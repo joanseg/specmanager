@@ -68,7 +68,7 @@ claude
 Inside the Claude Code session:
 
 ```
-/plugin marketplace add <owner>/specmanager
+/plugin marketplace add joanseg/specmanager
 /plugin install specmanager@specmanager
 ```
 
