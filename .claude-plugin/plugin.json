@@ -1,0 +1,15 @@
+{
+  "name": "specmanager",
+  "displayName": "SpecManager",
+  "description": "Lifecycle kanban for Claude Code projects (PRD → architecture → plan → tasks → walkthroughs).",
+  "mcpServers": "./.mcp.json",
+  "hooks": "./hooks/hooks.json",
+  "userConfig": {
+    "board_port": {
+      "type": "number",
+      "title": "Board port",
+      "description": "Localhost port for the kanban UI (Phase 2+).",
+      "default": 4317
+    }
+  }
+}

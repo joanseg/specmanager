@@ -1,0 +1,13 @@
+{
+  "name": "specmanager",
+  "owner": { "name": "specmanager" },
+  "description": "Lifecycle kanban for Claude Code projects (PRD → architecture → plan → tasks → walkthroughs).",
+  "plugins": [
+    {
+      "name": "specmanager",
+      "source": ".",
+      "description": "Lifecycle kanban for Claude Code projects.",
+      "version": "0.1.0"
+    }
+  ]
+}

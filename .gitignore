@@ -1,0 +1,7 @@
+node_modules/
+*.tsbuildinfo
+.DS_Store
+
+# server/dist/ IS committed — plugin consumers install straight from GitHub
+# and need the compiled JS at server/dist/mcp.js. Run `npm run build` in
+# server/ before committing source changes.

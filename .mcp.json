@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "specmanager": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/server/dist/mcp.js"],
+      "env": {
+        "NODE_PATH": "${CLAUDE_PLUGIN_DATA}/node_modules",
+        "SPECMANAGER_PROJECT_DIR": "${CLAUDE_PROJECT_DIR}",
+        "SPECMANAGER_BOARD_PORT": "${user_config.board_port}"
+      }
+    }
+  }
+}
