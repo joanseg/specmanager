@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "diff -q \"${CLAUDE_PLUGIN_ROOT}/server/package.json\" \"${CLAUDE_PLUGIN_DATA}/package.json\" >/dev/null 2>&1 || (cd \"${CLAUDE_PLUGIN_DATA}\" && cp \"${CLAUDE_PLUGIN_ROOT}/server/package.json\" . && npm install --omit=dev --no-audit --no-fund) || rm -f \"${CLAUDE_PLUGIN_DATA}/package.json\""
+            "command": "(diff -q \"${CLAUDE_PLUGIN_ROOT}/server/package.json\" \"${CLAUDE_PLUGIN_DATA}/package.json\" >/dev/null 2>&1 || (cd \"${CLAUDE_PLUGIN_DATA}\" && cp \"${CLAUDE_PLUGIN_ROOT}/server/package.json\" . && npm install --omit=dev --no-audit --no-fund)) ; ln -sfn \"${CLAUDE_PLUGIN_DATA}/node_modules\" \"${CLAUDE_PLUGIN_ROOT}/server/node_modules\""
           }
         ]
       }

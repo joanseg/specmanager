@@ -115,7 +115,7 @@ grep -c "specmanager:end"   "$SCRATCH/CLAUDE.md"   # → 1
 ### 4.2 Create a feature
 
 ```
-/specmanager-feature Checkout corridor
+/specmanager:specmanager-feature Checkout corridor
 ```
 
 Verify:
