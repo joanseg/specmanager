@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/install-deps.mjs\""
+            "command": "diff -q \"${CLAUDE_PLUGIN_ROOT}/server/package.json\" \"${CLAUDE_PLUGIN_DATA}/package.json\" >/dev/null 2>&1 || (cd \"${CLAUDE_PLUGIN_DATA}\" && cp \"${CLAUDE_PLUGIN_ROOT}/server/package.json\" . && npm install --omit=dev --no-audit --no-fund) || rm -f \"${CLAUDE_PLUGIN_DATA}/package.json\""
           }
         ]
       }
