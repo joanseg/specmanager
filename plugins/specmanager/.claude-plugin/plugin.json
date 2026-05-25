@@ -2,8 +2,6 @@
   "name": "specmanager",
   "displayName": "SpecManager",
   "description": "Lifecycle kanban for Claude Code projects (PRD → architecture → plan → tasks → walkthroughs).",
-  "mcpServers": "./.mcp.json",
-  "hooks": "./hooks/hooks.json",
   "userConfig": {
     "board_port": {
       "type": "number",
