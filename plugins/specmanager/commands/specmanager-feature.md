@@ -18,9 +18,9 @@ PRD → Architecture → Plan → Build → Walkthroughs.
    `manifest.json`, and updates the managed `CLAUDE.md` block.
 2. Report the new feature's `id`, `slug`, and folder path so the user can
    find the files in git.
-3. Suggest the next step: drafting the PRD by creating a doc in the `prd`
-   stage. In Phase 1 there is no `/specmanager:prd` skill yet — use the
-   `create_document` MCP tool directly. Phase 4 will add the stage skills.
+3. Suggest the next step: drafting the PRD with
+   **`/specmanager-prd <feature id or slug>`**, which invokes the
+   `prd-writer` subagent.
 
 ## Don't
 

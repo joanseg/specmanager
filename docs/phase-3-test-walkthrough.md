@@ -40,8 +40,35 @@ If any of these fail, **stop here** — the UI relies on them.
 ## 2. Scratch project setup
 
 Identical to Phase 1 §2. Install the plugin into the scratch repo, restart Claude Code, then in the session:
+Then in Claude Code in your scratch repo:
 
 ```
+/plugin marketplace update specmanager
+/plugin uninstall specmanager
+/plugin install specmanager@specmanager
+```
+
+**Quit Claude Code and kill the daemon** so the new MCP server boots fresh:
+
+```bash
+pkill -f '^claude$'
+claude daemon stop
+cd "$SCRATCH"            # your scratch dir from Phase 1
+claude
+```
+1. Confirm the right MCP is up with:
+  ```
+  lsof -nP -iTCP:4317 -sTCP:LISTEN
+  ps aux | grep specmanager | grep -v grep
+  ```
+2. Expect a single node …/378685653e0b/server/dist/mcp.js holding 4317.
+If not:
+```
+kill 88236
+```
+
+```
+/reload-plugins
 /specmanager-init
 /specmanager-feature Checkout corridor
 ```

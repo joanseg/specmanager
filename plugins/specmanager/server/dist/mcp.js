@@ -4,7 +4,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { startBoardServer } from "./board-server.js";
 import { spawn } from "node:child_process";
-import { STAGE, DOC_STATUS, TASK_STATUS, GENERATED_BY, initProject, listFeatures, createFeature, listDocuments, readDocumentById, createDocument, writeDocument, setStatus, checkGate, listStale, linkDocuments, listTasks, createTask, updateTask, syncClaudeMd, writeManifest, } from "./core/index.js";
+import { STAGE, DOC_STATUS, TASK_STATUS, GENERATED_BY, events, initProject, listFeatures, createFeature, listDocuments, readDocumentById, createDocument, writeDocument, setStatus, checkGate, listStale, linkDocuments, listTasks, createTask, updateTask, syncClaudeMd, writeManifest, } from "./core/index.js";
 const PROJECT_DIR = process.env.SPECMANAGER_PROJECT_DIR ?? process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
 const BOARD_PORT = Number(process.env.SPECMANAGER_BOARD_PORT ?? 4317);
 function text(payload) {
@@ -220,6 +220,37 @@ server.registerTool("open_board", {
         return fail(`could not open browser (${err.message}); URL: ${url}`);
     }
 });
+// Refresh the CLAUDE.md managed block whenever any mutation flows through core —
+// covers MCP tool calls AND board-server REST writes, since both emit the same events.
+function startClaudeMdAutoSync(root) {
+    let pending = null;
+    const schedule = () => {
+        if (pending)
+            clearTimeout(pending);
+        pending = setTimeout(() => {
+            pending = null;
+            syncClaudeMd(root).catch((err) => {
+                // eslint-disable-next-line no-console
+                console.error("specmanager: sync_claude_md failed:", err.message);
+            });
+        }, 150);
+    };
+    events.on((e) => {
+        switch (e.type) {
+            case "feature.created":
+            case "document.created":
+            case "document.updated":
+            case "status.changed":
+            case "stale.flagged":
+            case "stale.cleared":
+                schedule();
+                break;
+            default:
+                // file.changed, task.updated — manifest covers these, no CLAUDE.md row impact
+                break;
+        }
+    });
+}
 async function main() {
     // Boot the board server first so the URL is ready by the time any tool is called.
     // Failure (e.g. port in use) is non-fatal — MCP keeps working without the UI.
@@ -234,6 +265,7 @@ async function main() {
         // eslint-disable-next-line no-console
         console.error("specmanager: board server failed to start:", err.message);
     }
+    startClaudeMdAutoSync(PROJECT_DIR);
     const transport = new StdioServerTransport();
     await server.connect(transport);
 }
