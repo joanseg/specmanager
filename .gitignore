@@ -2,6 +2,9 @@ node_modules/
 *.tsbuildinfo
 .DS_Store
 
-# server/dist/ IS committed — plugin consumers install straight from GitHub
-# and need the compiled JS at server/dist/mcp.js. Run `npm run build` in
-# server/ before committing source changes.
+# server/dist/ AND ui/dist/ are committed — plugin consumers install straight
+# from GitHub and need both the compiled MCP server (server/dist/mcp.js) and
+# the built kanban UI (ui/dist/index.html). Contributors run:
+#   cd plugins/specmanager/server && npm install && npm run build
+#   cd plugins/specmanager/ui     && npm install && npm run build
+# before committing source changes.

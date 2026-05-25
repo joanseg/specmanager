@@ -71,6 +71,7 @@ async function main() {
         "list_features",
         "list_stale",
         "list_tasks",
+        "open_board",
         "read_document",
         "set_status",
         "specmanager_init",
@@ -81,7 +82,7 @@ async function main() {
     const missing = expected.filter((n) => !names.includes(n));
     if (missing.length > 0)
         throw new Error(`missing tools: ${missing.join(", ")}`);
-    console.log("ok — all 16 Phase-1 tools registered");
+    console.log(`ok — all ${expected.length} tools registered`);
     child.kill("SIGTERM");
 }
 main()

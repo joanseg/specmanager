@@ -2,6 +2,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+import { startBoardServer } from "./board-server.js";
+import { spawn } from "node:child_process";
 import { STAGE, DOC_STATUS, TASK_STATUS, GENERATED_BY, initProject, listFeatures, createFeature, listDocuments, readDocumentById, createDocument, writeDocument, setStatus, checkGate, listStale, linkDocuments, listTasks, createTask, updateTask, syncClaudeMd, writeManifest, } from "./core/index.js";
 const PROJECT_DIR = process.env.SPECMANAGER_PROJECT_DIR ?? process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
 const BOARD_PORT = Number(process.env.SPECMANAGER_BOARD_PORT ?? 4317);
@@ -189,14 +191,59 @@ server.registerTool("sync_claude_md", {
     description: "Rewrite the managed SpecManager block in the project CLAUDE.md.",
     inputSchema: z.object({}),
 }, async () => ok(await syncClaudeMd(PROJECT_DIR)));
+let board = null;
 server.registerTool("board_url", {
-    description: "Return the (planned) localhost URL of the kanban board server. Board UI lands in Phase 2; this currently returns the configured port only.",
+    description: "Return the localhost URL of the kanban board server, and whether it is currently running.",
     inputSchema: z.object({}),
-}, async () => ok({ url: `http://127.0.0.1:${BOARD_PORT}`, available: false }));
+}, async () => ok({
+    url: board?.url ?? `http://127.0.0.1:${BOARD_PORT}`,
+    available: board !== null,
+}));
+server.registerTool("open_board", {
+    description: "Open the SpecManager kanban board in the user's default browser. Returns the URL it tried to open.",
+    inputSchema: z.object({}),
+}, async () => {
+    const url = board?.url ?? `http://127.0.0.1:${BOARD_PORT}`;
+    if (!board) {
+        return fail(`board server is not running on ${url} — restart the Claude Code session`);
+    }
+    const cmd = process.platform === "darwin" ? "open" :
+        process.platform === "win32" ? "cmd" :
+            "xdg-open";
+    const args = process.platform === "win32" ? ["/c", "start", "", url] : [url];
+    try {
+        const child = spawn(cmd, args, { detached: true, stdio: "ignore" });
+        child.unref();
+        return ok({ url, opened: true });
+    }
+    catch (err) {
+        return fail(`could not open browser (${err.message}); URL: ${url}`);
+    }
+});
 async function main() {
+    // Boot the board server first so the URL is ready by the time any tool is called.
+    // Failure (e.g. port in use) is non-fatal — MCP keeps working without the UI.
+    try {
+        board = await startBoardServer({ root: PROJECT_DIR, port: BOARD_PORT });
+        if (board) {
+            // eslint-disable-next-line no-console
+            console.error(`specmanager: board server up at ${board.url}`);
+        }
+    }
+    catch (err) {
+        // eslint-disable-next-line no-console
+        console.error("specmanager: board server failed to start:", err.message);
+    }
     const transport = new StdioServerTransport();
     await server.connect(transport);
 }
+const shutdown = async () => {
+    if (board)
+        await board.stop().catch(() => undefined);
+    process.exit(0);
+};
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
 main().catch((err) => {
     // eslint-disable-next-line no-console
     console.error("specmanager mcp failed to start:", err);

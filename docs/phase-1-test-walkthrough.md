@@ -90,6 +90,8 @@ for `GITHUB_TOKEN` setup.
 
 When prompted for `board_port`, accept the default (`4317`).
 
+Quite claude (ctrl+c) and reopen claude
+
 Expected: `specmanager` is enabled. The MCP server auto-starts; the `SessionStart` hook copies `server/package.json` into `${CLAUDE_PLUGIN_DATA}` and runs `npm install --omit=dev` there (one-time, ~10s). The compiled JS at `server/dist/mcp.js` is **shipped in the repo** — no `tsc` step runs on the user's machine.
 
 ## 4. Run the Phase 1 exit test inside Claude Code
