@@ -42,7 +42,7 @@ export async function renderBlock(root = projectRoot()) {
     lines.push("Specs live in `.claude/specs/features/`. Read the approved doc for a feature's stage before implementing it.");
     lines.push("");
     if (m.features.length === 0) {
-        lines.push("_No features yet. Run `/specmanager:feature \"<title>\"` to create one._");
+        lines.push("_No features yet. Run `/specmanager-feature \"<title>\"` to create one._");
     }
     else {
         lines.push("| Feature | Current stage | Notes |");

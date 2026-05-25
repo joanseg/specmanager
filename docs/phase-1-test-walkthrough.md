@@ -2,7 +2,7 @@
 
 End-to-end test of the SpecManager plugin against a **scratch repo**, exercising the Phase 1 exit criteria:
 
-> install into a scratch repo → `/specmanager:init` scaffolds `.claude/specs/` + the `CLAUDE.md` block → create a feature, create a PRD doc, approve it, then reopen it and confirm a dependent is flagged `stale` — all from the Claude Code session, files visible in git.
+> install into a scratch repo → `/specmanager-init` scaffolds `.claude/specs/` + the `CLAUDE.md` block → create a feature, create a PRD doc, approve it, then reopen it and confirm a dependent is flagged `stale` — all from the Claude Code session, files visible in git.
 
 ## 0. Prerequisites
 
@@ -99,7 +99,7 @@ The slash commands below come from the plugin. After each one, Claude will call 
 ### 4.1 Initialize
 
 ```
-/specmanager:init
+/specmanager-init
 ```
 
 Verify:
@@ -113,7 +113,7 @@ grep -c "specmanager:end"   "$SCRATCH/CLAUDE.md"   # → 1
 ### 4.2 Create a feature
 
 ```
-/specmanager:feature Checkout corridor
+/specmanager-feature Checkout corridor
 ```
 
 Verify:

@@ -54,10 +54,9 @@ specmanager/                              # repo root = marketplace root
       .mcp.json                           # auto-starts the MCP server
       hooks/
         hooks.json                        # SessionStart deps install + FileChanged notice
-        install-deps.mjs                  # copies server/package.json into CLAUDE_PLUGIN_DATA, npm install
-      skills/
-        init/SKILL.md                     # /specmanager:init
-        feature/SKILL.md                  # /specmanager:feature
+      commands/
+        specmanager-init.md               # /specmanager-init
+        specmanager-feature.md            # /specmanager-feature
       server/
         src/
           core/                           # @specmanager/core — schema, state machine, deps, manifest, CLAUDE.md

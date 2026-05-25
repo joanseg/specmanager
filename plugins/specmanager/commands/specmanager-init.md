@@ -23,4 +23,4 @@ and whether `CLAUDE.md` was created or updated.
 
 - Don't edit files outside the `<!-- specmanager:start -->` / `<!-- specmanager:end -->`
   markers in `CLAUDE.md`. The user owns that content.
-- Don't create features here — point the user at `/specmanager:feature`.
+- Don't create features here — point the user at `/specmanager-feature`.

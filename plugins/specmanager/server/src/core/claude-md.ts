@@ -54,7 +54,7 @@ export async function renderBlock(root = projectRoot()): Promise<string> {
   );
   lines.push("");
   if (m.features.length === 0) {
-    lines.push("_No features yet. Run `/specmanager:feature \"<title>\"` to create one._");
+    lines.push("_No features yet. Run `/specmanager-feature \"<title>\"` to create one._");
   } else {
     lines.push("| Feature | Current stage | Notes |");
     lines.push("|---------|---------------|-------|");
