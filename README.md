@@ -2,7 +2,7 @@
 
 A Claude Code plugin that manages a software project's lifecycle — PRD → architecture → plan → tasks → build → walkthroughs — as a kanban board over plain markdown in the repo.
 
-**Status:** Phase 2 complete (headless core + MCP server + read-only kanban board served at `http://127.0.0.1:4317` with live updates).
+**Status:** Phase 3 complete (Phases 1+2 + in-UI editor with CodeMirror 6, split-view markdown preview, save with optimistic concurrency, Approve/Reopen, "what changed" stale popover, gate-aware Generate affordances).
 
 ## Design docs
 
@@ -10,6 +10,7 @@ A Claude Code plugin that manages a software project's lifecycle — PRD → arc
 - `docs/phase-tasks.md` — six-phase implementation plan (≤ 3 points per task).
 - `docs/phase-1-test-walkthrough.md` — exact steps to install and test Phase 1 in a scratch repo.
 - `docs/phase-2-test-walkthrough.md` — exact steps to verify the board UI + live updates.
+- `docs/phase-3-test-walkthrough.md` — exact steps to verify edit/approve/stale flows in the UI.
 
 ## Build
 

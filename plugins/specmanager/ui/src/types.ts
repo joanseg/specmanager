@@ -6,13 +6,37 @@ export const STAGES: Stage[] = ["prd", "architecture", "plan", "walkthrough"];
 export const COLUMNS = [...STAGES, "build" as const] as const;
 export type Column = (typeof COLUMNS)[number];
 
+export type DocStatus = "draft" | "approved";
+
 export interface DocCard {
   id: string;
   stage: Stage;
-  status: "draft" | "approved";
+  status: DocStatus;
   stale: boolean;
   version: number;
   title: string;
+}
+
+export interface DocFull {
+  id: string;
+  featureId: string;
+  stage: Stage;
+  status: DocStatus;
+  stale: boolean;
+  title: string;
+  body: string;
+  version: number;
+  dependsOn: string[];
+  basedOn: Record<string, number>;
+  generatedBy: "agent" | "human";
+  createdAt: string;
+  updatedAt: string;
+  filePath: string;
+}
+
+export interface GateResult {
+  ok: boolean;
+  reason?: string;
 }
 
 export interface TaskCounts {

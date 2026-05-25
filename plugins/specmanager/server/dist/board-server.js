@@ -5,7 +5,7 @@ import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
 import { WebSocketServer } from "ws";
 import chokidar from "chokidar";
-import { buildManifest, events, listDocuments, listFeatures, listStale, listTasks, projectRoot, readDocumentById, specsDir, } from "./core/index.js";
+import { buildManifest, checkGate, events, listDocuments, listFeatures, listStale, listTasks, projectRoot, readDocumentById, setStatus, specsDir, writeDocument, } from "./core/index.js";
 const here = path.dirname(fileURLToPath(import.meta.url));
 // dist/board-server.js → plugin root → ui/dist
 const UI_DIST = path.resolve(here, "..", "..", "ui", "dist");
@@ -40,6 +40,54 @@ export async function startBoardServer(opts = {}) {
             reply.code(404);
             return { error: err.message };
         }
+    });
+    app.put("/api/documents/:id", async (req, reply) => {
+        try {
+            const updated = await writeDocument({
+                id: req.params.id,
+                body: req.body?.body,
+                title: req.body?.title,
+                baseVersion: req.body?.baseVersion,
+                generatedBy: "human",
+            }, root);
+            return { ...updated.frontmatter, body: updated.body, filePath: updated.filePath };
+        }
+        catch (err) {
+            const message = err.message;
+            if (message.startsWith("version conflict")) {
+                reply.code(409);
+                return { error: message };
+            }
+            if (message.startsWith("document not found")) {
+                reply.code(404);
+                return { error: message };
+            }
+            reply.code(400);
+            return { error: message };
+        }
+    });
+    app.post("/api/documents/:id/status", async (req, reply) => {
+        const next = req.body?.status;
+        if (next !== "draft" && next !== "approved") {
+            reply.code(400);
+            return { error: `status must be 'draft' or 'approved' (got ${JSON.stringify(next)})` };
+        }
+        try {
+            const updated = await setStatus(req.params.id, next, root);
+            return { ...updated.frontmatter, body: updated.body, filePath: updated.filePath };
+        }
+        catch (err) {
+            reply.code(404);
+            return { error: err.message };
+        }
+    });
+    app.get("/api/features/:id/gate", async (req, reply) => {
+        const stage = req.query.stage;
+        if (!stage) {
+            reply.code(400);
+            return { error: "missing query param: stage" };
+        }
+        return checkGate(req.params.id, stage, root);
     });
     app.get("/api/stale", async () => {
         const docs = await listStale(root);

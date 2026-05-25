@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { fetchBoard, openWebSocket } from "./api";
+import DocPanel from "./DocPanel";
 import { Board, COLUMNS, Column, DocCard, FeatureRow, Stage, TaskCounts } from "./types";
 
 const STAGE_LABEL: Record<Column, string> = {
@@ -26,18 +27,21 @@ function priorStageApproved(row: FeatureRow, stage: Stage): boolean {
   return doc?.status === "approved";
 }
 
-function DocCellView({ doc }: { doc: DocCard }) {
+function DocCellView({ doc, onOpen }: { doc: DocCard; onOpen: (id: string) => void }) {
   return (
-    <article className={`card${doc.stale ? " card--stale" : ""}`}>
-      <header className="card__title" title={doc.id}>
-        {doc.title}
-      </header>
-      <footer className="card__badges">
+    <button
+      type="button"
+      className={`card card--button${doc.stale ? " card--stale" : ""}`}
+      onClick={() => onOpen(doc.id)}
+      title={doc.id}
+    >
+      <span className="card__title">{doc.title}</span>
+      <span className="card__badges">
         <span className={`badge badge--${doc.status}`}>{doc.status}</span>
         {doc.stale && <span className="badge badge--stale">⚠ stale</span>}
         <span className="badge badge--meta">v{doc.version}</span>
-      </footer>
-    </article>
+      </span>
+    </button>
   );
 }
 
@@ -51,12 +55,21 @@ function LockedCell({ stage }: { stage: Stage }) {
 }
 
 function EmptyCell({ stage, ready }: { stage: Stage; ready: boolean }) {
+  const slash = `/specmanager-${stage}`;
+  const onCopy = (e: React.MouseEvent): void => {
+    e.stopPropagation();
+    void navigator.clipboard?.writeText(slash);
+  };
   return (
     <div className={`card card--empty${ready ? " card--ready" : ""}`}>
       <span className="card__empty-label">{ready ? "Generate" : STAGE_LABEL[stage]}</span>
-      <span className="card__empty-sub">
-        {ready ? `/specmanager-${stage}` : "—"}
-      </span>
+      {ready ? (
+        <button type="button" className="card__empty-cmd" onClick={onCopy} title="copy to clipboard">
+          {slash}
+        </button>
+      ) : (
+        <span className="card__empty-sub">—</span>
+      )}
     </div>
   );
 }
@@ -90,11 +103,19 @@ function BuildCell({ tasks, row }: { tasks: TaskCounts; row: FeatureRow }) {
   );
 }
 
-function Cell({ row, column }: { row: FeatureRow; column: Column }) {
+function Cell({
+  row,
+  column,
+  onOpenDoc,
+}: {
+  row: FeatureRow;
+  column: Column;
+  onOpenDoc: (id: string) => void;
+}) {
   if (column === "build") return <BuildCell tasks={row.tasks} row={row} />;
   const stage: Stage = column;
   const doc = findDoc(row, stage);
-  if (doc) return <DocCellView doc={doc} />;
+  if (doc) return <DocCellView doc={doc} onOpen={onOpenDoc} />;
   if (!priorStageApproved(row, stage)) return <LockedCell stage={stage} />;
   if (stage === "walkthrough") {
     const ready = row.tasks.total > 0 && row.tasks.done === row.tasks.total;
@@ -107,6 +128,10 @@ export default function App() {
   const [board, setBoard] = useState<Board | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [lastEvent, setLastEvent] = useState<string | null>(null);
+  const [openDocId, setOpenDocId] = useState<string | null>(null);
+
+  const openDoc = useCallback((id: string) => setOpenDocId(id), []);
+  const closeDoc = useCallback(() => setOpenDocId(null), []);
 
   const reload = (): void => {
     fetchBoard()
@@ -171,7 +196,7 @@ export default function App() {
               </div>
               {COLUMNS.map((c) => (
                 <div key={c} className="row__cell">
-                  <Cell row={row} column={c} />
+                  <Cell row={row} column={c} onOpenDoc={openDoc} />
                 </div>
               ))}
             </div>
@@ -182,6 +207,10 @@ export default function App() {
       <footer className="board__footer">
         <span>Last synced: {new Date(board.generatedAt).toLocaleString()}</span>
       </footer>
+
+      {openDocId && (
+        <DocPanel docId={openDocId} onClose={closeDoc} onJumpTo={openDoc} />
+      )}
     </main>
   );
 }

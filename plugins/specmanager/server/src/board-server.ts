@@ -8,6 +8,7 @@ import chokidar from "chokidar";
 
 import {
   buildManifest,
+  checkGate,
   events,
   listDocuments,
   listFeatures,
@@ -15,8 +16,10 @@ import {
   listTasks,
   projectRoot,
   readDocumentById,
+  setStatus,
   SpecEvent,
   specsDir,
+  writeDocument,
 } from "./core/index.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -67,6 +70,72 @@ export async function startBoardServer(opts: {
       reply.code(404);
       return { error: (err as Error).message };
     }
+  });
+
+  app.put<{
+    Params: { id: string };
+    Body: { body?: string; title?: string; baseVersion?: number };
+  }>("/api/documents/:id", async (req, reply) => {
+    try {
+      const updated = await writeDocument(
+        {
+          id: req.params.id,
+          body: req.body?.body,
+          title: req.body?.title,
+          baseVersion: req.body?.baseVersion,
+          generatedBy: "human",
+        },
+        root
+      );
+      return { ...updated.frontmatter, body: updated.body, filePath: updated.filePath };
+    } catch (err) {
+      const message = (err as Error).message;
+      if (message.startsWith("version conflict")) {
+        reply.code(409);
+        return { error: message };
+      }
+      if (message.startsWith("document not found")) {
+        reply.code(404);
+        return { error: message };
+      }
+      reply.code(400);
+      return { error: message };
+    }
+  });
+
+  app.post<{
+    Params: { id: string };
+    Body: { status: "draft" | "approved" };
+  }>("/api/documents/:id/status", async (req, reply) => {
+    const next = req.body?.status;
+    if (next !== "draft" && next !== "approved") {
+      reply.code(400);
+      return { error: `status must be 'draft' or 'approved' (got ${JSON.stringify(next)})` };
+    }
+    try {
+      const updated = await setStatus(req.params.id, next, root);
+      return { ...updated.frontmatter, body: updated.body, filePath: updated.filePath };
+    } catch (err) {
+      reply.code(404);
+      return { error: (err as Error).message };
+    }
+  });
+
+  app.get<{
+    Params: { id: string };
+    Querystring: { stage?: string };
+  }>("/api/features/:id/gate", async (req, reply) => {
+    const stage = req.query.stage as
+      | "prd"
+      | "architecture"
+      | "plan"
+      | "walkthrough"
+      | undefined;
+    if (!stage) {
+      reply.code(400);
+      return { error: "missing query param: stage" };
+    }
+    return checkGate(req.params.id, stage, root);
   });
 
   app.get("/api/stale", async () => {

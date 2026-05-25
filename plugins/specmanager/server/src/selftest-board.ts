@@ -70,6 +70,57 @@ async function main(): Promise<void> {
     const staleRes = await fetch(`${board.url}/api/stale`);
     assert(staleRes.ok, "GET /api/stale → 200");
 
+    // PUT /api/documents/:id — successful update bumps version
+    const putRes = await fetch(`${board.url}/api/documents/${docId}`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ body: "# PRD\nEdited via REST.", baseVersion: 1 }),
+    });
+    assert(putRes.ok, "PUT /api/documents/:id → 200");
+    const putJson = (await putRes.json()) as { version: number };
+    assert(putJson.version === 2, "PUT bumps version to 2");
+
+    // PUT with stale baseVersion → 409
+    const conflictRes = await fetch(`${board.url}/api/documents/${docId}`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ body: "should fail", baseVersion: 1 }),
+    });
+    assert(conflictRes.status === 409, "PUT with stale baseVersion → 409");
+
+    // POST /api/documents/:id/status — approve, then reopen
+    const approveRes = await fetch(`${board.url}/api/documents/${docId}/status`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ status: "approved" }),
+    });
+    assert(approveRes.ok, "POST status=approved → 200");
+    const approveJson = (await approveRes.json()) as { status: string };
+    assert(approveJson.status === "approved", "approve persisted");
+
+    const reopenRes = await fetch(`${board.url}/api/documents/${docId}/status`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ status: "draft" }),
+    });
+    assert(reopenRes.ok, "POST status=draft (reopen) → 200");
+
+    // POST with bad status → 400
+    const badRes = await fetch(`${board.url}/api/documents/${docId}/status`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ status: "nope" }),
+    });
+    assert(badRes.status === 400, "POST status=nope → 400");
+
+    // GET /api/features/:id/gate — architecture gate fails because PRD is draft
+    const gateRes = await fetch(
+      `${board.url}/api/features/${feature.id}/gate?stage=architecture`
+    );
+    assert(gateRes.ok, "GET /api/features/:id/gate → 200");
+    const gateJson = (await gateRes.json()) as { ok: boolean };
+    assert(gateJson.ok === false, "architecture gate is closed when PRD is draft");
+
     // WS event on file change
     await new Promise<void>((resolve, reject) => {
       const ws = new WebSocket(`ws://127.0.0.1:${port}/ws`);
