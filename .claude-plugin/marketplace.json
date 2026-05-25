@@ -7,10 +7,7 @@
     {
       "name": "specmanager",
       "description": "Lifecycle kanban for Claude Code projects.",
-      "source": {
-        "source": "github",
-        "repo": "joanseg/specmanager"
-      }
+      "source": "./plugins/specmanager"
     }
   ]
 }

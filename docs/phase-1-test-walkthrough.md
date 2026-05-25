@@ -16,9 +16,9 @@ End-to-end test of the SpecManager plugin against a **scratch repo**, exercising
 
 ```bash
 PLUGIN_DIR=~/Documents/projects/specmanager
-cd "$PLUGIN_DIR/server"
-npm install            # installs into server/node_modules
-npm run build          # writes server/dist/*.js
+cd "$PLUGIN_DIR/plugins/specmanager/server"
+npm install            # installs into plugins/specmanager/server/node_modules
+npm run build          # writes plugins/specmanager/server/dist/*.js
 ```
 
 Sanity-check the build:

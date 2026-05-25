@@ -13,7 +13,7 @@ A Claude Code plugin that manages a software project's lifecycle — PRD → arc
 ## Build
 
 ```bash
-cd server
+cd plugins/specmanager/server
 npm install
 npm run build
 npm run selftest        # core flow against a tmp dir
@@ -35,8 +35,9 @@ can be installed directly:
 /plugin install specmanager@specmanager
 ```
 
-`server/dist/` is committed — installs work with no build step on the user's
-machine. Contributors run `cd server && npm install && npm run build` before
+The compiled `plugins/specmanager/server/dist/` is committed — installs work
+with no build step on the user's machine. Contributors run
+`cd plugins/specmanager/server && npm install && npm run build` before
 committing source changes.
 
 See `docs/phase-1-test-walkthrough.md` for the end-to-end install + test flow.
@@ -44,20 +45,24 @@ See `docs/phase-1-test-walkthrough.md` for the end-to-end install + test flow.
 ## Layout
 
 ```
-specmanager/
-  .claude-plugin/plugin.json       # plugin manifest
-  .mcp.json                        # auto-starts the MCP server
-  hooks/
-    hooks.json                     # SessionStart deps install + FileChanged notice
-    install-deps.mjs               # copies server/package.json into CLAUDE_PLUGIN_DATA, npm install
-  skills/
-    init/SKILL.md                  # /specmanager:init
-    feature/SKILL.md               # /specmanager:feature
-  server/
-    src/
-      core/                        # @specmanager/core — schema, state machine, deps, manifest, CLAUDE.md
-      mcp.ts                       # MCP server bootstrap + all Phase 1 tools
-      selftest.ts / smoke-mcp.ts   # validation scripts
+specmanager/                              # repo root = marketplace root
+  .claude-plugin/marketplace.json         # the marketplace manifest
+  docs/                                   # design docs + walkthroughs
+  plugins/
+    specmanager/                          # the plugin root
+      .claude-plugin/plugin.json          # plugin manifest
+      .mcp.json                           # auto-starts the MCP server
+      hooks/
+        hooks.json                        # SessionStart deps install + FileChanged notice
+        install-deps.mjs                  # copies server/package.json into CLAUDE_PLUGIN_DATA, npm install
+      skills/
+        init/SKILL.md                     # /specmanager:init
+        feature/SKILL.md                  # /specmanager:feature
+      server/
+        src/
+          core/                           # @specmanager/core — schema, state machine, deps, manifest, CLAUDE.md
+          mcp.ts                          # MCP server bootstrap + all Phase 1 tools
+          selftest.ts / smoke-mcp.ts      # validation scripts
 ```
 
 Source-of-truth artifacts in *target* projects live under `.claude/specs/features/<slug>/` and the project's `CLAUDE.md` carries a managed block between `<!-- specmanager:start -->` / `<!-- specmanager:end -->` markers.
