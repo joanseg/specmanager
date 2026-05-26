@@ -55,6 +55,7 @@ In the Claude session:
 ```
 /mcp
 ```
+If ❌failed, then slecte `reconnect` and click enter.
 
 Expected: the `specmanager` server lists **`list_phases`** and **`get_next_phase`** alongside the existing tools.
 
@@ -130,14 +131,14 @@ get_next_phase featureId=<id>
 Returns `{ "name": "A", … }`. Now complete Phase A:
 
 ```
-update_task id=<A1 id> featureId=<id> status="done"
-update_task id=<A2 id> featureId=<id> status="done"
+update_task id=<A1 id> feat-sample-7a-feature status="done"
+update_task id=<A2 id> feat-sample-7a-feature status="done"
 ```
 
 Re-check:
 
 ```
-get_next_phase featureId=<id>
+get_next_phase eat-sample-7a-feature
 ```
 
 Expected: `{ "name": "B", … }`.
@@ -145,7 +146,7 @@ Expected: `{ "name": "B", … }`.
 Complete Phase B:
 
 ```
-update_task id=<B1 id> featureId=<id> status="done"
+update_task task-003 feat-sample-7a-feature status="done"
 get_next_phase featureId=<id>
 ```
 

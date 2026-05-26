@@ -25,10 +25,24 @@ export class SplitRequiredError extends Error {
   }
 }
 
+export class MissingArtifactError extends Error {
+  readonly code = "missingArtifact";
+  constructor(taskId: string) {
+    super(
+      `task ${taskId} cannot transition to 'done' without at least one commit or file ref — record artifacts via update_task before marking done`
+    );
+    this.name = "MissingArtifactError";
+  }
+}
+
 function assertSplittable(complexity: TaskComplexity | null | undefined): void {
   if (complexity != null && complexity > MAX_TASK_COMPLEXITY) {
     throw new SplitRequiredError(complexity);
   }
+}
+
+function hasArtifact(artifacts: TaskArtifacts): boolean {
+  return artifacts.commits.length > 0 || artifacts.files.length > 0;
 }
 
 async function tasksFilePath(featureId: string, root: string): Promise<string> {
@@ -119,6 +133,12 @@ export async function updateTask(input: UpdateTaskInput, root = projectRoot()): 
     artifacts: { ...cur.artifacts, ...(input.artifacts ?? {}) },
     updatedAt: nowIso(),
   };
+  // Artifact discipline (Phase 7.B): every done transition must carry at least
+  // one commit or file ref. Only enforced on the todo/in_progress → done edge,
+  // not on idempotent done → done writes (no-op patches stay legal).
+  if (merged.status === "done" && cur.status !== "done" && !hasArtifact(merged.artifacts)) {
+    throw new MissingArtifactError(merged.id);
+  }
   file.tasks[idx] = merged;
   await writeTasksFile(input.featureId, file, root);
   events.emit({ type: "task.updated", taskId: merged.id, featureId: input.featureId });

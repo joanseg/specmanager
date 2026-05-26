@@ -121,7 +121,7 @@ export async function startBoardServer(opts = {}) {
             reply.code(400);
             return { error: "missing query param: stage" };
         }
-        return checkGate(req.params.id, stage, root);
+        return checkGate(req.params.id, stage, root, { phase: req.query.phase });
     });
     app.get("/api/stale", async () => {
         const docs = await listStale(root);

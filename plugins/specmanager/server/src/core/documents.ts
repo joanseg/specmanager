@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { DocFrontmatter, DocumentRecord, Stage } from "./types.js";
+import { DEFAULT_PHASE, DocFrontmatter, DocumentRecord, Stage } from "./types.js";
 import { projectRoot, stageDir, STAGES } from "./paths.js";
 import { docId, nowIso } from "./ids.js";
 import { readDoc, writeDoc } from "./frontmatter.js";
@@ -13,6 +13,22 @@ const DEFAULT_FILENAMES: Record<Stage, string[]> = {
   plan: ["plan.md"],
   walkthrough: [],
 };
+
+export const FINAL_PHASE = "final" as const;
+
+function sanitizePhaseSegment(phase: string): string {
+  return (
+    phase
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || DEFAULT_PHASE
+  );
+}
+
+export function walkthroughFilename(phase: string): string {
+  if (phase === FINAL_PHASE) return "feature.md";
+  return `phase-${sanitizePhaseSegment(phase)}.md`;
+}
 
 export async function listDocuments(
   filter: { featureId?: string; stage?: Stage; status?: string; stale?: boolean } = {},
@@ -29,6 +45,11 @@ export async function listDocuments(
       for (const name of entries) {
         if (!name.endsWith(".md")) continue;
         const doc = await readDoc(path.join(dir, name));
+        // Walkthroughs: legacy docs predating Phase 7.B have no `phase` field —
+        // default to the synthetic "default" phase so check_gate keeps working.
+        if (stage === "walkthrough" && !doc.frontmatter.phase) {
+          doc.frontmatter.phase = DEFAULT_PHASE;
+        }
         if (filter.status && doc.frontmatter.status !== filter.status) continue;
         if (filter.stale !== undefined && doc.frontmatter.stale !== filter.stale) continue;
         out.push(doc);
@@ -36,6 +57,42 @@ export async function listDocuments(
     }
   }
   return out;
+}
+
+/**
+ * One-time non-destructive migration: rename pre-Phase-7.B walkthrough files
+ * (anything that isn't already `phase-*.md` or `feature.md`) to `phase-default.md`.
+ * Also stamps `phase: "default"` into their frontmatter so reads round-trip.
+ * Safe to run repeatedly — no-op once migrated.
+ */
+export async function migrateWalkthroughs(root = projectRoot()): Promise<string[]> {
+  const features = await listFeatures(root);
+  const migrated: string[] = [];
+  for (const f of features) {
+    const dir = stageDir(f.slug, "walkthrough", root);
+    const entries = await fs.readdir(dir).catch(() => []);
+    for (const name of entries) {
+      if (!name.endsWith(".md")) continue;
+      if (name === "feature.md" || name.startsWith("phase-")) continue;
+      const oldPath = path.join(dir, name);
+      const doc = await readDoc(oldPath);
+      const newPath = path.join(dir, walkthroughFilename(DEFAULT_PHASE));
+      const newExists = await fs
+        .stat(newPath)
+        .then(() => true)
+        .catch(() => false);
+      if (newExists) continue; // never overwrite
+      const updated: DocFrontmatter = {
+        ...doc.frontmatter,
+        phase: DEFAULT_PHASE,
+        updatedAt: nowIso(),
+      };
+      await writeDoc(oldPath, updated, doc.body);
+      await fs.rename(oldPath, newPath);
+      migrated.push(newPath);
+    }
+  }
+  return migrated;
 }
 
 export async function readDocumentById(
@@ -48,7 +105,10 @@ export async function readDocumentById(
   return hit;
 }
 
-function defaultFilename(stage: Stage, slug: string, title: string): string {
+function defaultFilename(stage: Stage, slug: string, title: string, phase?: string): string {
+  if (stage === "walkthrough") {
+    return walkthroughFilename(phase ?? DEFAULT_PHASE);
+  }
   const defaults = DEFAULT_FILENAMES[stage];
   if (defaults.length > 0) return defaults[0]!;
   const t = title
@@ -72,6 +132,7 @@ export interface CreateDocInput {
   generatedBy?: "agent" | "human";
   dependsOn?: string[];
   basedOn?: Record<string, number>;
+  phase?: string;
 }
 
 export async function createDocument(
@@ -82,7 +143,9 @@ export async function createDocument(
   if (!feature) throw new Error(`feature not found: ${input.featureId}`);
   const dir = stageDir(feature.slug, input.stage, root);
   await fs.mkdir(dir, { recursive: true });
-  const filename = input.filename ?? defaultFilename(input.stage, feature.slug, input.title);
+  const phase = input.stage === "walkthrough" ? input.phase ?? DEFAULT_PHASE : undefined;
+  const filename =
+    input.filename ?? defaultFilename(input.stage, feature.slug, input.title, phase);
   const filePath = path.join(dir, filename);
   const exists = await fs
     .stat(filePath)
@@ -102,6 +165,7 @@ export async function createDocument(
     basedOn: input.basedOn ?? {},
     generatedBy: input.generatedBy ?? "human",
     version: 1,
+    ...(phase !== undefined ? { phase } : {}),
     createdAt: now,
     updatedAt: now,
   };

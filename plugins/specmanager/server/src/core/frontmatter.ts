@@ -9,12 +9,20 @@ export async function readDoc(filePath: string): Promise<DocumentRecord> {
   return { frontmatter, body: parsed.content, filePath };
 }
 
+function stripUndefined<T extends Record<string, unknown>>(obj: T): T {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (v !== undefined) out[k] = v;
+  }
+  return out as T;
+}
+
 export async function writeDoc(
   filePath: string,
   frontmatter: DocFrontmatter,
   body: string
 ): Promise<void> {
   const validated = DocFrontmatterSchema.parse(frontmatter);
-  const out = matter.stringify(body, validated);
+  const out = matter.stringify(body, stripUndefined(validated));
   await fs.writeFile(filePath, out, "utf8");
 }

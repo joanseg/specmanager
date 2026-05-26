@@ -120,9 +120,13 @@ server.registerTool("set_status", {
     }
 });
 server.registerTool("check_gate", {
-    description: "Check whether the prerequisite for a feature's stage is met (prior stage approved, or all tasks done for walkthroughs).",
-    inputSchema: z.object({ featureId: z.string(), stage: STAGE }),
-}, async ({ featureId, stage }) => ok(await checkGate(featureId, stage, PROJECT_DIR)));
+    description: "Check whether the prerequisite for a feature's stage is met (prior stage approved, or — for walkthrough — all tasks in the named phase are done). `phase` defaults to 'default' and is only meaningful for the walkthrough stage.",
+    inputSchema: z.object({
+        featureId: z.string(),
+        stage: STAGE,
+        phase: z.string().optional(),
+    }),
+}, async ({ featureId, stage, phase }) => ok(await checkGate(featureId, stage, PROJECT_DIR, { phase })));
 server.registerTool("list_stale", {
     description: "List documents currently flagged stale.",
     inputSchema: z.object({}),

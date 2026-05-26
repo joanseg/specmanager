@@ -174,7 +174,7 @@ export async function startBoardServer(opts: {
 
   app.get<{
     Params: { id: string };
-    Querystring: { stage?: string };
+    Querystring: { stage?: string; phase?: string };
   }>("/api/features/:id/gate", async (req, reply) => {
     const stage = req.query.stage as
       | "prd"
@@ -186,7 +186,7 @@ export async function startBoardServer(opts: {
       reply.code(400);
       return { error: "missing query param: stage" };
     }
-    return checkGate(req.params.id, stage, root);
+    return checkGate(req.params.id, stage, root, { phase: req.query.phase });
   });
 
   app.get("/api/stale", async () => {

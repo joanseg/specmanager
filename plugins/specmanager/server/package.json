@@ -11,6 +11,7 @@
     "selftest": "node dist/selftest.js",
     "selftest-board": "node dist/selftest-board.js",
     "selftest-phases": "node dist/selftest-phases.js",
+    "selftest-execute": "node dist/selftest-execute.js",
     "smoke-mcp": "node dist/smoke-mcp.js"
   },
   "dependencies": {

@@ -2,18 +2,21 @@
 
 A Claude Code plugin that manages a software project's lifecycle — PRD → architecture → plan → tasks → build → walkthroughs — as a kanban board over plain markdown in the repo.
 
-**Status:** Phase 6 complete (Phases 1–5 + in-UI AI chat: per-doc Claude Agent SDK session, in-process MCP bridge for `read_document` / `write_document` / `list_documents`, adaptive interview vs co-write mode, WS-streamed deltas, mid-stream conflict guard via baseVersion). Two items deferred as explicit follow-ups — see `docs/phase-6-test-walkthrough.md §6`.
+**Status:** Phase 7.B complete (Phases 1–6 + phased plans + headless build loop). The planner now organises tasks into phases (Fibonacci ≤3); `/specmanager-execute <feature> <phase|next>` drives one phase's tasks via the builder subagent (records commits + files, stops at the phase boundary); `/specmanager-walkthrough <feature> <phase>` writes a per-phase walkthrough gated on that phase's tasks being done. Per-feature walkthroughs are migrated non-destructively to `phase-default.md`. Board UI for phase grouping ships in Phase 7.C.
 
 ## Design docs
 
 - `docs/architecture-and-spec.md` — full architecture & specification (source of truth).
 - `docs/phase-tasks.md` — six-phase implementation plan (≤ 3 points per task).
+- `docs/phase-7-execute-and-phased-plans.md` — Phase 7 follow-on plan (7.A, 7.B, 7.C).
 - `docs/phase-1-test-walkthrough.md` — exact steps to install and test Phase 1 in a scratch repo.
 - `docs/phase-2-test-walkthrough.md` — exact steps to verify the board UI + live updates.
 - `docs/phase-3-test-walkthrough.md` — exact steps to verify edit/approve/stale flows in the UI.
 - `docs/phase-4-test-walkthrough.md` — exact steps to verify the stage subagents end-to-end on a real repo.
 - `docs/phase-5-test-walkthrough.md` — exact steps to verify task execution + walkthrough generation.
 - `docs/phase-6-test-walkthrough.md` — exact steps to verify in-UI AI chat (interview, co-write, mid-stream conflict).
+- `docs/phase-7-A-test-walkthrough.md` — exact steps to verify phased plans + Fibonacci enforcement.
+- `docs/phase-7-B-test-walkthrough.md` — exact steps to verify the per-phase execute + walkthrough loop end-to-end.
 
 ## Build
 
@@ -23,6 +26,8 @@ npm install
 npm run build
 npm run selftest          # Phase 1 — core flow against a tmp dir
 npm run selftest-board    # Phase 2 — boots board, REST + WS + watcher
+npm run selftest-phases   # Phase 7.A — phase rollup + Fibonacci ≤3 validation
+npm run selftest-execute  # Phase 7.B — per-phase gates + walkthrough storage + migration
 npm run smoke-mcp         # MCP wire protocol + 17 tools registered
 
 cd ../ui

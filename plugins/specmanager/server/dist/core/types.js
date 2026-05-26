@@ -33,6 +33,9 @@ export const DocFrontmatterSchema = z.object({
     basedOn: z.record(z.string(), z.number()).default({}),
     generatedBy: GENERATED_BY.default("human"),
     version: z.number().int().nonnegative().default(1),
+    // Only meaningful for walkthrough docs; omitted on PRD/Architecture/Plan.
+    // "default" = legacy per-feature walkthrough; "final" = the 7.C roll-up.
+    phase: z.string().optional(),
     createdAt: z.string(),
     updatedAt: z.string(),
 });

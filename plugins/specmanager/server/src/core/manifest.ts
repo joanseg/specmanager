@@ -4,6 +4,13 @@ import { listFeatures } from "./features.js";
 import { listDocuments } from "./documents.js";
 import { listTasks } from "./tasks.js";
 import { PhaseDescriptor, rollupPhases } from "./phases.js";
+import { DEFAULT_PHASE } from "./types.js";
+
+export interface PhaseManifestEntry extends PhaseDescriptor {
+  walkthroughId: string | null;
+  walkthroughStatus: "draft" | "approved" | null;
+  walkthroughStale: boolean | null;
+}
 
 export interface Manifest {
   generatedAt: string;
@@ -19,9 +26,10 @@ export interface Manifest {
       stale: boolean;
       version: number;
       title: string;
+      phase?: string;
     }>;
     tasks: { todo: number; in_progress: number; done: number; total: number };
-    phases: PhaseDescriptor[];
+    phases: PhaseManifestEntry[];
   }>;
 }
 
@@ -33,6 +41,30 @@ export async function buildManifest(root = projectRoot()): Promise<Manifest> {
     const tasks = await listTasks(f.id, root);
     const counts = { todo: 0, in_progress: 0, done: 0, total: tasks.length };
     for (const t of tasks) counts[t.status]++;
+    const phaseRollup = rollupPhases(tasks);
+    // Map phase-name → walkthrough doc (if one exists for that phase).
+    const walkthroughByPhase = new Map<
+      string,
+      { id: string; status: "draft" | "approved"; stale: boolean }
+    >();
+    for (const d of docs) {
+      if (d.frontmatter.stage !== "walkthrough") continue;
+      const phase = d.frontmatter.phase ?? DEFAULT_PHASE;
+      walkthroughByPhase.set(phase, {
+        id: d.frontmatter.id,
+        status: d.frontmatter.status,
+        stale: d.frontmatter.stale,
+      });
+    }
+    const phases: PhaseManifestEntry[] = phaseRollup.map((p) => {
+      const wt = walkthroughByPhase.get(p.name) ?? null;
+      return {
+        ...p,
+        walkthroughId: wt?.id ?? null,
+        walkthroughStatus: wt?.status ?? null,
+        walkthroughStale: wt ? wt.stale : null,
+      };
+    });
     out.features.push({
       id: f.id,
       slug: f.slug,
@@ -45,9 +77,10 @@ export async function buildManifest(root = projectRoot()): Promise<Manifest> {
         stale: d.frontmatter.stale,
         version: d.frontmatter.version,
         title: d.frontmatter.title,
+        ...(d.frontmatter.phase ? { phase: d.frontmatter.phase } : {}),
       })),
       tasks: counts,
-      phases: rollupPhases(tasks),
+      phases,
     });
   }
   return out;

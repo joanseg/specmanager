@@ -51,13 +51,13 @@ async function main() {
     // 4. getNextPhase returns A while A has open tasks.
     const next1 = await getNextPhase(feature.id, root);
     assert(next1?.name === "A", "next phase is A while A is incomplete");
-    // 5. Complete phase A → next phase is B.
-    await updateTask({ id: a1.id, featureId: feature.id, status: "done" }, root);
-    await updateTask({ id: a2.id, featureId: feature.id, status: "done" }, root);
+    // 5. Complete phase A → next phase is B. (artifacts required for done transition.)
+    await updateTask({ id: a1.id, featureId: feature.id, status: "done", artifacts: { files: ["src/a1.ts"] } }, root);
+    await updateTask({ id: a2.id, featureId: feature.id, status: "done", artifacts: { files: ["src/a2.ts"] } }, root);
     const next2 = await getNextPhase(feature.id, root);
     assert(next2?.name === "B", "next phase advances to B once A is done");
     // 6. Complete B → no next phase.
-    await updateTask({ id: b1.id, featureId: feature.id, status: "done" }, root);
+    await updateTask({ id: b1.id, featureId: feature.id, status: "done", artifacts: { commits: ["b1abc"] } }, root);
     const next3 = await getNextPhase(feature.id, root);
     assert(next3 === null, "no next phase when all phases done");
     // 7. Legacy fallback: hand-write a tasks.json without phase/complexity fields and read it back.

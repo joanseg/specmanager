@@ -24,10 +24,15 @@ function notesFor(f: {
   documents: Array<{ stage: string; status: string; stale: boolean }>;
   tasks: { todo: number; in_progress: number; done: number; total: number };
   currentStage: string;
+  phases?: Array<{ name: string; status: string }>;
 }): string {
   const stale = f.documents.filter((d) => d.stale).map((d) => stageLabel(d.stage));
   if (f.currentStage === "plan" && f.tasks.total > 0) {
-    const note = `Build (${f.tasks.done}/${f.tasks.total} tasks done)`;
+    const phaseSummary =
+      f.phases && f.phases.length > 1
+        ? ` · phases ${f.phases.filter((p) => p.status === "done").length}/${f.phases.length}`
+        : "";
+    const note = `Build (${f.tasks.done}/${f.tasks.total} tasks done)${phaseSummary}`;
     return stale.length ? `${note} · ${stale.join(", ")} ⚠️ stale` : note;
   }
   if (stale.length) return `${stale.join(", ")} ⚠️ stale`;
@@ -65,6 +70,11 @@ export async function renderBlock(root = projectRoot()): Promise<string> {
   lines.push("");
   lines.push(
     "**Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation."
+  );
+  lines.push("");
+  lines.push("**Commands:**");
+  lines.push(
+    "`/specmanager-feature` · `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-plan` · `/specmanager-execute` · `/specmanager-walkthrough` · `/specmanager-board`"
   );
   lines.push("");
   lines.push(`_Last synced: ${m.generatedAt}_`);
