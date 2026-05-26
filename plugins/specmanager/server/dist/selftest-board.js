@@ -99,6 +99,45 @@ async function main() {
         assert(gateRes.ok, "GET /api/features/:id/gate → 200");
         const gateJson = (await gateRes.json());
         assert(gateJson.ok === false, "architecture gate is closed when PRD is draft");
+        // POST /api/features/:id/tasks — create a task
+        const newTaskRes = await fetch(`${board.url}/api/features/${feature.id}/tasks`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ title: "Wire it up" }),
+        });
+        assert(newTaskRes.ok, "POST /api/features/:id/tasks → 200");
+        const newTask = (await newTaskRes.json());
+        assert(newTask.status === "todo", "new task starts todo");
+        // PATCH /api/features/:featureId/tasks/:taskId — set in_progress with artifacts
+        const patchRes = await fetch(`${board.url}/api/features/${feature.id}/tasks/${newTask.id}`, {
+            method: "PATCH",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+                status: "in_progress",
+                artifacts: { commits: ["abc1234"], files: ["src/foo.ts"] },
+            }),
+        });
+        assert(patchRes.ok, "PATCH tasks → 200");
+        const patched = (await patchRes.json());
+        assert(patched.status === "in_progress", "task status updated");
+        assert(patched.artifacts.commits[0] === "abc1234", "task commit recorded");
+        assert(patched.artifacts.files[0] === "src/foo.ts", "task file recorded");
+        // PATCH to done → walkthrough gate now opens
+        await fetch(`${board.url}/api/features/${feature.id}/tasks/${newTask.id}`, {
+            method: "PATCH",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ status: "done" }),
+        });
+        const wgateRes = await fetch(`${board.url}/api/features/${feature.id}/gate?stage=walkthrough`);
+        const wgateJson = (await wgateRes.json());
+        assert(wgateJson.ok === true, "walkthrough gate opens when all tasks done");
+        // PATCH unknown task → 404
+        const missingRes = await fetch(`${board.url}/api/features/${feature.id}/tasks/task-999`, {
+            method: "PATCH",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ status: "done" }),
+        });
+        assert(missingRes.status === 404, "PATCH unknown task → 404");
         // WS event on file change
         await new Promise((resolve, reject) => {
             const ws = new WebSocket(`ws://127.0.0.1:${port}/ws`);

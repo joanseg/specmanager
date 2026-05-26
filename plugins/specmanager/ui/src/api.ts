@@ -1,4 +1,4 @@
-import { Board, DocFull, DocStatus, GateResult, Stage, WsEvent } from "./types";
+import { Board, DocFull, DocStatus, GateResult, Stage, Task, TaskStatus, WsEvent } from "./types";
 
 export async function fetchBoard(): Promise<Board> {
   const res = await fetch("/api/board");
@@ -42,6 +42,46 @@ export async function postDocStatus(id: string, status: DocStatus): Promise<DocF
     throw new Error(data.error ?? `HTTP ${res.status}`);
   }
   return (await res.json()) as DocFull;
+}
+
+export async function fetchTasks(featureId: string): Promise<Task[]> {
+  const res = await fetch(`/api/features/${encodeURIComponent(featureId)}/tasks`);
+  if (!res.ok) throw new Error(`/api/features/${featureId}/tasks → ${res.status}`);
+  return (await res.json()) as Task[];
+}
+
+export async function createTaskApi(
+  featureId: string,
+  title: string
+): Promise<Task> {
+  const res = await fetch(`/api/features/${encodeURIComponent(featureId)}/tasks`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ title }),
+  });
+  if (!res.ok) throw new Error(`create task → ${res.status}`);
+  return (await res.json()) as Task;
+}
+
+export async function patchTask(
+  featureId: string,
+  taskId: string,
+  patch: {
+    status?: TaskStatus;
+    title?: string;
+    artifacts?: { commits?: string[]; files?: string[]; pr?: string | null };
+  }
+): Promise<Task> {
+  const res = await fetch(
+    `/api/features/${encodeURIComponent(featureId)}/tasks/${encodeURIComponent(taskId)}`,
+    {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(patch),
+    }
+  );
+  if (!res.ok) throw new Error(`patch task → ${res.status}`);
+  return (await res.json()) as Task;
 }
 
 export async function fetchGate(featureId: string, stage: Stage): Promise<GateResult> {

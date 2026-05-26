@@ -9,6 +9,7 @@ import chokidar from "chokidar";
 import {
   buildManifest,
   checkGate,
+  createTask,
   events,
   listDocuments,
   listFeatures,
@@ -19,6 +20,8 @@ import {
   setStatus,
   SpecEvent,
   specsDir,
+  TaskStatus,
+  updateTask,
   writeDocument,
 } from "./core/index.js";
 
@@ -149,6 +152,66 @@ export async function startBoardServer(opts: {
     const out: unknown[] = [];
     for (const f of features) out.push(...(await listTasks(f.id, root)));
     return out;
+  });
+
+  app.get<{ Params: { id: string } }>("/api/features/:id/tasks", async (req) =>
+    listTasks(req.params.id, root)
+  );
+
+  app.post<{
+    Params: { id: string };
+    Body: { title: string; stageRef?: string; dependsOn?: string[] };
+  }>("/api/features/:id/tasks", async (req, reply) => {
+    if (!req.body?.title || typeof req.body.title !== "string") {
+      reply.code(400);
+      return { error: "title is required" };
+    }
+    try {
+      const t = await createTask(
+        {
+          featureId: req.params.id,
+          title: req.body.title,
+          stageRef: req.body.stageRef,
+          dependsOn: req.body.dependsOn,
+        },
+        root
+      );
+      return t;
+    } catch (err) {
+      reply.code(400);
+      return { error: (err as Error).message };
+    }
+  });
+
+  app.patch<{
+    Params: { featureId: string; taskId: string };
+    Body: {
+      status?: TaskStatus;
+      title?: string;
+      artifacts?: { commits?: string[]; files?: string[]; pr?: string | null };
+    };
+  }>("/api/features/:featureId/tasks/:taskId", async (req, reply) => {
+    try {
+      const updated = await updateTask(
+        {
+          id: req.params.taskId,
+          featureId: req.params.featureId,
+          status: req.body?.status,
+          title: req.body?.title,
+          artifacts: req.body?.artifacts,
+        },
+        root
+      );
+      return updated;
+    } catch (err) {
+      const message = (err as Error).message;
+      if (message.startsWith("task not found") || message.startsWith("feature not found")) {
+        reply.code(404);
+        return { error: message };
+      }
+      reply.code(400);
+      return { error: message };
+    }
   });
 
   // Static UI (optional — only if it has been built)

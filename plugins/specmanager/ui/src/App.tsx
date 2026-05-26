@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { fetchBoard, openWebSocket } from "./api";
 import DocPanel from "./DocPanel";
+import BuildPanel from "./BuildPanel";
 import { Board, COLUMNS, Column, DocCard, FeatureRow, Stage, TaskCounts } from "./types";
 
 const STAGE_LABEL: Record<Column, string> = {
@@ -74,32 +75,48 @@ function EmptyCell({ stage, ready }: { stage: Stage; ready: boolean }) {
   );
 }
 
-function BuildCell({ tasks, row }: { tasks: TaskCounts; row: FeatureRow }) {
+function BuildCell({
+  tasks,
+  row,
+  onOpen,
+}: {
+  tasks: TaskCounts;
+  row: FeatureRow;
+  onOpen: (featureId: string, title: string) => void;
+}) {
   if (tasks.total === 0) {
     const planApproved = findDoc(row, "plan")?.status === "approved";
     return (
-      <div className={`card card--empty${planApproved ? " card--ready" : ""}`}>
+      <button
+        type="button"
+        className={`card card--empty${planApproved ? " card--ready" : ""}`}
+        onClick={() => onOpen(row.id, row.title)}
+      >
         <span className="card__empty-label">Build</span>
         <span className="card__empty-sub">
-          {planApproved ? "no tasks yet" : "plan not approved"}
+          {planApproved ? "no tasks yet · click to add" : "plan not approved"}
         </span>
-      </div>
+      </button>
     );
   }
   const donePct = Math.round((tasks.done / Math.max(1, tasks.total)) * 100);
   const inProgressPct = Math.round((tasks.in_progress / Math.max(1, tasks.total)) * 100);
   return (
-    <article className="card card--build">
-      <header className="card__title">Build</header>
+    <button
+      type="button"
+      className="card card--build card--button"
+      onClick={() => onOpen(row.id, row.title)}
+    >
+      <span className="card__title">Build</span>
       <div className="bar">
         <div className="bar__seg bar__seg--done" style={{ width: `${donePct}%` }} />
         <div className="bar__seg bar__seg--prog" style={{ width: `${inProgressPct}%` }} />
       </div>
-      <footer className="card__build-counts">
+      <span className="card__build-counts">
         <span>{tasks.done}/{tasks.total} done</span>
         {tasks.in_progress > 0 && <span>· {tasks.in_progress} in progress</span>}
-      </footer>
-    </article>
+      </span>
+    </button>
   );
 }
 
@@ -107,12 +124,14 @@ function Cell({
   row,
   column,
   onOpenDoc,
+  onOpenBuild,
 }: {
   row: FeatureRow;
   column: Column;
   onOpenDoc: (id: string) => void;
+  onOpenBuild: (featureId: string, title: string) => void;
 }) {
-  if (column === "build") return <BuildCell tasks={row.tasks} row={row} />;
+  if (column === "build") return <BuildCell tasks={row.tasks} row={row} onOpen={onOpenBuild} />;
   const stage: Stage = column;
   const doc = findDoc(row, stage);
   if (doc) return <DocCellView doc={doc} onOpen={onOpenDoc} />;
@@ -129,9 +148,14 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [lastEvent, setLastEvent] = useState<string | null>(null);
   const [openDocId, setOpenDocId] = useState<string | null>(null);
+  const [openBuild, setOpenBuild] = useState<{ featureId: string; title: string } | null>(null);
 
   const openDoc = useCallback((id: string) => setOpenDocId(id), []);
   const closeDoc = useCallback(() => setOpenDocId(null), []);
+  const openBuildFor = useCallback((featureId: string, title: string) => {
+    setOpenBuild({ featureId, title });
+  }, []);
+  const closeBuild = useCallback(() => setOpenBuild(null), []);
 
   const reload = (): void => {
     fetchBoard()
@@ -196,7 +220,7 @@ export default function App() {
               </div>
               {COLUMNS.map((c) => (
                 <div key={c} className="row__cell">
-                  <Cell row={row} column={c} onOpenDoc={openDoc} />
+                  <Cell row={row} column={c} onOpenDoc={openDoc} onOpenBuild={openBuildFor} />
                 </div>
               ))}
             </div>
@@ -210,6 +234,13 @@ export default function App() {
 
       {openDocId && (
         <DocPanel docId={openDocId} onClose={closeDoc} onJumpTo={openDoc} />
+      )}
+      {openBuild && (
+        <BuildPanel
+          featureId={openBuild.featureId}
+          featureTitle={openBuild.title}
+          onClose={closeBuild}
+        />
       )}
     </main>
   );

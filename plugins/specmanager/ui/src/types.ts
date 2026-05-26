@@ -39,6 +39,26 @@ export interface GateResult {
   reason?: string;
 }
 
+export type TaskStatus = "todo" | "in_progress" | "done";
+
+export interface TaskArtifacts {
+  commits: string[];
+  files: string[];
+  pr: string | null;
+}
+
+export interface Task {
+  id: string;
+  featureId: string;
+  title: string;
+  status: TaskStatus;
+  stageRef?: string;
+  dependsOn: string[];
+  artifacts: TaskArtifacts;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface TaskCounts {
   todo: number;
   in_progress: number;

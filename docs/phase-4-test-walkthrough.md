@@ -45,6 +45,7 @@ Inside the session:
 /plugin marketplace update specmanager
 /plugin uninstall specmanager
 /plugin install specmanager@specmanager
+/reload-plugins
 ```
 
 **Quit Claude and kill the daemon** before continuing (Phase 1+2 troubleshooting still applies — stale MCP servers cause "1 error during load" on `/reload-plugins`):

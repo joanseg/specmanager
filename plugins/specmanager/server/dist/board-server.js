@@ -5,7 +5,7 @@ import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
 import { WebSocketServer } from "ws";
 import chokidar from "chokidar";
-import { buildManifest, checkGate, events, listDocuments, listFeatures, listStale, listTasks, projectRoot, readDocumentById, setStatus, specsDir, writeDocument, } from "./core/index.js";
+import { buildManifest, checkGate, createTask, events, listDocuments, listFeatures, listStale, listTasks, projectRoot, readDocumentById, setStatus, specsDir, updateTask, writeDocument, } from "./core/index.js";
 const here = path.dirname(fileURLToPath(import.meta.url));
 // dist/board-server.js → plugin root → ui/dist
 const UI_DIST = path.resolve(here, "..", "..", "ui", "dist");
@@ -101,6 +101,47 @@ export async function startBoardServer(opts = {}) {
         for (const f of features)
             out.push(...(await listTasks(f.id, root)));
         return out;
+    });
+    app.get("/api/features/:id/tasks", async (req) => listTasks(req.params.id, root));
+    app.post("/api/features/:id/tasks", async (req, reply) => {
+        if (!req.body?.title || typeof req.body.title !== "string") {
+            reply.code(400);
+            return { error: "title is required" };
+        }
+        try {
+            const t = await createTask({
+                featureId: req.params.id,
+                title: req.body.title,
+                stageRef: req.body.stageRef,
+                dependsOn: req.body.dependsOn,
+            }, root);
+            return t;
+        }
+        catch (err) {
+            reply.code(400);
+            return { error: err.message };
+        }
+    });
+    app.patch("/api/features/:featureId/tasks/:taskId", async (req, reply) => {
+        try {
+            const updated = await updateTask({
+                id: req.params.taskId,
+                featureId: req.params.featureId,
+                status: req.body?.status,
+                title: req.body?.title,
+                artifacts: req.body?.artifacts,
+            }, root);
+            return updated;
+        }
+        catch (err) {
+            const message = err.message;
+            if (message.startsWith("task not found") || message.startsWith("feature not found")) {
+                reply.code(404);
+                return { error: message };
+            }
+            reply.code(400);
+            return { error: message };
+        }
     });
     // Static UI (optional — only if it has been built)
     if (existsSync(UI_DIST)) {
