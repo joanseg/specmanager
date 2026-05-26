@@ -147,6 +147,8 @@ export async function startBoardServer(opts = {}) {
                 featureId: req.params.id,
                 title: req.body.title,
                 stageRef: req.body.stageRef,
+                phase: req.body.phase,
+                complexity: req.body.complexity,
                 dependsOn: req.body.dependsOn,
             }, root);
             return t;
@@ -164,6 +166,8 @@ export async function startBoardServer(opts = {}) {
                 featureId: req.params.featureId,
                 status: req.body?.status,
                 title: req.body?.title,
+                phase: req.body?.phase,
+                complexity: req.body?.complexity,
                 artifacts: req.body?.artifacts,
             }, root);
             return updated;

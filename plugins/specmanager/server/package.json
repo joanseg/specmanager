@@ -10,6 +10,7 @@
     "build": "tsc -p tsconfig.json",
     "selftest": "node dist/selftest.js",
     "selftest-board": "node dist/selftest-board.js",
+    "selftest-phases": "node dist/selftest-phases.js",
     "smoke-mcp": "node dist/smoke-mcp.js"
   },
   "dependencies": {

@@ -48,10 +48,10 @@ If `/reload-plugins` reports "1 error during load":
 ```bash
 pkill -f '^claude$'
 claude daemon stop
-ps aux | grep specmanager | grep -v grep   # kill any leftovers
+ps aux | grep specmanager | grep -v grep   # kill any leftovers (e.g. kill -9 70410) -9 forces the kill
 lsof -nP -iTCP:4317 -sTCP:LISTEN
 cd /path/to/your/test/repo
-ANTHROPIC_API_KEY=sk-ant-... claude       # confirm the key is in the env
+ANTHROPIC_API_KEY=sk-ant-... claude       # confirm the key is in the env, but selct No (Recommended)
 ```
 
 ## 3. Open the board
@@ -59,6 +59,7 @@ ANTHROPIC_API_KEY=sk-ant-... claude       # confirm the key is in the env
 ```
 /specmanager-board
 ```
+if fails, /reload-plugins, exit claude, and open claude.
 
 ## 4. Phase 6 exit checks
 
@@ -82,7 +83,7 @@ Or, without a key:
 
 1. Create a fresh feature: `/specmanager-feature Sample chat feature`.
 2. Use the MCP tool `create_document` to create an **empty-body** PRD:
-   > Use `create_document` with `{ featureId: "feat-sample-chat-feature", stage: "prd", title: "Sample PRD", body: "" }`.
+   > Use `create_document` with `{ featureId: "feat-list-view", stage: "prd", title: "Sample PRD", body: "" }`.
 3. Click the PRD card on the board. The doc panel opens. Tick the **Chat** toggle in the toolbar — a third column slides in on the right.
 4. The chat header should show a mode badge **interview** (because the body is blank).
 5. In the composer, type `please draft a tight PRD for a leaderboard feature on this app — the contributors track is the priority.` and press Enter.

@@ -4,7 +4,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { startBoardServer } from "./board-server.js";
 import { spawn } from "node:child_process";
-import { STAGE, DOC_STATUS, TASK_STATUS, GENERATED_BY, events, initProject, listFeatures, createFeature, listDocuments, readDocumentById, createDocument, writeDocument, setStatus, checkGate, listStale, linkDocuments, listTasks, createTask, updateTask, syncClaudeMd, writeManifest, } from "./core/index.js";
+import { STAGE, DOC_STATUS, TASK_STATUS, TASK_COMPLEXITY, GENERATED_BY, events, initProject, listFeatures, createFeature, listDocuments, readDocumentById, createDocument, writeDocument, setStatus, checkGate, listStale, linkDocuments, listTasks, createTask, updateTask, listPhases, getNextPhase, syncClaudeMd, writeManifest, } from "./core/index.js";
 const PROJECT_DIR = process.env.SPECMANAGER_PROJECT_DIR ?? process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
 const BOARD_PORT = Number(process.env.SPECMANAGER_BOARD_PORT ?? 4317);
 function text(payload) {
@@ -147,16 +147,19 @@ server.registerTool("list_tasks", {
     inputSchema: z.object({ featureId: z.string() }),
 }, async ({ featureId }) => ok(await listTasks(featureId, PROJECT_DIR)));
 server.registerTool("create_task", {
-    description: "Create a task on a feature's plan.",
+    description: "Create a task on a feature's plan. `phase` groups tasks into a working-software increment. `complexity` is Fibonacci (1|2|3|5|8|13); values ≥5 are rejected — split before persisting.",
     inputSchema: z.object({
         featureId: z.string(),
         title: z.string().min(1),
         stageRef: z.string().optional(),
+        phase: z.string().optional(),
+        complexity: TASK_COMPLEXITY.nullable().optional(),
         dependsOn: z.array(z.string()).optional(),
     }),
 }, async (input) => {
     try {
         const t = await createTask(input, PROJECT_DIR);
+        await writeManifest(PROJECT_DIR);
         return ok(t);
     }
     catch (err) {
@@ -164,12 +167,14 @@ server.registerTool("create_task", {
     }
 });
 server.registerTool("update_task", {
-    description: "Update a task's status, title, or artifacts.",
+    description: "Update a task's status, title, phase, complexity, or artifacts.",
     inputSchema: z.object({
         id: z.string(),
         featureId: z.string(),
         status: TASK_STATUS.optional(),
         title: z.string().optional(),
+        phase: z.string().optional(),
+        complexity: TASK_COMPLEXITY.nullable().optional(),
         artifacts: z
             .object({
             commits: z.array(z.string()).optional(),
@@ -181,12 +186,21 @@ server.registerTool("update_task", {
 }, async (input) => {
     try {
         const t = await updateTask(input, PROJECT_DIR);
+        await writeManifest(PROJECT_DIR);
         return ok(t);
     }
     catch (err) {
         return fail(err.message);
     }
 });
+server.registerTool("list_phases", {
+    description: "List a feature's phases (groups of tasks that ladder up to a testable working-software increment), in first-seen order.",
+    inputSchema: z.object({ featureId: z.string() }),
+}, async ({ featureId }) => ok(await listPhases(featureId, PROJECT_DIR)));
+server.registerTool("get_next_phase", {
+    description: "Return the first phase whose tasks aren't all done, or null if every phase is complete. Used by /specmanager-execute.",
+    inputSchema: z.object({ featureId: z.string() }),
+}, async ({ featureId }) => ok(await getNextPhase(featureId, PROJECT_DIR)));
 server.registerTool("sync_claude_md", {
     description: "Rewrite the managed SpecManager block in the project CLAUDE.md.",
     inputSchema: z.object({}),

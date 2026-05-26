@@ -3,6 +3,7 @@ import { manifestPath, projectRoot } from "./paths.js";
 import { listFeatures } from "./features.js";
 import { listDocuments } from "./documents.js";
 import { listTasks } from "./tasks.js";
+import { PhaseDescriptor, rollupPhases } from "./phases.js";
 
 export interface Manifest {
   generatedAt: string;
@@ -20,6 +21,7 @@ export interface Manifest {
       title: string;
     }>;
     tasks: { todo: number; in_progress: number; done: number; total: number };
+    phases: PhaseDescriptor[];
   }>;
 }
 
@@ -45,6 +47,7 @@ export async function buildManifest(root = projectRoot()): Promise<Manifest> {
         title: d.frontmatter.title,
       })),
       tasks: counts,
+      phases: rollupPhases(tasks),
     });
   }
   return out;

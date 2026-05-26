@@ -20,6 +20,7 @@ import {
   setStatus,
   SpecEvent,
   specsDir,
+  TaskComplexity,
   TaskStatus,
   updateTask,
   writeDocument,
@@ -207,7 +208,13 @@ export async function startBoardServer(opts: {
 
   app.post<{
     Params: { id: string };
-    Body: { title: string; stageRef?: string; dependsOn?: string[] };
+    Body: {
+      title: string;
+      stageRef?: string;
+      phase?: string;
+      complexity?: TaskComplexity | null;
+      dependsOn?: string[];
+    };
   }>("/api/features/:id/tasks", async (req, reply) => {
     if (!req.body?.title || typeof req.body.title !== "string") {
       reply.code(400);
@@ -219,6 +226,8 @@ export async function startBoardServer(opts: {
           featureId: req.params.id,
           title: req.body.title,
           stageRef: req.body.stageRef,
+          phase: req.body.phase,
+          complexity: req.body.complexity,
           dependsOn: req.body.dependsOn,
         },
         root
@@ -237,6 +246,8 @@ export async function startBoardServer(opts: {
     Body: {
       status?: TaskStatus;
       title?: string;
+      phase?: string;
+      complexity?: TaskComplexity | null;
       artifacts?: { commits?: string[]; files?: string[]; pr?: string | null };
     };
   }>("/api/features/:featureId/tasks/:taskId", async (req, reply) => {
@@ -247,6 +258,8 @@ export async function startBoardServer(opts: {
           featureId: req.params.featureId,
           status: req.body?.status,
           title: req.body?.title,
+          phase: req.body?.phase,
+          complexity: req.body?.complexity,
           artifacts: req.body?.artifacts,
         },
         root

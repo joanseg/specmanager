@@ -3,6 +3,7 @@ import { manifestPath, projectRoot } from "./paths.js";
 import { listFeatures } from "./features.js";
 import { listDocuments } from "./documents.js";
 import { listTasks } from "./tasks.js";
+import { rollupPhases } from "./phases.js";
 export async function buildManifest(root = projectRoot()) {
     const features = await listFeatures(root);
     const out = { generatedAt: new Date().toISOString(), features: [] };
@@ -26,6 +27,7 @@ export async function buildManifest(root = projectRoot()) {
                 title: d.frontmatter.title,
             })),
             tasks: counts,
+            phases: rollupPhases(tasks),
         });
     }
     return out;

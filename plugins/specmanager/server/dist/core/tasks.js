@@ -1,10 +1,22 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { TasksFileSchema } from "./types.js";
+import { DEFAULT_PHASE, MAX_TASK_COMPLEXITY, TasksFileSchema, } from "./types.js";
 import { projectRoot, stageDir } from "./paths.js";
 import { nowIso, taskId } from "./ids.js";
 import { events } from "./events.js";
 import { findFeatureById } from "./features.js";
+export class SplitRequiredError extends Error {
+    code = "splitRequired";
+    constructor(complexity) {
+        super(`task complexity ${complexity} exceeds max ${MAX_TASK_COMPLEXITY} — split into smaller tasks before persisting`);
+        this.name = "SplitRequiredError";
+    }
+}
+function assertSplittable(complexity) {
+    if (complexity != null && complexity > MAX_TASK_COMPLEXITY) {
+        throw new SplitRequiredError(complexity);
+    }
+}
 async function tasksFilePath(featureId, root) {
     const feature = await findFeatureById(featureId, root);
     if (!feature)
@@ -31,6 +43,7 @@ export async function listTasks(featureId, root = projectRoot()) {
     return file.tasks;
 }
 export async function createTask(input, root = projectRoot()) {
+    assertSplittable(input.complexity);
     const file = await readTasksFile(input.featureId, root);
     const now = nowIso();
     const task = {
@@ -39,6 +52,8 @@ export async function createTask(input, root = projectRoot()) {
         title: input.title,
         status: "todo",
         stageRef: input.stageRef,
+        phase: input.phase ?? DEFAULT_PHASE,
+        complexity: input.complexity ?? null,
         dependsOn: input.dependsOn ?? [],
         artifacts: { commits: [], files: [], pr: null },
         createdAt: now,
@@ -50,6 +65,8 @@ export async function createTask(input, root = projectRoot()) {
     return task;
 }
 export async function updateTask(input, root = projectRoot()) {
+    if (input.complexity !== undefined)
+        assertSplittable(input.complexity);
     const file = await readTasksFile(input.featureId, root);
     const idx = file.tasks.findIndex((t) => t.id === input.id);
     if (idx === -1)
@@ -59,6 +76,8 @@ export async function updateTask(input, root = projectRoot()) {
         ...cur,
         status: input.status ?? cur.status,
         title: input.title ?? cur.title,
+        phase: input.phase ?? cur.phase,
+        complexity: input.complexity !== undefined ? input.complexity : cur.complexity,
         artifacts: { ...cur.artifacts, ...(input.artifacts ?? {}) },
         updatedAt: nowIso(),
     };
