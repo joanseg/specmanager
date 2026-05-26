@@ -73,6 +73,16 @@ ps aux | grep specmanager | grep -v grep
 ```
 /specmanager-board
 ```
+If fails:
+```
+/reload-plugins
+```
+Exit claude ctrl+c
+Reload Claude
+```
+/specmanager-board
+```
+
 
 Pick a feature row whose **Build** cell shows tasks (e.g. `0/5 done`).
 
@@ -177,7 +187,7 @@ Pass criteria for the walkthrough body:
 
 Open the board in two browser tabs side by side. In one tab, open the Build panel and flip a task to `in_progress`. Confirm the other tab's Build cell updates live (progress bar) without a reload — that's the `task.updated` WS event broadcasting.
 
-## 4. Pass criteria (all required)
+## 5. Pass criteria (all required)
 
 - [ ] `npm run selftest-board` includes the new task assertions and reports `walkthrough gate opens when all tasks done`.
 - [ ] Clicking the Build cell opens a task panel listing all tasks for that feature.
@@ -188,13 +198,13 @@ Open the board in two browser tabs side by side. In one tab, open the Build pane
 - [ ] `/specmanager-walkthrough` succeeds once all tasks are done; the resulting doc names real file paths from task artifacts.
 - [ ] `git status` shows changes only inside `.claude/specs/` and `CLAUDE.md`.
 
-## 5. Troubleshooting
+## 6. Troubleshooting
 
 - **Build panel shows "no tasks yet" but `tasks.json` exists** — check that the file path is `.claude/specs/features/<slug>/plan/tasks.json` exactly. If `tasks.json` is at a different path (e.g. directly under the feature dir), it was hand-written outside the MCP tools and the loader silently skips it. Move it or recreate via `/specmanager-plan`.
 - **Status pill click does nothing** — open devtools Network and look for a `PATCH /api/features/.../tasks/...` request. A 404 means the task id isn't being persisted under the feature you think it is.
 - **Walkthrough writer ignores `files` artifacts** — that's a subagent grounding regression. Confirm `agents/walkthrough-writer.md` is installed in the active plugin cache (`ls ~/.claude/plugins/cache/specmanager/specmanager/<commit>/agents`). Reinstall if missing.
 
-## 6. Teardown
+## 7. Teardown
 
 Walkthroughs are part of the spec history — commit them.
 

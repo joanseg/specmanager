@@ -6,9 +6,43 @@ import fastifyStatic from "@fastify/static";
 import { WebSocketServer } from "ws";
 import chokidar from "chokidar";
 import { buildManifest, checkGate, createTask, events, listDocuments, listFeatures, listStale, listTasks, projectRoot, readDocumentById, setStatus, specsDir, updateTask, writeDocument, } from "./core/index.js";
+import { cancelChat, chatStatus, runChat } from "./agent-chat.js";
 const here = path.dirname(fileURLToPath(import.meta.url));
 // dist/board-server.js → plugin root → ui/dist
 const UI_DIST = path.resolve(here, "..", "..", "ui", "dist");
+function isClientMessage(x) {
+    return Boolean(x && typeof x === "object" && "type" in x && typeof x.type === "string");
+}
+function handleClientMessage(ws, msg, root) {
+    if (!isClientMessage(msg))
+        return;
+    if (msg.type === "chat.cancel") {
+        const ok = cancelChat(msg.docId);
+        safeSend(ws, { type: "chat.cancelled", docId: msg.docId, ok });
+        return;
+    }
+    if (msg.type === "chat.send") {
+        if (typeof msg.message !== "string" || typeof msg.docId !== "string") {
+            safeSend(ws, { type: "chat.error", reason: "chat.send: docId and message are required" });
+            return;
+        }
+        safeSend(ws, { type: "chat.started", docId: msg.docId });
+        void runChat({
+            docId: msg.docId,
+            message: msg.message,
+            mode: msg.mode,
+            projectRoot: root,
+            onEvent: (e) => {
+                const { type, ...rest } = e;
+                safeSend(ws, { type: `chat.${type}`, docId: msg.docId, ...rest });
+            },
+        });
+    }
+}
+function safeSend(ws, payload) {
+    if (ws.readyState === ws.OPEN)
+        ws.send(JSON.stringify(payload));
+}
 export async function startBoardServer(opts = {}) {
     const root = opts.root ?? projectRoot();
     const port = opts.port ?? Number(process.env.SPECMANAGER_BOARD_PORT ?? 4317);
@@ -122,6 +156,7 @@ export async function startBoardServer(opts = {}) {
             return { error: err.message };
         }
     });
+    app.get("/api/chat/status", async () => chatStatus());
     app.patch("/api/features/:featureId/tasks/:taskId", async (req, reply) => {
         try {
             const updated = await updateTask({
@@ -178,6 +213,16 @@ export async function startBoardServer(opts = {}) {
     wss.on("connection", (ws) => {
         clients.add(ws);
         ws.on("close", () => clients.delete(ws));
+        ws.on("message", (raw) => {
+            let msg;
+            try {
+                msg = JSON.parse(String(raw));
+            }
+            catch {
+                return;
+            }
+            handleClientMessage(ws, msg, root);
+        });
     });
     const broadcast = (event) => {
         const payload = JSON.stringify(event);

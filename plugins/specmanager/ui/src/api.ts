@@ -1,4 +1,4 @@
-import { Board, DocFull, DocStatus, GateResult, Stage, Task, TaskStatus, WsEvent } from "./types";
+import { Board, ChatStatus, DocFull, DocStatus, GateResult, Stage, Task, TaskStatus, WsEvent } from "./types";
 
 export async function fetchBoard(): Promise<Board> {
   const res = await fetch("/api/board");
@@ -82,6 +82,48 @@ export async function patchTask(
   );
   if (!res.ok) throw new Error(`patch task → ${res.status}`);
   return (await res.json()) as Task;
+}
+
+export async function fetchChatStatus(): Promise<ChatStatus> {
+  const res = await fetch("/api/chat/status");
+  if (!res.ok) throw new Error(`/api/chat/status → ${res.status}`);
+  return (await res.json()) as ChatStatus;
+}
+
+export interface ChatSocket {
+  send: (message: string, mode?: "interview" | "co-write") => void;
+  cancel: () => void;
+  close: () => void;
+}
+
+export function openChatSocket(
+  docId: string,
+  onEvent: (event: WsEvent) => void
+): ChatSocket {
+  const proto = location.protocol === "https:" ? "wss:" : "ws:";
+  const ws = new WebSocket(`${proto}//${location.host}/ws`);
+  ws.addEventListener("message", (msg) => {
+    try {
+      const event = JSON.parse(msg.data) as WsEvent;
+      if ("docId" in event && (event as { docId?: string }).docId !== docId) return;
+      onEvent(event);
+    } catch {
+      // ignore
+    }
+  });
+  return {
+    send: (message, mode) => {
+      if (ws.readyState === ws.OPEN) {
+        ws.send(JSON.stringify({ type: "chat.send", docId, message, mode }));
+      }
+    },
+    cancel: () => {
+      if (ws.readyState === ws.OPEN) {
+        ws.send(JSON.stringify({ type: "chat.cancel", docId }));
+      }
+    },
+    close: () => ws.close(),
+  };
 }
 
 export async function fetchGate(featureId: string, stage: Stage): Promise<GateResult> {

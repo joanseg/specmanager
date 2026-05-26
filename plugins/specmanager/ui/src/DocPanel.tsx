@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { marked } from "marked";
 import Editor from "./Editor";
+import ChatPanel from "./ChatPanel";
 import { fetchDoc, fetchGate, postDocStatus, putDoc } from "./api";
 import { DocFull, Stage } from "./types";
 
@@ -30,6 +31,7 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
   const [error, setError] = useState<string | null>(null);
   const [save, setSave] = useState<SaveState>({ kind: "idle" });
   const [showPreview, setShowPreview] = useState<boolean>(true);
+  const [showChat, setShowChat] = useState<boolean>(false);
   const [depVersions, setDepVersions] = useState<Record<string, number>>({});
 
   // Initial load
@@ -234,6 +236,14 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
             />
             Preview
           </label>
+          <label className="panel__toggle">
+            <input
+              type="checkbox"
+              checked={showChat}
+              onChange={(e) => setShowChat(e.target.checked)}
+            />
+            Chat
+          </label>
         </div>
 
         {save.kind === "conflict" && (
@@ -254,12 +264,21 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
           </div>
         )}
 
-        <div className={`panel__body${showPreview ? " panel__body--split" : ""}`}>
+        <div
+          className={`panel__body panel__body--cols-${
+            1 + (showPreview ? 1 : 0) + (showChat ? 1 : 0)
+          }`}
+        >
           <div className="panel__editor">
             <Editor value={body} readOnly={!!readOnly} onChange={setBody} />
           </div>
           {showPreview && (
             <div className="panel__preview markdown" dangerouslySetInnerHTML={{ __html: renderedHtml }} />
+          )}
+          {showChat && (
+            <div className="panel__chat">
+              <ChatPanel docId={doc.id} docStatus={doc.status} onDocChanged={reload} />
+            </div>
           )}
         </div>
 

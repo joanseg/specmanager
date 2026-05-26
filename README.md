@@ -2,7 +2,7 @@
 
 A Claude Code plugin that manages a software project's lifecycle — PRD → architecture → plan → tasks → build → walkthroughs — as a kanban board over plain markdown in the repo.
 
-**Status:** Phase 5 complete (Phases 1–4 + in-UI Build panel for task execution: status pills, commit/file/PR artifacts, live `task.updated` updates; walkthrough generation reads task artifacts for the code tour).
+**Status:** Phase 6 complete (Phases 1–5 + in-UI AI chat: per-doc Claude Agent SDK session, in-process MCP bridge for `read_document` / `write_document` / `list_documents`, adaptive interview vs co-write mode, WS-streamed deltas, mid-stream conflict guard via baseVersion). Two items deferred as explicit follow-ups — see `docs/phase-6-test-walkthrough.md §6`.
 
 ## Design docs
 
@@ -13,6 +13,7 @@ A Claude Code plugin that manages a software project's lifecycle — PRD → arc
 - `docs/phase-3-test-walkthrough.md` — exact steps to verify edit/approve/stale flows in the UI.
 - `docs/phase-4-test-walkthrough.md` — exact steps to verify the stage subagents end-to-end on a real repo.
 - `docs/phase-5-test-walkthrough.md` — exact steps to verify task execution + walkthrough generation.
+- `docs/phase-6-test-walkthrough.md` — exact steps to verify in-UI AI chat (interview, co-write, mid-stream conflict).
 
 ## Build
 

@@ -24,10 +24,57 @@ import {
   updateTask,
   writeDocument,
 } from "./core/index.js";
+import { cancelChat, chatStatus, runChat, type ChatMode } from "./agent-chat.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 // dist/board-server.js → plugin root → ui/dist
 const UI_DIST = path.resolve(here, "..", "..", "ui", "dist");
+
+interface ClientChatSend {
+  type: "chat.send";
+  docId: string;
+  message: string;
+  mode?: ChatMode;
+}
+interface ClientChatCancel {
+  type: "chat.cancel";
+  docId: string;
+}
+type ClientMessage = ClientChatSend | ClientChatCancel;
+
+function isClientMessage(x: unknown): x is ClientMessage {
+  return Boolean(x && typeof x === "object" && "type" in x && typeof (x as { type: unknown }).type === "string");
+}
+
+function handleClientMessage(ws: WebSocket, msg: unknown, root: string): void {
+  if (!isClientMessage(msg)) return;
+  if (msg.type === "chat.cancel") {
+    const ok = cancelChat(msg.docId);
+    safeSend(ws, { type: "chat.cancelled", docId: msg.docId, ok });
+    return;
+  }
+  if (msg.type === "chat.send") {
+    if (typeof msg.message !== "string" || typeof msg.docId !== "string") {
+      safeSend(ws, { type: "chat.error", reason: "chat.send: docId and message are required" });
+      return;
+    }
+    safeSend(ws, { type: "chat.started", docId: msg.docId });
+    void runChat({
+      docId: msg.docId,
+      message: msg.message,
+      mode: msg.mode,
+      projectRoot: root,
+      onEvent: (e) => {
+        const { type, ...rest } = e;
+        safeSend(ws, { type: `chat.${type}`, docId: msg.docId, ...rest });
+      },
+    });
+  }
+}
+
+function safeSend(ws: WebSocket, payload: unknown): void {
+  if (ws.readyState === ws.OPEN) ws.send(JSON.stringify(payload));
+}
 
 export interface BoardServer {
   url: string;
@@ -183,6 +230,8 @@ export async function startBoardServer(opts: {
     }
   });
 
+  app.get("/api/chat/status", async () => chatStatus());
+
   app.patch<{
     Params: { featureId: string; taskId: string };
     Body: {
@@ -249,6 +298,15 @@ export async function startBoardServer(opts: {
   wss.on("connection", (ws) => {
     clients.add(ws);
     ws.on("close", () => clients.delete(ws));
+    ws.on("message", (raw) => {
+      let msg: unknown;
+      try {
+        msg = JSON.parse(String(raw));
+      } catch {
+        return;
+      }
+      handleClientMessage(ws, msg, root);
+    });
   });
 
   const broadcast = (event: SpecEvent): void => {
