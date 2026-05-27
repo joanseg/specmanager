@@ -138,6 +138,68 @@ async function main() {
             body: JSON.stringify({ status: "done" }),
         });
         assert(missingRes.status === 404, "PATCH unknown task → 404");
+        // ── Phase A: design stage round-trip + compound plan gate ────────────
+        // Re-approve the PRD so design's gate (which mirrors architecture's) is open.
+        await fetch(`${board.url}/api/documents/${docId}/status`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ status: "approved" }),
+        });
+        // Create an architecture draft.
+        const archDoc = await createDocument({
+            featureId: feature.id,
+            stage: "architecture",
+            title: "Checkout corridor architecture",
+            body: "# Architecture\nDraft.",
+        }, root);
+        assert(archDoc.frontmatter.status === "draft", "architecture starts draft");
+        // Gate state 1 — architecture draft, no design → plan CLOSED.
+        let planGate = (await (await fetch(`${board.url}/api/features/${feature.id}/gate?stage=plan`)).json());
+        assert(planGate.ok === false, "plan gate closed when architecture draft (no design)");
+        assert((planGate.reason ?? "").includes("architecture"), "plan gate reason names architecture");
+        // Approve architecture.
+        await fetch(`${board.url}/api/documents/${archDoc.frontmatter.id}/status`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ status: "approved" }),
+        });
+        // Gate state 2 — architecture approved, no design → plan OPEN.
+        planGate = (await (await fetch(`${board.url}/api/features/${feature.id}/gate?stage=plan`)).json());
+        assert(planGate.ok === true, "plan gate open when architecture approved + no design");
+        // Design stage gate must be open now that the PRD is approved.
+        const designGate = (await (await fetch(`${board.url}/api/features/${feature.id}/gate?stage=design`)).json());
+        assert(designGate.ok === true, "design gate opens when PRD approved");
+        // Create a design draft. Default filename should be brief.html.
+        const designDoc = await createDocument({
+            featureId: feature.id,
+            stage: "design",
+            title: "Checkout corridor design brief",
+            body: "<h1>Design brief</h1><p>Draft.</p>",
+        }, root);
+        assert(designDoc.filePath.endsWith("/design/brief.html"), "design doc lands at design/brief.html");
+        // Gate state 3 — architecture approved, design draft → plan CLOSED.
+        planGate = (await (await fetch(`${board.url}/api/features/${feature.id}/gate?stage=plan`)).json());
+        assert(planGate.ok === false, "plan gate closed when design is draft (design exists → must approve)");
+        assert((planGate.reason ?? "").includes("design"), "plan gate reason names design when design is the blocker");
+        // Approve design.
+        await fetch(`${board.url}/api/documents/${designDoc.frontmatter.id}/status`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ status: "approved" }),
+        });
+        // Gate state 4 — architecture approved, design approved → plan OPEN.
+        planGate = (await (await fetch(`${board.url}/api/features/${feature.id}/gate?stage=plan`)).json());
+        assert(planGate.ok === true, "plan gate open when architecture + design both approved");
+        // Design doc round-trip via REST: list_documents, read_document.
+        const designListRes = await fetch(`${board.url}/api/board`);
+        const designList = (await designListRes.json());
+        const designOnBoard = designList.features[0].documents.find((d) => d.stage === "design");
+        assert(designOnBoard?.id === designDoc.frontmatter.id, "design doc appears in /api/board features[].documents");
+        const designReadRes = await fetch(`${board.url}/api/documents/${designDoc.frontmatter.id}`);
+        assert(designReadRes.ok, "GET /api/documents/:id returns design doc");
+        const designRead = (await designReadRes.json());
+        assert(designRead.stage === "design", "design doc round-trips stage field");
+        assert(designRead.body.includes("Design brief"), "design doc round-trips body");
         // WS event on file change
         await new Promise((resolve, reject) => {
             const ws = new WebSocket(`ws://127.0.0.1:${port}/ws`);

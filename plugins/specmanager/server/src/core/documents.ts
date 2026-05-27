@@ -10,6 +10,7 @@ import { findFeatureById, listFeatures } from "./features.js";
 const DEFAULT_FILENAMES: Record<Stage, string[]> = {
   prd: ["prd.md", "press-release.md"],
   architecture: ["architecture.md"],
+  design: ["brief.html"],
   plan: ["plan.md"],
   walkthrough: [],
 };
@@ -43,7 +44,9 @@ export async function listDocuments(
       const dir = stageDir(f.slug, stage, root);
       const entries = await fs.readdir(dir).catch(() => []);
       for (const name of entries) {
-        if (!name.endsWith(".md")) continue;
+        // Doc files use gray-matter frontmatter; body can be markdown OR html
+        // (design briefs are .html). We trust frontmatter as the source of truth.
+        if (!name.endsWith(".md") && !name.endsWith(".html")) continue;
         const doc = await readDoc(path.join(dir, name));
         // Walkthroughs: legacy docs predating Phase 7.B have no `phase` field —
         // default to the synthetic "default" phase so check_gate keeps working.

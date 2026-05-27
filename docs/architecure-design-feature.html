@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>SpecManager — Design feature architecture</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --bg: #0d0e10;
+    --surface: #181a1d;
+    --surface-2: #21242a;
+    --border: #2a2e35;
+    --text: #e6e8eb;
+    --text-dim: #8b929c;
+    --accent: #7ad0ff;
+    --draft: #c8924a;
+    --approved: #5fb56b;
+    --stale: #d77b6b;
+    color-scheme: dark light;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #fafafa;
+      --surface: #ffffff;
+      --surface-2: #f0f1f3;
+      --border: #d8dce1;
+      --text: #1a1d22;
+      --text-dim: #5b6470;
+      --accent: #0a6bd0;
+      --draft: #8a5410;
+      --approved: #2a7a36;
+      --stale: #a13b27;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: ui-sans-serif, -apple-system, "SF Pro Text", "Segoe UI", sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .page { max-width: 56rem; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; }
+  h1 { font-size: 1.7rem; margin: 0 0 0.4rem; letter-spacing: -0.01em; }
+  h2 { font-size: 1.2rem; margin: 2rem 0 0.6rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--border); }
+  h3 { font-size: 1.0rem; margin: 1.3rem 0 0.4rem; color: var(--accent); }
+  p { margin: 0.5rem 0; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.86em; }
+  code { background: var(--surface-2); padding: 0.06rem 0.32rem; border-radius: 3px; }
+  pre { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.7rem 0.9rem; overflow: auto; }
+  pre code { background: transparent; padding: 0; }
+  ul, ol { padding-left: 1.2rem; }
+  li { margin: 0.18rem 0; }
+  table { width: 100%; border-collapse: collapse; margin: 0.8rem 0 1.2rem; font-size: 0.92rem; }
+  th, td { text-align: left; padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--surface); color: var(--text-dim); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  tbody tr:nth-child(even) { background: rgba(127,127,127,0.04); }
+  .lead { color: var(--text-dim); font-size: 1.0rem; }
+  .meta { display: flex; gap: 0.6rem; flex-wrap: wrap; margin: 0.6rem 0 1.6rem; }
+  .chip { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.15rem 0.55rem; border: 1px solid var(--border); border-radius: 99px; font-size: 0.72rem; color: var(--text-dim); background: var(--surface); }
+  .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; margin: 1rem 0 2rem; font-size: 0.88rem; }
+  .toc ol { padding-left: 1.4rem; margin: 0.3rem 0; }
+  a { color: var(--accent); }
+  .grid {
+    display: grid;
+    grid-template-columns: 12rem repeat(6, minmax(7rem, 1fr));
+    gap: 0.35rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.6rem;
+    margin: 0.8rem 0;
+    font-size: 0.78rem;
+  }
+  .grid > div { padding: 0.45rem 0.5rem; border-radius: 4px; }
+  .grid__h { color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.7rem; }
+  .grid__h--new { color: var(--accent); border: 1px dashed var(--accent); }
+  .grid__cell { background: var(--surface-2); }
+  .grid__cell--new { background: rgba(122,208,255,0.08); border: 1px dashed var(--accent); }
+  .grid__row-label { color: var(--text-dim); font-style: italic; padding-left: 0; background: transparent; }
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: rgba(122,208,255,0.06);
+    padding: 0.6rem 0.9rem;
+    border-radius: 0 4px 4px 0;
+    margin: 0.9rem 0;
+  }
+  .callout--warn { border-left-color: var(--draft); background: rgba(200,146,74,0.08); }
+  .callout--risk { border-left-color: var(--stale); background: rgba(215,123,107,0.07); }
+  .small { color: var(--text-dim); font-size: 0.84rem; }
+</style>
+</head>
+<body>
+<main class="page">
+
+<h1>Design feature — Architecture</h1>
+<p class="lead">Introduce a first-class <strong>Design</strong> stage between Architecture and Plan, plus a repo-level <code>./docs/DESIGN.md</code> design-system spec that <code>/specmanager-init</code> creates and that re-syncs whenever a feature ships.</p>
+
+<div class="meta">
+  <span class="chip">dependsOn: PRD <code>prd-design-feature-001</code> (assumed)</span>
+  <span class="chip">basedOn: SpecManager Phase 7.C</span>
+  <span class="chip">stage: architecture</span>
+</div>
+
+<section class="toc">
+<strong>Contents</strong>
+<ol>
+  <li><a href="#summary">Summary</a></li>
+  <li><a href="#affected">Affected components</a></li>
+  <li><a href="#data">Data model changes</a></li>
+  <li><a href="#interfaces">Interfaces</a></li>
+  <li><a href="#flow">Sequence &amp; flow</a></li>
+  <li><a href="#failure">Failure &amp; edge cases</a></li>
+  <li><a href="#conventions">Conventions used</a></li>
+  <li><a href="#open">Open questions &amp; risks</a></li>
+</ol>
+</section>
+
+<h2 id="summary">1. Summary</h2>
+
+<p>SpecManager today walks PRD → Architecture → Plan → Build → Walkthroughs. This feature inserts <strong>Design</strong> as an <em>optional</em> stage between Architecture and Plan. It ships in three coordinated pieces:</p>
+
+<ol>
+  <li>A new <code>design</code> stage in the core schema, with its own column on the board, gate logic that lets the Plan stage proceed whether or not a Design doc exists, and a slash command <code>/specmanager-design</code> driven by a new <code>designer</code> subagent that produces an HTML design brief (screenshots + descriptions).</li>
+  <li>A repo-level <code>./docs/DESIGN.md</code> living outside <code>.claude/specs/</code> — the project's <em>design system spec</em> (tokens, components, layouts) following the <a href="https://stitch.withgoogle.com/docs/design-md/specification">Google Stitch DESIGN.md spec</a>. It is generated/refreshed by <code>/specmanager-init</code> from the existing UI code, and auto-re-syncs after every feature's last phase completes.</li>
+  <li>UI wiring on the kanban board: a new Design column rendered between Architecture and Plan, with an "optional" affordance so users can clearly skip it.</li>
+</ol>
+
+<p>The architect / planner / builder subagents become design-aware: when a Design doc exists for a feature they read it and ground task descriptions in it; when none exists they proceed exactly as today.</p>
+
+<h3>Board column layout after this feature ships</h3>
+
+<div class="grid" aria-label="Kanban grid after the Design feature ships">
+  <div class="grid__h">Feature</div>
+  <div class="grid__h">PRD</div>
+  <div class="grid__h">Architecture</div>
+  <div class="grid__h grid__h--new">Design (new)</div>
+  <div class="grid__h">Plan</div>
+  <div class="grid__h">Build</div>
+  <div class="grid__h">Walkthroughs</div>
+
+  <div class="grid__row-label">Sample feature</div>
+  <div class="grid__cell">PRD · approved</div>
+  <div class="grid__cell">Arch · approved</div>
+  <div class="grid__cell grid__cell--new">Design · optional</div>
+  <div class="grid__cell">Plan · approved</div>
+  <div class="grid__cell">3/7 done</div>
+  <div class="grid__cell">Walkthroughs ▸</div>
+</div>
+
+<h2 id="affected">2. Affected components</h2>
+
+<p>Every path below is real and exists in the repo today (or, for "(new)", will be added).</p>
+
+<h3>Core (server) — extend</h3>
+
+<ul>
+  <li><code>plugins/specmanager/server/src/core/types.ts</code> — extend the <code>STAGE</code> Zod enum to include <code>"design"</code>; bump the stage list everywhere it's enumerated.</li>
+  <li><code>plugins/specmanager/server/src/core/paths.ts</code> — add <code>design</code> to the <code>STAGES</code> array in canonical order (<code>prd → architecture → design → plan → walkthrough</code>) and to the <code>stageDir</code> map (<code>design</code> directory, plural-free).</li>
+  <li><code>plugins/specmanager/server/src/core/documents.ts</code> — add a default filename for design (<code>brief.html</code>) so created docs land predictably; teach <code>listDocuments</code> to surface design docs (no walkthrough-style phase mapping needed).</li>
+  <li><code>plugins/specmanager/server/src/core/dependencies.ts</code> — update <code>PRIOR_STAGE</code>: <code>design</code> gates on <code>prd</code> approved; <code>plan</code> gates on <code>architecture</code> approved AND (no design doc OR design doc approved). The current <code>plan → architecture</code> edge stays; the additional "design approved if present" check is OR'd in.</li>
+  <li><code>plugins/specmanager/server/src/core/claude-md.ts</code> — add a <code>Design</code> label to <code>stageLabel</code> and to the Commands footer (<code>/specmanager-design</code>).</li>
+  <li><code>plugins/specmanager/server/src/core/manifest.ts</code> — surface design doc status alongside the other per-stage entries so the board cell can render it.</li>
+</ul>
+
+<h3>Core (server) — add (new)</h3>
+
+<ul>
+  <li><code>plugins/specmanager/server/src/core/design-md.ts</code> <em>(new)</em> — small module that owns the <code>./docs/DESIGN.md</code> lifecycle:
+    <ul>
+      <li><code>scanUiSources(root)</code> — walk the project's UI directories (default heuristics: <code>src/</code>, <code>app/</code>, <code>ui/</code>, <code>web/</code>, <code>frontend/</code>, plus any directory containing <code>*.tsx</code>/<code>*.jsx</code>/<code>*.vue</code>/<code>*.svelte</code>) and surface a digest: token files (CSS vars, Tailwind config, design-tokens.json), component manifests, layout shells.</li>
+      <li><code>renderDesignMd(digest)</code> — render the Stitch-spec'd sections (Overview, Tokens, Typography, Color, Components, Layouts, Motion, Accessibility, Open questions).</li>
+      <li><code>syncDesignMd({ mode })</code> — idempotent write to <code>./docs/DESIGN.md</code>. On <code>init</code> mode, create or merge; on <code>refresh</code> mode (after a feature ships), regenerate only the auto-managed sections between two HTML-style markers <code>&lt;!-- specmanager:design:start --&gt;</code> / <code>&lt;!-- specmanager:design:end --&gt;</code>, preserving anything outside (same pattern as <code>claude-md.ts</code>).</li>
+    </ul>
+  </li>
+  <li><code>plugins/specmanager/server/src/core/paths.ts</code> — add <code>designMdPath(root)</code> returning <code>&lt;root&gt;/docs/DESIGN.md</code>.</li>
+  <li><code>plugins/specmanager/server/src/core/init.ts</code> — extend <code>initProject</code> to also call <code>syncDesignMd({ mode: "init" })</code>; widen <code>InitResult</code> with <code>designMd: string</code> and <code>createdDesignMd: boolean</code>.</li>
+  <li><code>plugins/specmanager/server/src/core/events.ts</code> — add a <code>feature.shipped</code> event emitted when the last phase of a feature's walkthrough is approved. The MCP server's existing auto-sync wiring (Phase 4) subscribes and triggers <code>syncDesignMd({ mode: "refresh" })</code> with a debounce.</li>
+</ul>
+
+<h3>MCP wire (server) — add</h3>
+
+<ul>
+  <li><code>plugins/specmanager/server/src/mcp.ts</code> — register two new tools:
+    <ul>
+      <li><code>sync_design_md</code> — manual refresh from outside the auto-sync path; useful for the slash command and for testing.</li>
+      <li><code>create_design_brief</code> — convenience wrapper around <code>create_document</code> for the <code>design</code> stage that accepts <code>attachments: string[]</code> (absolute or repo-relative paths) and embeds them as <code>&lt;img src=&quot;…&quot;&gt;</code> inside the brief HTML body. Re-uses Phase 6's <code>writeDocument</code> path for versioning.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3>Board server (REST + WS) — extend</h3>
+
+<ul>
+  <li><code>plugins/specmanager/server/src/board-server.ts</code> — existing <code>GET /api/board</code> and <code>PUT /api/documents/:id</code> already work generically; only the <code>checkGate</code> wrapper and the manifest builder benefit from the design stage knowledge. Add a small endpoint <code>POST /api/design/sync</code> that calls <code>syncDesignMd({ mode: "refresh" })</code>; broadcast a new WS event <code>design.synced</code> so the board surfaces a brief pulse.</li>
+</ul>
+
+<h3>Subagents &amp; commands — add</h3>
+
+<ul>
+  <li><code>plugins/specmanager/agents/designer.md</code> <em>(new)</em> — system prompt for an HTML-design-brief writer. Reads PRD + Architecture + <code>./docs/DESIGN.md</code> + any user-provided screenshots; writes a self-contained HTML body (inline CSS, no external assets) that is the design brief.</li>
+  <li><code>plugins/specmanager/commands/specmanager-design.md</code> <em>(new)</em> — slash command harness mirroring the Phase 4 pattern: resolve feature → gate check → invoke <code>designer</code> via Task → call <code>create_design_brief</code> → sync CLAUDE.md.</li>
+  <li><code>plugins/specmanager/agents/architect.md</code> &amp; <code>plugins/specmanager/agents/planner.md</code> &amp; <code>plugins/specmanager/agents/builder.md</code> — extend each prompt with a single paragraph: <em>"if a <code>design</code> stage doc exists for this feature, <code>read_document</code> it and ground your output in it; if not, proceed."</em> Existing logic unchanged.</li>
+</ul>
+
+<h3>UI — extend</h3>
+
+<ul>
+  <li><code>plugins/specmanager/ui/src/types.ts</code> — extend the <code>Stage</code> union to include <code>"design"</code>; bump <code>STAGES</code> array.</li>
+  <li><code>plugins/specmanager/ui/src/App.tsx</code> — extend <code>STAGE_LABEL</code>, add a <code>"design"</code> branch in <code>priorStageApproved</code> (gates on <code>prd</code> approved). The existing <code>Cell</code> switch already handles a generic doc cell via <code>findDoc(row, stage)</code>, so the column drops in once <code>COLUMNS</code> is updated. Add an <code>OptionalEmptyCell</code> variant so an absent design doc shows "Design (optional) · /specmanager-design" rather than the standard locked-or-generate affordance.</li>
+  <li><code>plugins/specmanager/ui/src/DocPanel.tsx</code> — design docs are HTML, not markdown. Detect <code>doc.stage === "design"</code> and swap the CodeMirror markdown mode for an HTML mode; show the rendered preview in an <code>&lt;iframe srcdoc&gt;</code> sandbox (no <code>marked</code>) so the brief renders as the author intended.</li>
+  <li><code>plugins/specmanager/ui/src/styles.css</code> — minor: <code>--design</code> token, <code>.badge--design</code>, and 6-column grid template (was 5).</li>
+</ul>
+
+<h3>Docs / install — add</h3>
+
+<ul>
+  <li><code>docs/phase-N-test-walkthrough.md</code> <em>(new, N = next phase number)</em> — exit test for the Design stage: create a feature; <code>/specmanager-design</code> produces an HTML brief that opens in the panel; planner reads it; <code>/specmanager-init</code> in a sample repo creates a DESIGN.md; finishing a feature's last phase refreshes DESIGN.md.</li>
+</ul>
+
+<h2 id="data">3. Data model changes</h2>
+
+<h3>Stage enum</h3>
+<pre><code>// types.ts (before)
+export const STAGE = z.enum(["prd", "architecture", "plan", "walkthrough"]);
+
+// types.ts (after)
+export const STAGE = z.enum(["prd", "architecture", "design", "plan", "walkthrough"]);</code></pre>
+
+<p>Zod v4 enums are positional in their <code>options</code> array, but <code>STAGE.parse(value)</code> matches by string identity — no migration of existing on-disk docs needed.</p>
+
+<h3>Stage directory map</h3>
+<pre><code>// paths.ts: stageDir() map gets a new key
+const map: Record&lt;Stage, string&gt; = {
+  prd: "prd",
+  architecture: "architecture",
+  design: "design",
+  plan: "plan",
+  walkthrough: "walkthroughs",
+};</code></pre>
+
+<h3>Default filename</h3>
+<pre><code>// documents.ts
+const DEFAULT_FILENAMES: Record&lt;Stage, string[]&gt; = {
+  prd: ["prd.md", "press-release.md"],
+  architecture: ["architecture.md"],
+  design: ["brief.html"],         // new
+  plan: ["plan.md"],
+  walkthrough: [],
+};</code></pre>
+
+<h3>Gate edges</h3>
+
+<table>
+<thead><tr><th>Stage</th><th>Gate (current)</th><th>Gate (after this feature)</th></tr></thead>
+<tbody>
+<tr><td>prd</td><td>always open</td><td>unchanged</td></tr>
+<tr><td>architecture</td><td>prd approved</td><td>unchanged</td></tr>
+<tr><td>design <em>(new)</em></td><td>—</td><td>prd approved (architecture not required; design can run in parallel with architecture if the user wants)</td></tr>
+<tr><td>plan</td><td>architecture approved</td><td>architecture approved AND (no design doc exists OR design doc approved)</td></tr>
+<tr><td>build</td><td>plan approved (de facto)</td><td>unchanged</td></tr>
+<tr><td>walkthrough[phase]</td><td>all tasks in phase done</td><td>unchanged</td></tr>
+<tr><td>walkthrough[final]</td><td>every phase walkthrough approved</td><td>unchanged</td></tr>
+</tbody>
+</table>
+
+<h3>DocFrontmatter</h3>
+
+<p>No schema change: existing <code>DocFrontmatter</code> already supports arbitrary stages because <code>stage</code> is typed by the <code>STAGE</code> enum. The HTML body lives in the same gray-matter file (<code>--- yaml ---</code> on top, HTML below the second <code>---</code>). <code>gray-matter</code> doesn't care about body format.</p>
+
+<h3>Events</h3>
+
+<pre><code>// events.ts — extend the discriminated union
+export type SpecEvent =
+  | { type: "feature.created"; featureId: string }
+  | { type: "document.created"; documentId: string; featureId: string }
+  | { type: "document.updated"; documentId: string; featureId: string; version: number }
+  | { type: "status.changed"; documentId: string; from: string; to: string }
+  | { type: "stale.flagged"; documentId: string; cause: string }
+  | { type: "stale.cleared"; documentId: string }
+  | { type: "task.updated"; taskId: string; featureId: string }
+  | { type: "file.changed"; filePath: string }
+  | { type: "feature.shipped"; featureId: string }     // new
+  | { type: "design.synced"; path: string };           // new
+</code></pre>
+
+<p><code>feature.shipped</code> is emitted by <code>setStatus</code> when approving a walkthrough whose <code>phase === "final"</code>. <code>design.synced</code> is emitted by <code>syncDesignMd</code>.</p>
+
+<h2 id="interfaces">4. Interfaces</h2>
+
+<h3>MCP tools (new)</h3>
+
+<pre><code>// sync_design_md
+{
+  description: "Generate or refresh ./docs/DESIGN.md from the project's UI sources. Idempotent.",
+  inputSchema: z.object({ mode: z.enum(["init","refresh"]).default("refresh") }),
+}
+// returns: { path, updated, sectionsTouched: string[] }
+
+// create_design_brief
+{
+  description: "Create a design brief HTML doc for a feature in the design stage. Embeds attachments as inline data: URLs.",
+  inputSchema: z.object({
+    featureId: z.string(),
+    title: z.string().min(1),
+    body: z.string(),                            // HTML
+    attachments: z.array(z.string()).optional(), // repo-relative paths
+    dependsOn: z.array(z.string()).optional(),
+    basedOn: z.record(z.string(), z.number()).optional(),
+  }),
+}</code></pre>
+
+<h3>REST (new)</h3>
+
+<ul>
+  <li><code>POST /api/design/sync</code> — body <code>{ mode?: "init"|"refresh" }</code>; returns the same shape as the MCP tool.</li>
+</ul>
+
+<h3>WS event (new)</h3>
+
+<pre><code>{ "type": "design.synced", "path": "/abs/repo/docs/DESIGN.md" }</code></pre>
+
+<h3>Slash command (new)</h3>
+
+<pre><code>/specmanager-design &lt;featureId-or-slug&gt; [optional one-line context]
+// Attachments: the user pastes paths to screenshots in the conversation BEFORE
+// invoking the command. The designer subagent picks them up from the prompt context.</code></pre>
+
+<h2 id="flow">5. Sequence &amp; flow</h2>
+
+<h3>5.1 — /specmanager-init on a fresh repo</h3>
+
+<ol>
+  <li>User runs <code>/specmanager-init</code> in a project.</li>
+  <li>Slash command calls <code>specmanager_init</code> MCP tool.</li>
+  <li><code>initProject</code> runs in order: <code>ensureSpecsRoot</code> → <code>migrateWalkthroughs</code> → <code>syncDesignMd({mode:"init"})</code> → <code>writeManifest</code> → <code>syncClaudeMd</code>.</li>
+  <li><code>syncDesignMd</code> calls <code>scanUiSources(root)</code>, infers tokens/components/layouts from the existing UI, renders DESIGN.md content between managed markers, and writes <code>./docs/DESIGN.md</code> (creating <code>docs/</code> if absent).</li>
+  <li>Result reported to the user includes <code>designMd</code> and <code>createdDesignMd</code>.</li>
+</ol>
+
+<h3>5.2 — /specmanager-design for a feature</h3>
+
+<ol>
+  <li>User runs <code>/specmanager-design feat-checkout</code>. Optionally pastes screenshot paths and a one-line brief in the conversation first.</li>
+  <li>Slash command resolves the feature, calls <code>check_gate({featureId, stage: "design"})</code>. Gate passes if PRD is approved.</li>
+  <li>Slash command spawns the <code>designer</code> subagent via Task with the PRD id, the Architecture id (if approved), the <code>./docs/DESIGN.md</code> path, and any attachment paths.</li>
+  <li>The subagent reads the upstream docs and DESIGN.md, generates an HTML body that includes embedded screenshot data URIs (read via <code>Read</code> tool, base64-encoded), and calls <code>create_design_brief</code>.</li>
+  <li><code>create_design_brief</code> persists the doc via the existing <code>createDocument</code> path. Frontmatter has <code>stage: "design"</code>, <code>status: "draft"</code>, <code>basedOn: { &lt;prdId&gt;: prdVersion, &lt;archId&gt;: archVersion }</code>.</li>
+  <li>Existing Phase 4 auto-sync emits <code>document.created</code> → CLAUDE.md refreshes.</li>
+  <li>User reviews in the doc panel (HTML-aware), iterates with the chat panel from Phase 6, and approves.</li>
+</ol>
+
+<h3>5.3 — Planner / builder ground in the design when present</h3>
+
+<ol>
+  <li><code>/specmanager-plan feat-checkout</code> resolves the feature, calls <code>check_gate({stage:"plan"})</code> — passes only when both architecture is approved AND (no design doc OR design approved).</li>
+  <li>Slash command discovers the design doc via <code>list_documents({featureId, stage:"design"})</code>; if present, passes its id into the planner's Task prompt as additional grounding.</li>
+  <li>Planner reads PRD + Architecture + Design (if any) + repo conventions and produces <code>plan.md</code> + tasks. Tasks that have an obvious design counterpart get a <code>stageRef</code> citing the design doc id.</li>
+  <li>Builder subagent for each phase similarly reads the design doc if present and references it when wiring up components.</li>
+</ol>
+
+<h3>5.4 — Feature completion → DESIGN.md refresh</h3>
+
+<ol>
+  <li>User approves the <em>final</em> walkthrough for a feature.</li>
+  <li><code>setStatus</code> sees <code>doc.frontmatter.stage === "walkthrough" &amp;&amp; doc.frontmatter.phase === "final"</code> and emits <code>feature.shipped</code>.</li>
+  <li>The board server's event listener (mirroring the Phase 4 auto-sync wiring) debounces 250ms then calls <code>syncDesignMd({mode:"refresh"})</code>.</li>
+  <li><code>syncDesignMd</code> re-scans UI sources, regenerates only the managed region of DESIGN.md, writes the file, and emits <code>design.synced</code>. The board pulses to confirm.</li>
+</ol>
+
+<h2 id="failure">6. Failure &amp; edge cases</h2>
+
+<table>
+<thead><tr><th>Case</th><th>Behaviour</th></tr></thead>
+<tbody>
+<tr><td>No UI directory in the repo</td><td><code>scanUiSources</code> returns an empty digest; DESIGN.md is created with section stubs and a note explaining no UI was found yet. <code>/specmanager-init</code> still succeeds.</td></tr>
+<tr><td>DESIGN.md already exists, hand-edited, no managed markers</td><td>Treat the existing content as preamble; insert managed markers + auto-content at the bottom. Never overwrite hand-written content above the markers.</td></tr>
+<tr><td>User attaches a 50MB screenshot</td><td><code>create_design_brief</code> rejects attachments &gt; 2MB with a clear error. Recommended path: commit the asset to the repo and reference it relatively in the body instead of inlining as data URI.</td></tr>
+<tr><td>Two <code>/specmanager-design</code> runs land back-to-back</td><td><code>createDocument</code>'s existing <code>"document file already exists"</code> guard fires; the second invocation gets a clean error pointing at the existing brief. Same behaviour as Phase 4 stage subagents.</td></tr>
+<tr><td>Plan started without a Design doc, then user runs <code>/specmanager-design</code> later</td><td>Allowed. The design doc lands as <code>draft</code>; Plan is unaffected (it was generated before the design existed). On the user's next Plan iteration, the design doc shows up as upstream context — Phase 3's stale-propagation mechanism marks Plan stale because of the new <code>basedOn</code> edge if the user explicitly links them via <code>link_documents</code>.</td></tr>
+<tr><td>Designer subagent produces malformed HTML</td><td>Body is stored verbatim — markdown ecosystem tolerance is irrelevant since the panel uses <code>&lt;iframe srcdoc&gt;</code>. The iframe sandbox (<code>sandbox="allow-same-origin"</code> only, no scripts) contains any breakage.</td></tr>
+<tr><td>Feature ships, DESIGN.md refresh fails (disk full, permissions)</td><td>The board surfaces <code>design.synced</code> with a failure flag; the failure is also logged to MCP server stderr. The feature ships regardless — DESIGN.md refresh is best-effort.</td></tr>
+<tr><td>Design doc reopened (approved → draft) while Plan is in flight</td><td>Existing Phase 3 stale-propagation kicks in: Plan is flagged stale via the <code>dependsOn</code> graph if it was linked. Visible in the board UI.</td></tr>
+</tbody>
+</table>
+
+<h2 id="conventions">7. Conventions used</h2>
+
+<ul>
+  <li><strong>Gate enforcement in core, not prompts</strong> — the new <code>design</code> gate edge lives in <code>dependencies.ts::PRIOR_STAGE</code> and the OR'd "design approved or absent" check is in <code>checkGate</code>. Slash commands call <code>check_gate</code>; refusal text is derived from the core's reason.</li>
+  <li><strong>Managed-block pattern</strong> — DESIGN.md uses the same <code>&lt;!-- specmanager:start --&gt;</code> / <code>&lt;!-- specmanager:end --&gt;</code> idiom as <code>claude-md.ts</code>, just with the marker namespace <code>specmanager:design</code>. Anything outside the markers is the user's territory.</li>
+  <li><strong>One MCP process boots the board</strong> — no new processes. The DESIGN.md refresh listener piggybacks on the existing event bus (Phase 4 wiring) in the same Node process.</li>
+  <li><strong>Auto-sync via events, not direct calls</strong> — both CLAUDE.md and DESIGN.md auto-sync are driven by the typed event bus. Mutation paths (MCP tools, REST endpoints) stay agnostic.</li>
+  <li><strong>HTML brief is a first-class doc, not an attachment</strong> — same gray-matter frontmatter, same versioning, same optimistic concurrency. Only the <em>body</em> format differs.</li>
+  <li><strong>Frontmatter remains authoritative; manifest is rebuildable</strong> — design docs work the same way.</li>
+  <li><strong>Subagent + slash-command + MCP tool triplet</strong> — matches the Phase 4 pattern for every stage generator.</li>
+</ul>
+
+<h2 id="open">8. Open questions &amp; risks</h2>
+
+<div class="callout callout--warn">
+<strong>Q1 — Google Stitch DESIGN.md spec details.</strong> The architecture assumes the Stitch spec's section structure (Overview, Tokens, Typography, Color, Components, Layouts, Motion, A11y). If the spec is materially different, the <code>renderDesignMd</code> function changes — but the surrounding wiring (init hook, refresh trigger, managed markers, MCP tool) doesn't. Resolve by pinning a snapshot of the spec into <code>docs/references/stitch-design-md.md</code> before implementation starts.
+</div>
+
+<div class="callout callout--warn">
+<strong>Q2 — Screenshot storage strategy.</strong> Inline <code>data:</code> URIs are simplest (briefs are self-contained, no asset directory to manage), but they bloat the doc file. Alternative: commit screenshots to <code>.claude/specs/features/&lt;slug&gt;/design/assets/</code> and reference them relatively. The architecture currently picks inline-with-a-2MB-cap; the planner phase should reconsider if any real brief blows past it.
+</div>
+
+<div class="callout callout--risk">
+<strong>R1 — Gate complexity creep.</strong> Plan's gate becomes a compound expression (architecture AND (no design OR design approved)). This is the first compound gate in <code>checkGate</code>; the test matrix grows. Mitigated by adding ≥4 selftest cases covering all combinations: (no design + draft arch), (no design + approved arch), (draft design + approved arch), (approved design + approved arch).
+</div>
+
+<div class="callout callout--risk">
+<strong>R2 — DESIGN.md refresh might surprise users.</strong> A user who hand-edited DESIGN.md preamble could be alarmed if they didn't realise the auto-managed region exists. Mitigation: <code>/specmanager-init</code> output explicitly lists DESIGN.md as created/touched, the markers are loud, and the README's Phase doc explains the contract.
+</div>
+
+<div class="callout callout--risk">
+<strong>R3 — HTML-in-frontmatter parsing.</strong> <code>gray-matter</code> uses <code>---</code> as the frontmatter delimiter. If a designer's HTML body contains <code>---</code> at column 0, parsing breaks. Mitigation: <code>create_design_brief</code> wraps any leading <code>---</code> in the body in an HTML comment before write. Cheap, defensive.
+</div>
+
+<div class="callout callout--risk">
+<strong>R4 — Build chain divergence.</strong> The architect / planner / builder agents all need the "if design exists, read it" addendum. If one agent forgets, design decisions don't propagate. Mitigation: one shared prompt fragment <code>docs/agent-snippets/design-grounding.md</code> referenced by all three agent prompts, plus an end-to-end test that grep's the generated plan for a known design-doc reference.
+</div>
+
+<p class="small">— End of architecture document. The companion plan with phases and Fibonacci-scored tasks lives in <code>./docs/plan-design-feature.md</code>.</p>
+
+</main>
+</body>
+</html>

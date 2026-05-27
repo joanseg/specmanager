@@ -1,5 +1,5 @@
 import { z } from "zod";
-export const STAGE = z.enum(["prd", "architecture", "plan", "walkthrough"]);
+export const STAGE = z.enum(["prd", "architecture", "design", "plan", "walkthrough"]);
 export const DOC_STATUS = z.enum(["draft", "approved"]);
 export const TASK_STATUS = z.enum(["todo", "in_progress", "done"]);
 // Fibonacci scale. Anything ≥5 must be split before persisting — the planner

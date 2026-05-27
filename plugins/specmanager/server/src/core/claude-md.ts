@@ -11,6 +11,8 @@ function stageLabel(stage: string): string {
       return "PRD";
     case "architecture":
       return "Architecture";
+    case "design":
+      return "Design";
     case "plan":
       return "Plan";
     case "walkthrough":
@@ -74,7 +76,7 @@ export async function renderBlock(root = projectRoot()): Promise<string> {
   lines.push("");
   lines.push("**Commands:**");
   lines.push(
-    "`/specmanager-feature` · `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-plan` · `/specmanager-execute` · `/specmanager-walkthrough` · `/specmanager-board`"
+    "`/specmanager-feature` · `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-execute` · `/specmanager-walkthrough` · `/specmanager-board`"
   );
   lines.push("");
   lines.push(`_Last synced: ${m.generatedAt}_`);
