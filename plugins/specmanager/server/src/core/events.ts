@@ -8,7 +8,9 @@ export type SpecEvent =
   | { type: "stale.flagged"; documentId: string; cause: string }
   | { type: "stale.cleared"; documentId: string }
   | { type: "task.updated"; taskId: string; featureId: string }
-  | { type: "file.changed"; filePath: string };
+  | { type: "file.changed"; filePath: string }
+  | { type: "feature.shipped"; featureId: string }
+  | { type: "design.synced"; path: string; mode: "init" | "refresh" };
 
 class TypedBus {
   private bus = new EventEmitter();

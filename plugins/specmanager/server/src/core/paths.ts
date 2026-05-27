@@ -30,6 +30,10 @@ export function claudeMdPath(root = projectRoot()): string {
   return path.join(root, "CLAUDE.md");
 }
 
+export function designMdPath(root = projectRoot()): string {
+  return path.join(root, "docs", "DESIGN.md");
+}
+
 import type { Stage } from "./types.js";
 
 export const STAGES: ReadonlyArray<Stage> = [

@@ -21,6 +21,14 @@ export async function setStatus(id, next, root = projectRoot()) {
     if (next === "approved" && doc.frontmatter.stale) {
         events.emit({ type: "stale.cleared", documentId: id });
     }
+    // feature.shipped — fired exactly once when the final-phase walkthrough is
+    // approved. The MCP server's auto-sync listener uses this to refresh
+    // ./docs/DESIGN.md so the system-level design spec stays current.
+    if (next === "approved" &&
+        doc.frontmatter.stage === "walkthrough" &&
+        doc.frontmatter.phase === "final") {
+        events.emit({ type: "feature.shipped", featureId: doc.frontmatter.featureId });
+    }
     if (prev === "approved" && next === "draft") {
         await propagateStale(id, `${id} reopened`, root);
     }

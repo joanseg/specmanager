@@ -20,6 +20,7 @@ import {
   setStatus,
   SpecEvent,
   specsDir,
+  syncDesignMd,
   TaskComplexity,
   TaskStatus,
   updateTask,
@@ -240,6 +241,14 @@ export async function startBoardServer(opts: {
   });
 
   app.get("/api/chat/status", async () => chatStatus());
+
+  app.post<{ Body: { mode?: "init" | "refresh" } }>(
+    "/api/design/sync",
+    async (req) => {
+      const mode = req.body?.mode === "init" ? "init" : "refresh";
+      return syncDesignMd(root, { mode });
+    }
+  );
 
   app.patch<{
     Params: { featureId: string; taskId: string };

@@ -4,7 +4,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { startBoardServer } from "./board-server.js";
 import { spawn } from "node:child_process";
-import { STAGE, DOC_STATUS, TASK_STATUS, TASK_COMPLEXITY, GENERATED_BY, events, initProject, listFeatures, createFeature, listDocuments, readDocumentById, createDocument, writeDocument, setStatus, checkGate, listStale, linkDocuments, listTasks, createTask, updateTask, listPhases, getNextPhase, syncClaudeMd, writeManifest, } from "./core/index.js";
+import { STAGE, DOC_STATUS, TASK_STATUS, TASK_COMPLEXITY, GENERATED_BY, events, initProject, listFeatures, createFeature, listDocuments, readDocumentById, createDocument, writeDocument, setStatus, checkGate, listStale, linkDocuments, listTasks, createTask, updateTask, listPhases, getNextPhase, syncClaudeMd, syncDesignMd, writeManifest, } from "./core/index.js";
 const PROJECT_DIR = process.env.SPECMANAGER_PROJECT_DIR ?? process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
 const BOARD_PORT = Number(process.env.SPECMANAGER_BOARD_PORT ?? 4317);
 function text(payload) {
@@ -210,6 +210,10 @@ server.registerTool("sync_claude_md", {
     description: "Rewrite the managed SpecManager block in the project CLAUDE.md.",
     inputSchema: z.object({}),
 }, async () => ok(await syncClaudeMd(PROJECT_DIR)));
+server.registerTool("sync_design_md", {
+    description: "Generate or refresh ./docs/DESIGN.md from the project's UI sources. Idempotent. mode=init creates if missing; mode=refresh updates only the managed block.",
+    inputSchema: z.object({ mode: z.enum(["init", "refresh"]).optional() }),
+}, async ({ mode }) => ok(await syncDesignMd(PROJECT_DIR, { mode: mode ?? "refresh" })));
 let board = null;
 server.registerTool("board_url", {
     description: "Return the localhost URL of the kanban board server, and whether it is currently running.",
@@ -265,9 +269,30 @@ function startClaudeMdAutoSync(root) {
                 schedule();
                 break;
             default:
-                // file.changed, task.updated — manifest covers these, no CLAUDE.md row impact
+                // file.changed, task.updated, feature.shipped, design.synced — manifest
+                // covers these, no CLAUDE.md row impact
                 break;
         }
+    });
+}
+// Refresh ./docs/DESIGN.md whenever a feature ships (final-phase walkthrough
+// approved). Best-effort — failures log to stderr but never block.
+function startDesignMdAutoSync(root) {
+    let pending = null;
+    const schedule = () => {
+        if (pending)
+            clearTimeout(pending);
+        pending = setTimeout(() => {
+            pending = null;
+            syncDesignMd(root, { mode: "refresh" }).catch((err) => {
+                // eslint-disable-next-line no-console
+                console.error("specmanager: sync_design_md failed:", err.message);
+            });
+        }, 250);
+    };
+    events.on((e) => {
+        if (e.type === "feature.shipped")
+            schedule();
     });
 }
 async function main() {
@@ -285,6 +310,7 @@ async function main() {
         console.error("specmanager: board server failed to start:", err.message);
     }
     startClaudeMdAutoSync(PROJECT_DIR);
+    startDesignMdAutoSync(PROJECT_DIR);
     const transport = new StdioServerTransport();
     await server.connect(transport);
 }

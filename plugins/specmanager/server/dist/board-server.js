@@ -5,7 +5,7 @@ import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
 import { WebSocketServer } from "ws";
 import chokidar from "chokidar";
-import { buildManifest, checkGate, createTask, events, listDocuments, listFeatures, listStale, listTasks, projectRoot, readDocumentById, setStatus, specsDir, updateTask, writeDocument, } from "./core/index.js";
+import { buildManifest, checkGate, createTask, events, listDocuments, listFeatures, listStale, listTasks, projectRoot, readDocumentById, setStatus, specsDir, syncDesignMd, updateTask, writeDocument, } from "./core/index.js";
 import { cancelChat, chatStatus, runChat } from "./agent-chat.js";
 const here = path.dirname(fileURLToPath(import.meta.url));
 // dist/board-server.js → plugin root → ui/dist
@@ -159,6 +159,10 @@ export async function startBoardServer(opts = {}) {
         }
     });
     app.get("/api/chat/status", async () => chatStatus());
+    app.post("/api/design/sync", async (req) => {
+        const mode = req.body?.mode === "init" ? "init" : "refresh";
+        return syncDesignMd(root, { mode });
+    });
     app.patch("/api/features/:featureId/tasks/:taskId", async (req, reply) => {
         try {
             const updated = await updateTask({

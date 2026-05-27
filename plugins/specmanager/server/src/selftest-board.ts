@@ -286,6 +286,26 @@ async function main(): Promise<void> {
     assert(designRead.stage === "design", "design doc round-trips stage field");
     assert(designRead.body.includes("Design brief"), "design doc round-trips body");
 
+    // ── Phase B: DESIGN.md sync via REST ───────────────────────────────
+    const designSyncRes = await fetch(`${board.url}/api/design/sync`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ mode: "refresh" }),
+    });
+    assert(designSyncRes.ok, "POST /api/design/sync → 200");
+    const designSyncJson = (await designSyncRes.json()) as {
+      path: string;
+      created: boolean;
+      mode: string;
+    };
+    assert(designSyncJson.mode === "refresh", "design sync echoes refresh mode");
+    assert(designSyncJson.path.endsWith("docs/DESIGN.md"), "design sync returns DESIGN.md path");
+    const designOnDisk = await fs.readFile(designSyncJson.path, "utf8");
+    assert(
+      designOnDisk.includes("<!-- specmanager:design:start -->"),
+      "DESIGN.md on disk has the design start marker"
+    );
+
     // WS event on file change
     await new Promise<void>((resolve, reject) => {
       const ws = new WebSocket(`ws://127.0.0.1:${port}/ws`);
