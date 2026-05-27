@@ -14,6 +14,17 @@ const DEFAULT_FILENAMES = {
     walkthrough: [],
 };
 export const FINAL_PHASE = "final";
+/**
+ * Bodies for design briefs are HTML. If a line starting with `---` (which is
+ * gray-matter's frontmatter delimiter) appears at column 0, the round-trip
+ * read would treat everything below it as a second frontmatter block and lose
+ * the body. Wrap any such leading `---` in an HTML comment to defang it.
+ * Cheap, defensive — only touches `---` at column 0, leaves everything else.
+ */
+export function sanitizeDesignBriefBody(body) {
+    return body.replace(/^---$/gm, "<!-- --- -->");
+}
+export const DESIGN_BRIEF_MAX_BYTES = 2 * 1024 * 1024;
 function sanitizePhaseSegment(phase) {
     return (phase
         .toLowerCase()

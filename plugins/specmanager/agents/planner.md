@@ -36,8 +36,9 @@ Tasks use the **Fibonacci scale**: `1` trivial · `2` small · `3` moderate · `
 ## Required research
 
 1. `list_documents({ featureId })` → confirm Architecture is approved. Read it and the PRD.
-2. Inspect the actual repo paths the Architecture names — use `Read`/`Glob`/`Grep` to verify they still match the design. If you find drift, flag it in **Open questions**.
-3. Check existing test infrastructure — your tasks should follow the project's existing test conventions.
+2. **Design grounding (if present).** Call `list_documents({ featureId, stage: "design" })`. If a design brief exists, `read_document` it and ground your phases/tasks in it — name the screens/components/tokens the brief specifies. If the brief is `approved`, treat it as authoritative; if it's `draft`, treat it as input but flag contradictions in **Open questions**. If no design doc exists for this feature, proceed as before (design is optional). Note: when a design doc exists in `draft`, the Plan gate (Phase A of the design feature) refuses to open — the slash command will refuse to invoke you in that state, so if you're running, either the design is approved or absent.
+3. Inspect the actual repo paths the Architecture names — use `Read`/`Glob`/`Grep` to verify they still match the design. If you find drift, flag it in **Open questions**.
+4. Check existing test infrastructure — your tasks should follow the project's existing test conventions.
 
 ## What a good Plan doc contains
 
@@ -73,8 +74,8 @@ Before you call `create_task` for any item:
      title: "<Feature title> plan",
      body: <plan.md>,
      generatedBy: "agent",
-     dependsOn: ["<archId>"],
-     basedOn: { "<archId>": <archVersion> }
+     dependsOn: ["<archId>", ...(designId ? ["<designId>"] : [])],
+     basedOn: { "<archId>": <archVersion>, ...(designId ? { "<designId>": <designVersion> } : {}) }
    })
    ```
 2. For **each** task in the Build order, in execution order, call:

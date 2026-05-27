@@ -8,7 +8,7 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { initProject, createFeature, createDocument, setStatus, readDocumentById, listStale, syncClaudeMd, syncDesignMd, } from "./core/index.js";
+import { initProject, createFeature, createDocument, setStatus, readDocumentById, listStale, syncClaudeMd, syncDesignMd, sanitizeDesignBriefBody, } from "./core/index.js";
 function assert(condition, message) {
     if (!condition) {
         throw new Error(`FAIL: ${message}`);
@@ -93,6 +93,29 @@ async function main() {
     await setStatus(arch.frontmatter.id, "approved", root);
     const archReconciled = await readDocumentById(arch.frontmatter.id, root);
     assert(archReconciled.frontmatter.stale === false, "approving arch clears its stale flag");
+    // 9. Phase C — create_design_brief wiring (sanitize + createDocument path).
+    const briefWithDashes = `<!doctype html>\n<html><body>\n---\nuser-content\n---\n</body></html>`;
+    const sanitized = sanitizeDesignBriefBody(briefWithDashes);
+    assert(!sanitized.includes("\n---\n"), "sanitizeDesignBriefBody defangs `---` at column 0");
+    assert(sanitized.includes("<!-- --- -->"), "sanitizeDesignBriefBody wraps `---` in an HTML comment");
+    // Drive a fake designer subagent: createDocument with stage="design" + sanitized body.
+    // (Mirrors what create_design_brief does in the MCP wrapper.)
+    const designBriefDoc = await createDocument({
+        featureId: feature.id,
+        stage: "design",
+        title: "Checkout corridor design brief",
+        body: sanitized,
+        generatedBy: "agent",
+        dependsOn: [prd.frontmatter.id],
+        basedOn: { [prd.frontmatter.id]: prd.frontmatter.version },
+    }, root);
+    assert(designBriefDoc.frontmatter.stage === "design", "design brief stage is design");
+    assert(designBriefDoc.frontmatter.generatedBy === "agent", "design brief generatedBy is agent");
+    assert(designBriefDoc.frontmatter.dependsOn[0] === prd.frontmatter.id, "design brief depends on PRD");
+    assert(designBriefDoc.filePath.endsWith("/design/brief.html"), "design brief lands at design/brief.html");
+    const briefRoundTrip = await readDocumentById(designBriefDoc.frontmatter.id, root);
+    assert(briefRoundTrip.body.includes("user-content"), "design brief body round-trips body content");
+    assert(briefRoundTrip.body.includes("<!-- --- -->"), "design brief body preserves the sanitized escape on read");
     console.log("\nAll Phase 1 assertions passed.");
     console.log(`Inspect the tmp project at: ${root}`);
 }

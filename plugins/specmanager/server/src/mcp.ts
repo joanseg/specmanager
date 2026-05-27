@@ -18,6 +18,8 @@ import {
   listDocuments,
   readDocumentById,
   createDocument,
+  sanitizeDesignBriefBody,
+  DESIGN_BRIEF_MAX_BYTES,
   writeDocument,
   setStatus,
   checkGate,
@@ -141,6 +143,47 @@ server.registerTool(
   async (input) => {
     try {
       const d = await createDocument(input, PROJECT_DIR);
+      await writeManifest(PROJECT_DIR);
+      return ok({ ...d.frontmatter, filePath: d.filePath });
+    } catch (err) {
+      return fail((err as Error).message);
+    }
+  }
+);
+
+server.registerTool(
+  "create_design_brief",
+  {
+    description:
+      "Create a draft design brief HTML doc in the design stage. Wraps create_document with stage=\"design\", defangs any `---` at column 0 in the body (gray-matter frontmatter collision), and rejects bodies larger than 2MB. Designer subagent inlines screenshots as data: URIs inside body.",
+    inputSchema: z.object({
+      featureId: z.string(),
+      title: z.string().min(1),
+      body: z.string(),
+      dependsOn: z.array(z.string()).optional(),
+      basedOn: z.record(z.string(), z.number()).optional(),
+    }),
+  },
+  async ({ featureId, title, body, dependsOn, basedOn }) => {
+    const bytes = Buffer.byteLength(body, "utf8");
+    if (bytes > DESIGN_BRIEF_MAX_BYTES) {
+      return fail(
+        `design brief body is ${bytes} bytes — cap is ${DESIGN_BRIEF_MAX_BYTES}. Refer to large screenshots by repo-relative path instead of inlining as data: URIs.`
+      );
+    }
+    try {
+      const d = await createDocument(
+        {
+          featureId,
+          stage: "design",
+          title,
+          body: sanitizeDesignBriefBody(body),
+          dependsOn,
+          basedOn,
+          generatedBy: "agent",
+        },
+        PROJECT_DIR
+      );
       await writeManifest(PROJECT_DIR);
       return ok({ ...d.frontmatter, filePath: d.filePath });
     } catch (err) {
