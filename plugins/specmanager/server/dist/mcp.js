@@ -63,7 +63,7 @@ server.registerTool("read_document", {
     }
 });
 server.registerTool("create_document", {
-    description: "Create a draft document in a feature+stage.",
+    description: "Create a draft document in a feature+stage. For walkthrough docs, pass `phase` (e.g. \"Foundation\") so the manifest can link the doc to its phase; the filename is derived from `phase` (`phase-<name>.md`, or `feature.md` for `phase: \"final\"`).",
     inputSchema: z.object({
         featureId: z.string(),
         stage: STAGE,
@@ -73,6 +73,7 @@ server.registerTool("create_document", {
         generatedBy: GENERATED_BY.optional(),
         dependsOn: z.array(z.string()).optional(),
         basedOn: z.record(z.string(), z.number()).optional(),
+        phase: z.string().optional(),
     }),
 }, async (input) => {
     try {
