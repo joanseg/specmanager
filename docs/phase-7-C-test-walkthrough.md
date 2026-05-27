@@ -38,6 +38,21 @@ If `selftest-execute` fails on `final gate opens once every phase walkthrough is
 /plugin install specmanager@specmanager
 /reload-plugins
 ```
+Quit claude ctrl+c twice.
+```
+pkill -f '^claude$'
+claude daemon stop
+ps aux | grep specmanager | grep -v grep   # kill any leftovers (kill -9 <PID> if needed)
+lsof -nP -iTCP:4317 -sTCP:LISTEN
+cd /path/to/your/test/repo
+claude
+```
+In the Claude session:
+
+```
+/mcp
+```
+If ❌failed, then slecte reconnect and click enter.
 
 Open the board:
 
