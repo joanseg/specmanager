@@ -11,4 +11,5 @@ export * from "./tasks.js";
 export * from "./phases.js";
 export * from "./manifest.js";
 export * from "./claude-md.js";
+export * from "./design-md.js";
 export * from "./init.js";

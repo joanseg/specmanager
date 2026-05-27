@@ -21,6 +21,9 @@ export function manifestPath(root = projectRoot()) {
 export function claudeMdPath(root = projectRoot()) {
     return path.join(root, "CLAUDE.md");
 }
+export function designMdPath(root = projectRoot()) {
+    return path.join(root, "docs", "DESIGN.md");
+}
 export const STAGES = [
     "prd",
     "architecture",

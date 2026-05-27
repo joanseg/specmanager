@@ -8,7 +8,7 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { initProject, createFeature, createDocument, setStatus, readDocumentById, listStale, syncClaudeMd, } from "./core/index.js";
+import { initProject, createFeature, createDocument, setStatus, readDocumentById, listStale, syncClaudeMd, syncDesignMd, } from "./core/index.js";
 function assert(condition, message) {
     if (!condition) {
         throw new Error(`FAIL: ${message}`);
@@ -18,6 +18,10 @@ function assert(condition, message) {
 async function main() {
     const root = await fs.mkdtemp(path.join(os.tmpdir(), "specmanager-selftest-"));
     console.log(`tmp project: ${root}`);
+    // Seed a UI source file so scanUiSources has something to find.
+    await fs.mkdir(path.join(root, "src/ui"), { recursive: true });
+    await fs.writeFile(path.join(root, "src/ui/Button.tsx"), "export const Button = () => null;\n", "utf8");
+    await fs.writeFile(path.join(root, "src/ui/tokens.css"), ":root { --primary: #1A1C1E; --neutral: #F7F5F2; }\n", "utf8");
     // 1. init
     const initRes = await initProject(root);
     assert(initRes.projectDir === root, "init returns project dir");
@@ -25,6 +29,25 @@ async function main() {
     assert(claudeMd1.includes("<!-- specmanager:start -->"), "CLAUDE.md has start marker");
     assert(claudeMd1.includes("<!-- specmanager:end -->"), "CLAUDE.md has end marker");
     assert(claudeMd1.includes("No features yet"), "CLAUDE.md notes no features yet");
+    // 1.5 DESIGN.md created by init with the design markers and scanned tokens.
+    assert(initRes.createdDesignMd === true, "init reports it created DESIGN.md");
+    assert(initRes.designMd.endsWith("docs/DESIGN.md"), "init returns DESIGN.md path under docs/");
+    const designMd1 = await fs.readFile(initRes.designMd, "utf8");
+    assert(designMd1.includes("<!-- specmanager:design:start -->"), "DESIGN.md has design start marker");
+    assert(designMd1.includes("<!-- specmanager:design:end -->"), "DESIGN.md has design end marker");
+    assert(designMd1.includes("primary:"), "DESIGN.md frontmatter includes primary token");
+    assert(designMd1.includes("Button.tsx"), "DESIGN.md components section names the scanned component");
+    // Hand-edit OUTSIDE the markers — survives a refresh.
+    const handEdited = `# Hand-written preamble\n\nUser-owned content above the markers.\n\n${designMd1}`;
+    await fs.writeFile(initRes.designMd, handEdited, "utf8");
+    await syncDesignMd(root, { mode: "refresh" });
+    const designMd2 = await fs.readFile(initRes.designMd, "utf8");
+    assert(designMd2.startsWith("# Hand-written preamble"), "DESIGN.md preamble preserved across refresh");
+    assert(designMd2.includes("<!-- specmanager:design:start -->"), "DESIGN.md still has markers after refresh");
+    // Idempotent: running refresh twice with no source changes produces identical bytes.
+    await syncDesignMd(root, { mode: "refresh" });
+    const designMd3 = await fs.readFile(initRes.designMd, "utf8");
+    assert(designMd3 === designMd2, "DESIGN.md refresh is idempotent (byte-identical)");
     // 2. create feature
     const feature = await createFeature("Checkout corridor", root);
     assert(feature.slug === "checkout-corridor", "feature slug is kebab-case");

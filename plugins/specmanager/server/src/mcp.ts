@@ -29,6 +29,7 @@ import {
   listPhases,
   getNextPhase,
   syncClaudeMd,
+  syncDesignMd,
   writeManifest,
 } from "./core/index.js";
 
@@ -330,6 +331,16 @@ server.registerTool(
   async () => ok(await syncClaudeMd(PROJECT_DIR))
 );
 
+server.registerTool(
+  "sync_design_md",
+  {
+    description:
+      "Generate or refresh ./docs/DESIGN.md from the project's UI sources. Idempotent. mode=init creates if missing; mode=refresh updates only the managed block.",
+    inputSchema: z.object({ mode: z.enum(["init", "refresh"]).optional() }),
+  },
+  async ({ mode }) => ok(await syncDesignMd(PROJECT_DIR, { mode: mode ?? "refresh" }))
+);
+
 let board: BoardServer | null = null;
 
 server.registerTool(
@@ -398,9 +409,29 @@ function startClaudeMdAutoSync(root: string): void {
         schedule();
         break;
       default:
-        // file.changed, task.updated — manifest covers these, no CLAUDE.md row impact
+        // file.changed, task.updated, feature.shipped, design.synced — manifest
+        // covers these, no CLAUDE.md row impact
         break;
     }
+  });
+}
+
+// Refresh ./docs/DESIGN.md whenever a feature ships (final-phase walkthrough
+// approved). Best-effort — failures log to stderr but never block.
+function startDesignMdAutoSync(root: string): void {
+  let pending: NodeJS.Timeout | null = null;
+  const schedule = (): void => {
+    if (pending) clearTimeout(pending);
+    pending = setTimeout(() => {
+      pending = null;
+      syncDesignMd(root, { mode: "refresh" }).catch((err) => {
+        // eslint-disable-next-line no-console
+        console.error("specmanager: sync_design_md failed:", (err as Error).message);
+      });
+    }, 250);
+  };
+  events.on((e) => {
+    if (e.type === "feature.shipped") schedule();
   });
 }
 
@@ -419,6 +450,7 @@ async function main(): Promise<void> {
   }
 
   startClaudeMdAutoSync(PROJECT_DIR);
+  startDesignMdAutoSync(PROJECT_DIR);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
