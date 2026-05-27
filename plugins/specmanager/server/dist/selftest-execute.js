@@ -128,10 +128,33 @@ async function main() {
     // get_next_phase null when everything done.
     const next2 = await getNextPhase(feature.id, root);
     assert(next2 === null, "no next phase once both done");
-    // ----- 7.B.3: 'final' walkthrough gate refused (reserved for 7.C) ---------
-    const gateFinal = await checkGate(feature.id, "walkthrough", root, { phase: "final" });
-    assert(gateFinal.ok === false, "final walkthrough is reserved for Phase 7.C");
+    // ----- 7.C.7: 'final' walkthrough gate ------------------------------------
+    // Both phase walkthroughs exist but are still draft → final closed.
+    const gateFinal0 = await checkGate(feature.id, "walkthrough", root, { phase: "final" });
+    assert(gateFinal0.ok === false, "final gate closed while phase walkthroughs are draft");
+    assert(gateFinal0.reason?.includes("A") && gateFinal0.reason?.includes("B"), "final gate reason lists missing phases");
+    // Approve phase A walkthrough → final still closed (B still draft).
+    await setStatus(wtA.frontmatter.id, "approved", root);
+    const gateFinal1 = await checkGate(feature.id, "walkthrough", root, { phase: "final" });
+    assert(gateFinal1.ok === false, "final still closed while B walkthrough is draft");
+    assert(!gateFinal1.reason?.includes("A,") && gateFinal1.reason?.includes("B"), "final gate reason now only lists B");
+    // Approve phase B walkthrough → final opens.
+    await setStatus(wtB.frontmatter.id, "approved", root);
+    const gateFinal2 = await checkGate(feature.id, "walkthrough", root, { phase: "final" });
+    assert(gateFinal2.ok === true, "final gate opens once every phase walkthrough is approved");
+    // Final walkthrough doc lands at feature.md.
+    const wtFinal = await createDocument({
+        featureId: feature.id,
+        stage: "walkthrough",
+        title: "Phased loop — feature walkthrough",
+        body: "# Final\n\nLinks every phase.",
+        generatedBy: "agent",
+        phase: "final",
+        dependsOn: [plan.frontmatter.id, wtA.frontmatter.id, wtB.frontmatter.id],
+    }, root);
     assert(walkthroughFilename(FINAL_PHASE) === "feature.md", "feature.md filename reserved for final");
+    assert(wtFinal.filePath.endsWith("feature.md"), "final walkthrough lands at feature.md");
+    assert(wtFinal.frontmatter.phase === "final", "final walkthrough carries phase=final");
     // ----- 7.B.1: migrate legacy walkthrough ---------------------------------
     const legacy = await createFeature("Legacy feat", root);
     const legacyPlan = await createDocument({

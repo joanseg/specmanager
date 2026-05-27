@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { createTaskApi, fetchTasks, openWebSocket, patchTask } from "./api";
 import { Task, TaskStatus } from "./types";
 
+const DEFAULT_PHASE = "default";
+
 interface BuildPanelProps {
   featureId: string;
   featureTitle: string;
@@ -59,6 +61,31 @@ export default function BuildPanel({ featureId, featureTitle, onClose }: BuildPa
   const total = (tasks ?? []).length;
   const donePct = total === 0 ? 0 : Math.round((counts.done / total) * 100);
   const progPct = total === 0 ? 0 : Math.round((counts.in_progress / total) * 100);
+
+  // Group tasks by phase, preserving first-seen order (matches core/phases.ts rollup).
+  const phaseGroups = useMemo(() => {
+    const order: string[] = [];
+    const byPhase = new Map<string, Task[]>();
+    for (const t of tasks ?? []) {
+      const name = t.phase || DEFAULT_PHASE;
+      if (!byPhase.has(name)) {
+        byPhase.set(name, []);
+        order.push(name);
+      }
+      byPhase.get(name)!.push(t);
+    }
+    return order.map((name) => {
+      const items = byPhase.get(name)!;
+      const c: Record<TaskStatus, number> = { todo: 0, in_progress: 0, done: 0 };
+      for (const t of items) c[t.status]++;
+      return { name, tasks: items, counts: c, total: items.length };
+    });
+  }, [tasks]);
+  const multiPhase = phaseGroups.length > 1 || (phaseGroups[0]?.name && phaseGroups[0].name !== DEFAULT_PHASE);
+
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const toggle = (name: string): void =>
+    setCollapsed((m) => ({ ...m, [name]: !m[name] }));
 
   const setStatus = async (task: Task, status: TaskStatus): Promise<void> => {
     setBusy(task.id);
@@ -167,6 +194,68 @@ export default function BuildPanel({ featureId, featureTitle, onClose }: BuildPa
               No tasks yet. The planner subagent (Phase 4) emits these from <code>/specmanager-plan</code>.
               You can also add ad-hoc tasks below.
             </p>
+          ) : multiPhase ? (
+            <div className="phase-groups">
+              {phaseGroups.map((g) => {
+                const phaseDonePct =
+                  g.total === 0 ? 0 : Math.round((g.counts.done / g.total) * 100);
+                const phaseProgPct =
+                  g.total === 0 ? 0 : Math.round((g.counts.in_progress / g.total) * 100);
+                const allDone = g.total > 0 && g.counts.done === g.total;
+                const isCollapsed = collapsed[g.name] ?? false;
+                const slash = `/specmanager-execute ${featureId} ${g.name}`;
+                const copySlash = (e: React.MouseEvent): void => {
+                  e.stopPropagation();
+                  void navigator.clipboard?.writeText(slash);
+                };
+                return (
+                  <section key={g.name} className={`phase-group${allDone ? " phase-group--done" : ""}`}>
+                    <header className="phase-group__head">
+                      <button
+                        type="button"
+                        className="phase-group__toggle"
+                        onClick={() => toggle(g.name)}
+                        aria-expanded={!isCollapsed}
+                      >
+                        <span className="phase-group__caret">{isCollapsed ? "▸" : "▾"}</span>
+                        <span className="phase-group__name">Phase {g.name}</span>
+                        <span className="phase-group__count">
+                          {g.counts.done}/{g.total} done
+                          {g.counts.in_progress > 0 && ` · ${g.counts.in_progress} in progress`}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        className="phase-group__cmd"
+                        title="copy /specmanager-execute slash command"
+                        onClick={copySlash}
+                      >
+                        {slash}
+                      </button>
+                    </header>
+                    <div className="bar phase-group__bar">
+                      <div className="bar__seg bar__seg--done" style={{ width: `${phaseDonePct}%` }} />
+                      <div className="bar__seg bar__seg--prog" style={{ width: `${phaseProgPct}%` }} />
+                    </div>
+                    {!isCollapsed && (
+                      <ul className="task-list task-list--in-phase">
+                        {g.tasks.map((t) => (
+                          <TaskRow
+                            key={t.id}
+                            task={t}
+                            busy={busy === t.id}
+                            onStatus={(s) => setStatus(t, s)}
+                            onAddArtifact={(kind, v) => addArtifact(t, kind, v)}
+                            onRemoveArtifact={(kind, v) => removeArtifact(t, kind, v)}
+                            onSetPr={(v) => setPr(t, v)}
+                          />
+                        ))}
+                      </ul>
+                    )}
+                  </section>
+                );
+              })}
+            </div>
           ) : (
             <ul className="task-list">
               {tasks.map((t) => (

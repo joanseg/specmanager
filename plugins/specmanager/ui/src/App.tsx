@@ -2,7 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 import { fetchBoard, openWebSocket } from "./api";
 import DocPanel from "./DocPanel";
 import BuildPanel from "./BuildPanel";
-import { Board, COLUMNS, Column, DocCard, FeatureRow, Stage, TaskCounts } from "./types";
+import { Board, COLUMNS, Column, DocCard, FeatureRow, PhaseRollup, Stage, TaskCounts } from "./types";
+
+const DEFAULT_PHASE = "default";
+const FINAL_PHASE = "final";
 
 const STAGE_LABEL: Record<Column, string> = {
   prd: "PRD",
@@ -101,6 +104,20 @@ function BuildCell({
   }
   const donePct = Math.round((tasks.done / Math.max(1, tasks.total)) * 100);
   const inProgressPct = Math.round((tasks.in_progress / Math.max(1, tasks.total)) * 100);
+  // Find the next non-done phase to suggest /specmanager-execute.
+  const nextPhase = row.phases?.find(
+    (p) => p.status !== "done" && p.status !== "empty"
+  );
+  const slash = nextPhase
+    ? `/specmanager-execute ${row.id} next`
+    : null;
+  const onCopy = (e: React.MouseEvent): void => {
+    e.stopPropagation();
+    if (slash) void navigator.clipboard?.writeText(slash);
+  };
+  const multiPhase =
+    (row.phases?.length ?? 0) > 1 ||
+    (row.phases?.[0]?.name && row.phases[0].name !== DEFAULT_PHASE);
   return (
     <button
       type="button"
@@ -114,9 +131,157 @@ function BuildCell({
       </div>
       <span className="card__build-counts">
         <span>{tasks.done}/{tasks.total} done</span>
+        {multiPhase && row.phases && (
+          <span>
+            · phases {row.phases.filter((p) => p.status === "done").length}/
+            {row.phases.length}
+          </span>
+        )}
         {tasks.in_progress > 0 && <span>· {tasks.in_progress} in progress</span>}
       </span>
+      {slash && (
+        <span
+          className="card__build-exec"
+          onClick={onCopy}
+          title="copy /specmanager-execute next slash command"
+        >
+          ▶ {slash}
+        </span>
+      )}
     </button>
+  );
+}
+
+function PhaseWalkthroughCard({
+  phase,
+  row,
+  onOpen,
+}: {
+  phase: PhaseRollup;
+  row: FeatureRow;
+  onOpen: (id: string) => void;
+}) {
+  const doc = phase.walkthroughId
+    ? row.documents.find((d) => d.id === phase.walkthroughId)
+    : undefined;
+  if (doc) {
+    return (
+      <button
+        type="button"
+        className={`card card--button card--sub${doc.stale ? " card--stale" : ""}`}
+        onClick={() => onOpen(doc.id)}
+        title={doc.id}
+      >
+        <span className="card__sub-label">Phase {phase.name}</span>
+        <span className="card__badges">
+          <span className={`badge badge--${doc.status}`}>{doc.status}</span>
+          {doc.stale && <span className="badge badge--stale">⚠ stale</span>}
+        </span>
+      </button>
+    );
+  }
+  const ready = phase.status === "done";
+  const slash = `/specmanager-walkthrough ${row.id} ${phase.name}`;
+  const onCopy = (e: React.MouseEvent): void => {
+    e.stopPropagation();
+    void navigator.clipboard?.writeText(slash);
+  };
+  return (
+    <div className={`card card--sub card--empty${ready ? " card--ready" : " card--locked"}`}>
+      <span className="card__sub-label">Phase {phase.name}</span>
+      {ready ? (
+        <button type="button" className="card__empty-cmd" onClick={onCopy} title="copy to clipboard">
+          {slash}
+        </button>
+      ) : (
+        <span className="card__locked-sub">
+          {phase.doneCount}/{phase.taskCount} tasks done
+        </span>
+      )}
+    </div>
+  );
+}
+
+function FinalWalkthroughCard({
+  row,
+  onOpen,
+}: {
+  row: FeatureRow;
+  onOpen: (id: string) => void;
+}) {
+  const phases = row.phases ?? [];
+  const finalDoc = row.documents.find(
+    (d) => d.stage === "walkthrough" && d.phase === FINAL_PHASE
+  );
+  if (finalDoc) {
+    return (
+      <button
+        type="button"
+        className={`card card--button card--sub card--final${finalDoc.stale ? " card--stale" : ""}`}
+        onClick={() => onOpen(finalDoc.id)}
+        title={finalDoc.id}
+      >
+        <span className="card__sub-label">★ Feature roll-up</span>
+        <span className="card__badges">
+          <span className={`badge badge--${finalDoc.status}`}>{finalDoc.status}</span>
+          {finalDoc.stale && <span className="badge badge--stale">⚠ stale</span>}
+        </span>
+      </button>
+    );
+  }
+  const missing = phases
+    .filter((p) => p.walkthroughStatus !== "approved")
+    .map((p) => p.name);
+  const ready = phases.length > 0 && missing.length === 0;
+  const slash = `/specmanager-walkthrough ${row.id} final`;
+  const onCopy = (e: React.MouseEvent): void => {
+    e.stopPropagation();
+    if (ready) void navigator.clipboard?.writeText(slash);
+  };
+  const tooltip = ready
+    ? "all phase walkthroughs approved — ready to draft"
+    : missing.length > 0
+    ? `awaiting approval: ${missing.map((m) => `phase ${m}`).join(", ")}`
+    : "no phases yet";
+  return (
+    <div
+      className={`card card--sub card--final card--empty${ready ? " card--ready" : " card--locked"}`}
+      title={tooltip}
+    >
+      <span className="card__sub-label">★ Feature roll-up</span>
+      {ready ? (
+        <button type="button" className="card__empty-cmd" onClick={onCopy} title="copy to clipboard">
+          {slash}
+        </button>
+      ) : (
+        <span className="card__locked-sub">
+          {missing.length > 0 ? `${missing.length} phase(s) pending` : "no phases yet"}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function WalkthroughCell({
+  row,
+  onOpenDoc,
+}: {
+  row: FeatureRow;
+  onOpenDoc: (id: string) => void;
+}) {
+  // No tasks yet → the legacy "locked / generate" affordance.
+  const phases = row.phases ?? [];
+  if (phases.length === 0) {
+    if (!priorStageApproved(row, "walkthrough")) return <LockedCell stage="walkthrough" />;
+    return <EmptyCell stage="walkthrough" ready={false} />;
+  }
+  return (
+    <div className="card card--walkthroughs">
+      {phases.map((p) => (
+        <PhaseWalkthroughCard key={p.name} phase={p} row={row} onOpen={onOpenDoc} />
+      ))}
+      <FinalWalkthroughCard row={row} onOpen={onOpenDoc} />
+    </div>
   );
 }
 
@@ -132,14 +297,11 @@ function Cell({
   onOpenBuild: (featureId: string, title: string) => void;
 }) {
   if (column === "build") return <BuildCell tasks={row.tasks} row={row} onOpen={onOpenBuild} />;
+  if (column === "walkthrough") return <WalkthroughCell row={row} onOpenDoc={onOpenDoc} />;
   const stage: Stage = column;
   const doc = findDoc(row, stage);
   if (doc) return <DocCellView doc={doc} onOpen={onOpenDoc} />;
   if (!priorStageApproved(row, stage)) return <LockedCell stage={stage} />;
-  if (stage === "walkthrough") {
-    const ready = row.tasks.total > 0 && row.tasks.done === row.tasks.total;
-    return <EmptyCell stage={stage} ready={ready} />;
-  }
   return <EmptyCell stage={stage} ready />;
 }
 

@@ -4,6 +4,7 @@ import { writeDoc } from "./frontmatter.js";
 import { nowIso } from "./ids.js";
 import { projectRoot } from "./paths.js";
 import { listTasks } from "./tasks.js";
+import { rollupPhases } from "./phases.js";
 
 export async function linkDocuments(
   downstreamId: string,
@@ -56,13 +57,33 @@ export async function checkGate(
   if (stage === "prd") return { ok: true };
   if (stage === "walkthrough") {
     const targetPhase = phase ?? DEFAULT_PHASE;
-    // The "final" sentinel is reserved for Phase 7.C — opens only when every
-    // phase walkthrough is approved. Until 7.C ships, refuse.
+    // The "final" sentinel is the feature-level roll-up walkthrough. It opens
+    // only when every phase has an `approved` walkthrough.
     if (targetPhase === "final") {
-      return {
-        ok: false,
-        reason: "final walkthrough is reserved for Phase 7.C and not yet available",
-      };
+      const allTasks = await listTasks(featureId, resolvedRoot);
+      const phases = rollupPhases(allTasks);
+      if (phases.length === 0) {
+        return { ok: false, reason: "no phases discovered — Build hasn't started" };
+      }
+      const wts = await listDocuments(
+        { featureId, stage: "walkthrough" },
+        resolvedRoot
+      );
+      const approvedByPhase = new Set(
+        wts
+          .filter((d) => d.frontmatter.status === "approved")
+          .map((d) => d.frontmatter.phase ?? DEFAULT_PHASE)
+      );
+      const missing = phases
+        .map((p) => p.name)
+        .filter((name) => !approvedByPhase.has(name));
+      if (missing.length > 0) {
+        return {
+          ok: false,
+          reason: `phase walkthroughs not approved: ${missing.join(", ")}`,
+        };
+      }
+      return { ok: true };
     }
     const tasks = await listTasks(featureId, resolvedRoot);
     if (tasks.length === 0) {

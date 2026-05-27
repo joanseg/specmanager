@@ -15,6 +15,7 @@ export interface DocCard {
   stale: boolean;
   version: number;
   title: string;
+  phase?: string;
 }
 
 export interface DocFull {
@@ -53,6 +54,8 @@ export interface Task {
   title: string;
   status: TaskStatus;
   stageRef?: string;
+  phase?: string;
+  complexity?: 1 | 2 | 3 | 5 | 8 | 13 | null;
   dependsOn: string[];
   artifacts: TaskArtifacts;
   createdAt: string;
@@ -66,6 +69,20 @@ export interface TaskCounts {
   total: number;
 }
 
+export type PhaseStatus = "empty" | "todo" | "in_progress" | "done";
+
+export interface PhaseRollup {
+  name: string;
+  order: number;
+  taskCount: number;
+  doneCount: number;
+  inProgressCount: number;
+  status: PhaseStatus;
+  walkthroughId: string | null;
+  walkthroughStatus: DocStatus | null;
+  walkthroughStale: boolean | null;
+}
+
 export interface FeatureRow {
   id: string;
   slug: string;
@@ -73,6 +90,7 @@ export interface FeatureRow {
   currentStage: Stage;
   documents: DocCard[];
   tasks: TaskCounts;
+  phases: PhaseRollup[];
 }
 
 export interface Board {

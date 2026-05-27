@@ -722,3 +722,123 @@ html, body, #root {
   max-height: 8rem;
 }
 .chat__composer textarea:focus { outline: 1px solid var(--accent); outline-offset: 0; }
+
+/* Phase grouping (Phase 7.C) ---------------------------------------- */
+.phase-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.4rem 1.25rem 1rem;
+}
+.phase-group {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.55rem 0.7rem;
+}
+.phase-group--done {
+  border-color: rgba(95, 181, 107, 0.35);
+  background: rgba(95, 181, 107, 0.04);
+}
+.phase-group__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.35rem;
+}
+.phase-group__toggle {
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  padding: 0;
+  flex: 1;
+  text-align: left;
+}
+.phase-group__caret {
+  color: var(--text-dim);
+  width: 0.8rem;
+  display: inline-block;
+}
+.phase-group__name {
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+.phase-group__count {
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+.phase-group__cmd {
+  all: unset;
+  cursor: pointer;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.68rem;
+  color: var(--accent);
+  opacity: 0.55;
+  padding: 0 0.2rem;
+  border-radius: 3px;
+}
+.phase-group__cmd:hover { opacity: 1; text-decoration: underline; }
+.phase-group__bar {
+  margin-bottom: 0.45rem;
+}
+.task-list--in-phase {
+  padding: 0;
+}
+.task-list--in-phase .task:last-child { border-bottom: 0; }
+
+/* Walkthrough column: per-phase cards + final roll-up --------------- */
+.card--walkthroughs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.4rem 0.45rem;
+  background: transparent;
+  border: 0;
+}
+.card--sub {
+  padding: 0.4rem 0.55rem;
+  border-radius: 5px;
+  min-height: 0;
+  gap: 0.2rem;
+}
+.card--sub.card--empty {
+  padding: 0.35rem 0.55rem;
+  font-size: 0.72rem;
+}
+.card--sub.card--locked {
+  background: transparent;
+  border-style: dashed;
+  color: var(--text-dim);
+}
+.card__sub-label {
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+.card--final {
+  border-color: rgba(122, 208, 255, 0.35);
+}
+.card--final .card__sub-label {
+  color: var(--accent);
+}
+.card--final.card--locked {
+  border-style: dashed;
+  opacity: 0.7;
+}
+
+.card__build-exec {
+  margin-top: 0.3rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.68rem;
+  color: var(--accent);
+  opacity: 0.65;
+  cursor: pointer;
+}
+.card__build-exec:hover { opacity: 1; text-decoration: underline; }
