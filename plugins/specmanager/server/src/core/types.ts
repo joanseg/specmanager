@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const STAGE = z.enum(["prd", "architecture", "plan", "walkthrough"]);
+export const STAGE = z.enum(["prd", "architecture", "design", "plan", "walkthrough"]);
 export type Stage = z.infer<typeof STAGE>;
 
 export const DOC_STATUS = z.enum(["draft", "approved"]);

@@ -21,11 +21,18 @@ export function manifestPath(root = projectRoot()) {
 export function claudeMdPath(root = projectRoot()) {
     return path.join(root, "CLAUDE.md");
 }
-export const STAGES = ["prd", "architecture", "plan", "walkthrough"];
+export const STAGES = [
+    "prd",
+    "architecture",
+    "design",
+    "plan",
+    "walkthrough",
+];
 export function stageDir(slug, stage, root = projectRoot()) {
     const map = {
         prd: "prd",
         architecture: "architecture",
+        design: "design",
         plan: "plan",
         walkthrough: "walkthroughs",
     };

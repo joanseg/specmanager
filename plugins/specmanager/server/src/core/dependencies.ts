@@ -28,8 +28,14 @@ export interface GateResult {
   reason?: string;
 }
 
+// Each stage's primary upstream — used by the simple gate path.
+// Plan's gate is compound (architecture approved AND no draft design): handled in checkGate
+// below rather than via this map. The map keeps the literal "<prior> stage is not approved"
+// reason string Phase 3's UI banners parse — so Plan's compound gate adds, never replaces,
+// the basic prior-stage check.
 const PRIOR_STAGE: Partial<Record<Stage, Stage>> = {
   architecture: "prd",
+  design: "prd",
   plan: "architecture",
 };
 
@@ -115,6 +121,24 @@ export async function checkGate(
   const approved = docs.find((d) => d.frontmatter.status === "approved");
   if (!approved) {
     return { ok: false, reason: `${prior} stage is not approved` };
+  }
+  // Plan's gate is compound: architecture approved (already checked above) AND
+  // (no design doc exists OR design approved). Design is optional — if no design
+  // doc exists for the feature, Plan still opens.
+  if (stage === "plan") {
+    const designs = await listDocuments(
+      { featureId, stage: "design" },
+      resolvedRoot
+    );
+    if (designs.length > 0) {
+      const designApproved = designs.find((d) => d.frontmatter.status === "approved");
+      if (!designApproved) {
+        return {
+          ok: false,
+          reason: "design stage is not approved (design is optional — delete the draft to skip)",
+        };
+      }
+    }
   }
   return { ok: true };
 }

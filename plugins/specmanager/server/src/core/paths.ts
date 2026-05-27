@@ -32,12 +32,19 @@ export function claudeMdPath(root = projectRoot()): string {
 
 import type { Stage } from "./types.js";
 
-export const STAGES: ReadonlyArray<Stage> = ["prd", "architecture", "plan", "walkthrough"];
+export const STAGES: ReadonlyArray<Stage> = [
+  "prd",
+  "architecture",
+  "design",
+  "plan",
+  "walkthrough",
+];
 
 export function stageDir(slug: string, stage: Stage, root = projectRoot()): string {
   const map: Record<Stage, string> = {
     prd: "prd",
     architecture: "architecture",
+    design: "design",
     plan: "plan",
     walkthrough: "walkthroughs",
   };
