@@ -34,12 +34,25 @@ Every selftest should report "All … assertions passed." If `selftest-execute` 
 /plugin marketplace update specmanager
 /plugin uninstall specmanager
 /plugin install specmanager@specmanager
-/reload-plugins
+
+```
+```bash
+pkill -f '^claude$'
+claude daemon stop
+ps aux | grep specmanager | grep -v grep   # kill any leftovers (kill -9 <PID> if needed)
+lsof -nP -iTCP:4317 -sTCP:LISTEN
+cd /path/to/your/test/repo
+claude
 ```
 
-## 3. Phase 7.B exit checks
+In the Claude session:
 
-### 3.1 New command is registered
+```
+/mcp
+```
+If ❌failed, then slecte `reconnect` and click enter.
+
+
 
 ```
 /specmanager-execute

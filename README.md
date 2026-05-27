@@ -2,7 +2,7 @@
 
 A Claude Code plugin that manages a software project's lifecycle — PRD → architecture → plan → tasks → build → walkthroughs — as a kanban board over plain markdown in the repo.
 
-**Status:** Phase 7.B complete (Phases 1–6 + phased plans + headless build loop). The planner now organises tasks into phases (Fibonacci ≤3); `/specmanager-execute <feature> <phase|next>` drives one phase's tasks via the builder subagent (records commits + files, stops at the phase boundary); `/specmanager-walkthrough <feature> <phase>` writes a per-phase walkthrough gated on that phase's tasks being done. Per-feature walkthroughs are migrated non-destructively to `phase-default.md`. Board UI for phase grouping ships in Phase 7.C.
+**Status:** Phase 7.C complete (Phases 1–6 + phased plans + headless build loop + board UI). The planner organises tasks into phases (Fibonacci ≤3); `/specmanager-execute <feature> <phase|next>` drives one phase's tasks via the builder subagent (records commits + files, stops at the phase boundary); `/specmanager-walkthrough <feature> <phase>` writes a per-phase walkthrough gated on that phase's tasks being done; `/specmanager-walkthrough <feature> final` writes the feature-level roll-up at `walkthroughs/<slug>/feature.md` once every phase walkthrough is approved. The board groups tasks under collapsible phase headers with per-phase progress bars and renders one walkthrough card per phase plus a feature-level roll-up card.
 
 ## Design docs
 
@@ -17,6 +17,7 @@ A Claude Code plugin that manages a software project's lifecycle — PRD → arc
 - `docs/phase-6-test-walkthrough.md` — exact steps to verify in-UI AI chat (interview, co-write, mid-stream conflict).
 - `docs/phase-7-A-test-walkthrough.md` — exact steps to verify phased plans + Fibonacci enforcement.
 - `docs/phase-7-B-test-walkthrough.md` — exact steps to verify the per-phase execute + walkthrough loop end-to-end.
+- `docs/phase-7-C-test-walkthrough.md` — exact steps to verify the board UI for phased builds + final feature-level walkthrough.
 
 ## Build
 
