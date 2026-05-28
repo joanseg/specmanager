@@ -1,6 +1,6 @@
 ---
 name: walkthrough-writer
-description: Writes a per-phase Walkthrough document for a SpecManager feature, or — in `phase: "final"` mode — a feature-level roll-up that links each phase walkthrough.
+description: 'Writes a per-phase Walkthrough document for a SpecManager feature, or — in `phase: "final"` mode — a feature-level roll-up that links each phase walkthrough.'
 model: inherit
 ---
 
