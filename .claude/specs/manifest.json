@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-28T18:16:15.563Z",
+  "generatedAt": "2026-05-28T19:20:58.466Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -28,14 +28,14 @@
           "stage": "plan",
           "status": "approved",
           "stale": false,
-          "version": 2,
+          "version": 3,
           "title": "Redesign plan"
         },
         {
           "id": "wt-redesign-001",
           "stage": "walkthrough",
-          "status": "draft",
-          "stale": true,
+          "status": "approved",
+          "stale": false,
           "version": 1,
           "title": "Redesign — Phase A walkthrough",
           "phase": "A"
@@ -43,18 +43,27 @@
         {
           "id": "wt-redesign-002",
           "stage": "walkthrough",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
           "version": 1,
           "title": "Redesign — Phase B walkthrough",
           "phase": "B"
+        },
+        {
+          "id": "wt-redesign-003",
+          "stage": "walkthrough",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Redesign — Phase C walkthrough",
+          "phase": "C"
         }
       ],
       "tasks": {
         "todo": 0,
         "in_progress": 0,
-        "done": 18,
-        "total": 18
+        "done": 23,
+        "total": 23
       },
       "phases": [
         {
@@ -65,8 +74,8 @@
           "inProgressCount": 0,
           "status": "done",
           "walkthroughId": "wt-redesign-001",
-          "walkthroughStatus": "draft",
-          "walkthroughStale": true
+          "walkthroughStatus": "approved",
+          "walkthroughStale": false
         },
         {
           "name": "B",
@@ -76,6 +85,17 @@
           "inProgressCount": 0,
           "status": "done",
           "walkthroughId": "wt-redesign-002",
+          "walkthroughStatus": "approved",
+          "walkthroughStale": false
+        },
+        {
+          "name": "C",
+          "order": 2,
+          "taskCount": 5,
+          "doneCount": 5,
+          "inProgressCount": 0,
+          "status": "done",
+          "walkthroughId": "wt-redesign-003",
           "walkthroughStatus": "draft",
           "walkthroughStale": false
         }

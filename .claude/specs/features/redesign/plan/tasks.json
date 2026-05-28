@@ -423,6 +423,122 @@
       },
       "createdAt": "2026-05-28T16:48:29.480Z",
       "updatedAt": "2026-05-28T17:18:32.333Z"
+    },
+    {
+      "id": "task-019",
+      "featureId": "feat-redesign",
+      "title": "Fix grid row box-model: content-sized row tracks plus full-width equal-height bottom-aligned cards",
+      "status": "done",
+      "stageRef": "plan-redesign-001",
+      "phase": "C",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "befbcbe"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/styles.css"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T18:45:41.717Z",
+      "updatedAt": "2026-05-28T19:05:19.401Z"
+    },
+    {
+      "id": "task-020",
+      "featureId": "feat-redesign",
+      "title": "Fix Walkthroughs roll-up sub-label overlapping its card top border",
+      "status": "done",
+      "stageRef": "plan-redesign-001",
+      "phase": "C",
+      "complexity": 1,
+      "dependsOn": [
+        "task-019"
+      ],
+      "artifacts": {
+        "commits": [
+          "d6f9cbc"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/styles.css"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T18:45:45.877Z",
+      "updatedAt": "2026-05-28T19:06:27.753Z"
+    },
+    {
+      "id": "task-021",
+      "featureId": "feat-redesign",
+      "title": "Regroup the panel header into a single horizontal bar (title/crumb left, actions right)",
+      "status": "done",
+      "stageRef": "plan-redesign-001",
+      "phase": "C",
+      "complexity": 3,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "b80f18b"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/DocPanel.tsx",
+          "plugins/specmanager/ui/src/styles.css"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T18:45:48.977Z",
+      "updatedAt": "2026-05-28T19:10:16.340Z"
+    },
+    {
+      "id": "task-022",
+      "featureId": "feat-redesign",
+      "title": "Breadcrumb shows feature title plus nudge drawer to the ~65% target",
+      "status": "done",
+      "stageRef": "plan-redesign-001",
+      "phase": "C",
+      "complexity": 1,
+      "dependsOn": [
+        "task-021"
+      ],
+      "artifacts": {
+        "commits": [
+          "675b2d6"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/DocPanel.tsx",
+          "plugins/specmanager/ui/src/styles.css"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T18:45:52.465Z",
+      "updatedAt": "2026-05-28T19:11:53.657Z"
+    },
+    {
+      "id": "task-023",
+      "featureId": "feat-redesign",
+      "title": "Phase C verification pass",
+      "status": "done",
+      "stageRef": "plan-redesign-001",
+      "phase": "C",
+      "complexity": 2,
+      "dependsOn": [
+        "task-019",
+        "task-020",
+        "task-021",
+        "task-022"
+      ],
+      "artifacts": {
+        "commits": [
+          "bbdd8f0"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/styles.css"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T18:45:56.010Z",
+      "updatedAt": "2026-05-28T19:16:52.193Z"
     }
   ]
 }

@@ -2,8 +2,8 @@
 id: wt-redesign-001
 featureId: feat-redesign
 stage: walkthrough
-status: draft
-stale: true
+status: approved
+stale: false
 title: Redesign — Phase A walkthrough
 dependsOn:
   - plan-redesign-001
@@ -13,7 +13,7 @@ generatedBy: agent
 version: 1
 phase: A
 createdAt: '2026-05-28T13:16:30.302Z'
-updatedAt: '2026-05-28T16:58:01.101Z'
+updatedAt: '2026-05-28T18:24:14.622Z'
 ---
 # Redesign — Phase A walkthrough
 

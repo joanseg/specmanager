@@ -8,3 +8,4 @@ node_modules/
 #   cd plugins/specmanager/server && npm install && npm run build
 #   cd plugins/specmanager/ui     && npm install && npm run build
 # before committing source changes.
+.gstack/
