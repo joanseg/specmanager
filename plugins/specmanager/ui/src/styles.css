@@ -68,11 +68,14 @@ html, body, #root {
   backdrop-filter: var(--glass-blur);
   border-bottom: 1px solid var(--outline-variant);
 }
+/* Display-lg (DESIGN.md typography.display-lg): Hanken Grotesk, 48px/56px,
+ * 600, -0.02em tracking. The large display face the mockup header uses. */
 .board__title {
   margin: 0;
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 1.5rem;
+  font-size: 3rem;
+  line-height: 3.5rem;
   letter-spacing: -0.02em;
   color: var(--on-surface);
 }
@@ -181,15 +184,18 @@ html, body, #root {
   flex-direction: column;
   gap: 0.35rem;
   height: 100%;
-  background: var(--surface-container);
-  border: 1px solid var(--outline-variant);
+  background: var(--card-gradient);
+  border: 1px solid var(--card-border);
   border-radius: var(--radius-md);
   padding: 0.6rem 0.7rem;
-  transition: border-color 0.12s ease, background 0.12s ease;
+  transition: border-color 0.14s ease, background 0.14s ease,
+    box-shadow 0.14s ease, transform 0.14s ease;
 }
 .card:hover {
-  border-color: var(--primary);
-  background: var(--surface-container-high);
+  border-color: var(--card-border-hover);
+  background: var(--card-gradient-hover);
+  box-shadow: var(--shadow-card);
+  transform: translateY(-1px) scale(1.01);
 }
 
 .card--empty, .card--locked {
@@ -203,6 +209,9 @@ html, body, #root {
 }
 .card--empty:hover, .card--locked:hover {
   background: var(--surface-container-low);
+  box-shadow: none;
+  transform: none;
+  border-color: var(--outline-variant);
 }
 .card--ready {
   border-color: var(--primary);
@@ -240,6 +249,12 @@ html, body, #root {
 .card--stale {
   border-color: var(--error);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--error) 18%, transparent);
+}
+/* Keep the stale error border on hover (the depth lift still applies). */
+.card--stale:hover {
+  border-color: var(--error);
+  box-shadow: var(--shadow-card),
+    inset 0 0 0 1px color-mix(in srgb, var(--error) 18%, transparent);
 }
 
 .card__title {
@@ -326,18 +341,21 @@ html, body, #root {
   flex-direction: column;
   gap: 0.35rem;
   height: 100%;
-  background: var(--surface-container);
-  border: 1px solid var(--outline-variant);
+  background: var(--card-gradient);
+  border: 1px solid var(--card-border);
   border-radius: var(--radius-md);
   padding: 0.6rem 0.7rem;
   text-align: left;
-  transition: border-color 0.12s ease, background 0.12s ease, transform 0.06s ease;
+  transition: border-color 0.14s ease, background 0.14s ease,
+    box-shadow 0.14s ease, transform 0.14s ease;
 }
 .card--button:hover {
-  border-color: var(--primary);
-  background: var(--surface-container-high);
+  border-color: var(--card-border-hover);
+  background: var(--card-gradient-hover);
+  box-shadow: var(--shadow-card);
+  transform: translateY(-1px) scale(1.01);
 }
-.card--button:active { transform: translateY(1px); }
+.card--button:active { transform: translateY(0) scale(0.998); }
 .card--button:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
 
 .card__empty-cmd {
@@ -988,10 +1006,25 @@ html, body, #root {
   border-radius: var(--radius-sm);
   min-height: 0;
   gap: 0.2rem;
+  background: var(--card-gradient);
+  border: 1px solid var(--card-border);
+}
+/* Sub-cards take the depth at a lighter weight: border brighten + a soft glow,
+ * no scale (the rows are tight). */
+.card--sub:hover {
+  border-color: var(--card-border-hover);
+  box-shadow: var(--shadow-card);
+  transform: none;
 }
 .card--sub.card--empty {
   padding: 0.38rem 0.55rem;
   font-size: 0.72rem;
+}
+/* Dashed placeholder sub-cards stay flat — no glow on hover. */
+.card--sub.card--empty:hover,
+.card--sub.card--locked:hover {
+  box-shadow: none;
+  border-color: var(--outline-variant);
 }
 .card--sub.card--locked {
   background: transparent;
@@ -1057,6 +1090,8 @@ html, body, #root {
 @media (max-width: 639px) {
   .board { padding: 0 var(--space-md) var(--space-xl); }
   .board__header { margin: 0 calc(var(--space-md) * -1) var(--space-md); }
+  /* Display title scales to headline-lg-mobile (24px) so the header fits. */
+  .board__title { font-size: 1.5rem; line-height: 2rem; }
 
   .grid {
     --grid-cols: 1fr;
@@ -1088,6 +1123,14 @@ html, body, #root {
   }
   .panel { animation: none; }
   .status-pill--on::before { box-shadow: none; }
+  /* Disable the Phase B card glow + scale micro-interactions (keep the border
+   * brighten as the sole hover affordance). */
+  .card:hover,
+  .card--button:hover,
+  .card--sub:hover {
+    box-shadow: none;
+    transform: none;
+  }
 }
 
 /* Glass fallback: when backdrop-filter is unsupported, use the opaque glass
