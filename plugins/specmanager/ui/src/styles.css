@@ -148,10 +148,8 @@ html, body, #root {
   letter-spacing: 0.08em;
   color: var(--on-surface-variant);
   padding: 0 0.5rem 0.4rem;
-  border-bottom: 1px solid var(--outline-variant);
 }
 .grid__header--build {
-  border-bottom-color: var(--primary);
   color: var(--primary);
 }
 
