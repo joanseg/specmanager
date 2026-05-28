@@ -1,0 +1,234 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-redesign",
+      "title": "Add self-hosted font deps and author ui/src/fonts.css",
+      "status": "todo",
+      "stageRef": "plan-redesign-001",
+      "phase": "A",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T12:11:33.250Z",
+      "updatedAt": "2026-05-28T12:11:33.250Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-redesign",
+      "title": "Author ui/src/tokens.css Obsidian Flux token layer",
+      "status": "todo",
+      "stageRef": "plan-redesign-001",
+      "phase": "A",
+      "complexity": 3,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T12:11:38.232Z",
+      "updatedAt": "2026-05-28T12:11:38.232Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-redesign",
+      "title": "Wire token+font imports, base/reset, and index.html head",
+      "status": "todo",
+      "stageRef": "plan-redesign-001",
+      "phase": "A",
+      "complexity": 1,
+      "dependsOn": [
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T12:11:41.575Z",
+      "updatedAt": "2026-05-28T12:11:41.575Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-redesign",
+      "title": "Re-skin board header to glassmorphic top bar",
+      "status": "todo",
+      "stageRef": "plan-redesign-001",
+      "phase": "A",
+      "complexity": 2,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T12:11:45.623Z",
+      "updatedAt": "2026-05-28T12:11:45.623Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-redesign",
+      "title": "Re-skin board grid cards and cell sub-components",
+      "status": "todo",
+      "stageRef": "plan-redesign-001",
+      "phase": "A",
+      "complexity": 3,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T12:11:46.966Z",
+      "updatedAt": "2026-05-28T12:11:46.966Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-redesign",
+      "title": "Relocate BUILD out of the grid into a right-hand region",
+      "status": "todo",
+      "stageRef": "plan-redesign-001",
+      "phase": "A",
+      "complexity": 3,
+      "dependsOn": [
+        "task-004",
+        "task-005"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T12:11:53.242Z",
+      "updatedAt": "2026-05-28T12:11:53.242Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-redesign",
+      "title": "Re-skin DocPanel header, actions, banners, split, stale section",
+      "status": "todo",
+      "stageRef": "plan-redesign-001",
+      "phase": "A",
+      "complexity": 3,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T12:11:56.733Z",
+      "updatedAt": "2026-05-28T12:11:56.733Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-redesign",
+      "title": "Re-skin BuildPanel phase groups, progress bar, pills, artifacts",
+      "status": "todo",
+      "stageRef": "plan-redesign-001",
+      "phase": "A",
+      "complexity": 3,
+      "dependsOn": [
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T12:12:01.999Z",
+      "updatedAt": "2026-05-28T12:12:01.999Z"
+    },
+    {
+      "id": "task-009",
+      "featureId": "feat-redesign",
+      "title": "Re-skin ChatPanel to the new palette",
+      "status": "todo",
+      "stageRef": "plan-redesign-001",
+      "phase": "A",
+      "complexity": 2,
+      "dependsOn": [
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T12:12:03.039Z",
+      "updatedAt": "2026-05-28T12:12:03.039Z"
+    },
+    {
+      "id": "task-010",
+      "featureId": "feat-redesign",
+      "title": "Re-theme the CodeMirror editor to Obsidian Flux tokens",
+      "status": "todo",
+      "stageRef": "plan-redesign-001",
+      "phase": "A",
+      "complexity": 2,
+      "dependsOn": [
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T12:12:07.499Z",
+      "updatedAt": "2026-05-28T12:12:07.499Z"
+    },
+    {
+      "id": "task-011",
+      "featureId": "feat-redesign",
+      "title": "Responsive pass plus reduced-motion guard",
+      "status": "todo",
+      "stageRef": "plan-redesign-001",
+      "phase": "A",
+      "complexity": 3,
+      "dependsOn": [
+        "task-006",
+        "task-008",
+        "task-009",
+        "task-010"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T12:12:11.520Z",
+      "updatedAt": "2026-05-28T12:12:11.520Z"
+    },
+    {
+      "id": "task-012",
+      "featureId": "feat-redesign",
+      "title": "Build, behavior, and visual verification pass",
+      "status": "todo",
+      "stageRef": "plan-redesign-001",
+      "phase": "A",
+      "complexity": 2,
+      "dependsOn": [
+        "task-011"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T12:12:15.180Z",
+      "updatedAt": "2026-05-28T12:12:15.180Z"
+    }
+  ]
+}
