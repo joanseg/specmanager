@@ -627,7 +627,7 @@ html, body, #root {
 
 .task {
   padding: 0.6rem 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--outline-variant);
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -635,7 +635,10 @@ html, body, #root {
 .task:last-child { border-bottom: 0; }
 .task--busy { opacity: 0.5; pointer-events: none; }
 .task--done { opacity: 0.85; }
-.task--done .task__title { text-decoration: line-through; text-decoration-color: rgba(255,255,255,0.18); }
+.task--done .task__title {
+  text-decoration: line-through;
+  text-decoration-color: var(--outline-variant);
+}
 
 .task__head {
   display: flex;
@@ -644,9 +647,9 @@ html, body, #root {
   flex-wrap: wrap;
 }
 .task__id {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.72rem;
-  color: var(--text-dim);
+  color: var(--on-surface-variant);
   min-width: 4.5rem;
 }
 .task__title {
@@ -660,39 +663,54 @@ html, body, #root {
 
 .status-pill {
   background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 4px;
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-sm);
   padding: 0.15rem 0.55rem;
-  font-size: 0.72rem;
-  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--on-surface-variant);
   cursor: pointer;
-  font-family: inherit;
+  transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease;
 }
-.status-pill:hover:not(:disabled) { color: var(--text); }
+.status-pill:hover:not(:disabled) { color: var(--on-surface); border-color: var(--outline); }
 .status-pill:disabled { cursor: not-allowed; opacity: 0.6; }
+/* Active chip: glowing dot to the left of the text (DESIGN.md Chips & Tags). */
+.status-pill--on {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.status-pill--on::before {
+  content: "";
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: var(--radius-full, 9999px);
+  background: currentColor;
+  box-shadow: 0 0 6px currentColor;
+}
 .status-pill--on.status-pill--todo {
-  border-color: var(--draft);
-  color: var(--draft);
-  background: rgba(200, 146, 74, 0.08);
+  border-color: var(--status-draft);
+  color: var(--status-draft);
+  background: color-mix(in srgb, var(--status-draft) 10%, transparent);
 }
 .status-pill--on.status-pill--in_progress {
-  border-color: var(--build-prog);
-  color: var(--build-prog);
-  background: rgba(200, 146, 74, 0.08);
+  border-color: var(--status-in-progress);
+  color: var(--status-in-progress);
+  background: color-mix(in srgb, var(--status-in-progress) 10%, transparent);
 }
 .status-pill--on.status-pill--done {
-  border-color: var(--approved);
-  color: var(--approved);
-  background: rgba(95, 181, 107, 0.08);
+  border-color: var(--status-done);
+  color: var(--status-done);
+  background: color-mix(in srgb, var(--status-done) 12%, transparent);
 }
 
 .task__toggle {
   background: transparent;
   border: 0;
-  color: var(--text-dim);
+  color: var(--on-surface-variant);
   font-size: 0.72rem;
   cursor: pointer;
-  font-family: inherit;
+  font-family: var(--font-body);
   padding: 0.1rem 0;
   align-self: flex-start;
 }
@@ -702,17 +720,18 @@ html, body, #root {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
   gap: 0.8rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
+  background: var(--surface-container);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
   padding: 0.6rem 0.8rem;
 }
 .task__artifact-group { display: flex; flex-direction: column; gap: 0.25rem; }
 .task__artifact-group label {
-  font-size: 0.7rem;
-  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--on-surface-variant);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 .task__artifact-group ul {
   list-style: none;
@@ -727,28 +746,31 @@ html, body, #root {
   align-items: center;
   justify-content: space-between;
   gap: 0.4rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.75rem;
 }
 .task__artifact-group code {
-  background: var(--surface-2);
+  background: var(--surface-container-highest);
   padding: 0.05rem 0.3rem;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   word-break: break-all;
 }
 
 .input {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  color: var(--text);
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  color: var(--on-surface);
   padding: 0.35rem 0.55rem;
-  font: inherit;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
   flex: 1;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
 }
 .input:focus {
-  outline: 1px solid var(--accent);
-  outline-offset: 0;
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent);
 }
 .input--small {
   font-size: 0.78rem;
@@ -882,14 +904,14 @@ html, body, #root {
   padding: 0.4rem 1.25rem 1rem;
 }
 .phase-group {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  background: var(--surface-container);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
   padding: 0.55rem 0.7rem;
 }
 .phase-group--done {
-  border-color: rgba(95, 181, 107, 0.35);
-  background: rgba(95, 181, 107, 0.04);
+  border-color: color-mix(in srgb, var(--success) 35%, transparent);
+  background: color-mix(in srgb, var(--success) 6%, transparent);
 }
 .phase-group__head {
   display: flex;
@@ -901,9 +923,9 @@ html, body, #root {
 .phase-group__toggle {
   background: transparent;
   border: 0;
-  color: var(--text);
+  color: var(--on-surface);
   cursor: pointer;
-  font: inherit;
+  font-family: var(--font-body);
   display: flex;
   align-items: baseline;
   gap: 0.45rem;
@@ -912,28 +934,30 @@ html, body, #root {
   text-align: left;
 }
 .phase-group__caret {
-  color: var(--text-dim);
+  color: var(--on-surface-variant);
   width: 0.8rem;
   display: inline-block;
 }
 .phase-group__name {
+  font-family: var(--font-display);
   font-weight: 600;
   font-size: 0.88rem;
 }
 .phase-group__count {
-  color: var(--text-dim);
-  font-size: 0.75rem;
+  color: var(--on-surface-variant);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
   font-variant-numeric: tabular-nums;
 }
 .phase-group__cmd {
   all: unset;
   cursor: pointer;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.68rem;
-  color: var(--accent);
+  color: var(--primary);
   opacity: 0.55;
   padding: 0 0.2rem;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
 }
 .phase-group__cmd:hover { opacity: 1; text-decoration: underline; }
 .phase-group__bar {
