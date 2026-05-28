@@ -38,14 +38,30 @@ export default function Editor({ value, readOnly, onChange, language = "markdown
           keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
           readOnlyComp.of(EditorState.readOnly.of(readOnly)),
           EditorView.lineWrapping,
+          // Obsidian Flux editor theme — reads the same CSS custom properties
+          // as styles.css so the editor never drifts from the rest of the UI.
           EditorView.theme({
-            "&": { height: "100%", fontSize: "0.85rem" },
-            ".cm-scroller": { fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" },
-            ".cm-content": { padding: "0.6rem 0" },
-            ".cm-gutters": { background: "transparent", borderRight: "1px solid var(--border)", color: "var(--text-dim)" },
+            "&": {
+              height: "100%",
+              fontSize: "0.85rem",
+              background: "var(--surface)",
+              color: "var(--on-surface)",
+            },
+            ".cm-scroller": { fontFamily: "var(--font-mono)" },
+            ".cm-content": { padding: "0.6rem 0", caretColor: "var(--primary)" },
+            ".cm-cursor, .cm-dropCursor": { borderLeftColor: "var(--primary)" },
+            ".cm-gutters": {
+              background: "transparent",
+              borderRight: "1px solid var(--outline-variant)",
+              color: "var(--on-surface-variant)",
+            },
             "&.cm-focused": { outline: "none" },
-            ".cm-activeLine": { background: "rgba(255,255,255,0.025)" },
-            ".cm-activeLineGutter": { background: "transparent", color: "var(--text)" },
+            ".cm-activeLine": { background: "var(--surface-container)" },
+            ".cm-activeLineGutter": { background: "transparent", color: "var(--on-surface)" },
+            "&.cm-focused .cm-selectionBackground, .cm-selectionBackground, ::selection": {
+              background: "var(--surface-container-highest)",
+            },
+            ".cm-selectionMatch": { background: "var(--surface-container-high)" },
           }, { dark: true }),
           EditorView.updateListener.of((u) => {
             if (u.docChanged) onChangeRef.current(u.state.doc.toString());
