@@ -187,6 +187,11 @@ html, body, #root {
 .row__cell > .card--button {
   flex: 1;
   min-height: 0;
+  /* Override the base .card/.card--button `height: 100%`: against a
+   * content-sized flex container that resolves to the card's intrinsic
+   * content height and inflates the box past the row track. height: auto lets
+   * `flex: 1` alone drive the height so every card matches the tallest cell. */
+  height: auto;
 }
 
 /* Tonal-elevation card: surface-container fill, hairline outline, no shadow.
@@ -318,6 +323,7 @@ html, body, #root {
 .row__cell--build > .card--button {
   flex: 1;
   min-height: 0;
+  height: auto;
 }
 .card--build {
   background: var(--surface-container-low);
