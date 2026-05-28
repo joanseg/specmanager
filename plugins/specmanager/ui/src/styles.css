@@ -158,7 +158,6 @@ html, body, #root {
   flex-direction: column;
   justify-content: center;
   padding: 0.6rem 0.5rem;
-  border-right: 1px solid var(--outline-variant);
 }
 .row__label strong {
   font-family: var(--font-display);
