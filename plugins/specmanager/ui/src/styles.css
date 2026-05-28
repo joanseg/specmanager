@@ -173,8 +173,20 @@ html, body, #root {
   font-size: 0.7rem;
   margin-top: 0.2rem;
 }
+/* Cells are flex containers so their single child card stretches to the full
+ * row-track height (the row track is sized to its tallest cell by the grid's
+ * align-items: stretch). Without this the card renders at intrinsic content
+ * height and overflows / leaves ragged bottoms. */
 .row__cell {
+  display: flex;
   min-height: 5.5rem;
+}
+/* The card fills the cell in both axes: flex:1 takes the full track height,
+ * align-self: stretch (flex default) gives it the full column width. */
+.row__cell > .card,
+.row__cell > .card--button {
+  flex: 1;
+  min-height: 0;
 }
 
 /* Tonal-elevation card: surface-container fill, hairline outline, no shadow.
@@ -299,7 +311,13 @@ html, body, #root {
 /* BUILD region — reserved right-hand track per row (Architecture §6, A).
  * A read-only progress glance that opens the existing BuildPanel overlay. */
 .row__cell--build {
+  display: flex;
   min-height: 5.5rem;
+}
+.row__cell--build > .card,
+.row__cell--build > .card--button {
+  flex: 1;
+  min-height: 0;
 }
 .card--build {
   background: var(--surface-container-low);
