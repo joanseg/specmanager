@@ -151,6 +151,10 @@ html, body, #root {
   padding: 0 0.5rem 0.4rem;
   border-bottom: 1px solid var(--outline-variant);
 }
+.grid__header--build {
+  border-bottom-color: var(--primary);
+  color: var(--primary);
+}
 
 .row__label {
   display: flex;
@@ -281,29 +285,40 @@ html, body, #root {
 .badge--meta     { opacity: 0.6; }
 .badge--design   { color: var(--secondary); }
 
+/* BUILD region — reserved right-hand track per row (Architecture §6, A).
+ * A read-only progress glance that opens the existing BuildPanel overlay. */
+.row__cell--build {
+  min-height: 5.5rem;
+}
+.card--build {
+  background: var(--surface-container-low);
+}
 .card--build .card__title {
-  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  color: var(--on-surface-variant);
 }
 .bar {
   position: relative;
-  background: var(--surface-2);
-  border-radius: 99px;
+  background: var(--surface-container-highest);
+  border-radius: var(--radius-sm);
   height: 0.4rem;
   overflow: hidden;
   display: flex;
 }
 .bar__seg { height: 100%; }
-.bar__seg--done { background: var(--build-done); }
-.bar__seg--prog { background: var(--build-prog); }
+.bar__seg--done { background: var(--status-done); }
+.bar__seg--prog { background: var(--status-in-progress); }
 
 .card__build-counts {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.35rem;
-  font-size: 0.72rem;
-  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--on-surface-variant);
   font-variant-numeric: tabular-nums;
 }
 

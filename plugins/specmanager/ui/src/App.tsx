@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { fetchBoard, openWebSocket } from "./api";
 import DocPanel from "./DocPanel";
 import BuildPanel from "./BuildPanel";
-import { Board, COLUMNS, Column, DocCard, FeatureRow, PhaseRollup, Stage, TaskCounts } from "./types";
+import { Board, Column, DocCard, FeatureRow, PhaseRollup, Stage, STAGES, TaskCounts } from "./types";
 
 const DEFAULT_PHASE = "default";
 const FINAL_PHASE = "final";
@@ -416,22 +416,33 @@ export default function App() {
           <pre>/specmanager-feature &lt;title&gt;</pre>
         </section>
       ) : (
-        <section className="grid" style={{ gridTemplateColumns: `12rem repeat(${COLUMNS.length}, minmax(11rem, 1fr))` }}>
+        <section
+          className="grid"
+          style={{
+            gridTemplateColumns: `12rem repeat(${STAGES.length}, minmax(11rem, 1fr)) 14rem`,
+          }}
+        >
           <div className="grid__corner">Feature</div>
-          {COLUMNS.map((c) => (
+          {STAGES.map((c) => (
             <div key={c} className="grid__header">{STAGE_LABEL[c]}</div>
           ))}
+          <div className="grid__header grid__header--build">Build</div>
           {board.features.map((row) => (
             <div key={row.id} className="row" style={{ display: "contents" }}>
               <div className="row__label">
                 <strong>{row.title}</strong>
                 <small>{row.slug}</small>
               </div>
-              {COLUMNS.map((c) => (
+              {STAGES.map((c) => (
                 <div key={c} className="row__cell">
                   <Cell row={row} column={c} onOpenDoc={openDoc} onOpenBuild={openBuildFor} />
                 </div>
               ))}
+              {/* BUILD lives in its own reserved right-hand track, not the
+                  iterated stage columns (Architecture §6, option A). */}
+              <div className="row__cell row__cell--build">
+                <Cell row={row} column="build" onOpenDoc={openDoc} onOpenBuild={openBuildFor} />
+              </div>
             </div>
           ))}
         </section>
