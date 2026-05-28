@@ -1,0 +1,103 @@
+/* Obsidian Flux — token layer.
+ *
+ * This is the ONLY place raw color hex lives. Every component style consumes
+ * these custom properties; the legacy-hex grep gate (task 12) asserts no raw
+ * #0d0e10 / #7ad0ff (or any one-off hex) survives outside this file.
+ *
+ * Values map 1:1 to docs/temp/redesign/DESIGN.md frontmatter so the mapping is
+ * auditable. The single derived token not present in DESIGN.md is --success
+ * (emerald), pinned by the approved Architecture (Q1) to exactly #10b981.
+ */
+
+:root {
+  /* --- Surfaces / tonal elevation (DESIGN.md colors.*) ----------------- */
+  --surface: #131315; /* True Dark canvas / background */
+  --surface-dim: #131315;
+  --surface-bright: #39393b;
+  --surface-container-lowest: #0e0e10;
+  --surface-container-low: #1b1b1d;
+  --surface-container: #201f21;
+  --surface-container-high: #2a2a2c;
+  --surface-container-highest: #353437;
+  --surface-variant: #353437;
+  --background: #131315;
+
+  /* --- On-surface text ------------------------------------------------- */
+  --on-surface: #e5e1e4;
+  --on-surface-variant: #c7c4d7;
+  --on-background: #e5e1e4;
+  --inverse-surface: #e5e1e4;
+  --inverse-on-surface: #303032;
+
+  /* --- Outline / borders ----------------------------------------------- */
+  --outline: #908fa0;
+  --outline-variant: #464554;
+
+  /* --- Primary (violet-indigo) ----------------------------------------- */
+  --surface-tint: #c0c1ff;
+  --primary: #c0c1ff;
+  --on-primary: #1000a9;
+  --primary-container: #8083ff;
+  --on-primary-container: #0d0096;
+  --inverse-primary: #494bd6;
+
+  /* --- Secondary (violet) — used for the DESIGN stage accent ----------- */
+  --secondary: #ddb7ff;
+  --on-secondary: #490080;
+  --secondary-container: #6f00be;
+  --on-secondary-container: #d6a9ff;
+
+  /* --- Tertiary (amber) — draft / in-progress / warning ---------------- */
+  --tertiary: #ffb783;
+  --on-tertiary: #4f2500;
+  --tertiary-container: #d97721;
+  --on-tertiary-container: #452000;
+
+  /* --- Error (rose) — error / stale ------------------------------------ */
+  --error: #ffb4ab;
+  --on-error: #690005;
+  --error-container: #93000a;
+  --on-error-container: #ffdad6;
+
+  /* --- Success (emerald) ----------------------------------------------- *
+   * Not in DESIGN.md frontmatter; pinned by Architecture Q1 to this exact
+   * hex. Load-bearing: the approved badge and BuildPanel done segments/pills
+   * MUST consume --success, never a one-off hex. */
+  --success: #10b981;
+
+  /* --- Radii (DESIGN.md rounded.*) ------------------------------------- */
+  --radius-sm: 0.25rem; /* 4px  — tags, badges, checkboxes */
+  --radius-md: 0.5rem; /* 8px  — buttons, inputs, cards */
+  --radius-lg: 1rem; /* 16px — modals, panels */
+
+  /* --- Spacing (DESIGN.md spacing.* — strict 8px grid) ----------------- */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --gutter: 20px;
+  --margin: 24px;
+  --container-max: 1440px;
+
+  /* --- Type roles (DESIGN.md typography.*) ----------------------------- */
+  --font-display: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* --- Elevation / glass (DESIGN.md Elevation & Depth) ----------------- */
+  --shadow-overlay: 0px 20px 50px rgba(0, 0, 0, 0.5);
+  --glass-bg: rgba(24, 24, 27, 0.8);
+  --glass-bg-opaque: #18181b; /* @supports fallback when no backdrop-filter */
+  --glass-blur: blur(12px);
+
+  /* --- Status-role mapping (Architecture §4) --------------------------- *
+   * Legacy roles re-expressed on the Obsidian Flux palette. Components refer
+   * to these so the intent (draft / approved / stale) stays readable, while
+   * the underlying color tracks the design system. */
+  --status-draft: var(--tertiary); /* amber */
+  --status-approved: var(--success); /* emerald */
+  --status-stale: var(--error); /* rose */
+  --status-in-progress: var(--tertiary); /* amber */
+  --status-done: var(--success); /* emerald */
+}
