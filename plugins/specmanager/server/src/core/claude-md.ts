@@ -5,6 +5,13 @@ import { buildManifest } from "./manifest.js";
 const START = "<!-- specmanager:start -->";
 const END = "<!-- specmanager:end -->";
 
+/** Match a marker only when it stands alone on its own line, so markers
+ * mentioned inline in prose (e.g. this project's own docs) are ignored. */
+function lineMarkerRe(marker: string): RegExp {
+  const escaped = marker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`^[ \\t]*${escaped}[ \\t\\r]*$`, "m");
+}
+
 function stageLabel(stage: string): string {
   switch (stage) {
     case "prd":
@@ -95,11 +102,11 @@ export async function syncClaudeMd(root = projectRoot()): Promise<{ path: string
     created = true;
   }
   let next: string;
-  const startIdx = existing.indexOf(START);
-  const endIdx = existing.indexOf(END);
-  if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
-    const before = existing.slice(0, startIdx);
-    const after = existing.slice(endIdx + END.length);
+  const startMatch = lineMarkerRe(START).exec(existing);
+  const endMatch = lineMarkerRe(END).exec(existing);
+  if (startMatch && endMatch && endMatch.index > startMatch.index) {
+    const before = existing.slice(0, startMatch.index);
+    const after = existing.slice(endMatch.index + endMatch[0].length);
     next = `${before}${block}${after}`;
   } else if (existing.trim().length === 0) {
     next = `${block}\n`;

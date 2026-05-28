@@ -1,0 +1,56 @@
+{
+  "generatedAt": "2026-05-28T12:12:15.187Z",
+  "features": [
+    {
+      "id": "feat-redesign",
+      "slug": "redesign",
+      "title": "Redesign",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-redesign-001",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Redesign PRD"
+        },
+        {
+          "id": "arch-redesign-001",
+          "stage": "architecture",
+          "status": "approved",
+          "stale": false,
+          "version": 4,
+          "title": "Redesign architecture"
+        },
+        {
+          "id": "plan-redesign-001",
+          "stage": "plan",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Redesign plan"
+        }
+      ],
+      "tasks": {
+        "todo": 12,
+        "in_progress": 0,
+        "done": 0,
+        "total": 12
+      },
+      "phases": [
+        {
+          "name": "A",
+          "order": 0,
+          "taskCount": 12,
+          "doneCount": 0,
+          "inProgressCount": 0,
+          "status": "todo",
+          "walkthroughId": null,
+          "walkthroughStatus": null,
+          "walkthroughStale": null
+        }
+      ]
+    }
+  ]
+}
