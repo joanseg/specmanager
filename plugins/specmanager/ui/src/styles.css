@@ -39,9 +39,13 @@ html, body, #root {
 .state {
   padding: 4rem 2rem;
   text-align: center;
-  color: var(--text-dim);
+  color: var(--on-surface-variant);
 }
-.state--error { color: var(--stale); }
+.state h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+.state--error { color: var(--error); }
 
 .board {
   padding: 0 var(--margin) var(--space-xl);
@@ -116,76 +120,93 @@ html, body, #root {
 }
 
 .empty {
-  border: 1px dashed var(--border);
-  border-radius: 8px;
+  border: 1px dashed var(--outline-variant);
+  border-radius: var(--radius-md);
   padding: 2.5rem 1.5rem;
   text-align: center;
-  color: var(--text-dim);
+  color: var(--on-surface-variant);
 }
 .empty pre {
-  background: var(--surface);
+  background: var(--surface-container);
   padding: 0.4rem 0.8rem;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   display: inline-block;
   margin-top: 0.5rem;
-  color: var(--accent);
+  font-family: var(--font-mono);
+  color: var(--primary);
 }
 
 .grid {
   display: grid;
-  gap: 0.5rem;
+  gap: var(--space-sm);
   align-items: stretch;
 }
 
 .grid__corner, .grid__header {
-  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-dim);
-  padding: 0 0.5rem 0.25rem;
-  border-bottom: 1px solid var(--border);
+  letter-spacing: 0.08em;
+  color: var(--on-surface-variant);
+  padding: 0 0.5rem 0.4rem;
+  border-bottom: 1px solid var(--outline-variant);
 }
 
 .row__label {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   padding: 0.6rem 0.5rem;
-  border-right: 1px solid var(--border);
+  border-right: 1px solid var(--outline-variant);
+}
+.row__label strong {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 .row__label small {
-  color: var(--text-dim);
-  font-size: 0.72rem;
-  margin-top: 0.15rem;
+  color: var(--on-surface-variant);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  margin-top: 0.2rem;
 }
 .row__cell {
   min-height: 5.5rem;
 }
 
+/* Tonal-elevation card: surface-container fill, hairline outline, no shadow.
+ * Hover/active brightens and gains a violet tint (DESIGN.md Cards). */
 .card {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
   height: 100%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 0.55rem 0.65rem;
-  transition: border-color 0.12s ease;
+  background: var(--surface-container);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 0.7rem;
+  transition: border-color 0.12s ease, background 0.12s ease;
 }
-.card:hover { border-color: var(--text-dim); }
+.card:hover {
+  border-color: var(--primary);
+  background: var(--surface-container-high);
+}
 
 .card--empty, .card--locked {
   background: transparent;
   border-style: dashed;
-  color: var(--text-dim);
+  color: var(--on-surface-variant);
   justify-content: center;
   align-items: center;
   font-size: 0.78rem;
   text-align: center;
 }
+.card--empty:hover, .card--locked:hover {
+  background: var(--surface-container-low);
+}
 .card--ready {
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 /* Design (optional) cell — visually distinct from locked / required-generate. */
@@ -194,16 +215,17 @@ html, body, #root {
   opacity: 0.85;
 }
 .card--optional-ready {
-  border-color: var(--draft);
-  color: var(--draft);
+  border-color: var(--secondary);
+  color: var(--secondary);
   opacity: 1;
 }
 .card__optional-tag {
+  font-family: var(--font-mono);
   font-size: 0.62rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--draft);
-  opacity: 0.8;
+  color: var(--secondary);
+  opacity: 0.85;
 }
 .card__empty-label, .card__locked-label {
   font-weight: 500;
@@ -216,8 +238,8 @@ html, body, #root {
 .card__locked-sub::before { content: "🔒 "; }
 
 .card--stale {
-  border-color: var(--stale);
-  box-shadow: inset 0 0 0 1px rgba(215, 123, 107, 0.15);
+  border-color: var(--error);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--error) 18%, transparent);
 }
 
 .card__title {
@@ -242,18 +264,22 @@ html, body, #root {
   align-items: center;
   gap: 0.25rem;
   padding: 0.1rem 0.4rem;
-  border-radius: 3px;
-  font-size: 0.68rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
   font-weight: 500;
   letter-spacing: 0.02em;
-  background: var(--surface-2);
-  color: var(--text-dim);
+  background: var(--surface-container-highest);
+  color: var(--on-surface-variant);
 }
-.badge--draft    { color: var(--draft); }
-.badge--approved { color: var(--approved); }
-.badge--stale    { color: var(--stale); background: rgba(215, 123, 107, 0.12); }
+.badge--draft    { color: var(--status-draft); }
+.badge--approved { color: var(--status-approved); }
+.badge--stale    {
+  color: var(--error);
+  background: color-mix(in srgb, var(--error) 14%, transparent);
+}
 .badge--meta     { opacity: 0.6; }
-.badge--design   { color: var(--accent); }
+.badge--design   { color: var(--secondary); }
 
 .card--build .card__title {
   font-size: 0.78rem;
@@ -289,23 +315,26 @@ html, body, #root {
   flex-direction: column;
   gap: 0.35rem;
   height: 100%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 0.55rem 0.65rem;
+  background: var(--surface-container);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 0.7rem;
   text-align: left;
-  transition: border-color 0.12s ease, transform 0.06s ease;
+  transition: border-color 0.12s ease, background 0.12s ease, transform 0.06s ease;
 }
-.card--button:hover { border-color: var(--text-dim); }
+.card--button:hover {
+  border-color: var(--primary);
+  background: var(--surface-container-high);
+}
 .card--button:active { transform: translateY(1px); }
-.card--button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.card--button:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
 
 .card__empty-cmd {
   all: unset;
   cursor: pointer;
   font-size: 0.7rem;
-  color: var(--accent);
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--primary);
+  font-family: var(--font-mono);
   margin-top: 0.15rem;
 }
 .card__empty-cmd:hover { text-decoration: underline; }
@@ -876,19 +905,19 @@ html, body, #root {
   border: 0;
 }
 .card--sub {
-  padding: 0.4rem 0.55rem;
-  border-radius: 5px;
+  padding: 0.42rem 0.55rem;
+  border-radius: var(--radius-sm);
   min-height: 0;
   gap: 0.2rem;
 }
 .card--sub.card--empty {
-  padding: 0.35rem 0.55rem;
+  padding: 0.38rem 0.55rem;
   font-size: 0.72rem;
 }
 .card--sub.card--locked {
   background: transparent;
   border-style: dashed;
-  color: var(--text-dim);
+  color: var(--on-surface-variant);
 }
 .card__sub-label {
   font-size: 0.74rem;
@@ -896,10 +925,10 @@ html, body, #root {
   letter-spacing: 0.01em;
 }
 .card--final {
-  border-color: rgba(122, 208, 255, 0.35);
+  border-color: color-mix(in srgb, var(--primary) 35%, transparent);
 }
 .card--final .card__sub-label {
-  color: var(--accent);
+  color: var(--primary);
 }
 .card--final.card--locked {
   border-style: dashed;
@@ -908,9 +937,9 @@ html, body, #root {
 
 .card__build-exec {
   margin-top: 0.3rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.68rem;
-  color: var(--accent);
+  color: var(--primary);
   opacity: 0.65;
   cursor: pointer;
 }
