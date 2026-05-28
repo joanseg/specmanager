@@ -10,6 +10,7 @@ const FINAL_PHASE = "final";
 const STAGE_LABEL: Record<Column, string> = {
   prd: "PRD",
   architecture: "Architecture",
+  design: "Design",
   plan: "Plan",
   build: "Build",
   walkthrough: "Walkthroughs",
@@ -20,15 +21,18 @@ function findDoc(row: FeatureRow, stage: Stage): DocCard | undefined {
 }
 
 function priorStageApproved(row: FeatureRow, stage: Stage): boolean {
-  const priors: Partial<Record<Stage, Stage>> = {
-    architecture: "prd",
-    plan: "architecture",
-  };
   if (stage === "prd") return true;
-  const prior = priors[stage];
-  if (!prior) return true;
-  const doc = findDoc(row, prior);
-  return doc?.status === "approved";
+  if (stage === "design") return findDoc(row, "prd")?.status === "approved";
+  if (stage === "architecture") return findDoc(row, "prd")?.status === "approved";
+  if (stage === "plan") {
+    // Compound gate (mirrors core/dependencies.ts): architecture approved AND
+    // (no design doc OR design approved). Design is optional.
+    if (findDoc(row, "architecture")?.status !== "approved") return false;
+    const design = findDoc(row, "design");
+    if (design && design.status !== "approved") return false;
+    return true;
+  }
+  return true;
 }
 
 function DocCellView({ doc, onOpen }: { doc: DocCard; onOpen: (id: string) => void }) {
@@ -74,6 +78,34 @@ function EmptyCell({ stage, ready }: { stage: Stage; ready: boolean }) {
       ) : (
         <span className="card__empty-sub">—</span>
       )}
+    </div>
+  );
+}
+
+// Design is optional. When no brief exists but the PRD is approved, show a
+// distinct "optional" affordance so users know they can skip it — visually
+// different from a locked or a required-generate cell.
+function OptionalDesignCell({ ready }: { ready: boolean }) {
+  const slash = "/specmanager-design";
+  const onCopy = (e: React.MouseEvent): void => {
+    e.stopPropagation();
+    void navigator.clipboard?.writeText(slash);
+  };
+  if (!ready) {
+    return (
+      <div className="card card--empty card--optional">
+        <span className="card__empty-label">Design</span>
+        <span className="card__empty-sub">optional · PRD not approved</span>
+      </div>
+    );
+  }
+  return (
+    <div className="card card--empty card--optional card--optional-ready">
+      <span className="card__empty-label">Design</span>
+      <span className="card__optional-tag">optional</span>
+      <button type="button" className="card__empty-cmd" onClick={onCopy} title="copy to clipboard">
+        {slash}
+      </button>
     </div>
   );
 }
@@ -301,6 +333,10 @@ function Cell({
   const stage: Stage = column;
   const doc = findDoc(row, stage);
   if (doc) return <DocCellView doc={doc} onOpen={onOpenDoc} />;
+  // Design is optional — never show a hard "locked" cell; show the optional affordance.
+  if (stage === "design") {
+    return <OptionalDesignCell ready={findDoc(row, "prd")?.status === "approved"} />;
+  }
   if (!priorStageApproved(row, stage)) return <LockedCell stage={stage} />;
   return <EmptyCell stage={stage} ready />;
 }

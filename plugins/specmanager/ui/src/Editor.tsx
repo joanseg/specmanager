@@ -3,6 +3,7 @@ import { EditorState, Compartment } from "@codemirror/state";
 import { EditorView, keymap, lineNumbers, highlightActiveLine } from "@codemirror/view";
 import { history, defaultKeymap, historyKeymap } from "@codemirror/commands";
 import { markdown } from "@codemirror/lang-markdown";
+import { html } from "@codemirror/lang-html";
 import { syntaxHighlighting, defaultHighlightStyle, bracketMatching } from "@codemirror/language";
 import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
 
@@ -10,9 +11,11 @@ interface EditorProps {
   value: string;
   readOnly: boolean;
   onChange: (next: string) => void;
+  language?: "markdown" | "html";
 }
 
-export default function Editor({ value, readOnly, onChange }: EditorProps) {
+export default function Editor({ value, readOnly, onChange, language = "markdown" }: EditorProps) {
+  const languageExt = language === "html" ? html() : markdown();
   const hostRef = useRef<HTMLDivElement | null>(null);
   const viewRef = useRef<EditorView | null>(null);
   const readOnlyComp = useRef(new Compartment()).current;
@@ -27,7 +30,7 @@ export default function Editor({ value, readOnly, onChange }: EditorProps) {
         extensions: [
           lineNumbers(),
           history(),
-          markdown(),
+          languageExt,
           bracketMatching(),
           highlightActiveLine(),
           highlightSelectionMatches(),

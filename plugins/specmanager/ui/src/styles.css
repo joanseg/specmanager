@@ -134,6 +134,24 @@ html, body, #root {
   border-color: var(--accent);
   color: var(--accent);
 }
+
+/* Design (optional) cell — visually distinct from locked / required-generate. */
+.card--optional {
+  border-style: dotted;
+  opacity: 0.85;
+}
+.card--optional-ready {
+  border-color: var(--draft);
+  color: var(--draft);
+  opacity: 1;
+}
+.card__optional-tag {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--draft);
+  opacity: 0.8;
+}
 .card__empty-label, .card__locked-label {
   font-weight: 500;
 }
@@ -182,6 +200,7 @@ html, body, #root {
 .badge--approved { color: var(--approved); }
 .badge--stale    { color: var(--stale); background: rgba(215, 123, 107, 0.12); }
 .badge--meta     { opacity: 0.6; }
+.badge--design   { color: var(--accent); }
 
 .card--build .card__title {
   font-size: 0.78rem;
@@ -424,6 +443,14 @@ html, body, #root {
   padding: 1rem 1.5rem;
   background: var(--surface);
   border-left: 1px solid var(--border);
+}
+.panel__preview--iframe {
+  padding: 0;
+  border: 0;
+  border-left: 1px solid var(--border);
+  background: #fff;
+  width: 100%;
+  height: 100%;
 }
 .markdown h1 { font-size: 1.3rem; margin: 0.6rem 0 0.8rem; }
 .markdown h2 { font-size: 1.1rem; margin: 1rem 0 0.5rem; }
