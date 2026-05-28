@@ -399,7 +399,7 @@ html, body, #root {
  * behind it (matching panel.png). A glass leading edge (tinted border + inner
  * highlight) plus the large soft --shadow-overlay separate it from the board. */
 .panel {
-  width: min(52rem, 65vw);
+  width: min(60rem, 65vw);
   height: 100vh;
   background: var(--surface);
   border-left: 1px solid var(--glass-edge);

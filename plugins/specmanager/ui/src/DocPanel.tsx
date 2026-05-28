@@ -18,6 +18,17 @@ type SaveState =
   | { kind: "conflict"; serverVersion: number }
   | { kind: "error"; message: string };
 
+// DocFull carries no feature title, only the id. Derive a human label by
+// stripping the `feat-` prefix and title-casing the slug (e.g.
+// `feat-redesign` → "Redesign"). No new fetch/endpoint.
+function featureTitle(featureId: string): string {
+  return featureId
+    .replace(/^feat-/, "")
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
 const STAGE_LABEL: Record<Stage, string> = {
   prd: "PRD",
   architecture: "Architecture",
@@ -173,7 +184,7 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
         <header className="panel__header">
           <div className="panel__header-main">
             <nav className="panel__crumb">
-              {doc.featureId} <span className="panel__crumb-sep">›</span> {STAGE_LABEL[doc.stage]}
+              {featureTitle(doc.featureId)} <span className="panel__crumb-sep">›</span> {STAGE_LABEL[doc.stage]}
             </nav>
             <div className="panel__title-row">
               <h2 className="panel__title">{doc.title}</h2>
