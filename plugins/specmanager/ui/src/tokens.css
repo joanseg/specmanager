@@ -106,6 +106,10 @@
   --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.35), 0 0 0 1px color-mix(in srgb, var(--primary) 12%, transparent);
   --glass-edge: color-mix(in srgb, var(--primary) 8%, var(--glass-bg));
 
+  /* Backdrop dim behind the doc-panel drawer — keeps the board visible but
+   * de-emphasised (matching panel.png "board behind"). */
+  --backdrop-dim: rgba(0, 0, 0, 0.55);
+
   /* --- Primary gradient CTA (DESIGN.md Buttons §Primary — indigo→purple) - *
    * 135° fill for the high-intent primary button; hover brightens. The 1px
    * top-border highlight and on-primary text are applied in styles.css. */

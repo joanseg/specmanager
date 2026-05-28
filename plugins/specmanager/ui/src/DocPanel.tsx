@@ -172,6 +172,9 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
       <aside className="panel" onClick={(e) => e.stopPropagation()}>
         <header className="panel__header">
           <button className="panel__close" onClick={onClose}>×</button>
+          <nav className="panel__crumb">
+            {doc.featureId} <span className="panel__crumb-sep">›</span> {STAGE_LABEL[doc.stage]}
+          </nav>
           <div className="panel__title-row">
             <h2 className="panel__title">{doc.title}</h2>
             <span className="panel__meta">
