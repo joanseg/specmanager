@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-28T13:16:30.313Z",
+  "generatedAt": "2026-05-28T18:16:15.563Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -28,24 +28,33 @@
           "stage": "plan",
           "status": "approved",
           "stale": false,
-          "version": 1,
+          "version": 2,
           "title": "Redesign plan"
         },
         {
           "id": "wt-redesign-001",
           "stage": "walkthrough",
           "status": "draft",
-          "stale": false,
+          "stale": true,
           "version": 1,
           "title": "Redesign — Phase A walkthrough",
           "phase": "A"
+        },
+        {
+          "id": "wt-redesign-002",
+          "stage": "walkthrough",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Redesign — Phase B walkthrough",
+          "phase": "B"
         }
       ],
       "tasks": {
         "todo": 0,
         "in_progress": 0,
-        "done": 12,
-        "total": 12
+        "done": 18,
+        "total": 18
       },
       "phases": [
         {
@@ -57,9 +66,34 @@
           "status": "done",
           "walkthroughId": "wt-redesign-001",
           "walkthroughStatus": "draft",
+          "walkthroughStale": true
+        },
+        {
+          "name": "B",
+          "order": 1,
+          "taskCount": 6,
+          "doneCount": 6,
+          "inProgressCount": 0,
+          "status": "done",
+          "walkthroughId": "wt-redesign-002",
+          "walkthroughStatus": "draft",
           "walkthroughStale": false
         }
       ]
+    },
+    {
+      "id": "feat-dummy-feature",
+      "slug": "dummy-feature",
+      "title": "Dummy feature",
+      "currentStage": "prd",
+      "documents": [],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0,
+        "total": 0
+      },
+      "phases": []
     }
   ]
 }
