@@ -114,11 +114,6 @@ html, body, #root {
 }
 @keyframes fade { from { opacity: 1; } to { opacity: 0.5; } }
 
-/* Glass fallback when backdrop-filter is unavailable (refined in task 11). */
-@supports not (backdrop-filter: blur(1px)) {
-  .board__header { background: var(--glass-bg-opaque); }
-}
-
 .empty {
   border: 1px dashed var(--outline-variant);
   border-radius: var(--radius-md);
@@ -138,6 +133,7 @@ html, body, #root {
 
 .grid {
   display: grid;
+  grid-template-columns: var(--grid-cols);
   gap: var(--space-sm);
   align-items: stretch;
 }
@@ -1023,3 +1019,78 @@ html, body, #root {
   cursor: pointer;
 }
 .card__build-exec:hover { opacity: 1; text-decoration: underline; }
+
+/* ===================================================================
+ * Responsive — three Obsidian Flux breakpoints (Architecture §6).
+ * CSS-only; no JS layout logic. The grid template is driven by the
+ * --grid-cols custom property set on .grid, so media queries can
+ * re-shape it without inline-style specificity fights.
+ * =================================================================== */
+
+/* Tablet 640–1024px: narrower stage columns; BUILD wraps below the row as a
+ * compact strip rather than a fixed right-hand track. */
+@media (max-width: 1024px) {
+  .grid {
+    --grid-cols: 10rem repeat(5, minmax(8rem, 1fr));
+  }
+  .grid__header--build { display: none; }
+  .row__cell--build {
+    grid-column: 1 / -1;
+    min-height: 0;
+  }
+  .card--build {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  .card--build .bar { flex: 1; min-width: 8rem; }
+}
+
+/* Mobile <640px: the grid linearizes — each feature stacks as a single column
+ * of cards with a 16px margin; panels go full-width; the split body collapses
+ * to one column (preview/chat stack under the editor). */
+@media (max-width: 639px) {
+  .board { padding: 0 var(--space-md) var(--space-xl); }
+  .board__header { margin: 0 calc(var(--space-md) * -1) var(--space-md); }
+
+  .grid {
+    --grid-cols: 1fr;
+    gap: var(--space-md);
+  }
+  .grid__corner, .grid__header { display: none; }
+  .row { gap: var(--space-xs); }
+  .row__label {
+    border-right: 0;
+    border-bottom: 1px solid var(--outline-variant);
+    padding-bottom: 0.4rem;
+  }
+  .row__cell, .row__cell--build { min-height: 0; }
+
+  .panel { width: 100vw; border-radius: 0; }
+  .panel__body--cols-2,
+  .panel__body--cols-3 { grid-template-columns: 1fr; }
+  .panel__editor { border-right: 0; border-bottom: 1px solid var(--outline-variant); }
+  .panel__preview, .panel__chat { border-left: 0; }
+}
+
+/* Reduced motion: disable the scale/glow/slide micro-interactions but keep the
+ * UI fully functional (Architecture Q9). */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .panel { animation: none; }
+  .status-pill--on::before { box-shadow: none; }
+}
+
+/* Glass fallback: when backdrop-filter is unsupported, use the opaque glass
+ * background so the sticky top bar stays readable. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .board__header {
+    background: var(--glass-bg-opaque);
+    backdrop-filter: none;
+  }
+}
