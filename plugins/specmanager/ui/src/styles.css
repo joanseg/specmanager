@@ -417,22 +417,36 @@ html, body, #root {
   to { transform: translateX(0); opacity: 1; }
 }
 
+/* Single horizontal header bar (matching panel.png): the title + breadcrumb +
+ * badges sit in a left cluster, the Save/Approve(or Edit)/Gate? actions and the
+ * close × align right on the SAME row. */
 .panel__header {
-  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
   padding: 1rem 1.25rem 0.75rem;
   border-bottom: 1px solid var(--outline-variant);
 }
+.panel__header-main {
+  min-width: 0;
+  flex: 1;
+}
+.panel__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
 .panel__close {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.75rem;
   background: transparent;
   border: 0;
   color: var(--on-surface-variant);
   font-size: 1.4rem;
   line-height: 1;
   cursor: pointer;
-  padding: 0.25rem 0.5rem;
+  padding: 0.1rem 0.4rem;
+  margin-left: 0.15rem;
 }
 .panel__close:hover { color: var(--on-surface); }
 /* Stage breadcrumb above the title (matching panel.png) — mono, low-contrast,
@@ -443,7 +457,6 @@ html, body, #root {
   letter-spacing: 0.02em;
   color: var(--on-surface-variant);
   margin-bottom: 0.3rem;
-  padding-right: 2rem;
 }
 .panel__crumb-sep {
   color: var(--outline);
@@ -453,7 +466,6 @@ html, body, #root {
   display: flex;
   align-items: baseline;
   gap: 0.75rem;
-  padding-right: 2rem;
 }
 .panel__title {
   margin: 0;
@@ -1159,6 +1171,10 @@ html, body, #root {
   .row__cell, .row__cell--build { min-height: 0; }
 
   .panel { width: 100vw; border-radius: 0; }
+  /* The horizontal header may wrap to two rows on narrow screens — acceptable;
+   * the action cluster drops below the title rather than crushing it. */
+  .panel__header { flex-wrap: wrap; }
+  .panel__header-actions { flex-wrap: wrap; }
   .panel__body--cols-2,
   .panel__body--cols-3 { grid-template-columns: 1fr; }
   .panel__editor { border-right: 0; border-bottom: 1px solid var(--outline-variant); }

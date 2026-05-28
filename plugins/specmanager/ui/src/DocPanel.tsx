@@ -171,21 +171,53 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
     <div className="panel-backdrop" onClick={onClose}>
       <aside className="panel" onClick={(e) => e.stopPropagation()}>
         <header className="panel__header">
-          <button className="panel__close" onClick={onClose}>×</button>
-          <nav className="panel__crumb">
-            {doc.featureId} <span className="panel__crumb-sep">›</span> {STAGE_LABEL[doc.stage]}
-          </nav>
-          <div className="panel__title-row">
-            <h2 className="panel__title">{doc.title}</h2>
-            <span className="panel__meta">
-              {STAGE_LABEL[doc.stage]} · <span className="panel__version">v{doc.version}</span>
-            </span>
+          <div className="panel__header-main">
+            <nav className="panel__crumb">
+              {doc.featureId} <span className="panel__crumb-sep">›</span> {STAGE_LABEL[doc.stage]}
+            </nav>
+            <div className="panel__title-row">
+              <h2 className="panel__title">{doc.title}</h2>
+              <span className="panel__meta">
+                {STAGE_LABEL[doc.stage]} · <span className="panel__version">v{doc.version}</span>
+              </span>
+            </div>
+            <div className="panel__badges">
+              <span className={`badge badge--${doc.status}`}>{doc.status}</span>
+              {doc.stale && <span className="badge badge--stale">⚠ stale</span>}
+              <span className="badge badge--meta" title={doc.id}>{doc.id}</span>
+              <span className="badge badge--meta">{doc.generatedBy}</span>
+            </div>
           </div>
-          <div className="panel__badges">
-            <span className={`badge badge--${doc.status}`}>{doc.status}</span>
-            {doc.stale && <span className="badge badge--stale">⚠ stale</span>}
-            <span className="badge badge--meta" title={doc.id}>{doc.id}</span>
-            <span className="badge badge--meta">{doc.generatedBy}</span>
+          <div className="panel__header-actions">
+            <button
+              className="btn"
+              disabled={!dirty || save.kind === "saving" || readOnly}
+              onClick={onSave}
+            >
+              {save.kind === "saving" ? "Saving…" : dirty ? "Save" : "Saved"}
+            </button>
+            {doc.status === "draft" ? (
+              <button
+                className="btn btn--primary"
+                disabled={dirty}
+                title={dirty ? "save your changes first" : ""}
+                onClick={onApprove}
+              >
+                Approve
+              </button>
+            ) : (
+              <button
+                className="btn"
+                onClick={onReopen}
+                title="Editing an approved doc reopens it as a draft"
+              >
+                Edit
+              </button>
+            )}
+            <button className="btn btn--ghost" onClick={onShowGate}>
+              Gate?
+            </button>
+            <button className="panel__close" onClick={onClose}>×</button>
           </div>
         </header>
 
@@ -215,34 +247,6 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
         )}
 
         <div className="panel__toolbar">
-          <button
-            className="btn"
-            disabled={!dirty || save.kind === "saving" || readOnly}
-            onClick={onSave}
-          >
-            {save.kind === "saving" ? "Saving…" : dirty ? "Save" : "Saved"}
-          </button>
-          {doc.status === "draft" ? (
-            <button
-              className="btn btn--primary"
-              disabled={dirty}
-              title={dirty ? "save your changes first" : ""}
-              onClick={onApprove}
-            >
-              Approve
-            </button>
-          ) : (
-            <button
-              className="btn"
-              onClick={onReopen}
-              title="Editing an approved doc reopens it as a draft"
-            >
-              Edit
-            </button>
-          )}
-          <button className="btn btn--ghost" onClick={onShowGate}>
-            Gate?
-          </button>
           <div className="panel__toolbar-spacer" />
           <label className="panel__toggle">
             <input
