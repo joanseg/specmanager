@@ -389,13 +389,24 @@ export default function App() {
   }
   if (!board) return <main className="state">Loading…</main>;
 
+  const lastSynced = new Date(board.generatedAt).toLocaleString();
   return (
     <main className="board">
       <header className="board__header">
-        <h1>SpecManager</h1>
+        <h1 className="board__title">SpecManager</h1>
         <div className="board__meta">
-          <span>{board.features.length} feature{board.features.length === 1 ? "" : "s"}</span>
+          <span className="board__count">
+            {board.features.length} feature{board.features.length === 1 ? "" : "s"}
+          </span>
           {lastEvent && <span className="board__pulse">· {lastEvent}</span>}
+          <button
+            type="button"
+            className="board__rescan"
+            onClick={reload}
+            title={`Last synced: ${lastSynced}`}
+          >
+            Rescan
+          </button>
         </div>
       </header>
 
@@ -425,10 +436,6 @@ export default function App() {
           ))}
         </section>
       )}
-
-      <footer className="board__footer">
-        <span>Last synced: {new Date(board.generatedAt).toLocaleString()}</span>
-      </footer>
 
       {openDocId && (
         <DocPanel docId={openDocId} onClose={closeDoc} onJumpTo={openDoc} />
