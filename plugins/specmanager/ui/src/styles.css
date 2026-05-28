@@ -377,14 +377,18 @@ html, body, #root {
   justify-content: flex-end;
   z-index: 100;
 }
+/* Focused right-side drawer (~65% width) so the dimmed board stays visible
+ * behind it (matching panel.png). A glass leading edge (tinted border + inner
+ * highlight) plus the large soft --shadow-overlay separate it from the board. */
 .panel {
-  width: min(80rem, 95vw);
+  width: min(52rem, 65vw);
   height: 100vh;
   background: var(--surface);
-  border-left: 1px solid var(--outline-variant);
+  border-left: 1px solid var(--glass-edge);
   border-top-left-radius: var(--radius-lg);
   border-bottom-left-radius: var(--radius-lg);
-  box-shadow: var(--shadow-overlay);
+  box-shadow: var(--shadow-overlay),
+    inset 1px 0 0 color-mix(in srgb, var(--primary) 14%, transparent);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -1082,6 +1086,19 @@ html, body, #root {
     gap: 0.6rem;
   }
   .card--build .bar { flex: 1; min-width: 8rem; }
+
+  /* At the narrower drawer width the 3-column split is cramped, so chat
+   * stacks under the editor/preview row rather than taking a third column
+   * (layout-only — the chat pane is still shown, no behavior change). */
+  .panel__body--cols-3 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr auto;
+  }
+  .panel__body--cols-3 .panel__chat {
+    grid-column: 1 / -1;
+    border-left: 0;
+    border-top: 1px solid var(--outline-variant);
+  }
 }
 
 /* Mobile <640px: the grid linearizes — each feature stacks as a single column
