@@ -4,24 +4,30 @@
       "id": "task-001",
       "featureId": "feat-redesign",
       "title": "Add self-hosted font deps and author ui/src/fonts.css",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-redesign-001",
       "phase": "A",
       "complexity": 2,
       "dependsOn": [],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "d68773b"
+        ],
+        "files": [
+          "plugins/specmanager/ui/package.json",
+          "plugins/specmanager/ui/package-lock.json",
+          "plugins/specmanager/ui/src/fonts.css"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-28T12:11:33.250Z",
-      "updatedAt": "2026-05-28T12:11:33.250Z"
+      "updatedAt": "2026-05-28T12:25:50.523Z"
     },
     {
       "id": "task-002",
       "featureId": "feat-redesign",
       "title": "Author ui/src/tokens.css Obsidian Flux token layer",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-redesign-001",
       "phase": "A",
       "complexity": 3,
@@ -29,18 +35,22 @@
         "task-001"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "202b512"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/tokens.css"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-28T12:11:38.232Z",
-      "updatedAt": "2026-05-28T12:11:38.232Z"
+      "updatedAt": "2026-05-28T12:26:37.178Z"
     },
     {
       "id": "task-003",
       "featureId": "feat-redesign",
       "title": "Wire token+font imports, base/reset, and index.html head",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-redesign-001",
       "phase": "A",
       "complexity": 1,
@@ -48,18 +58,23 @@
         "task-002"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "2f988f7"
+        ],
+        "files": [
+          "plugins/specmanager/ui/index.html",
+          "plugins/specmanager/ui/src/styles.css"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-28T12:11:41.575Z",
-      "updatedAt": "2026-05-28T12:11:41.575Z"
+      "updatedAt": "2026-05-28T12:27:51.988Z"
     },
     {
       "id": "task-004",
       "featureId": "feat-redesign",
       "title": "Re-skin board header to glassmorphic top bar",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-redesign-001",
       "phase": "A",
       "complexity": 2,
@@ -67,18 +82,23 @@
         "task-003"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "4b8635b"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/App.tsx",
+          "plugins/specmanager/ui/src/styles.css"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-28T12:11:45.623Z",
-      "updatedAt": "2026-05-28T12:11:45.623Z"
+      "updatedAt": "2026-05-28T12:29:12.173Z"
     },
     {
       "id": "task-005",
       "featureId": "feat-redesign",
       "title": "Re-skin board grid cards and cell sub-components",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-redesign-001",
       "phase": "A",
       "complexity": 3,
@@ -86,18 +106,22 @@
         "task-003"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "776e545"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/styles.css"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-28T12:11:46.966Z",
-      "updatedAt": "2026-05-28T12:11:46.966Z"
+      "updatedAt": "2026-05-28T12:31:06.321Z"
     },
     {
       "id": "task-006",
       "featureId": "feat-redesign",
       "title": "Relocate BUILD out of the grid into a right-hand region",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-redesign-001",
       "phase": "A",
       "complexity": 3,
@@ -106,18 +130,23 @@
         "task-005"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "243c61c"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/App.tsx",
+          "plugins/specmanager/ui/src/styles.css"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-28T12:11:53.242Z",
-      "updatedAt": "2026-05-28T12:11:53.242Z"
+      "updatedAt": "2026-05-28T12:32:23.552Z"
     },
     {
       "id": "task-007",
       "featureId": "feat-redesign",
       "title": "Re-skin DocPanel header, actions, banners, split, stale section",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-redesign-001",
       "phase": "A",
       "complexity": 3,
@@ -125,18 +154,23 @@
         "task-003"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "5e4be95"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/DocPanel.tsx",
+          "plugins/specmanager/ui/src/styles.css"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-28T12:11:56.733Z",
-      "updatedAt": "2026-05-28T12:11:56.733Z"
+      "updatedAt": "2026-05-28T12:34:18.707Z"
     },
     {
       "id": "task-008",
       "featureId": "feat-redesign",
       "title": "Re-skin BuildPanel phase groups, progress bar, pills, artifacts",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-redesign-001",
       "phase": "A",
       "complexity": 3,
@@ -144,18 +178,22 @@
         "task-007"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "45e71cb"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/styles.css"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-28T12:12:01.999Z",
-      "updatedAt": "2026-05-28T12:12:01.999Z"
+      "updatedAt": "2026-05-28T12:35:51.856Z"
     },
     {
       "id": "task-009",
       "featureId": "feat-redesign",
       "title": "Re-skin ChatPanel to the new palette",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-redesign-001",
       "phase": "A",
       "complexity": 2,
@@ -163,18 +201,22 @@
         "task-007"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "d8c365e"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/styles.css"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-28T12:12:03.039Z",
-      "updatedAt": "2026-05-28T12:12:03.039Z"
+      "updatedAt": "2026-05-28T12:36:46.787Z"
     },
     {
       "id": "task-010",
       "featureId": "feat-redesign",
       "title": "Re-theme the CodeMirror editor to Obsidian Flux tokens",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-redesign-001",
       "phase": "A",
       "complexity": 2,
@@ -182,18 +224,22 @@
         "task-007"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "29431c0"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/Editor.tsx"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-28T12:12:07.499Z",
-      "updatedAt": "2026-05-28T12:12:07.499Z"
+      "updatedAt": "2026-05-28T12:37:41.016Z"
     },
     {
       "id": "task-011",
       "featureId": "feat-redesign",
       "title": "Responsive pass plus reduced-motion guard",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-redesign-001",
       "phase": "A",
       "complexity": 3,
@@ -204,18 +250,23 @@
         "task-010"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "a386936"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/App.tsx",
+          "plugins/specmanager/ui/src/styles.css"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-28T12:12:11.520Z",
-      "updatedAt": "2026-05-28T12:12:11.520Z"
+      "updatedAt": "2026-05-28T12:40:14.165Z"
     },
     {
       "id": "task-012",
       "featureId": "feat-redesign",
       "title": "Build, behavior, and visual verification pass",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-redesign-001",
       "phase": "A",
       "complexity": 2,
@@ -223,12 +274,17 @@
         "task-011"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "d80fdd1"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/tokens.css",
+          "plugins/specmanager/ui/src/styles.css"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-28T12:12:15.180Z",
-      "updatedAt": "2026-05-28T12:12:15.180Z"
+      "updatedAt": "2026-05-28T12:43:45.871Z"
     }
   ]
 }
