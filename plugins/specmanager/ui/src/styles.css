@@ -372,7 +372,7 @@ html, body, #root {
 .panel-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--backdrop-dim);
   display: flex;
   justify-content: flex-end;
   z-index: 100;
@@ -417,6 +417,20 @@ html, body, #root {
   padding: 0.25rem 0.5rem;
 }
 .panel__close:hover { color: var(--on-surface); }
+/* Stage breadcrumb above the title (matching panel.png) — mono, low-contrast,
+ * derived from already-loaded doc data (no new fetch). */
+.panel__crumb {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: var(--on-surface-variant);
+  margin-bottom: 0.3rem;
+  padding-right: 2rem;
+}
+.panel__crumb-sep {
+  color: var(--outline);
+  margin: 0 0.1rem;
+}
 .panel__title-row {
   display: flex;
   align-items: baseline;
