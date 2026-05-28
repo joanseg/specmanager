@@ -285,6 +285,144 @@
       },
       "createdAt": "2026-05-28T12:12:15.180Z",
       "updatedAt": "2026-05-28T12:43:45.871Z"
+    },
+    {
+      "id": "task-013",
+      "featureId": "feat-redesign",
+      "title": "Add depth/elevation tokens to tokens.css (card gradient, brightened border, hover glow)",
+      "status": "done",
+      "stageRef": "plan-redesign-001",
+      "phase": "B",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "0145979"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/tokens.css"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T16:48:12.980Z",
+      "updatedAt": "2026-05-28T17:01:37.379Z"
+    },
+    {
+      "id": "task-014",
+      "featureId": "feat-redesign",
+      "title": "Add primary gradient CTA token and establish button hierarchy",
+      "status": "done",
+      "stageRef": "plan-redesign-001",
+      "phase": "B",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "633c0e8"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/styles.css"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T16:48:13.935Z",
+      "updatedAt": "2026-05-28T17:02:03.048Z"
+    },
+    {
+      "id": "task-015",
+      "featureId": "feat-redesign",
+      "title": "Apply card depth and hover glow/scale to board cards and walkthrough sub-cards",
+      "status": "done",
+      "stageRef": "plan-redesign-001",
+      "phase": "B",
+      "complexity": 2,
+      "dependsOn": [
+        "task-013"
+      ],
+      "artifacts": {
+        "commits": [
+          "381e7c3"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/styles.css"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T16:48:21.800Z",
+      "updatedAt": "2026-05-28T17:03:38.297Z"
+    },
+    {
+      "id": "task-016",
+      "featureId": "feat-redesign",
+      "title": "Re-point DocPanel actions to the new button hierarchy",
+      "status": "done",
+      "stageRef": "plan-redesign-001",
+      "phase": "B",
+      "complexity": 1,
+      "dependsOn": [
+        "task-014"
+      ],
+      "artifacts": {
+        "commits": [
+          "f03b03c"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/DocPanel.tsx"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T16:48:23.638Z",
+      "updatedAt": "2026-05-28T17:04:08.698Z"
+    },
+    {
+      "id": "task-017",
+      "featureId": "feat-redesign",
+      "title": "Constrain DocPanel to a ~65%-width drawer over the dimmed board",
+      "status": "done",
+      "stageRef": "plan-redesign-001",
+      "phase": "B",
+      "complexity": 3,
+      "dependsOn": [
+        "task-013"
+      ],
+      "artifacts": {
+        "commits": [
+          "a269757"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/styles.css"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T16:48:24.714Z",
+      "updatedAt": "2026-05-28T17:04:48.235Z"
+    },
+    {
+      "id": "task-018",
+      "featureId": "feat-redesign",
+      "title": "Add rendered-pane stage breadcrumb header and run Phase B verification pass",
+      "status": "done",
+      "stageRef": "plan-redesign-001",
+      "phase": "B",
+      "complexity": 2,
+      "dependsOn": [
+        "task-015",
+        "task-016",
+        "task-017"
+      ],
+      "artifacts": {
+        "commits": [
+          "7e63b3b"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/DocPanel.tsx",
+          "plugins/specmanager/ui/src/styles.css",
+          "plugins/specmanager/ui/src/tokens.css"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T16:48:29.480Z",
+      "updatedAt": "2026-05-28T17:18:32.333Z"
     }
   ]
 }

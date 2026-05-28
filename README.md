@@ -2,22 +2,7 @@
 
 A Claude Code plugin that manages a software project's lifecycle — PRD → architecture → plan → tasks → build → walkthroughs — as a kanban board over plain markdown in the repo.
 
-**Status:** Phase 7.C complete (Phases 1–6 + phased plans + headless build loop + board UI). The planner organises tasks into phases (Fibonacci ≤3); `/specmanager-execute <feature> <phase|next>` drives one phase's tasks via the builder subagent (records commits + files, stops at the phase boundary); `/specmanager-walkthrough <feature> <phase>` writes a per-phase walkthrough gated on that phase's tasks being done; `/specmanager-walkthrough <feature> final` writes the feature-level roll-up at `walkthroughs/<slug>/feature.md` once every phase walkthrough is approved. The board groups tasks under collapsible phase headers with per-phase progress bars and renders one walkthrough card per phase plus a feature-level roll-up card.
 
-## Design docs
-
-- `docs/architecture-and-spec.md` — full architecture & specification (source of truth).
-- `docs/phase-tasks.md` — six-phase implementation plan (≤ 3 points per task).
-- `docs/phase-7-execute-and-phased-plans.md` — Phase 7 follow-on plan (7.A, 7.B, 7.C).
-- `docs/phase-1-test-walkthrough.md` — exact steps to install and test Phase 1 in a scratch repo.
-- `docs/phase-2-test-walkthrough.md` — exact steps to verify the board UI + live updates.
-- `docs/phase-3-test-walkthrough.md` — exact steps to verify edit/approve/stale flows in the UI.
-- `docs/phase-4-test-walkthrough.md` — exact steps to verify the stage subagents end-to-end on a real repo.
-- `docs/phase-5-test-walkthrough.md` — exact steps to verify task execution + walkthrough generation.
-- `docs/phase-6-test-walkthrough.md` — exact steps to verify in-UI AI chat (interview, co-write, mid-stream conflict).
-- `docs/phase-7-A-test-walkthrough.md` — exact steps to verify phased plans + Fibonacci enforcement.
-- `docs/phase-7-B-test-walkthrough.md` — exact steps to verify the per-phase execute + walkthrough loop end-to-end.
-- `docs/phase-7-C-test-walkthrough.md` — exact steps to verify the board UI for phased builds + final feature-level walkthrough.
 
 ## Build
 
@@ -40,6 +25,36 @@ npm run build             # produces ui/dist/ served by the board server
 
 This repo ships its own marketplace (`.claude-plugin/marketplace.json`), so it
 can be installed directly:
+
+## 2. Install + reload the plugin in your test repo
+
+```
+/plugin marketplace update specmanager
+/plugin uninstall specmanager
+/plugin install specmanager@specmanager
+/reload-plugins
+```
+Quit claude ctrl+c twice.
+```
+pkill -f '^claude$'
+claude daemon stop
+ps aux | grep specmanager | grep -v grep   # kill any leftovers (kill -9 <PID> if needed)
+lsof -nP -iTCP:4317 -sTCP:LISTEN
+cd /path/to/your/test/repo
+claude
+```
+In the Claude session:
+
+```
+/mcp
+```
+If ❌failed, then slecte reconnect and click enter.
+
+Open the board:
+
+```
+/specmanager-board
+```
 
 ```
 # from GitHub
