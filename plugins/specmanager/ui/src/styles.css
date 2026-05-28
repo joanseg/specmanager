@@ -1,17 +1,28 @@
+/* Token layer + self-hosted fonts must be imported before any other rule. */
+@import "./tokens.css";
+@import "./fonts.css";
+
+/* Legacy → Obsidian Flux aliases.
+ * Component blocks below still reference the old role names; these map them
+ * onto the token layer so nothing in this file carries raw legacy hex. As
+ * each component is re-skinned (tasks 4–10) it moves to the real token names
+ * and these aliases shrink; the responsive/verification pass keeps them
+ * honest. NOTE: these are deliberately NOT in tokens.css :root — tokens.css
+ * is the sole owner of raw hex. */
 :root {
-  --bg: #0d0e10;
-  --surface: #181a1d;
-  --surface-2: #21242a;
-  --border: #2a2e35;
-  --text: #e6e8eb;
-  --text-dim: #8b929c;
-  --accent: #7ad0ff;
-  --draft: #c8924a;
-  --approved: #5fb56b;
-  --stale: #d77b6b;
-  --build-prog: #c8924a;
-  --build-done: #5fb56b;
-  font-family: ui-sans-serif, -apple-system, "SF Pro Text", "Segoe UI", sans-serif;
+  --bg: var(--surface);
+  --surface-2: var(--surface-container-high);
+  --border: var(--outline-variant);
+  --text: var(--on-surface);
+  --text-dim: var(--on-surface-variant);
+  --accent: var(--primary);
+  --draft: var(--status-draft);
+  --approved: var(--status-approved);
+  --stale: var(--status-stale);
+  --build-prog: var(--status-in-progress);
+  --build-done: var(--status-done);
+
+  font-family: var(--font-body);
   font-size: 14px;
   color-scheme: dark;
 }
@@ -20,8 +31,8 @@
 
 html, body, #root {
   margin: 0;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--surface);
+  color: var(--on-surface);
   min-height: 100vh;
 }
 
