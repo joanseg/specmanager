@@ -213,7 +213,7 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
 
         <div className="panel__toolbar">
           <button
-            className="btn btn--primary"
+            className="btn"
             disabled={!dirty || save.kind === "saving" || readOnly}
             onClick={onSave}
           >
@@ -221,7 +221,7 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
           </button>
           {doc.status === "draft" ? (
             <button
-              className="btn"
+              className="btn btn--primary"
               disabled={dirty}
               title={dirty ? "save your changes first" : ""}
               onClick={onApprove}
