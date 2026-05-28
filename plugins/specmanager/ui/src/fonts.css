@@ -1,0 +1,21 @@
+/* Obsidian Flux tri-font stack — self-hosted via @fontsource (offline-friendly).
+ * Only the weights named in the approved Architecture (Q8) are bundled, latin
+ * subset only, to keep the build lean. Each @fontsource file already declares
+ * font-display: swap, so first paint never blocks on the font download.
+ *
+ *   Hanken Grotesk — 500 / 600  (display + headlines)
+ *   Inter          — 400 / 500  (body + UI controls)
+ *   Geist Mono     — 400 / 500  (labels, metadata, code)
+ */
+
+/* Hanken Grotesk — display / headlines */
+@import "@fontsource/hanken-grotesk/latin-500.css";
+@import "@fontsource/hanken-grotesk/latin-600.css";
+
+/* Inter — body / UI controls */
+@import "@fontsource/inter/latin-400.css";
+@import "@fontsource/inter/latin-500.css";
+
+/* Geist Mono — labels / metadata / code */
+@import "@fontsource/geist-mono/latin-400.css";
+@import "@fontsource/geist-mono/latin-500.css";
