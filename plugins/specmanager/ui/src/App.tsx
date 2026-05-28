@@ -418,9 +418,11 @@ export default function App() {
       ) : (
         <section
           className="grid"
-          style={{
-            gridTemplateColumns: `12rem repeat(${STAGES.length}, minmax(11rem, 1fr)) 14rem`,
-          }}
+          style={
+            {
+              "--grid-cols": `12rem repeat(${STAGES.length}, minmax(11rem, 1fr)) 14rem`,
+            } as React.CSSProperties
+          }
         >
           <div className="grid__corner">Feature</div>
           {STAGES.map((c) => (
