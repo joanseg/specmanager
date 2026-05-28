@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { fetchBoard, openWebSocket } from "./api";
 import DocPanel from "./DocPanel";
 import BuildPanel from "./BuildPanel";
@@ -420,15 +420,21 @@ export default function App() {
           className="grid"
           style={
             {
-              "--grid-cols": `12rem repeat(${STAGES.length}, minmax(11rem, 1fr)) 14rem`,
+              "--grid-cols": `12rem repeat(4, minmax(11rem, 1fr)) 14rem minmax(11rem, 1fr)`,
             } as React.CSSProperties
           }
         >
           <div className="grid__corner">Feature</div>
           {STAGES.map((c) => (
-            <div key={c} className="grid__header">{STAGE_LABEL[c]}</div>
+            <Fragment key={c}>
+              {/* BUILD sits between PLAN and WALKTHROUGHS (Architecture §6,
+                  option A): emit its header just before the walkthrough stage. */}
+              {c === "walkthrough" && (
+                <div className="grid__header grid__header--build">Build</div>
+              )}
+              <div className="grid__header">{STAGE_LABEL[c]}</div>
+            </Fragment>
           ))}
-          <div className="grid__header grid__header--build">Build</div>
           {board.features.map((row) => (
             <div key={row.id} className="row" style={{ display: "contents" }}>
               <div className="row__label">
@@ -436,15 +442,19 @@ export default function App() {
                 <small>{row.slug}</small>
               </div>
               {STAGES.map((c) => (
-                <div key={c} className="row__cell">
-                  <Cell row={row} column={c} onOpenDoc={openDoc} onOpenBuild={openBuildFor} />
-                </div>
+                <Fragment key={c}>
+                  {/* BUILD lives in its own reserved track between PLAN and
+                      WALKTHROUGHS, not iterated as a stage column. */}
+                  {c === "walkthrough" && (
+                    <div className="row__cell row__cell--build">
+                      <Cell row={row} column="build" onOpenDoc={openDoc} onOpenBuild={openBuildFor} />
+                    </div>
+                  )}
+                  <div className="row__cell">
+                    <Cell row={row} column={c} onOpenDoc={openDoc} onOpenBuild={openBuildFor} />
+                  </div>
+                </Fragment>
               ))}
-              {/* BUILD lives in its own reserved right-hand track, not the
-                  iterated stage columns (Architecture §6, option A). */}
-              <div className="row__cell row__cell--build">
-                <Cell row={row} column="build" onOpenDoc={openDoc} onOpenBuild={openBuildFor} />
-              </div>
             </div>
           ))}
         </section>
