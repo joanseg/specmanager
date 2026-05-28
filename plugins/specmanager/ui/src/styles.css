@@ -44,34 +44,76 @@ html, body, #root {
 .state--error { color: var(--stale); }
 
 .board {
-  padding: 1.5rem 2rem 4rem;
-  max-width: 96rem;
+  padding: 0 var(--margin) var(--space-xl);
+  max-width: var(--container-max);
   margin: 0 auto;
 }
 
+/* Glassmorphic sticky top bar (DESIGN.md — top nav uses backdrop blur). */
 .board__header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
+  gap: var(--space-md);
+  margin: 0 calc(var(--margin) * -1) var(--space-lg);
+  padding: var(--space-md) var(--margin);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--outline-variant);
 }
-.board__header h1 {
+.board__title {
   margin: 0;
-  font-size: 1.4rem;
-  letter-spacing: -0.01em;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  color: var(--on-surface);
 }
 .board__meta {
   display: flex;
-  gap: 0.5rem;
-  color: var(--text-dim);
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--on-surface-variant);
   font-variant-numeric: tabular-nums;
   font-size: 0.85rem;
 }
+.board__count {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+}
 .board__pulse {
-  color: var(--accent);
+  color: var(--primary);
   animation: fade 1.2s ease-out;
 }
+.board__rescan {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--on-surface);
+  background: var(--surface-container-high);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  padding: 0.32rem 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+.board__rescan:hover {
+  border-color: var(--primary);
+  background: var(--surface-container-highest);
+}
+.board__rescan:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
 @keyframes fade { from { opacity: 1; } to { opacity: 0.5; } }
+
+/* Glass fallback when backdrop-filter is unavailable (refined in task 11). */
+@supports not (backdrop-filter: blur(1px)) {
+  .board__header { background: var(--glass-bg-opaque); }
+}
 
 .empty {
   border: 1px dashed var(--border);
@@ -237,13 +279,6 @@ html, body, #root {
   font-size: 0.72rem;
   color: var(--text-dim);
   font-variant-numeric: tabular-nums;
-}
-
-.board__footer {
-  margin-top: 2rem;
-  font-size: 0.75rem;
-  color: var(--text-dim);
-  text-align: right;
 }
 
 /* Card as button (clickable docs) ----------------------------------- */
