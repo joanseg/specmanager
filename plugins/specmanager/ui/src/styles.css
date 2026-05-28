@@ -1038,7 +1038,7 @@ html, body, #root {
   border: 0;
 }
 .card--sub {
-  padding: 0.42rem 0.55rem;
+  padding: 0.5rem 0.55rem 0.42rem;
   border-radius: var(--radius-sm);
   min-height: 0;
   gap: 0.2rem;
@@ -1053,7 +1053,7 @@ html, body, #root {
   transform: none;
 }
 .card--sub.card--empty {
-  padding: 0.38rem 0.55rem;
+  padding: 0.46rem 0.55rem 0.38rem;
   font-size: 0.72rem;
 }
 /* Dashed placeholder sub-cards stay flat — no glow on hover. */
@@ -1071,6 +1071,9 @@ html, body, #root {
   font-size: 0.74rem;
   font-weight: 500;
   letter-spacing: 0.01em;
+  /* Constrain the line box so the label (incl. the ★ glyph's tall cap) clears
+   * the 1px border + --radius-sm corner instead of riding over it. */
+  line-height: 1.15;
 }
 .card--final {
   border-color: color-mix(in srgb, var(--primary) 35%, transparent);
