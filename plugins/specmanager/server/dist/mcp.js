@@ -86,7 +86,7 @@ server.registerTool("create_document", {
     }
 });
 server.registerTool("create_design_brief", {
-    description: "Create a draft design brief HTML doc in the design stage. Wraps create_document with stage=\"design\", defangs any `---` at column 0 in the body (gray-matter frontmatter collision), and rejects bodies larger than 2MB. Designer subagent inlines screenshots as data: URIs inside body.",
+    description: "Create a draft design doc (stacked high-fi screen mockups) in the design stage. Body is one self-contained HTML document — rendered screens + explanatory notes. Wraps create_document with stage=\"design\", defangs any `---` at column 0 (gray-matter collision), and rejects bodies larger than 5MB. Writes to design/mockups.html.",
     inputSchema: z.object({
         featureId: z.string(),
         title: z.string().min(1),

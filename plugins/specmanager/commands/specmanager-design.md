@@ -1,9 +1,9 @@
 ---
-description: Draft an HTML design brief for a SpecManager feature via the designer subagent. Optional — Plan can run without one, but if a draft brief exists, Plan refuses to open until it's approved.
+description: Design the actual screens for a SpecManager feature as stacked high-fi HTML mockups via the designer subagent. Optional — Plan can run without one, but if a draft exists, Plan refuses to open until it's approved.
 argument-hint: "<featureId or slug> [optional one-line context]"
 ---
 
-Generate a design brief for the feature: **$ARGUMENTS**.
+Design the screens for the feature: **$ARGUMENTS**.
 
 ## Steps
 
@@ -11,7 +11,7 @@ Generate a design brief for the feature: **$ARGUMENTS**.
 2. **Check the gate.** Call `check_gate({ featureId, stage: "design" })`. The design gate is open once the PRD is approved (Architecture is NOT required — design can run in parallel with Architecture). If closed, report `reason` and stop.
 3. **Confirm no draft already exists.** `list_documents({ featureId, stage: "design" })`. If a doc exists, point the user at the panel to edit, or delete the file before regenerating. Don't duplicate.
 4. **Look up PRD and Architecture ids** to pass into the subagent prompt. `list_documents({ featureId, stage: "prd" })` and `list_documents({ featureId, stage: "architecture" })`. Architecture may be absent or in draft — pass `null` if so.
-5. **Collect attachments.** If the user pasted screenshot paths in the conversation before invoking the command, list them — the designer will inline them as data URIs. If no attachments, the brief is text-only.
+5. **Collect attachments.** If the user pasted screenshot paths in the conversation before invoking the command, list them — the designer uses them as visual reference and may inline them as data URIs. If no attachments, the designer works from the PRD + DESIGN.md alone.
 6. **Invoke the subagent.** Use the `Task` tool with `subagent_type: "designer"` and a prompt that includes:
    - The feature id, title, and slug.
    - The PRD id + version.
@@ -19,11 +19,11 @@ Generate a design brief for the feature: **$ARGUMENTS**.
    - The screenshot paths the user attached (if any).
    - Any extra context the user gave after the feature id.
 
-   The designer reads the upstream docs and `./docs/DESIGN.md`, generates HTML, and calls `create_design_brief` itself.
+   The designer reads the upstream docs and `./docs/DESIGN.md`, designs the actual screens as one self-contained HTML file (high-fi mockups stacked with explanatory notes between them), and calls `create_design_brief` itself.
 7. **Sync CLAUDE.md.** After the subagent returns, call `sync_claude_md`.
-8. **Report.** Document id + file path. Suggest reviewing in the board (HTML preview lands in Phase D — until then the panel will show raw HTML in the markdown editor).
+8. **Report.** Document id + file path (`design/mockups.html`). Suggest opening it in the board — the doc panel renders the stacked mockups in a sandboxed iframe preview.
 
 ## Don't
 - Don't bypass `check_gate`. The gate is the contract.
-- Don't draft the brief inline — the subagent has the system prompt that enforces self-contained HTML and proper token references.
-- Don't call `create_document` directly with `stage: "design"` — always go through `create_design_brief` so the `---` escape and the 2MB cap apply.
+- Don't design the screens inline in chat — the subagent has the system prompt that enforces self-contained, DESIGN.md-grounded, high-fi HTML.
+- Don't call `create_document` directly with `stage: "design"` — always go through `create_design_brief` so the `---` escape and the 5MB cap apply.

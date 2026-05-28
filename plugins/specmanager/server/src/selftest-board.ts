@@ -224,19 +224,19 @@ async function main(): Promise<void> {
     ).json()) as { ok: boolean };
     assert(designGate.ok === true, "design gate opens when PRD approved");
 
-    // Create a design draft. Default filename should be brief.html.
+    // Create a design draft. Default filename should be mockups.html.
     const designDoc = await createDocument(
       {
         featureId: feature.id,
         stage: "design",
-        title: "Checkout corridor design brief",
-        body: "<h1>Design brief</h1><p>Draft.</p>",
+        title: "Checkout corridor mockups",
+        body: '<section class="sm-screen"><h1>List view</h1></section>',
       },
       root
     );
     assert(
-      designDoc.filePath.endsWith("/design/brief.html"),
-      "design doc lands at design/brief.html"
+      designDoc.filePath.endsWith("/design/mockups.html"),
+      "design doc lands at design/mockups.html"
     );
 
     // Gate state 3 — architecture approved, design draft → plan CLOSED.
@@ -284,7 +284,7 @@ async function main(): Promise<void> {
     assert(designReadRes.ok, "GET /api/documents/:id returns design doc");
     const designRead = (await designReadRes.json()) as { stage: string; body: string };
     assert(designRead.stage === "design", "design doc round-trips stage field");
-    assert(designRead.body.includes("Design brief"), "design doc round-trips body");
+    assert(designRead.body.includes("sm-screen"), "design doc round-trips body");
 
     // ── Phase B: DESIGN.md sync via REST ───────────────────────────────
     const designSyncRes = await fetch(`${board.url}/api/design/sync`, {
