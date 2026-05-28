@@ -10,7 +10,7 @@ import { findFeatureById, listFeatures } from "./features.js";
 const DEFAULT_FILENAMES: Record<Stage, string[]> = {
   prd: ["prd.md", "press-release.md"],
   architecture: ["architecture.md"],
-  design: ["brief.html"],
+  design: ["mockups.html"],
   plan: ["plan.md"],
   walkthrough: [],
 };
@@ -28,7 +28,10 @@ export function sanitizeDesignBriefBody(body: string): string {
   return body.replace(/^---$/gm, "<!-- --- -->");
 }
 
-export const DESIGN_BRIEF_MAX_BYTES = 2 * 1024 * 1024;
+// High-fi stacked mockups with inline CSS for several screens are larger than a
+// prose brief — 5MB headroom. Designers should still prefer CSS mockups over
+// inlining large raster screenshots.
+export const DESIGN_BRIEF_MAX_BYTES = 5 * 1024 * 1024;
 
 function sanitizePhaseSegment(phase: string): string {
   return (
@@ -60,7 +63,18 @@ export async function listDocuments(
         // Doc files use gray-matter frontmatter; body can be markdown OR html
         // (design briefs are .html). We trust frontmatter as the source of truth.
         if (!name.endsWith(".md") && !name.endsWith(".html")) continue;
-        const doc = await readDoc(path.join(dir, name));
+        // A single malformed doc (e.g. an .html written without SpecManager
+        // frontmatter) must never take down the whole board — skip + warn.
+        let doc: DocumentRecord;
+        try {
+          doc = await readDoc(path.join(dir, name));
+        } catch (err) {
+          // eslint-disable-next-line no-console
+          console.error(
+            `specmanager: skipping unparseable doc ${path.join(dir, name)}: ${(err as Error).message}`
+          );
+          continue;
+        }
         // Walkthroughs: legacy docs predating Phase 7.B have no `phase` field —
         // default to the synthetic "default" phase so check_gate keeps working.
         if (stage === "walkthrough" && !doc.frontmatter.phase) {

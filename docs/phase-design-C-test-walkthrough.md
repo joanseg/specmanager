@@ -1,6 +1,6 @@
 # Design feature — Phase C test walkthrough
 
-End-to-end test of the **`/specmanager-design` slash command + `designer` subagent + downstream design grounding** that ships in Phase C of `docs/plan-design-feature.md`. Phase C adds the runtime that creates per-feature HTML design briefs and wires every downstream agent (architect, planner, builder) to read the brief when one exists.
+End-to-end test of the **`/specmanager-design` slash command + `designer` subagent + downstream design grounding** that ships in Phase C of `docs/plan-design-feature.md`. Phase C adds the runtime that designs a feature's actual screens — one self-contained HTML doc of stacked high-fi mockups with explanatory notes between them — and wires every downstream agent (architect, planner, builder) to read those mockups when they exist.
 
 > Exit criterion (from `docs/plan-design-feature.md`):
 > in a test repo with an approved PRD, running `/specmanager-design <featureId>` (after pasting one screenshot path and a one-line brief into the chat) invokes the `designer` subagent visibly via the Task tool. The subagent calls `create_design_brief`, which persists a versioned HTML doc with `stage: "design"`, `generatedBy: "agent"`, the screenshot inlined as a `data:` URI, and proper `dependsOn`/`basedOn` linking to the PRD (+ architecture if approved). Approving the design doc and then running `/specmanager-plan` produces a plan whose body references the design doc id at least once. Running `/specmanager-plan` with the design doc in `draft` is refused by the gate.
@@ -33,12 +33,13 @@ npm run build             # no UI changes yet (Phase D adds the column + iframe 
 ```
 ok — sanitizeDesignBriefBody defangs `---` at column 0
 ok — sanitizeDesignBriefBody wraps `---` in an HTML comment
-ok — design brief stage is design
-ok — design brief generatedBy is agent
-ok — design brief depends on PRD
-ok — design brief lands at design/brief.html
-ok — design brief body round-trips body content
-ok — design brief body preserves the sanitized escape on read
+ok — design doc stage is design
+ok — design doc generatedBy is agent
+ok — design doc depends on PRD
+ok — design doc lands at design/mockups.html
+ok — design doc body round-trips stacked screen sections
+ok — design doc body round-trips inline styles
+ok — design doc body preserves the sanitized escape on read
 ```
 
 `smoke-mcp` should print `tools/list returned 21 tools` (was 20 in Phase B — `create_design_brief` is the new one).
@@ -84,7 +85,7 @@ grep "^status:" .claude/specs/features/design-c-demo/prd/prd.md
 
 Place a screenshot somewhere in the repo (or just a tiny PNG anywhere on disk you can reference). Then in the Claude session:
 
-> I want to use this screenshot: `/tmp/sample.png` — please draft a minimalist design brief.
+> I want to use this screenshot: `/tmp/sample.png` — design minimalist screens for this feature.
 > /specmanager-design design-c-demo
 
 Expected:
@@ -92,14 +93,15 @@ Expected:
 - Claude reads `commands/specmanager-design.md`, calls `check_gate({ stage: "design" })` — opens because PRD is approved.
 - It calls `list_documents({ stage: "prd" })` and (optionally) `list_documents({ stage: "architecture" })` to grab the upstream ids.
 - It invokes the `designer` subagent **visibly via the Task tool** with the feature id + PRD id + screenshot path.
-- The subagent reads PRD via `read_document`, reads `./docs/DESIGN.md` via `Read`, reads `/tmp/sample.png` via `Read`, encodes it as base64 inside an `<img src="data:image/png;base64,…">` block, and calls `create_design_brief`.
+- The subagent reads PRD via `read_document`, reads `./docs/DESIGN.md` via `Read`, reads `/tmp/sample.png` via `Read`, and designs the actual screens as one self-contained HTML doc — stacked `<section class="sm-screen">` mockups with `<section class="sm-note">` explanations between them, grounded in DESIGN.md tokens, any screenshot inlined as a `data:` URI — then calls `create_design_brief`.
 
 Verify on disk:
 
 ```bash
 ls .claude/specs/features/design-c-demo/design/
-# → brief.html
-head -20 .claude/specs/features/design-c-demo/design/brief.html
+# → mockups.html
+head -30 .claude/specs/features/design-c-demo/design/mockups.html
+grep -c "sm-screen" .claude/specs/features/design-c-demo/design/mockups.html   # ≥ number of screens
 ```
 
 Frontmatter must show:
@@ -174,18 +176,18 @@ When the architect runs on a feature that has an approved design doc, it should 
 
 Ask Claude:
 
-> Use `create_design_brief` with `featureId: "feat-design-c-demo"`, `title: "Oversize test"`, `body: <a 3MB string>`.
+> Use `create_design_brief` with `featureId: "feat-design-c-demo"`, `title: "Oversize test"`, `body: <a 6MB string>`.
 
-(In practice you'd ask Claude to construct a 3MB body; the cleanest path is to ask it to fabricate one in-prompt rather than read a file.)
+(In practice you'd ask Claude to construct a 6MB body; the cleanest path is to ask it to fabricate one in-prompt rather than read a file. The cap is 5MB — high-fi stacked mockups need more headroom than the old 2MB brief.)
 
-Expected: the MCP tool returns `{ ok: false, error: "design brief body is N bytes — cap is 2097152. Refer to large screenshots by repo-relative path instead of inlining as data: URIs." }`. No file is written.
+Expected: the MCP tool returns `{ ok: false, error: "design brief body is N bytes — cap is 5242880. Refer to large screenshots by repo-relative path instead of inlining as data: URIs." }`. No file is written.
 
 ### 3.7 `---` at column 0 is defanged (regression check)
 
 If you crafted a brief whose body included a line that's exactly `---` at column 0 (e.g. the agent generated `<hr>` as `---`), `create_design_brief` should wrap it in `<!-- --- -->` before persisting. The selftest in §1 already exercises this. To verify manually:
 
 ```bash
-grep "<!-- --- -->" .claude/specs/features/<slug>/design/brief.html
+grep "<!-- --- -->" .claude/specs/features/<slug>/design/mockups.html
 # (empty if the body has no col-0 `---` lines — that's fine; sanitize is a no-op then)
 ```
 
@@ -193,14 +195,14 @@ If the file fails to parse via `gray-matter` on next read (you'd see odd manifes
 
 ## 4. Pass criteria (all required)
 
-- [ ] `npm run selftest` exits 0 with all 8 Phase C unit assertions listed in §1.
+- [ ] `npm run selftest` exits 0 with all 9 Phase C unit assertions listed in §1.
 - [ ] `npm run smoke-mcp` reports `tools/list returned 21 tools` (create_design_brief added).
 - [ ] §3.2: `/specmanager-design` invokes the **designer** subagent via Task tool (visible in Claude's transcript).
-- [ ] §3.2: design brief is persisted at `design/brief.html` with `stage: "design"`, `generatedBy: "agent"`, `dependsOn` including PRD id, `basedOn` with PRD version.
-- [ ] §3.2: screenshot is inlined as a `data:image/...;base64,...` URI in the body.
+- [ ] §3.2: the design doc is persisted at `design/mockups.html` with `stage: "design"`, `generatedBy: "agent"`, `dependsOn` including PRD id, `basedOn` with PRD version. Body is one self-contained HTML doc with multiple stacked `<section>` screen mockups + inline `<style>`.
+- [ ] §3.2: any screenshot is inlined as a `data:image/...;base64,...` URI in the body.
 - [ ] §3.3: `/specmanager-plan` is REFUSED while design is in `draft` with the compound-gate reason naming design.
 - [ ] §3.4: approving design → `/specmanager-plan` succeeds AND the generated plan body references the design doc id; plan frontmatter `dependsOn`/`basedOn` includes both architecture and design.
-- [ ] §3.6: `create_design_brief` rejects bodies > 2MB.
+- [ ] §3.6: `create_design_brief` rejects bodies > 5MB.
 - [ ] `git status` shows changes only inside `.claude/specs/` and `CLAUDE.md`.
 
 ## 5. Deferred to later phases

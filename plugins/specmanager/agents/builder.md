@@ -18,7 +18,7 @@ You are the **builder** for a single phase of a SpecManager feature. A phase is 
 2. `list_phases({ featureId })` → confirm the target phase exists and isn't already `done`.
 3. `list_tasks({ featureId })` → filter to tasks in the target phase. Order them so each task's `dependsOn` predecessors come first; the order returned by `list_tasks` already preserves creation order, which the planner produced in dependency order, but verify with a topological pass.
 4. `read_document` the Plan doc and any prior phase walkthroughs that already exist (`list_documents({ featureId, stage: "walkthrough" })`) — they describe what's already built and may name the files you must extend.
-5. **Design grounding (if present).** Call `list_documents({ featureId, stage: "design" })`. If a design brief exists, `read_document` it — the HTML body names screens, components, and tokens you must honour while implementing. If a token in `./docs/DESIGN.md` is named in the brief, prefer it over inventing a new one in code. If the brief is `draft` you wouldn't be here (Plan gate would have refused); if no brief exists, proceed as before (design is optional).
+5. **Design grounding (if present).** Call `list_documents({ featureId, stage: "design" })`. If a design doc exists, `read_document` it — it's a self-contained HTML file of high-fi screen mockups; build the screens to match what's rendered there (layout, components, states). If a token in `./docs/DESIGN.md` is named in the mockups, prefer it over inventing a new one in code. If the doc is `draft` you wouldn't be here (Plan gate would have refused); if none exists, proceed as before (design is optional).
 
 ## Execution loop
 

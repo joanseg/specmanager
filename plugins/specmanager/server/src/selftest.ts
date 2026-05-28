@@ -156,11 +156,21 @@ async function main(): Promise<void> {
   const archReconciled = await readDocumentById(arch.frontmatter.id, root);
   assert(archReconciled.frontmatter.stale === false, "approving arch clears its stale flag");
 
-  // 9. Phase C — create_design_brief wiring (sanitize + createDocument path).
-  const briefWithDashes = `<!doctype html>\n<html><body>\n---\nuser-content\n---\n</body></html>`;
-  const sanitized = sanitizeDesignBriefBody(briefWithDashes);
+  // 9. Phase C — design mockups wiring (sanitize + createDocument path).
+  // Fake the designer subagent: a single self-contained HTML doc of stacked
+  // screen mockups + explanatory notes. A stray `---` at column 0 must be defanged.
+  const mockupHtml = [
+    `<!doctype html>`,
+    `<html><head><style>.sm-screen{border:1px solid #ccc}</style></head><body>`,
+    `<section class="sm-screen"><h1>List view</h1></section>`,
+    `<section class="sm-note"><h2>List view</h2><p>user-content</p></section>`,
+    `---`,
+    `<section class="sm-screen"><h1>Detail view</h1></section>`,
+    `</body></html>`,
+  ].join("\n");
+  const sanitized = sanitizeDesignBriefBody(mockupHtml);
   assert(
-    !sanitized.includes("\n---\n"),
+    !/\n---\n/.test(sanitized),
     "sanitizeDesignBriefBody defangs `---` at column 0"
   );
   assert(
@@ -170,11 +180,11 @@ async function main(): Promise<void> {
 
   // Drive a fake designer subagent: createDocument with stage="design" + sanitized body.
   // (Mirrors what create_design_brief does in the MCP wrapper.)
-  const designBriefDoc = await createDocument(
+  const designDoc = await createDocument(
     {
       featureId: feature.id,
       stage: "design",
-      title: "Checkout corridor design brief",
+      title: "Checkout corridor mockups",
       body: sanitized,
       generatedBy: "agent",
       dependsOn: [prd.frontmatter.id],
@@ -182,21 +192,48 @@ async function main(): Promise<void> {
     },
     root
   );
-  assert(designBriefDoc.frontmatter.stage === "design", "design brief stage is design");
-  assert(designBriefDoc.frontmatter.generatedBy === "agent", "design brief generatedBy is agent");
+  assert(designDoc.frontmatter.stage === "design", "design doc stage is design");
+  assert(designDoc.frontmatter.generatedBy === "agent", "design doc generatedBy is agent");
   assert(
-    designBriefDoc.frontmatter.dependsOn[0] === prd.frontmatter.id,
-    "design brief depends on PRD"
+    designDoc.frontmatter.dependsOn[0] === prd.frontmatter.id,
+    "design doc depends on PRD"
   );
   assert(
-    designBriefDoc.filePath.endsWith("/design/brief.html"),
-    "design brief lands at design/brief.html"
+    designDoc.filePath.endsWith("/design/mockups.html"),
+    "design doc lands at design/mockups.html"
   );
-  const briefRoundTrip = await readDocumentById(designBriefDoc.frontmatter.id, root);
-  assert(briefRoundTrip.body.includes("user-content"), "design brief body round-trips body content");
+  const mockupRoundTrip = await readDocumentById(designDoc.frontmatter.id, root);
   assert(
-    briefRoundTrip.body.includes("<!-- --- -->"),
-    "design brief body preserves the sanitized escape on read"
+    mockupRoundTrip.body.includes('<section class="sm-screen">'),
+    "design doc body round-trips stacked screen sections"
+  );
+  assert(
+    mockupRoundTrip.body.includes("<style>"),
+    "design doc body round-trips inline styles"
+  );
+  assert(
+    mockupRoundTrip.body.includes("<!-- --- -->"),
+    "design doc body preserves the sanitized escape on read"
+  );
+
+  // 10. Resilience — a malformed doc file (no frontmatter) must be skipped,
+  // never crash listDocuments / buildManifest (regression: design brief written
+  // as raw HTML without going through create_design_brief).
+  const designDir = path.join(
+    root,
+    ".claude/specs/features/checkout-corridor/design"
+  );
+  await fs.mkdir(designDir, { recursive: true });
+  await fs.writeFile(
+    path.join(designDir, "rogue.html"),
+    "<!doctype html><html><body>no frontmatter here</body></html>",
+    "utf8"
+  );
+  const { buildManifest } = await import("./core/index.js");
+  const manifestAfterRogue = await buildManifest(root);
+  assert(
+    manifestAfterRogue.features.length >= 1,
+    "buildManifest survives a frontmatter-less doc file (skips it, no throw)"
   );
 
   console.log("\nAll Phase 1 assertions passed.");
