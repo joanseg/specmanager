@@ -2,7 +2,7 @@
 id: wt-redesign-002
 featureId: feat-redesign
 stage: walkthrough
-status: draft
+status: approved
 stale: false
 title: Redesign — Phase B walkthrough
 dependsOn:
@@ -13,7 +13,7 @@ generatedBy: agent
 version: 1
 phase: B
 createdAt: '2026-05-28T18:16:15.557Z'
-updatedAt: '2026-05-28T18:16:15.557Z'
+updatedAt: '2026-05-28T18:24:21.804Z'
 ---
 # Redesign — Phase B walkthrough
 

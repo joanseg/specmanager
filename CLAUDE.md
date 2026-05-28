@@ -5,7 +5,7 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 
 | Feature | Current stage | Notes |
 |---------|---------------|-------|
-| Redesign | PRD (approved) | Walkthroughs ⚠️ stale |
+| Redesign | PRD (approved) | — |
 | Dummy feature | PRD | — |
 
 **Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation.
@@ -13,7 +13,7 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 **Commands:**
 `/specmanager-feature` · `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-execute` · `/specmanager-walkthrough` · `/specmanager-board`
 
-_Last synced: 2026-05-28T18:16:34.759Z_
+_Last synced: 2026-05-28T19:21:27.153Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
