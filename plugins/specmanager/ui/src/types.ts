@@ -1,8 +1,8 @@
 // Mirror of the server's manifest shape (see core/manifest.ts).
 // Kept lean so the UI can read /api/board without pulling server types.
 
-export type Stage = "prd" | "architecture" | "plan" | "walkthrough";
-export const STAGES: Stage[] = ["prd", "architecture", "plan", "walkthrough"];
+export type Stage = "prd" | "architecture" | "design" | "plan" | "walkthrough";
+export const STAGES: Stage[] = ["prd", "architecture", "design", "plan", "walkthrough"];
 export const COLUMNS = [...STAGES, "build" as const] as const;
 export type Column = (typeof COLUMNS)[number];
 
@@ -107,6 +107,8 @@ export type WsEvent =
   | { type: "stale.cleared"; documentId: string }
   | { type: "task.updated"; taskId: string; featureId: string }
   | { type: "file.changed"; filePath: string }
+  | { type: "feature.shipped"; featureId: string }
+  | { type: "design.synced"; path: string; mode: "init" | "refresh" }
   | { type: "chat.started"; docId: string }
   | { type: "chat.cancelled"; docId: string; ok: boolean }
   | { type: "chat.info"; docId: string; reason?: string }

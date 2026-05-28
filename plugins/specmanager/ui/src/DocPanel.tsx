@@ -21,6 +21,7 @@ type SaveState =
 const STAGE_LABEL: Record<Stage, string> = {
   prd: "PRD",
   architecture: "Architecture",
+  design: "Design",
   plan: "Plan",
   walkthrough: "Walkthrough",
 };
@@ -83,7 +84,13 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
 
   const dirty = useMemo(() => doc !== null && body !== doc.body, [doc, body]);
   const readOnly = doc?.status === "approved";
-  const renderedHtml = useMemo(() => marked.parse(body) as string, [body]);
+  const isDesign = doc?.stage === "design";
+  // Design briefs are HTML: render verbatim in a sandboxed iframe. Other stages
+  // are markdown: render via marked.
+  const renderedHtml = useMemo(
+    () => (isDesign ? "" : (marked.parse(body) as string)),
+    [body, isDesign]
+  );
 
   const reload = async (): Promise<void> => {
     const d = await fetchDoc(docId);
@@ -270,9 +277,23 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
           }`}
         >
           <div className="panel__editor">
-            <Editor value={body} readOnly={!!readOnly} onChange={setBody} />
+            <Editor
+              key={doc.id}
+              value={body}
+              readOnly={!!readOnly}
+              onChange={setBody}
+              language={isDesign ? "html" : "markdown"}
+            />
           </div>
-          {showPreview && (
+          {showPreview && isDesign && (
+            <iframe
+              className="panel__preview panel__preview--iframe"
+              title="design brief preview"
+              sandbox="allow-same-origin"
+              srcDoc={body}
+            />
+          )}
+          {showPreview && !isDesign && (
             <div className="panel__preview markdown" dangerouslySetInnerHTML={{ __html: renderedHtml }} />
           )}
           {showChat && (
