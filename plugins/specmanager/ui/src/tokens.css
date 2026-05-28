@@ -91,6 +91,31 @@
   --glass-bg-opaque: #18181b; /* @supports fallback when no backdrop-filter */
   --glass-blur: blur(12px);
 
+  /* --- Card depth / micro-interaction (DESIGN.md "Depth through Layering",
+   * "Micro-interactions", Cards) ---------------------------------------- *
+   * Phase B fidelity pass: surfaces gain depth via a subtle 135° tonal
+   * gradient (container → container-low) plus a hairline border that
+   * brightens / violet-tints toward --primary on hover, a soft tonal glow on
+   * hover (distinct from the large modal --shadow-overlay), and a glass
+   * leading-edge tint for the doc-panel drawer. All derived from the palette
+   * via color-mix; the only literal rgba lives here, never in a component. */
+  --card-gradient: linear-gradient(135deg, var(--surface-container), var(--surface-container-low));
+  --card-gradient-hover: linear-gradient(135deg, var(--surface-container-high), var(--surface-container));
+  --card-border: color-mix(in srgb, var(--outline-variant) 80%, transparent);
+  --card-border-hover: color-mix(in srgb, var(--primary) 55%, var(--outline-variant));
+  --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.35), 0 0 0 1px color-mix(in srgb, var(--primary) 12%, transparent);
+  --glass-edge: color-mix(in srgb, var(--primary) 8%, var(--glass-bg));
+
+  /* --- Primary gradient CTA (DESIGN.md Buttons §Primary — indigo→purple) - *
+   * 135° fill for the high-intent primary button; hover brightens. The 1px
+   * top-border highlight and on-primary text are applied in styles.css. */
+  --gradient-primary: linear-gradient(135deg, var(--primary-container), var(--secondary-container));
+  --gradient-primary-hover: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--primary-container) 80%, white),
+    color-mix(in srgb, var(--secondary-container) 80%, white)
+  );
+
   /* The design-brief preview is verbatim HTML in a sandboxed iframe and keeps
    * a white canvas by design; named here so no component carries raw hex. */
   --design-preview-bg: #ffffff;
