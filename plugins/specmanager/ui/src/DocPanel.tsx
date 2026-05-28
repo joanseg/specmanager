@@ -175,7 +175,7 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
           <div className="panel__title-row">
             <h2 className="panel__title">{doc.title}</h2>
             <span className="panel__meta">
-              {STAGE_LABEL[doc.stage]} · v{doc.version}
+              {STAGE_LABEL[doc.stage]} · <span className="panel__version">v{doc.version}</span>
             </span>
           </div>
           <div className="panel__badges">
@@ -229,7 +229,13 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
               Approve
             </button>
           ) : (
-            <button className="btn" onClick={onReopen}>Reopen</button>
+            <button
+              className="btn"
+              onClick={onReopen}
+              title="Editing an approved doc reopens it as a draft"
+            >
+              Edit
+            </button>
           )}
           <button className="btn btn--ghost" onClick={onShowGate}>
             Gate?
