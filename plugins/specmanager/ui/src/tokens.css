@@ -91,6 +91,10 @@
   --glass-bg-opaque: #18181b; /* @supports fallback when no backdrop-filter */
   --glass-blur: blur(12px);
 
+  /* The design-brief preview is verbatim HTML in a sandboxed iframe and keeps
+   * a white canvas by design; named here so no component carries raw hex. */
+  --design-preview-bg: #ffffff;
+
   /* --- Status-role mapping (Architecture §4) --------------------------- *
    * Legacy roles re-expressed on the Obsidian Flux palette. Components refer
    * to these so the intent (draft / approved / stale) stays readable, while
