@@ -177,18 +177,31 @@ html, body, #root {
 .row__cell {
   display: flex;
   min-height: 5.5rem;
+  /* Row-direction flex (flex:1 on the card drives full column width on the main
+   * axis; the cross axis is vertical). Bottom-align so a capped stage card pins
+   * to the bottom of a taller row track (driven by the BUILD glance or a tall
+   * Walkthroughs sub-card stack) instead of floating at the top with a gap —
+   * preserving the Phase C bottom-aligned invariant. */
+  align-items: flex-end;
 }
 /* The card fills the cell in both axes: flex:1 takes the full track height,
  * align-self: stretch (flex default) gives it the full column width. */
 .row__cell > .card,
 .row__cell > .card--button {
   flex: 1;
-  min-height: 0;
-  /* Override the base .card/.card--button `height: 100%`: against a
-   * content-sized flex container that resolves to the card's intrinsic
-   * content height and inflates the box past the row track. height: auto lets
-   * `flex: 1` alone drive the height so every card matches the tallest cell. */
-  height: auto;
+  /* flex:1 (main = horizontal) gives full column width; with the cell
+   * bottom-aligned (align-items: flex-end) the vertical size is the card's own
+   * height. Pin stage cards to one compact mock height so a sparse row no longer
+   * stretches them to the tall track (~206–226px in Phase C) — they stay equal
+   * to each other and bottom-aligned, with title + badges + version fitting
+   * inside the cap (no inner scroll), matching docs/temp/redesign/board.png.
+   * The walkthroughs sub-card stack and the BUILD glance opt out below.
+   * border-box so the fixed height is the total box across both the plain
+   * .card (border-box via the global reset) and the .card--button (which
+   * `all: unset` flips to content-box) — otherwise the button variant renders
+   * ~19px taller than its dashed siblings and the row looks ragged. */
+  box-sizing: border-box;
+  height: 5.5rem;
 }
 
 /* Tonal-elevation card: surface-container fill, hairline outline, no shadow.
@@ -320,6 +333,8 @@ html, body, #root {
 .row__cell--build > .card--button {
   flex: 1;
   min-height: 0;
+  /* The BUILD glance (progress bar + phase rows) sizes to its own content and
+   * must not inherit the stage-card fixed height. */
   height: auto;
 }
 .card--build {
@@ -1051,6 +1066,13 @@ html, body, #root {
   padding: 0.4rem 0.45rem;
   background: transparent;
   border: 0;
+}
+/* The roll-up is a stack of per-phase sub-cards; it sizes to its content and
+ * opts out of the fixed stage-card height (it legitimately drives a tall row
+ * track that the compact, bottom-aligned stage cards align against). Scoped to
+ * `.row__cell >` so it outranks the stage-card height rule. */
+.row__cell > .card--walkthroughs {
+  height: auto;
 }
 .card--sub {
   padding: 0.5rem 0.55rem 0.42rem;
