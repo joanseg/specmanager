@@ -359,7 +359,7 @@ server.registerTool(
   "get_next_phase",
   {
     description:
-      "Return the first phase whose tasks aren't all done, or null if every phase is complete. Used by /specmanager-execute.",
+      "Return the first phase whose tasks aren't all done, or null if every phase is complete. Used by /specmanager-build.",
     inputSchema: z.object({ featureId: z.string() }),
   },
   async ({ featureId }) => ok(await getNextPhase(featureId, PROJECT_DIR))
