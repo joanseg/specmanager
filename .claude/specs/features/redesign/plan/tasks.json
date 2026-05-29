@@ -539,6 +539,123 @@
       },
       "createdAt": "2026-05-28T18:45:56.010Z",
       "updatedAt": "2026-05-28T19:16:52.193Z"
+    },
+    {
+      "id": "task-024",
+      "featureId": "feat-redesign",
+      "title": "Remove the divider below each column title",
+      "status": "done",
+      "stageRef": "plan-redesign-001",
+      "phase": "D",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "71da44d"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/styles.css"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T19:52:10.290Z",
+      "updatedAt": "2026-05-28T20:23:23.972Z"
+    },
+    {
+      "id": "task-025",
+      "featureId": "feat-redesign",
+      "title": "Remove the vertical divider between the FEATURE and PRD columns",
+      "status": "done",
+      "stageRef": "plan-redesign-001",
+      "phase": "D",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "dfb661a"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/styles.css"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T19:52:11.119Z",
+      "updatedAt": "2026-05-28T20:23:43.066Z"
+    },
+    {
+      "id": "task-026",
+      "featureId": "feat-redesign",
+      "title": "Reorder the BUILD column to sit after PLAN and before WALKTHROUGHS",
+      "status": "done",
+      "stageRef": "plan-redesign-001",
+      "phase": "D",
+      "complexity": 3,
+      "dependsOn": [
+        "task-024",
+        "task-025"
+      ],
+      "artifacts": {
+        "commits": [
+          "fd17bfb"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/App.tsx"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T19:52:15.647Z",
+      "updatedAt": "2026-05-28T20:24:47.205Z"
+    },
+    {
+      "id": "task-027",
+      "featureId": "feat-redesign",
+      "title": "Phase D verification pass",
+      "status": "done",
+      "stageRef": "plan-redesign-001",
+      "phase": "D",
+      "complexity": 2,
+      "dependsOn": [
+        "task-024",
+        "task-025",
+        "task-026"
+      ],
+      "artifacts": {
+        "commits": [
+          "4891638"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/styles.css",
+          "plugins/specmanager/ui/src/App.tsx"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T19:52:19.382Z",
+      "updatedAt": "2026-05-28T20:45:53.585Z"
+    },
+    {
+      "id": "task-028",
+      "featureId": "feat-redesign",
+      "title": "Cap board card height to match the mock (sparse rows no longer inflate cards)",
+      "status": "done",
+      "stageRef": "plan-redesign-001",
+      "phase": "D",
+      "complexity": 2,
+      "dependsOn": [
+        "task-024",
+        "task-025",
+        "task-026"
+      ],
+      "artifacts": {
+        "commits": [
+          "4891638"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/styles.css"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T20:05:51.349Z",
+      "updatedAt": "2026-05-28T20:45:14.169Z"
     }
   ]
 }

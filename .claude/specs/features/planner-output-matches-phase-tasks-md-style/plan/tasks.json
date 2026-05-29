@@ -1,0 +1,81 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-planner-output-matches-phase-tasks-md-style",
+      "title": "Add the Scale legend + ≤3 note and the Total row mandates to ## What a good Plan doc contains",
+      "status": "todo",
+      "stageRef": "plan-planner-output-matches-phase-tasks-md-style-002",
+      "phase": "A",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T20:45:16.305Z",
+      "updatedAt": "2026-05-28T20:45:16.305Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-planner-output-matches-phase-tasks-md-style",
+      "title": "Add the ## Notes on estimates section + testing/docs-as-tasks framing mandate to ## What a good Plan doc contains",
+      "status": "todo",
+      "stageRef": "plan-planner-output-matches-phase-tasks-md-style-002",
+      "phase": "A",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T20:45:20.083Z",
+      "updatedAt": "2026-05-28T20:45:20.083Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-planner-output-matches-phase-tasks-md-style",
+      "title": "Mirror all four mandates as matching items in ## Self-check before persisting",
+      "status": "todo",
+      "stageRef": "plan-planner-output-matches-phase-tasks-md-style-002",
+      "phase": "A",
+      "complexity": 1,
+      "dependsOn": [
+        "task-001",
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T20:45:23.776Z",
+      "updatedAt": "2026-05-28T20:45:23.776Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-planner-output-matches-phase-tasks-md-style",
+      "title": "Verification pass: generate/inspect a plan and confirm the four deltas against docs/phase-tasks.md",
+      "status": "todo",
+      "stageRef": "plan-planner-output-matches-phase-tasks-md-style-002",
+      "phase": "A",
+      "complexity": 1,
+      "dependsOn": [
+        "task-001",
+        "task-002",
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-28T20:45:27.354Z",
+      "updatedAt": "2026-05-28T20:45:27.354Z"
+    }
+  ]
+}

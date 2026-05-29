@@ -3,7 +3,7 @@ id: wt-redesign-003
 featureId: feat-redesign
 stage: walkthrough
 status: approved
-stale: false
+stale: true
 title: Redesign — Phase C walkthrough
 dependsOn:
   - plan-redesign-001
@@ -13,7 +13,7 @@ generatedBy: agent
 version: 1
 phase: C
 createdAt: '2026-05-28T19:20:58.459Z'
-updatedAt: '2026-05-28T19:21:27.000Z'
+updatedAt: '2026-05-28T19:31:11.728Z'
 ---
 > Per-phase walkthrough for **Phase C — Layout-correctness pass**. Phases A and B are documented in their own walkthroughs (`walkthroughs/redesign/phase-a.md`, `walkthroughs/redesign/phase-b.md`); this doc covers ONLY Phase C and cross-references A/B where it re-touches shared files.
 

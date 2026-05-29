@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-28T19:20:58.466Z",
+  "generatedAt": "2026-05-28T20:51:04.099Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -28,14 +28,14 @@
           "stage": "plan",
           "status": "approved",
           "stale": false,
-          "version": 3,
+          "version": 7,
           "title": "Redesign plan"
         },
         {
           "id": "wt-redesign-001",
           "stage": "walkthrough",
           "status": "approved",
-          "stale": false,
+          "stale": true,
           "version": 1,
           "title": "Redesign — Phase A walkthrough",
           "phase": "A"
@@ -44,7 +44,7 @@
           "id": "wt-redesign-002",
           "stage": "walkthrough",
           "status": "approved",
-          "stale": false,
+          "stale": true,
           "version": 1,
           "title": "Redesign — Phase B walkthrough",
           "phase": "B"
@@ -52,18 +52,27 @@
         {
           "id": "wt-redesign-003",
           "stage": "walkthrough",
-          "status": "draft",
-          "stale": false,
+          "status": "approved",
+          "stale": true,
           "version": 1,
           "title": "Redesign — Phase C walkthrough",
           "phase": "C"
+        },
+        {
+          "id": "wt-redesign-004",
+          "stage": "walkthrough",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Redesign — Phase D walkthrough",
+          "phase": "D"
         }
       ],
       "tasks": {
         "todo": 0,
         "in_progress": 0,
-        "done": 23,
-        "total": 23
+        "done": 28,
+        "total": 28
       },
       "phases": [
         {
@@ -75,7 +84,7 @@
           "status": "done",
           "walkthroughId": "wt-redesign-001",
           "walkthroughStatus": "approved",
-          "walkthroughStale": false
+          "walkthroughStale": true
         },
         {
           "name": "B",
@@ -86,7 +95,7 @@
           "status": "done",
           "walkthroughId": "wt-redesign-002",
           "walkthroughStatus": "approved",
-          "walkthroughStale": false
+          "walkthroughStale": true
         },
         {
           "name": "C",
@@ -96,6 +105,17 @@
           "inProgressCount": 0,
           "status": "done",
           "walkthroughId": "wt-redesign-003",
+          "walkthroughStatus": "approved",
+          "walkthroughStale": true
+        },
+        {
+          "name": "D",
+          "order": 3,
+          "taskCount": 5,
+          "doneCount": 5,
+          "inProgressCount": 0,
+          "status": "done",
+          "walkthroughId": "wt-redesign-004",
           "walkthroughStatus": "draft",
           "walkthroughStale": false
         }
@@ -114,6 +134,88 @@
         "total": 0
       },
       "phases": []
+    },
+    {
+      "id": "feat-rename-execute-command-to-build",
+      "slug": "rename-execute-command-to-build",
+      "title": "Rename execute command to build",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-rename-execute-command-to-build-002",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Rename execute command to build PRD"
+        },
+        {
+          "id": "arch-rename-execute-command-to-build-002",
+          "stage": "architecture",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Rename execute command to build architecture"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0,
+        "total": 0
+      },
+      "phases": []
+    },
+    {
+      "id": "feat-planner-output-matches-phase-tasks-md-style",
+      "slug": "planner-output-matches-phase-tasks-md-style",
+      "title": "Planner output matches phase-tasks.md style",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-planner-output-matches-phase-tasks-md-style-003",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Planner output matches phase-tasks.md style PRD"
+        },
+        {
+          "id": "arch-planner-output-matches-phase-tasks-md-style-003",
+          "stage": "architecture",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Planner output matches phase-tasks.md style architecture"
+        },
+        {
+          "id": "plan-planner-output-matches-phase-tasks-md-style-002",
+          "stage": "plan",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Planner output matches phase-tasks.md style plan"
+        }
+      ],
+      "tasks": {
+        "todo": 4,
+        "in_progress": 0,
+        "done": 0,
+        "total": 4
+      },
+      "phases": [
+        {
+          "name": "A",
+          "order": 0,
+          "taskCount": 4,
+          "doneCount": 0,
+          "inProgressCount": 0,
+          "status": "todo",
+          "walkthroughId": null,
+          "walkthroughStatus": null,
+          "walkthroughStale": null
+        }
+      ]
     }
   ]
 }
