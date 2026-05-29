@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-29T09:38:38.351Z",
+  "generatedAt": "2026-05-29T10:06:39.515Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -152,19 +152,39 @@
         {
           "id": "arch-rename-execute-command-to-build-002",
           "stage": "architecture",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
           "version": 1,
           "title": "Rename execute command to build architecture"
+        },
+        {
+          "id": "plan-rename-execute-command-to-build-003",
+          "stage": "plan",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Rename execute command to build plan"
         }
       ],
       "tasks": {
-        "todo": 0,
+        "todo": 9,
         "in_progress": 0,
         "done": 0,
-        "total": 0
+        "total": 9
       },
-      "phases": []
+      "phases": [
+        {
+          "name": "Rename",
+          "order": 0,
+          "taskCount": 9,
+          "doneCount": 0,
+          "inProgressCount": 0,
+          "status": "todo",
+          "walkthroughId": null,
+          "walkthroughStatus": null,
+          "walkthroughStale": null
+        }
+      ]
     },
     {
       "id": "feat-planner-output-matches-phase-tasks-md-style",
@@ -199,7 +219,7 @@
         {
           "id": "wt-planner-output-matches-phase-tasks-md-style-005",
           "stage": "walkthrough",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
           "version": 1,
           "title": "Planner output matches phase-tasks.md style — Phase A walkthrough",
@@ -221,10 +241,33 @@
           "inProgressCount": 0,
           "status": "done",
           "walkthroughId": "wt-planner-output-matches-phase-tasks-md-style-005",
-          "walkthroughStatus": "draft",
+          "walkthroughStatus": "approved",
           "walkthroughStale": false
         }
       ]
+    },
+    {
+      "id": "feat-post-phase-design-conformance-check",
+      "slug": "post-phase-design-conformance-check",
+      "title": "Post-phase design conformance check",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-post-phase-design-conformance-check-004",
+          "stage": "prd",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Post-phase design conformance check PRD"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0,
+        "total": 0
+      },
+      "phases": []
     }
   ]
 }

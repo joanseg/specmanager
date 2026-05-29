@@ -50,11 +50,12 @@ Tasks use the **Fibonacci scale**: `1` trivial · `2` small · `3` moderate · `
    ```
 
    followed by an italic note that every task below is decomposed to **≤3 points** (state whether larger items were split or the work was genuinely small, and that phase subtotals are unchanged). This anchors the reader before they hit any numbers.
-3. **Phase summary table** — one row per phase with theme + point total, and a closing bold **Total** row that sums the phase point totals. Include the **Total** row even for a single-phase feature. Keep it inside this summary table only — never add a **Total** row to a per-phase `# | Task | Pts | Notes` table, or a parser will misread "Total" as a task.
+3. **Phase summary table** — a table with the exact columns `| Phase | Theme | Points |`, one row per phase (phase name, theme, summed point total), and a closing bold **Total** row that sums the phase point totals. Include the **Total** row even for a single-phase feature. Keep it inside this summary table only — never add a **Total** row to a per-phase `# | Task | Pts | Notes` table, or a parser will misread "Total" as a task. Place a `---` rule after this table, before the first phase.
 4. **For each phase:**
    - `## Phase <name> — <theme>` heading.
-   - `**Exit test:** …` — a concrete, user-runnable verification.
-   - Ordered task table with columns: `# | Task | Pts | Notes`.
+   - `**Exit test:** …` — a concrete, user-runnable verification (optionally followed by a short italic parenthetical when a phase needs a clarifying caveat).
+   - Ordered task table with columns: `# | Task | Pts | Notes`. The `#` column uses **dotted `<phase>.<index>` numbering** (`1.1`, `1.2`, … for Phase 1; `2.1`, … for Phase 2), restarting the index within each phase, so a row's task can be cited unambiguously.
+   - Separate each phase from the next with a `---` rule.
 5. **Risk & sequencing notes** — what must land first, what blocks what, where rollbacks are tricky.
 6. **Test strategy** — which tests get written when (per task or as a final pass), per the repo's conventions.
 7. **Out of scope** — explicit non-tasks that someone might wrongly assume are included.
@@ -79,7 +80,9 @@ Before you call `create_task` for any item:
 3. For each phase, ask: "if the user installed the plugin after only this phase shipped, could they meaningfully test something?" If no, the phase boundary is in the wrong place — merge it with the next or split differently.
 4. Confirm the house conventions are all present before reporting done:
    - the verbatim `**Scale:**` legend line sits between the Overview paragraph and the phase summary table, followed by the italic ≤3-points note;
-   - the phase summary table carries a closing bold **Total** row, and no per-phase task table contains a **Total** row;
+   - the phase summary table uses the `| Phase | Theme | Points |` columns and carries a closing bold **Total** row, and no per-phase task table contains a **Total** row;
+   - every per-phase task table's `#` column uses dotted `<phase>.<index>` numbering, restarting the index within each phase;
+   - a `---` rule sits after the summary table and between every pair of adjacent phases;
    - the plan ends with a `## Notes on estimates` section covering relative-complexity-not-hours, the ≤3 granularity note, and testing/docs-as-tasks;
    - none of the parsed constructs changed shape — `## Phase <name> — <theme>` headings, `**Exit test:**` lines, and `# | Task | Pts | Notes` tables still match exactly.
 
