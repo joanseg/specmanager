@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-28T20:51:04.099Z",
+  "generatedAt": "2026-05-29T09:38:38.351Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -61,7 +61,7 @@
         {
           "id": "wt-redesign-004",
           "stage": "walkthrough",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
           "version": 1,
           "title": "Redesign — Phase D walkthrough",
@@ -116,7 +116,7 @@
           "inProgressCount": 0,
           "status": "done",
           "walkthroughId": "wt-redesign-004",
-          "walkthroughStatus": "draft",
+          "walkthroughStatus": "approved",
           "walkthroughStale": false
         }
       ]
@@ -191,16 +191,25 @@
         {
           "id": "plan-planner-output-matches-phase-tasks-md-style-002",
           "stage": "plan",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
           "version": 1,
           "title": "Planner output matches phase-tasks.md style plan"
+        },
+        {
+          "id": "wt-planner-output-matches-phase-tasks-md-style-005",
+          "stage": "walkthrough",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Planner output matches phase-tasks.md style — Phase A walkthrough",
+          "phase": "A"
         }
       ],
       "tasks": {
-        "todo": 4,
+        "todo": 0,
         "in_progress": 0,
-        "done": 0,
+        "done": 4,
         "total": 4
       },
       "phases": [
@@ -208,12 +217,12 @@
           "name": "A",
           "order": 0,
           "taskCount": 4,
-          "doneCount": 0,
+          "doneCount": 4,
           "inProgressCount": 0,
-          "status": "todo",
-          "walkthroughId": null,
-          "walkthroughStatus": null,
-          "walkthroughStale": null
+          "status": "done",
+          "walkthroughId": "wt-planner-output-matches-phase-tasks-md-style-005",
+          "walkthroughStatus": "draft",
+          "walkthroughStale": false
         }
       ]
     }
