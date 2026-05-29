@@ -58,6 +58,12 @@ Tasks use the **Fibonacci scale**: `1` trivial · `2` small · `3` moderate · `
 5. **Risk & sequencing notes** — what must land first, what blocks what, where rollbacks are tricky.
 6. **Test strategy** — which tests get written when (per task or as a final pass), per the repo's conventions.
 7. **Out of scope** — explicit non-tasks that someone might wrongly assume are included.
+8. **Notes on estimates** — reproduce this convention as a closing `## Notes on estimates` section. Cover, in your own words for this feature:
+   - that points are **relative complexity**, not hours — calibrate to your own velocity after the first phase (phrase this phase-agnostically, e.g. "after the first phase," never hard-coded to "Phase 1");
+   - that every task is **≤3 points**, and if you split anything that would have scored 5/8 it is a granularity change that leaves phase subtotals unchanged;
+   - that testing and docs are their own **per-phase tasks**, so "installable & testable" stays a real exit gate rather than an afterthought.
+
+   Write the convention, not the verbatim content — adapt the wording to the actual feature so the section never reads as boilerplate. For a one-task feature keep it to a line or two; don't pad it.
 
 Sized expectations:
 - Each **task** is shippable in one sitting (complexity ≤3).
