@@ -41,7 +41,7 @@ Each **feature** is a row on the board that flows left to right through the life
 /specmanager-architecture   <feature>       # draft the Architecture   → approve in board
 /specmanager-design         <feature>       # OPTIONAL high-fi HTML mockups → approve
 /specmanager-plan           <feature>       # plan.md + phased tasks   → approve in board
-/specmanager-execute        <feature> next  # build one phase at a time
+/specmanager-build          <feature> next  # build one phase at a time
 /specmanager-walkthrough    <feature> <phase>   # per-phase walkthrough
 /specmanager-walkthrough    <feature> final     # feature-level roll-up
 /specmanager-board                          # open the kanban board anytime
@@ -60,7 +60,7 @@ Each **feature** is a row on the board that flows left to right through the life
 | **Build** | *no doc — it's execution* | Plan approved |
 | **Walkthroughs** | `<slug>.md` per phase + a final roll-up | the phase's tasks are all `done` |
 
-Gates are enforced in shared code, not in prompts — Claude **cannot** draft a stage whose gate is closed. Plans are organised into **phases**, each a testable, runnable increment; tasks carry a Fibonacci `complexity` score and anything over 3 must be split. `/specmanager-execute` builds one phase and stops at its boundary.
+Gates are enforced in shared code, not in prompts — Claude **cannot** draft a stage whose gate is closed. Plans are organised into **phases**, each a testable, runnable increment; tasks carry a Fibonacci `complexity` score and anything over 3 must be split. `/specmanager-build` builds one phase and stops at its boundary.
 
 ### Living docs
 
@@ -115,7 +115,7 @@ npm run build
 npm run selftest          # core flow against a tmp dir
 npm run selftest-board    # boots board: REST + WS + file watcher
 npm run selftest-phases   # phase rollup + Fibonacci ≤3 validation
-npm run selftest-execute  # per-phase gates + walkthrough storage
+npm run selftest-build    # per-phase gates + walkthrough storage
 npm run smoke-mcp         # MCP wire protocol + tools registered
 
 cd ../ui
