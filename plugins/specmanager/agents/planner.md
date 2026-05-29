@@ -43,14 +43,21 @@ Tasks use the **Fibonacci scale**: `1` trivial · `2` small · `3` moderate · `
 ## What a good Plan doc contains
 
 1. **Overview** — one paragraph: what's being built and why this phase split.
-2. **Phase summary table** — one row per phase with theme + point total.
-3. **For each phase:**
+2. **Scale legend** — reproduce this convention: immediately after the Overview paragraph and *before* the phase summary table, emit the verbatim legend line
+
+   ```
+   **Scale:** `1` trivial · `2` small · `3` moderate · `5` substantial · `8` large · `13`/`21` epic.
+   ```
+
+   followed by an italic note that every task below is decomposed to **≤3 points** (state whether larger items were split or the work was genuinely small, and that phase subtotals are unchanged). This anchors the reader before they hit any numbers.
+3. **Phase summary table** — one row per phase with theme + point total, and a closing bold **Total** row that sums the phase point totals. Include the **Total** row even for a single-phase feature. Keep it inside this summary table only — never add a **Total** row to a per-phase `# | Task | Pts | Notes` table, or a parser will misread "Total" as a task.
+4. **For each phase:**
    - `## Phase <name> — <theme>` heading.
    - `**Exit test:** …` — a concrete, user-runnable verification.
    - Ordered task table with columns: `# | Task | Pts | Notes`.
-4. **Risk & sequencing notes** — what must land first, what blocks what, where rollbacks are tricky.
-5. **Test strategy** — which tests get written when (per task or as a final pass), per the repo's conventions.
-6. **Out of scope** — explicit non-tasks that someone might wrongly assume are included.
+5. **Risk & sequencing notes** — what must land first, what blocks what, where rollbacks are tricky.
+6. **Test strategy** — which tests get written when (per task or as a final pass), per the repo's conventions.
+7. **Out of scope** — explicit non-tasks that someone might wrongly assume are included.
 
 Sized expectations:
 - Each **task** is shippable in one sitting (complexity ≤3).
