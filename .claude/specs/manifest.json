@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-29T10:06:39.515Z",
+  "generatedAt": "2026-05-29T11:54:02.683Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -160,29 +160,38 @@
         {
           "id": "plan-rename-execute-command-to-build-003",
           "stage": "plan",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Rename execute command to build plan"
+        },
+        {
+          "id": "wt-rename-execute-command-to-build-006",
+          "stage": "walkthrough",
           "status": "draft",
           "stale": false,
           "version": 1,
-          "title": "Rename execute command to build plan"
+          "title": "Rename execute command to build — Phase Rename walkthrough",
+          "phase": "Rename"
         }
       ],
       "tasks": {
-        "todo": 9,
+        "todo": 0,
         "in_progress": 0,
-        "done": 0,
-        "total": 9
+        "done": 7,
+        "total": 7
       },
       "phases": [
         {
           "name": "Rename",
           "order": 0,
-          "taskCount": 9,
-          "doneCount": 0,
+          "taskCount": 7,
+          "doneCount": 7,
           "inProgressCount": 0,
-          "status": "todo",
-          "walkthroughId": null,
-          "walkthroughStatus": null,
-          "walkthroughStale": null
+          "status": "done",
+          "walkthroughId": "wt-rename-execute-command-to-build-006",
+          "walkthroughStatus": "draft",
+          "walkthroughStale": false
         }
       ]
     },
@@ -259,6 +268,29 @@
           "stale": false,
           "version": 1,
           "title": "Post-phase design conformance check PRD"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0,
+        "total": 0
+      },
+      "phases": []
+    },
+    {
+      "id": "feat-markdown-viewer",
+      "slug": "markdown-viewer",
+      "title": "Markdown viewer",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-markdown-viewer-005",
+          "stage": "prd",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Markdown viewer PRD"
         }
       ],
       "tasks": {

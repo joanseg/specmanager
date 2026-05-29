@@ -1,0 +1,169 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-rename-execute-command-to-build",
+      "title": "Rename commands/specmanager-execute.md → specmanager-build.md and flip its in-file copy",
+      "status": "done",
+      "phase": "Rename",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "47e0feee86560efa910cc33b782b87c7452be70c"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-build.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-29T10:38:27.996Z",
+      "updatedAt": "2026-05-29T10:56:32.652Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-rename-execute-command-to-build",
+      "title": "Flip board UI slash strings + tooltips in ui/src/App.tsx and ui/src/BuildPanel.tsx",
+      "status": "done",
+      "phase": "Rename",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "7bd01ea02e66efc62f4b24ecd1d22bbf00f82c67"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/App.tsx",
+          "plugins/specmanager/ui/src/BuildPanel.tsx"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-29T10:38:32.800Z",
+      "updatedAt": "2026-05-29T10:57:14.192Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-rename-execute-command-to-build",
+      "title": "Update the managed-CLAUDE.md generator string in server/src/core/claude-md.ts",
+      "status": "done",
+      "phase": "Rename",
+      "complexity": 1,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "527f5a2d5a21beb63629fe62d9f4ca413513569f"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/claude-md.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-29T10:38:36.475Z",
+      "updatedAt": "2026-05-29T10:58:16.744Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-rename-execute-command-to-build",
+      "title": "Update the get_next_phase description copy in server/src/mcp.ts",
+      "status": "done",
+      "phase": "Rename",
+      "complexity": 1,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "ea81f4e631f01d5638d326f68974f77516b55544"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/mcp.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-29T10:38:36.506Z",
+      "updatedAt": "2026-05-29T10:58:39.065Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-rename-execute-command-to-build",
+      "title": "Rename the internal self-test to selftest-build (file, temp-dir prefix, npm script)",
+      "status": "done",
+      "phase": "Rename",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "ec31f9fcb4f62adde01f4498fb28f85bd363d593"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest-build.ts",
+          "plugins/specmanager/server/package.json"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-29T10:38:38.993Z",
+      "updatedAt": "2026-05-29T11:24:18.125Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-rename-execute-command-to-build",
+      "title": "Rewrite live docs (README.md) and regenerate CLAUDE.md via sync_claude_md",
+      "status": "done",
+      "phase": "Rename",
+      "complexity": 1,
+      "dependsOn": [
+        "task-003",
+        "task-005"
+      ],
+      "artifacts": {
+        "commits": [
+          "aaffc44f8019a710bf7579143d157ac2ecaba7b5"
+        ],
+        "files": [
+          "README.md",
+          "CLAUDE.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-29T10:38:43.612Z",
+      "updatedAt": "2026-05-29T11:27:31.760Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-rename-execute-command-to-build",
+      "title": "Build, fresh UI bundle, and run the verification checklist (selftest-build, grep, plugin validate)",
+      "status": "done",
+      "phase": "Rename",
+      "complexity": 1,
+      "dependsOn": [
+        "task-001",
+        "task-002",
+        "task-003",
+        "task-004",
+        "task-005",
+        "task-006"
+      ],
+      "artifacts": {
+        "commits": [
+          "347862a740799dd0fee18c79de1014b84e0bdf76"
+        ],
+        "files": [
+          "plugins/specmanager/server/dist/selftest-build.js",
+          "plugins/specmanager/server/dist/core/claude-md.js",
+          "plugins/specmanager/server/dist/mcp.js",
+          "plugins/specmanager/ui/dist/assets/index-DP0vDYOx.js",
+          "plugins/specmanager/ui/dist/index.html"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-29T10:38:49.726Z",
+      "updatedAt": "2026-05-29T11:37:50.632Z"
+    }
+  ]
+}
