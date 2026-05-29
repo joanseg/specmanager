@@ -136,12 +136,12 @@ function BuildCell({
   }
   const donePct = Math.round((tasks.done / Math.max(1, tasks.total)) * 100);
   const inProgressPct = Math.round((tasks.in_progress / Math.max(1, tasks.total)) * 100);
-  // Find the next non-done phase to suggest /specmanager-execute.
+  // Find the next non-done phase to suggest /specmanager-build.
   const nextPhase = row.phases?.find(
     (p) => p.status !== "done" && p.status !== "empty"
   );
   const slash = nextPhase
-    ? `/specmanager-execute ${row.id} next`
+    ? `/specmanager-build ${row.id} next`
     : null;
   const onCopy = (e: React.MouseEvent): void => {
     e.stopPropagation();
@@ -175,7 +175,7 @@ function BuildCell({
         <span
           className="card__build-exec"
           onClick={onCopy}
-          title="copy /specmanager-execute next slash command"
+          title="copy /specmanager-build next slash command"
         >
           ▶ {slash}
         </span>
