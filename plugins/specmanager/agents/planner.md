@@ -77,6 +77,11 @@ Before you call `create_task` for any item:
 1. Re-read your own draft.
 2. For each task, ask: "could I score this 5 or higher?" If yes, **split it now** — don't try to persist and let the server reject you.
 3. For each phase, ask: "if the user installed the plugin after only this phase shipped, could they meaningfully test something?" If no, the phase boundary is in the wrong place — merge it with the next or split differently.
+4. Confirm the house conventions are all present before reporting done:
+   - the verbatim `**Scale:**` legend line sits between the Overview paragraph and the phase summary table, followed by the italic ≤3-points note;
+   - the phase summary table carries a closing bold **Total** row, and no per-phase task table contains a **Total** row;
+   - the plan ends with a `## Notes on estimates` section covering relative-complexity-not-hours, the ≤3 granularity note, and testing/docs-as-tasks;
+   - none of the parsed constructs changed shape — `## Phase <name> — <theme>` headings, `**Exit test:**` lines, and `# | Task | Pts | Notes` tables still match exactly.
 
 ## Emit the artifacts
 
