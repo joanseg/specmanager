@@ -1,14 +1,14 @@
 ---
-description: Execute one phase of a SpecManager feature's plan via the builder subagent. Stops at the phase boundary; never advances.
+description: Build one phase of a SpecManager feature's plan via the builder subagent. Stops at the phase boundary; never advances.
 argument-hint: "<featureId or slug> <phaseName | \"next\"> [--force]"
 ---
 
-Execute one phase of the plan for **$ARGUMENTS**.
+Build one phase of the plan for **$ARGUMENTS**.
 
 `$ARGUMENTS` is `<feature> <phaseName | "next"> [--force]`.
 - `next` resolves to the first phase whose tasks aren't all done (`get_next_phase`).
 - Otherwise `<phaseName>` must match a `## Phase <name>` heading from `plan.md` exactly.
-- `--force` lets you execute a phase out of order (e.g. start Phase B while Phase A still has open tasks). Off by default.
+- `--force` lets you build a phase out of order (e.g. start Phase B while Phase A still has open tasks). Off by default.
 
 ## Steps
 
@@ -16,9 +16,9 @@ Execute one phase of the plan for **$ARGUMENTS**.
 2. **Resolve the feature.** `list_features` → match by `id`/`slug`. Stop if not found.
 3. **Check the Plan is approved.** `check_gate({ featureId, stage: "plan" })` must be `ok: true` AND a `plan` doc with `status: "approved"` must exist for this feature (`list_documents({ featureId, stage: "plan" })`). If not approved, report and stop — the builder needs a stable plan to follow.
 4. **Resolve the target phase.**
-   - If `<phaseName> === "next"`: call `get_next_phase({ featureId })`. If it returns `null`, report "All phases done — nothing to execute" and stop.
+   - If `<phaseName> === "next"`: call `get_next_phase({ featureId })`. If it returns `null`, report "All phases done — nothing to build" and stop.
    - Otherwise: `list_phases({ featureId })` and find the entry matching `<phaseName>`. If none, list available phases and stop.
-5. **Order check (unless `--force`).** Read `list_phases({ featureId })` in order. If any phase with a lower `order` than the target phase has `status !== "done"`, refuse: "Phase X has open tasks — execute it first, or pass `--force`." Skip this check when `--force` is present.
+5. **Order check (unless `--force`).** Read `list_phases({ featureId })` in order. If any phase with a lower `order` than the target phase has `status !== "done"`, refuse: "Phase X has open tasks — build it first, or pass `--force`." Skip this check when `--force` is present.
 6. **Idempotency.** If the target phase is already `done`, report and stop — suggest `/specmanager-walkthrough <feature> <phaseName>` instead.
 7. **Invoke the builder.** `Task({ subagent_type: "builder", prompt: ... })`. Include:
    - Feature id, title, slug.
