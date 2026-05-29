@@ -203,7 +203,7 @@ export default function BuildPanel({ featureId, featureTitle, onClose }: BuildPa
                   g.total === 0 ? 0 : Math.round((g.counts.in_progress / g.total) * 100);
                 const allDone = g.total > 0 && g.counts.done === g.total;
                 const isCollapsed = collapsed[g.name] ?? false;
-                const slash = `/specmanager-execute ${featureId} ${g.name}`;
+                const slash = `/specmanager-build ${featureId} ${g.name}`;
                 const copySlash = (e: React.MouseEvent): void => {
                   e.stopPropagation();
                   void navigator.clipboard?.writeText(slash);
@@ -227,7 +227,7 @@ export default function BuildPanel({ featureId, featureTitle, onClose }: BuildPa
                       <button
                         type="button"
                         className="phase-group__cmd"
-                        title="copy /specmanager-execute slash command"
+                        title="copy /specmanager-build slash command"
                         onClick={copySlash}
                       >
                         {slash}
