@@ -26,9 +26,25 @@ Create the architectural and plan document in ./docs/architecure-design-feature.
 
 Who to share with:
 
+- Fernando
 - Andre
 - vibecoding club
 - Udemy instructur
 - reddit
 - 
 - Zartis
+
+
+Improvements
+- remove the /feature command, the /prd should create it automatically
+- when a phase is finished the walkthough of that phase should be created automatically, when all phases are finished the feature walktrhough is created automatically, if it just one phase, three is no feature walkthough.
+- was the Design.md and claude.md files revisited after feature executed? no, it has to be reviewd.
+- Move the build after the Plan and rename execute command to build
+- Readme file needs redoing
+- refine skills:
+    - Walkthough agent should do walkthoughs like the ones under /docs
+    - Plan agent should do plans like
+
+- Markdown editor should be wysiwig
+- Create a design review hook, at the end of a feature build, it runs a design comparison between the as buil and the design provided. As result appends an extra phase to the plan with the design polish suggestions
+- automate the need to kill claud etc

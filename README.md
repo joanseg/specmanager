@@ -6,6 +6,8 @@ Claude *drafts* each stage from the previous approved one **and your existing co
 
 ---
 
+![Happy Specmanager](assets/spemanager-image.png)
+
 ## Quick start
 
 ```text
