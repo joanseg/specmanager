@@ -2,7 +2,7 @@
 id: arch-rename-execute-command-to-build-002
 featureId: feat-rename-execute-command-to-build
 stage: architecture
-status: draft
+status: approved
 stale: false
 title: Rename execute command to build architecture
 dependsOn:
@@ -12,7 +12,7 @@ basedOn:
 generatedBy: agent
 version: 1
 createdAt: '2026-05-28T19:55:20.787Z'
-updatedAt: '2026-05-28T19:55:20.787Z'
+updatedAt: '2026-05-29T10:02:45.883Z'
 ---
 ## Summary
 
