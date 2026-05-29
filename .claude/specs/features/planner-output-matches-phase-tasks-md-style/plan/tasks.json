@@ -4,24 +4,28 @@
       "id": "task-001",
       "featureId": "feat-planner-output-matches-phase-tasks-md-style",
       "title": "Add the Scale legend + ≤3 note and the Total row mandates to ## What a good Plan doc contains",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-planner-output-matches-phase-tasks-md-style-002",
       "phase": "A",
       "complexity": 2,
       "dependsOn": [],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "2b0912af475095f76c1e519b89013c1f3edeca87"
+        ],
+        "files": [
+          "plugins/specmanager/agents/planner.md"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-28T20:45:16.305Z",
-      "updatedAt": "2026-05-28T20:45:16.305Z"
+      "updatedAt": "2026-05-29T09:26:43.680Z"
     },
     {
       "id": "task-002",
       "featureId": "feat-planner-output-matches-phase-tasks-md-style",
       "title": "Add the ## Notes on estimates section + testing/docs-as-tasks framing mandate to ## What a good Plan doc contains",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-planner-output-matches-phase-tasks-md-style-002",
       "phase": "A",
       "complexity": 2,
@@ -29,18 +33,22 @@
         "task-001"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "1989001bde5e5300ef729082c97f25233273d74c"
+        ],
+        "files": [
+          "plugins/specmanager/agents/planner.md"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-28T20:45:20.083Z",
-      "updatedAt": "2026-05-28T20:45:20.083Z"
+      "updatedAt": "2026-05-29T09:27:02.660Z"
     },
     {
       "id": "task-003",
       "featureId": "feat-planner-output-matches-phase-tasks-md-style",
       "title": "Mirror all four mandates as matching items in ## Self-check before persisting",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-planner-output-matches-phase-tasks-md-style-002",
       "phase": "A",
       "complexity": 1,
@@ -49,18 +57,22 @@
         "task-002"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "e6c149eaa82d0b713fde406a1b27efe98f579611"
+        ],
+        "files": [
+          "plugins/specmanager/agents/planner.md"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-28T20:45:23.776Z",
-      "updatedAt": "2026-05-28T20:45:23.776Z"
+      "updatedAt": "2026-05-29T09:27:20.553Z"
     },
     {
       "id": "task-004",
       "featureId": "feat-planner-output-matches-phase-tasks-md-style",
       "title": "Verification pass: generate/inspect a plan and confirm the four deltas against docs/phase-tasks.md",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-planner-output-matches-phase-tasks-md-style-002",
       "phase": "A",
       "complexity": 1,
@@ -70,12 +82,19 @@
         "task-003"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "2b0912af475095f76c1e519b89013c1f3edeca87",
+          "1989001bde5e5300ef729082c97f25233273d74c",
+          "e6c149eaa82d0b713fde406a1b27efe98f579611"
+        ],
+        "files": [
+          "plugins/specmanager/agents/planner.md",
+          "docs/phase-tasks.md"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-28T20:45:27.354Z",
-      "updatedAt": "2026-05-28T20:45:27.354Z"
+      "updatedAt": "2026-05-29T09:27:43.871Z"
     }
   ]
 }

@@ -178,11 +178,11 @@ html, body, #root {
   display: flex;
   min-height: 5.5rem;
   /* Row-direction flex (flex:1 on the card drives full column width on the main
-   * axis; the cross axis is vertical). Bottom-align so a capped stage card pins
-   * to the bottom of a taller row track (driven by the BUILD glance or a tall
-   * Walkthroughs sub-card stack) instead of floating at the top with a gap —
-   * preserving the Phase C bottom-aligned invariant. */
-  align-items: flex-end;
+   * axis; the cross axis is vertical). Top-align so a capped stage card pins
+   * to the top of a taller row track (driven by the BUILD glance or a tall
+   * Walkthroughs sub-card stack) instead of sinking to the bottom with a gap
+   * above it. */
+  align-items: flex-start;
 }
 /* The card fills the cell in both axes: flex:1 takes the full track height,
  * align-self: stretch (flex default) gives it the full column width. */
@@ -190,7 +190,7 @@ html, body, #root {
 .row__cell > .card--button {
   flex: 1;
   /* flex:1 (main = horizontal) gives full column width; with the cell
-   * bottom-aligned (align-items: flex-end) the vertical size is the card's own
+   * top-aligned (align-items: flex-start) the vertical size is the card's own
    * height. Pin stage cards to one compact mock height so a sparse row no longer
    * stretches them to the tall track (~206–226px in Phase C) — they stay equal
    * to each other and bottom-aligned, with title + badges + version fitting

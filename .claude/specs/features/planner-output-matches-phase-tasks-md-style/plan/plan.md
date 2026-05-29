@@ -2,7 +2,7 @@
 id: plan-planner-output-matches-phase-tasks-md-style-002
 featureId: feat-planner-output-matches-phase-tasks-md-style
 stage: plan
-status: draft
+status: approved
 stale: false
 title: Planner output matches phase-tasks.md style plan
 dependsOn:
@@ -14,7 +14,7 @@ basedOn:
 generatedBy: agent
 version: 1
 createdAt: '2026-05-28T20:45:11.622Z'
-updatedAt: '2026-05-28T20:45:11.622Z'
+updatedAt: '2026-05-29T09:24:30.290Z'
 ---
 ## Overview
 
