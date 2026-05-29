@@ -1,12 +1,12 @@
 // Phase 7.B smoke test — phased build loop:
-//   plan (phased) → execute phase A → walkthrough phase A
-//   → execute phase B → walkthrough phase B.
+//   plan (phased) → build phase A → walkthrough phase A
+//   → build phase B → walkthrough phase B.
 //
 // Exercises core directly (no subagent spawn) — it simulates what the builder
 // would do via the same MCP tools: update_task with artifacts, then check_gate,
 // then create_document with `phase`. The agent prompt is the orthogonal half.
 //
-// Usage: node dist/selftest-execute.js
+// Usage: node dist/selftest-build.js
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -17,7 +17,7 @@ function assert(cond, msg) {
     console.log(`ok — ${msg}`);
 }
 async function main() {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "specmanager-execute-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "specmanager-build-"));
     console.log(`tmp project: ${root}`);
     await initProject(root);
     const feature = await createFeature("Phased loop", root);
@@ -197,4 +197,4 @@ main().catch((err) => {
     console.error(err);
     process.exit(1);
 });
-//# sourceMappingURL=selftest-execute.js.map
+//# sourceMappingURL=selftest-build.js.map

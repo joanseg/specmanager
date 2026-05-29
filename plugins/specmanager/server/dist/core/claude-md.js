@@ -66,7 +66,7 @@ export async function renderBlock(root = projectRoot()) {
     lines.push("**Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation.");
     lines.push("");
     lines.push("**Commands:**");
-    lines.push("`/specmanager-feature` · `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-execute` · `/specmanager-walkthrough` · `/specmanager-board`");
+    lines.push("`/specmanager-feature` · `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board`");
     lines.push("");
     lines.push(`_Last synced: ${m.generatedAt}_`);
     lines.push(END);
