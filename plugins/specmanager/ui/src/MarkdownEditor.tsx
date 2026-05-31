@@ -13,8 +13,11 @@ import {
   toggleStrongCommand,
   toggleEmphasisCommand,
   wrapInHeadingCommand,
+  wrapInBulletListCommand,
+  toggleLinkCommand,
+  createCodeBlockCommand,
 } from "@milkdown/preset-commonmark";
-import { gfm } from "@milkdown/preset-gfm";
+import { gfm, insertTableCommand } from "@milkdown/preset-gfm";
 import { listener, listenerCtx } from "@milkdown/plugin-listener";
 import { callCommand, replaceAll } from "@milkdown/utils";
 import MarkdownToolbar, { ToolbarAction } from "./MarkdownToolbar";
@@ -38,6 +41,20 @@ function runAction(editor: Editor, action: ToolbarAction, payload?: unknown): vo
         break;
       case "heading":
         callCommand(wrapInHeadingCommand.key, (payload as number) ?? 1)(ctx);
+        break;
+      case "bulletList":
+        callCommand(wrapInBulletListCommand.key)(ctx);
+        break;
+      case "link": {
+        const href = (payload as string) ?? "";
+        callCommand(toggleLinkCommand.key, { href })(ctx);
+        break;
+      }
+      case "table":
+        callCommand(insertTableCommand.key, { row: 3, col: 3 })(ctx);
+        break;
+      case "codeBlock":
+        callCommand(createCodeBlockCommand.key)(ctx);
         break;
     }
   });
@@ -152,6 +169,12 @@ export default function MarkdownEditor({ value, readOnly, onChange }: MarkdownEd
   const onAction = (action: ToolbarAction, payload?: unknown): void => {
     const editor = editorRef.current;
     if (!editor || readOnly) return;
+    if (action === "link" && payload === undefined) {
+      const href = window.prompt("Link URL");
+      if (href === null) return; // cancelled
+      runAction(editor, action, href);
+      return;
+    }
     runAction(editor, action, payload);
   };
 
