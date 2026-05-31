@@ -536,6 +536,118 @@ html, body, #root {
 }
 .panel__toggle input { accent-color: var(--primary); }
 
+/* ===== Markdown WYSIWYG editor + formatting toolbar (Phase 2) =========
+ * Toolbar bar above a scrollable surface. Full reading-column / surface
+ * polish lands in Phase 3; these are the toolbar rules the toolbar phase
+ * needs to render and be testable. All token-driven (design `.md-toolbar`). */
+.md-editor {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.md-surface { flex: 1; overflow: auto; }
+
+.md-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.45rem 1.25rem;
+  border-bottom: 1px solid var(--outline-variant);
+  background: var(--surface-container);
+}
+.md-toolbar .tb-spacer { flex: 1; }
+.tb-sep {
+  width: 1px;
+  align-self: stretch;
+  margin: 0.25rem 0.4rem;
+  background: var(--outline-variant);
+}
+.tb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.85rem;
+  height: 1.85rem;
+  padding: 0 0.45rem;
+  background: transparent;
+  color: var(--on-surface-variant);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.tb-btn:hover:not(:disabled) {
+  color: var(--on-surface);
+  border-color: var(--outline-variant);
+  background: var(--surface-container-high);
+}
+.tb-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.tb-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.tb-btn b { font-weight: 700; }
+.tb-btn i { font-style: italic; }
+.tb-btn .mono { font-family: var(--font-mono); font-size: 0.74rem; }
+.tb-btn .caret { font-size: 0.6rem; margin-left: 0.2rem; opacity: 0.7; }
+/* Active / selected — the mark covering the selection is on. */
+.tb-btn--active {
+  color: var(--primary);
+  border-color: color-mix(in srgb, var(--primary) 55%, var(--outline-variant));
+  background: var(--tb-active-bg, color-mix(in srgb, var(--primary) 14%, transparent));
+}
+
+/* Heading level-picker popover + overflow menu (tasks 010 / 011). */
+.tb-pop-wrap { position: relative; display: inline-flex; }
+.tb-menu {
+  position: absolute;
+  top: calc(100% + 0.3rem);
+  left: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  min-width: 8rem;
+  padding: 0.25rem;
+  background: var(--surface-container-high);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-overlay);
+}
+.tb-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  background: transparent;
+  color: var(--on-surface);
+  border: 0;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  text-align: left;
+  cursor: pointer;
+}
+.tb-menu__item:hover { background: var(--surface-container-highest); }
+
+/* Read-only hint row shown in place of the toolbar on approved docs. */
+.ro-hint {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--on-surface-variant);
+  padding: 0.45rem 1.25rem;
+  border-bottom: 1px solid var(--outline-variant);
+  background: var(--surface-container-low);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.ro-hint .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 6px var(--success);
+}
+
 .btn {
   background: var(--surface-container-high);
   color: var(--on-surface);
