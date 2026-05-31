@@ -46,5 +46,5 @@ Improvements
     - Plan agent should do plans like
 
 - Markdown editor should be wysiwig
-- Create a design review hook, at the end of a feature build, it runs a design comparison between the as buil and the design provided. As result appends an extra phase to the plan with the design polish suggestions
+- The plan should always allocate a task at the end of the plan in order to review the UIs agains the provided designs in the design phase, if there are no designs in the design step then this task is not needed. The design reviewr task should use the claude code /chrome extension in order to verify the actual look and feel of the UIs in the browser.
 - automate the need to kill claud etc

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-29T11:54:02.683Z",
+  "generatedAt": "2026-05-31T14:46:36.670Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -168,7 +168,7 @@
         {
           "id": "wt-rename-execute-command-to-build-006",
           "stage": "walkthrough",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
           "version": 1,
           "title": "Rename execute command to build — Phase Rename walkthrough",
@@ -190,7 +190,7 @@
           "inProgressCount": 0,
           "status": "done",
           "walkthroughId": "wt-rename-execute-command-to-build-006",
-          "walkthroughStatus": "draft",
+          "walkthroughStatus": "approved",
           "walkthroughStale": false
         }
       ]
@@ -266,7 +266,7 @@
           "stage": "prd",
           "status": "draft",
           "stale": false,
-          "version": 1,
+          "version": 2,
           "title": "Post-phase design conformance check PRD"
         }
       ],
@@ -287,19 +287,77 @@
         {
           "id": "prd-markdown-viewer-005",
           "stage": "prd",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
-          "version": 1,
+          "version": 3,
           "title": "Markdown viewer PRD"
+        },
+        {
+          "id": "arch-markdown-viewer-004",
+          "stage": "architecture",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Markdown viewer architecture"
+        },
+        {
+          "id": "design-markdown-viewer-001",
+          "stage": "design",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Markdown viewer mockups"
+        },
+        {
+          "id": "plan-markdown-viewer-004",
+          "stage": "plan",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Markdown viewer plan"
         }
       ],
       "tasks": {
-        "todo": 0,
+        "todo": 12,
         "in_progress": 0,
-        "done": 0,
-        "total": 0
+        "done": 6,
+        "total": 18
       },
-      "phases": []
+      "phases": [
+        {
+          "name": "Surface swap",
+          "order": 0,
+          "taskCount": 6,
+          "doneCount": 6,
+          "inProgressCount": 0,
+          "status": "done",
+          "walkthroughId": null,
+          "walkthroughStatus": null,
+          "walkthroughStale": null
+        },
+        {
+          "name": "Toolbar",
+          "order": 1,
+          "taskCount": 6,
+          "doneCount": 0,
+          "inProgressCount": 0,
+          "status": "todo",
+          "walkthroughId": null,
+          "walkthroughStatus": null,
+          "walkthroughStale": null
+        },
+        {
+          "name": "Reading and tables",
+          "order": 2,
+          "taskCount": 6,
+          "doneCount": 0,
+          "inProgressCount": 0,
+          "status": "todo",
+          "walkthroughId": null,
+          "walkthroughStatus": null,
+          "walkthroughStale": null
+        }
+      ]
     }
   ]
 }

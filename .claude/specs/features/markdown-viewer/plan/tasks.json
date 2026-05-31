@@ -1,0 +1,372 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-markdown-viewer",
+      "title": "Add Milkdown + remark/remark-gfm deps to ui/package.json and verify vite build",
+      "status": "done",
+      "stageRef": "plan-markdown-viewer-004",
+      "phase": "Surface swap",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "2acae74cacfda9842e8a223563c52ff65a4e9cde"
+        ],
+        "files": [
+          "plugins/specmanager/ui/package.json",
+          "plugins/specmanager/ui/package-lock.json"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-31T13:49:27.482Z",
+      "updatedAt": "2026-05-31T14:12:36.985Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-markdown-viewer",
+      "title": "Create MarkdownEditor.tsx mounting Milkdown with remark serializer (value/readOnly/onChange props)",
+      "status": "done",
+      "stageRef": "plan-markdown-viewer-004",
+      "phase": "Surface swap",
+      "complexity": 3,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "c6293221f28fba25fc44ce21d5b77a3f426bf85e"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/MarkdownEditor.tsx"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-31T13:49:53.184Z",
+      "updatedAt": "2026-05-31T14:17:04.964Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-markdown-viewer",
+      "title": "Implement external-value-sync and read-only-reconfigure effects in MarkdownEditor (echo-guard)",
+      "status": "done",
+      "stageRef": "plan-markdown-viewer-004",
+      "phase": "Surface swap",
+      "complexity": 3,
+      "dependsOn": [
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [
+          "eeba45c7eb71e0f5717310ba80dc26d291f9bcfc"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/MarkdownEditor.tsx"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-31T13:49:59.303Z",
+      "updatedAt": "2026-05-31T14:19:39.631Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-markdown-viewer",
+      "title": "Swap MarkdownEditor into DocPanel for markdown stages; remove marked.parse preview and showPreview toggle",
+      "status": "done",
+      "stageRef": "plan-markdown-viewer-004",
+      "phase": "Surface swap",
+      "complexity": 3,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [
+          "b7a688aa150e824d82652aa5b3990fcccc4ee633"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/DocPanel.tsx"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-31T13:50:03.137Z",
+      "updatedAt": "2026-05-31T14:22:58.658Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-markdown-viewer",
+      "title": "Make the design (HTML) stage iframe-only: drop the HTML source-editor column, keep the sandboxed iframe",
+      "status": "done",
+      "stageRef": "plan-markdown-viewer-004",
+      "phase": "Surface swap",
+      "complexity": 1,
+      "dependsOn": [
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [
+          "00590d2b0ccfd84a57ea3e6e199b54a1923dc8af"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/DocPanel.tsx"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-31T13:50:20.061Z",
+      "updatedAt": "2026-05-31T14:24:32.601Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-markdown-viewer",
+      "title": "Add server/src/selftest-roundtrip.ts asserting byte-clean parse→serialize over real repo docs; wire npm script",
+      "status": "done",
+      "stageRef": "plan-markdown-viewer-004",
+      "phase": "Surface swap",
+      "complexity": 3,
+      "dependsOn": [
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [
+          "034265904c81b19bb0f9cb521e5c2760c0ed19cf"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest-roundtrip.ts",
+          "plugins/specmanager/server/package.json",
+          "plugins/specmanager/server/package-lock.json"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-05-31T13:50:23.841Z",
+      "updatedAt": "2026-05-31T14:42:19.094Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-markdown-viewer",
+      "title": "Create MarkdownToolbar.tsx with always-visible Bold/Italic/Heading dispatching Milkdown commands; disabled mirrors readOnly",
+      "status": "todo",
+      "stageRef": "plan-markdown-viewer-004",
+      "phase": "Toolbar",
+      "complexity": 3,
+      "dependsOn": [
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-31T13:50:28.123Z",
+      "updatedAt": "2026-05-31T13:50:28.123Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-markdown-viewer",
+      "title": "Add Bullet list / Link / Table / Code block toolbar actions (bulletList/link/table/codeBlock commands)",
+      "status": "todo",
+      "stageRef": "plan-markdown-viewer-004",
+      "phase": "Toolbar",
+      "complexity": 2,
+      "dependsOn": [
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-31T13:50:46.293Z",
+      "updatedAt": "2026-05-31T13:50:46.293Z"
+    },
+    {
+      "id": "task-009",
+      "featureId": "feat-markdown-viewer",
+      "title": "Implement active-mark state: light the matching button (aria-pressed, --tb-active-bg) from the ProseMirror selection",
+      "status": "todo",
+      "stageRef": "plan-markdown-viewer-004",
+      "phase": "Toolbar",
+      "complexity": 3,
+      "dependsOn": [
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-31T13:51:05.796Z",
+      "updatedAt": "2026-05-31T13:51:05.796Z"
+    },
+    {
+      "id": "task-010",
+      "featureId": "feat-markdown-viewer",
+      "title": "Implement the H ▾ heading level-picker popover (H1/H2/H3 menu, not click-cycle)",
+      "status": "todo",
+      "stageRef": "plan-markdown-viewer-004",
+      "phase": "Toolbar",
+      "complexity": 2,
+      "dependsOn": [
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-31T13:51:10.079Z",
+      "updatedAt": "2026-05-31T13:51:10.079Z"
+    },
+    {
+      "id": "task-011",
+      "featureId": "feat-markdown-viewer",
+      "title": "Implement the narrow-width ⋯ overflow menu collapsing List/Link/Table/Code-block; primary trio stays visible",
+      "status": "todo",
+      "stageRef": "plan-markdown-viewer-004",
+      "phase": "Toolbar",
+      "complexity": 2,
+      "dependsOn": [
+        "task-008"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-31T13:51:14.060Z",
+      "updatedAt": "2026-05-31T13:51:14.060Z"
+    },
+    {
+      "id": "task-012",
+      "featureId": "feat-markdown-viewer",
+      "title": "Render read-only state: hide the toolbar and show the slim \"Approved — read-only\" hint row",
+      "status": "todo",
+      "stageRef": "plan-markdown-viewer-004",
+      "phase": "Toolbar",
+      "complexity": 1,
+      "dependsOn": [
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-31T13:51:33.738Z",
+      "updatedAt": "2026-05-31T13:51:33.738Z"
+    },
+    {
+      "id": "task-013",
+      "featureId": "feat-markdown-viewer",
+      "title": "Widen .panel to min(64rem,68vw) and constrain prose to a centered 72ch column (~62ch with chat)",
+      "status": "todo",
+      "stageRef": "plan-markdown-viewer-004",
+      "phase": "Reading and tables",
+      "complexity": 2,
+      "dependsOn": [
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-31T13:51:47.033Z",
+      "updatedAt": "2026-05-31T13:53:55.499Z"
+    },
+    {
+      "id": "task-014",
+      "featureId": "feat-markdown-viewer",
+      "title": "Add .md-surface / .md-toolbar / .prose styling from tokens.css (toolbar bar, surface, reading column)",
+      "status": "todo",
+      "stageRef": "plan-markdown-viewer-004",
+      "phase": "Reading and tables",
+      "complexity": 2,
+      "dependsOn": [
+        "task-013"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-31T13:54:00.155Z",
+      "updatedAt": "2026-05-31T13:54:00.155Z"
+    },
+    {
+      "id": "task-015",
+      "featureId": "feat-markdown-viewer",
+      "title": "Add .markdown table/th/td rules: collapsed borders, header fill, zebra, padding scoped to .markdown",
+      "status": "todo",
+      "stageRef": "plan-markdown-viewer-004",
+      "phase": "Reading and tables",
+      "complexity": 3,
+      "dependsOn": [
+        "task-014"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-31T13:54:05.664Z",
+      "updatedAt": "2026-05-31T13:54:05.664Z"
+    },
+    {
+      "id": "task-016",
+      "featureId": "feat-markdown-viewer",
+      "title": "Decide and apply the four derived style values (--tb-active-bg, --table-header-bg, zebra, cell border) in tokens.css or inline color-mix",
+      "status": "todo",
+      "stageRef": "plan-markdown-viewer-004",
+      "phase": "Reading and tables",
+      "complexity": 1,
+      "dependsOn": [
+        "task-015"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-31T13:54:10.138Z",
+      "updatedAt": "2026-05-31T13:54:10.138Z"
+    },
+    {
+      "id": "task-017",
+      "featureId": "feat-markdown-viewer",
+      "title": "Wrap wide tables in .tbl-wrap (overflow-x: auto) so they scroll horizontally rather than reflowing",
+      "status": "todo",
+      "stageRef": "plan-markdown-viewer-004",
+      "phase": "Reading and tables",
+      "complexity": 1,
+      "dependsOn": [
+        "task-015"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-31T13:54:24.372Z",
+      "updatedAt": "2026-05-31T13:54:24.372Z"
+    },
+    {
+      "id": "task-018",
+      "featureId": "feat-markdown-viewer",
+      "title": "Remove the dead Editor.tsx and marked dependency after grep-confirming no importer/usage; rebuild and reinstall",
+      "status": "todo",
+      "stageRef": "plan-markdown-viewer-004",
+      "phase": "Reading and tables",
+      "complexity": 3,
+      "dependsOn": [
+        "task-005",
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-05-31T13:55:14.772Z",
+      "updatedAt": "2026-05-31T13:55:14.772Z"
+    }
+  ]
+}

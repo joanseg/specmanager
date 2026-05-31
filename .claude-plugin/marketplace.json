@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "specmanager",
-  "owner": { "name": "specmanager" },
+  "owner": { "name": "specmanager", "url": "https://specmanager.org" },
   "description": "Lifecycle kanban for Claude Code projects (PRD → architecture → plan → tasks → walkthroughs).",
   "plugins": [
     {
