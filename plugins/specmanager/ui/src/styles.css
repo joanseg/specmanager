@@ -844,6 +844,35 @@ html, body, #root {
   color: var(--on-surface-variant);
 }
 
+/* ===== VS Code-quality tables (design Screen 5) =======================
+ * Scoped to .markdown so editing (Milkdown's GFM node) and reading share the
+ * same grid: collapsed 1px borders, a filled header row, even-row zebra, and
+ * comfortable padding. The four derived values are named in tokens.css
+ * (task-016) with the literal color-mix retained as the fallback. */
+.markdown table {
+  border-collapse: collapse;
+  width: auto;
+  max-width: 100%;
+  margin: 0.9rem 0;
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+}
+.markdown th, .markdown td {
+  border: 1px solid var(--table-cell-border, var(--outline-variant));
+  padding: 0.42rem 0.7rem;
+  text-align: left;
+  vertical-align: top;
+}
+.markdown th {
+  background: var(--table-header-bg, var(--surface-container-high));
+  font-weight: 600;
+  color: var(--on-surface);
+  white-space: nowrap;
+}
+.markdown tbody tr:nth-child(even) td {
+  background: var(--table-zebra-bg, color-mix(in srgb, var(--surface-container) 55%, transparent));
+}
+
 .panel__footer {
   padding: 0.4rem 1.25rem;
   border-top: 1px solid var(--outline-variant);
