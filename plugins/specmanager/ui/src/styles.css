@@ -551,13 +551,66 @@ html, body, #root {
  * measure is applied to the ProseMirror editor root (.prose lands on it via
  * editorViewOptions attributes). ~62ch with chat falls out of the narrower
  * --cols-2 body track. */
-.md-surface { flex: 1; overflow: auto; }
+.md-surface {
+  flex: 1;
+  overflow: auto;
+  background: var(--surface);
+}
+.md-surface--ro { background: var(--surface); }
 .md-surface .prose,
 .md-surface .ProseMirror {
   max-width: 72ch;
   margin-inline: auto;
   padding: var(--space-lg) var(--space-md) var(--space-xl);
   color: var(--on-surface);
+  outline: none;
+}
+
+/* Reading column typography (design Screen 1 `.prose` rules). Lifted to
+ * 0.95rem for long-form comfort at the wider measure; reuses the token palette
+ * so editing and reading look identical. */
+.prose h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.3rem;
+  margin: 0.6rem 0 0.8rem;
+  letter-spacing: -0.01em;
+}
+.prose h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 1.3rem 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+.prose h3 { font-size: 0.95rem; margin: 1rem 0 0.4rem; font-weight: 600; }
+.prose p, .prose li { font-size: 0.95rem; line-height: 1.62; }
+.prose p { margin: 0.55rem 0; }
+.prose ul, .prose ol { margin: 0.5rem 0; padding-left: 1.3rem; }
+.prose li { margin: 0.28rem 0; }
+.prose a { color: var(--primary); }
+.prose strong { font-weight: 700; color: var(--on-surface); }
+.prose em { font-style: italic; }
+.prose code {
+  background: var(--surface-container-highest);
+  padding: 0.05rem 0.3rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+}
+.prose pre {
+  background: var(--surface-container-highest);
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--radius-md);
+  overflow: auto;
+  margin: 0.7rem 0;
+}
+.prose pre code { background: transparent; padding: 0; font-size: 0.8rem; line-height: 1.5; }
+.prose blockquote {
+  border-left: 3px solid var(--outline-variant);
+  padding-left: 0.8rem;
+  color: var(--on-surface-variant);
+  margin: 0.7rem 0;
 }
 
 .md-toolbar {
