@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { marked } from "marked";
 import Editor from "./Editor";
+import MarkdownEditor from "./MarkdownEditor";
 import ChatPanel from "./ChatPanel";
 import { fetchDoc, fetchGate, postDocStatus, putDoc } from "./api";
 import { DocFull, Stage } from "./types";
@@ -42,7 +42,6 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
   const [body, setBody] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [save, setSave] = useState<SaveState>({ kind: "idle" });
-  const [showPreview, setShowPreview] = useState<boolean>(true);
   const [showChat, setShowChat] = useState<boolean>(false);
   const [depVersions, setDepVersions] = useState<Record<string, number>>({});
 
@@ -96,12 +95,6 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
   const dirty = useMemo(() => doc !== null && body !== doc.body, [doc, body]);
   const readOnly = doc?.status === "approved";
   const isDesign = doc?.stage === "design";
-  // Design briefs are HTML: render verbatim in a sandboxed iframe. Other stages
-  // are markdown: render via marked.
-  const renderedHtml = useMemo(
-    () => (isDesign ? "" : (marked.parse(body) as string)),
-    [body, isDesign]
-  );
 
   const reload = async (): Promise<void> => {
     const d = await fetchDoc(docId);
@@ -262,14 +255,6 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
           <label className="panel__toggle">
             <input
               type="checkbox"
-              checked={showPreview}
-              onChange={(e) => setShowPreview(e.target.checked)}
-            />
-            Preview
-          </label>
-          <label className="panel__toggle">
-            <input
-              type="checkbox"
               checked={showChat}
               onChange={(e) => setShowChat(e.target.checked)}
             />
@@ -297,28 +282,36 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
 
         <div
           className={`panel__body panel__body--cols-${
-            1 + (showPreview ? 1 : 0) + (showChat ? 1 : 0)
+            (isDesign ? 2 : 1) + (showChat ? 1 : 0)
           }`}
         >
-          <div className="panel__editor">
-            <Editor
-              key={doc.id}
-              value={body}
-              readOnly={!!readOnly}
-              onChange={setBody}
-              language={isDesign ? "html" : "markdown"}
-            />
-          </div>
-          {showPreview && isDesign && (
-            <iframe
-              className="panel__preview panel__preview--iframe"
-              title="design brief preview"
-              sandbox="allow-same-origin"
-              srcDoc={body}
-            />
-          )}
-          {showPreview && !isDesign && (
-            <div className="panel__preview markdown" dangerouslySetInnerHTML={{ __html: renderedHtml }} />
+          {isDesign ? (
+            <>
+              <div className="panel__editor">
+                <Editor
+                  key={doc.id}
+                  value={body}
+                  readOnly={!!readOnly}
+                  onChange={setBody}
+                  language="html"
+                />
+              </div>
+              <iframe
+                className="panel__preview panel__preview--iframe"
+                title="design brief preview"
+                sandbox="allow-same-origin"
+                srcDoc={body}
+              />
+            </>
+          ) : (
+            <div className="panel__editor">
+              <MarkdownEditor
+                key={doc.id}
+                value={body}
+                readOnly={!!readOnly}
+                onChange={setBody}
+              />
+            </div>
           )}
           {showChat && (
             <div className="panel__chat">
