@@ -8,15 +8,39 @@ import {
   serializerCtx,
   remarkStringifyOptionsCtx,
 } from "@milkdown/core";
-import { commonmark } from "@milkdown/preset-commonmark";
+import {
+  commonmark,
+  toggleStrongCommand,
+  toggleEmphasisCommand,
+  wrapInHeadingCommand,
+} from "@milkdown/preset-commonmark";
 import { gfm } from "@milkdown/preset-gfm";
 import { listener, listenerCtx } from "@milkdown/plugin-listener";
-import { replaceAll } from "@milkdown/utils";
+import { callCommand, replaceAll } from "@milkdown/utils";
+import MarkdownToolbar, { ToolbarAction } from "./MarkdownToolbar";
 
 interface MarkdownEditorProps {
   value: string;
   readOnly: boolean;
   onChange: (next: string) => void;
+}
+
+// Maps a toolbar action to the Milkdown command it dispatches. Secondary
+// actions (bulletList/link/table/codeBlock) are wired in task-008.
+function runAction(editor: Editor, action: ToolbarAction, payload?: unknown): void {
+  editor.action((ctx) => {
+    switch (action) {
+      case "bold":
+        callCommand(toggleStrongCommand.key)(ctx);
+        break;
+      case "italic":
+        callCommand(toggleEmphasisCommand.key)(ctx);
+        break;
+      case "heading":
+        callCommand(wrapInHeadingCommand.key, (payload as number) ?? 1)(ctx);
+        break;
+    }
+  });
 }
 
 /**
@@ -125,5 +149,16 @@ export default function MarkdownEditor({ value, readOnly, onChange }: MarkdownEd
     });
   }, [readOnly]);
 
-  return <div ref={hostRef} className="md-surface" />;
+  const onAction = (action: ToolbarAction, payload?: unknown): void => {
+    const editor = editorRef.current;
+    if (!editor || readOnly) return;
+    runAction(editor, action, payload);
+  };
+
+  return (
+    <div className="md-editor">
+      <MarkdownToolbar onAction={onAction} disabled={readOnly} />
+      <div ref={hostRef} className="md-surface" />
+    </div>
+  );
 }
