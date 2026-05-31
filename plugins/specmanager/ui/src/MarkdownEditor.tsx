@@ -140,6 +140,10 @@ export default function MarkdownEditor({ value, readOnly, onChange }: MarkdownEd
         ctx.update(editorViewOptionsCtx, (prev) => ({
           ...prev,
           editable: () => !readOnlyRef.current,
+          // The ProseMirror editor root carries the reading-column + markdown
+          // classes so editing and reading share one set of `.prose`/`.markdown`
+          // rules (design Screen 1/5 — "editing == reading").
+          attributes: { class: "prose markdown" },
         }));
         ctx.get(listenerCtx).markdownUpdated((_ctx, markdown) => {
           if (settingExternal.current) return;
