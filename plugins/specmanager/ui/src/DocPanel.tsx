@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import Editor from "./Editor";
 import MarkdownEditor from "./MarkdownEditor";
 import ChatPanel from "./ChatPanel";
 import { fetchDoc, fetchGate, postDocStatus, putDoc } from "./api";
@@ -281,28 +280,15 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
         )}
 
         <div
-          className={`panel__body panel__body--cols-${
-            (isDesign ? 2 : 1) + (showChat ? 1 : 0)
-          }`}
+          className={`panel__body panel__body--cols-${1 + (showChat ? 1 : 0)}`}
         >
           {isDesign ? (
-            <>
-              <div className="panel__editor">
-                <Editor
-                  key={doc.id}
-                  value={body}
-                  readOnly={!!readOnly}
-                  onChange={setBody}
-                  language="html"
-                />
-              </div>
-              <iframe
-                className="panel__preview panel__preview--iframe"
-                title="design brief preview"
-                sandbox="allow-same-origin"
-                srcDoc={body}
-              />
-            </>
+            <iframe
+              className="panel__preview panel__preview--iframe"
+              title="design brief preview"
+              sandbox="allow-same-origin"
+              srcDoc={body}
+            />
           ) : (
             <div className="panel__editor">
               <MarkdownEditor
