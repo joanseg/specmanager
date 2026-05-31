@@ -627,6 +627,8 @@ html, body, #root {
   cursor: pointer;
 }
 .tb-menu__item:hover { background: var(--surface-container-highest); }
+.tb-menu__item--active { color: var(--primary); }
+.tb-menu__glyph { display: inline-flex; width: 1.2rem; justify-content: center; }
 
 /* Read-only hint row shown in place of the toolbar on approved docs. */
 .ro-hint {
