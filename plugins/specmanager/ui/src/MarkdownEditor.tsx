@@ -225,8 +225,14 @@ export default function MarkdownEditor({ value, readOnly, onChange }: MarkdownEd
 
   return (
     <div className="md-editor">
-      <MarkdownToolbar onAction={onAction} disabled={readOnly} active={active} />
-      <div ref={hostRef} className="md-surface" />
+      {readOnly ? (
+        <div className="ro-hint">
+          <span className="dot" /> Approved — read-only. Choose <b>Edit</b> to reopen as a draft and format.
+        </div>
+      ) : (
+        <MarkdownToolbar onAction={onAction} disabled={readOnly} active={active} />
+      )}
+      <div ref={hostRef} className={`md-surface${readOnly ? " md-surface--ro" : ""}`} />
     </div>
   );
 }
