@@ -4,6 +4,8 @@ A Claude Code plugin that turns your project's lifecycle — **PRD → Architect
 
 Claude *drafts* each stage from the previous approved one **and your existing codebase**; you *edit and approve* in the board. Every artifact is git-tracked markdown, so it diffs, reviews, and travels with the code. Single-user, fully local, no auth, bound to `127.0.0.1`.
 
+[specmanager.org](https://specmanager.org) · MIT licensed
+
 ---
 
 ![Happy Specmanager](assets/spemanager-image.png)
@@ -19,6 +21,9 @@ Claude *drafts* each stage from the previous approved one **and your existing co
 /plugin install specmanager@specmanager
 
 # 3. Restart Claude Code so the MCP server boots (it also starts the board)
+
+# 4. Reconnect MCP server
+If /mcp shows specmanager failed, select it and reconnect.
 
 # 4. In your project, scaffold SpecManager and open the board
 /specmanager-init
@@ -142,3 +147,13 @@ Then reinstall in a test repo:
 - **`/mcp` shows specmanager failed** — select it and reconnect. If it persists, fully restart: quit Claude (`Ctrl-C` twice), `claude daemon stop`, kill stragglers (`ps aux | grep mcp.js`), confirm the port is free (`lsof -nP -iTCP:4317 -sTCP:LISTEN`), then relaunch `claude` from your project.
 - **Board won't open** — the MCP process boots the board server on startup; if it isn't running, restart your Claude session. `/specmanager-board` reports the URL so you can open it manually.
 - **`/reload-plugins` reports a load error** — do the full restart above rather than retrying the reload.
+
+---
+
+## Links
+
+- Website: <https://specmanager.org>
+
+## License
+
+[MIT](LICENSE) © 2026-present [Joanseg](https://github.com/joanseg)

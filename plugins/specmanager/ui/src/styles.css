@@ -96,25 +96,6 @@ html, body, #root {
   color: var(--primary);
   animation: fade 1.2s ease-out;
 }
-.board__rescan {
-  font-family: var(--font-body);
-  font-size: 0.8rem;
-  color: var(--on-surface);
-  background: var(--surface-container-high);
-  border: 1px solid var(--outline-variant);
-  border-radius: var(--radius-md);
-  padding: 0.32rem 0.8rem;
-  cursor: pointer;
-  transition: border-color 0.12s ease, background 0.12s ease;
-}
-.board__rescan:hover {
-  border-color: var(--primary);
-  background: var(--surface-container-highest);
-}
-.board__rescan:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 1px;
-}
 @keyframes fade { from { opacity: 1; } to { opacity: 0.5; } }
 
 .empty {
@@ -156,7 +137,7 @@ html, body, #root {
 .row__label {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   padding: 0.6rem 0.5rem;
 }
 .row__label strong {
@@ -333,9 +314,10 @@ html, body, #root {
 .row__cell--build > .card--button {
   flex: 1;
   min-height: 0;
-  /* The BUILD glance (progress bar + phase rows) sizes to its own content and
-   * must not inherit the stage-card fixed height. */
-  height: auto;
+  /* The BUILD glance pins to the same compact height as the stage cards so the
+   * row reads as one even band (matching .row__cell > .card above). */
+  box-sizing: border-box;
+  height: 5.5rem;
 }
 .card--build {
   background: var(--surface-container-low);

@@ -389,7 +389,6 @@ export default function App() {
   }
   if (!board) return <main className="state">Loading…</main>;
 
-  const lastSynced = new Date(board.generatedAt).toLocaleString();
   return (
     <main className="board">
       <header className="board__header">
@@ -399,14 +398,6 @@ export default function App() {
             {board.features.length} feature{board.features.length === 1 ? "" : "s"}
           </span>
           {lastEvent && <span className="board__pulse">· {lastEvent}</span>}
-          <button
-            type="button"
-            className="board__rescan"
-            onClick={reload}
-            title={`Last synced: ${lastSynced}`}
-          >
-            Rescan
-          </button>
         </div>
       </header>
 

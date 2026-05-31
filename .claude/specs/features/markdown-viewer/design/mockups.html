@@ -1,0 +1,1098 @@
+---
+id: design-markdown-viewer-001
+featureId: feat-markdown-viewer
+stage: design
+status: approved
+stale: false
+title: Markdown viewer mockups
+dependsOn:
+  - prd-markdown-viewer-005
+  - arch-markdown-viewer-004
+basedOn:
+  prd-markdown-viewer-005: 3
+  arch-markdown-viewer-004: 2
+generatedBy: agent
+version: 2
+createdAt: '2026-05-31T13:13:55.513Z'
+updatedAt: '2026-05-31T13:41:27.310Z'
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Markdown viewer — mockups</title>
+<style>
+  /* ===================================================================
+   * Token layer — copied 1:1 from plugins/specmanager/ui/src/tokens.css
+   * (Obsidian Flux). Every color/radius/spacing/font below traces back
+   * to one of these. Self-contained: no external fonts/styles/scripts.
+   * Real fonts (Hanken Grotesk / Inter / Geist Mono) are self-hosted in
+   * the app; the sandbox has no web access, so we fall back to the same
+   * stacks the tokens declare (system-ui / ui-monospace).
+   * =================================================================== */
+  :root {
+    --surface: #131315;
+    --surface-dim: #131315;
+    --surface-bright: #39393b;
+    --surface-container-lowest: #0e0e10;
+    --surface-container-low: #1b1b1d;
+    --surface-container: #201f21;
+    --surface-container-high: #2a2a2c;
+    --surface-container-highest: #353437;
+    --surface-variant: #353437;
+    --background: #131315;
+
+    --on-surface: #e5e1e4;
+    --on-surface-variant: #c7c4d7;
+
+    --outline: #908fa0;
+    --outline-variant: #464554;
+
+    --surface-tint: #c0c1ff;
+    --primary: #c0c1ff;
+    --on-primary: #1000a9;
+    --primary-container: #8083ff;
+    --on-primary-container: #0d0096;
+
+    --secondary: #ddb7ff;
+    --secondary-container: #6f00be;
+
+    --tertiary: #ffb783;
+    --tertiary-container: #d97721;
+
+    --error: #ffb4ab;
+    --on-error: #690005;
+
+    --success: #10b981;
+
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 1rem;
+
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 40px;
+
+    --font-display: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    --shadow-overlay: 0px 20px 50px rgba(0, 0, 0, 0.5);
+    --card-gradient: linear-gradient(135deg, var(--surface-container), var(--surface-container-low));
+    --card-border: color-mix(in srgb, var(--outline-variant) 80%, transparent);
+    --gradient-primary: linear-gradient(135deg, var(--primary-container), var(--secondary-container));
+    --backdrop-dim: rgba(0, 0, 0, 0.55);
+    --glass-edge: color-mix(in srgb, var(--primary) 8%, rgba(24,24,27,0.8));
+
+    --status-draft: var(--tertiary);
+    --status-approved: var(--success);
+    --status-stale: var(--error);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: #0a0a0c;
+    color: var(--on-surface);
+    font-family: var(--font-body);
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- Mockup scaffolding (not part of the product) ---------------- */
+  .sheet {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--space-xl) var(--space-lg) 80px;
+  }
+  .doc-head {
+    border-bottom: 1px solid var(--outline-variant);
+    padding-bottom: var(--space-lg);
+    margin-bottom: var(--space-xl);
+  }
+  .doc-head h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    font-size: 2.1rem;
+    margin: 0 0 0.4rem;
+  }
+  .doc-head p { color: var(--on-surface-variant); margin: 0.3rem 0; line-height: 1.55; max-width: 70ch; }
+  .doc-head code, .sm-note code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: var(--surface-container-highest);
+    color: var(--primary);
+    padding: 0.05rem 0.32rem;
+    border-radius: var(--radius-sm);
+  }
+  .pillrow { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: var(--space-md); }
+  .pill {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.02em;
+    padding: 0.18rem 0.5rem;
+    border-radius: var(--radius-sm);
+    background: var(--surface-container-highest);
+    color: var(--on-surface-variant);
+  }
+
+  .sm-note {
+    max-width: 78ch;
+    margin: var(--space-lg) auto var(--space-xl);
+    padding: var(--space-lg) var(--space-lg);
+    background: var(--surface-container-low);
+    border: 1px solid var(--outline-variant);
+    border-left: 3px solid var(--primary);
+    border-radius: var(--radius-md);
+  }
+  .sm-note h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    font-size: 1.15rem;
+    margin: 0 0 0.5rem;
+  }
+  .sm-note .kicker {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--primary);
+    margin: 0 0 0.3rem;
+  }
+  .sm-note p { line-height: 1.6; color: var(--on-surface); margin: 0.5rem 0; }
+  .sm-note ul { margin: 0.4rem 0; padding-left: 1.2rem; }
+  .sm-note li { line-height: 1.55; margin: 0.3rem 0; color: var(--on-surface); }
+  .sm-note strong { color: var(--on-surface); }
+  .sm-open-questions { border-left-color: var(--tertiary); }
+  .sm-open-questions .kicker { color: var(--tertiary); }
+
+  .sm-screen {
+    margin: 0 auto var(--space-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .frame-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--on-surface-variant);
+    margin-bottom: var(--space-sm);
+    align-self: stretch;
+  }
+  .frame-label b { color: var(--primary); font-weight: 600; }
+
+  /* ---- Board-behind backdrop (the drawer sits over a dimmed board) - */
+  .stage {
+    width: 100%;
+    background:
+      radial-gradient(120% 80% at 20% 0%, #1b1b1f, #0c0c0e 70%);
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .stage::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: var(--backdrop-dim);
+  }
+  /* faint board ghost behind the drawer */
+  .board-ghost {
+    position: absolute;
+    inset: 0;
+    padding: 18px 20px;
+    opacity: 0.5;
+    filter: blur(0.4px);
+  }
+  .board-ghost .bg-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.4rem;
+    color: var(--on-surface);
+    letter-spacing: -0.01em;
+    margin-bottom: 14px;
+  }
+  .bg-grid { display: grid; grid-template-columns: 90px repeat(4, 1fr); gap: 6px; }
+  .bg-cell {
+    height: 46px;
+    background: var(--card-gradient);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+  }
+  .bg-cell.lbl { background: transparent; border: 0; }
+  .bg-cell.dash { background: transparent; border: 1px dashed var(--outline-variant); }
+
+  /* ===== The drawer = .panel (mirrors styles.css .panel) ============ */
+  .panel {
+    position: relative;
+    z-index: 2;
+    width: 64rem;           /* NEW width — "an inch wider" (was 60rem) */
+    max-width: 92%;
+    background: var(--surface);
+    border-left: 1px solid var(--glass-edge);
+    border-top-left-radius: var(--radius-lg);
+    border-bottom-left-radius: var(--radius-lg);
+    box-shadow: var(--shadow-overlay),
+      inset 1px 0 0 color-mix(in srgb, var(--primary) 14%, transparent);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .panel--narrow { width: 60rem; }   /* OLD width, for the before/after */
+
+  .panel__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding: 1rem 1.25rem 0.75rem;
+    border-bottom: 1px solid var(--outline-variant);
+  }
+  .panel__header-main { min-width: 0; flex: 1; }
+  .panel__crumb {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+    color: var(--on-surface-variant);
+    margin-bottom: 0.3rem;
+  }
+  .panel__crumb-sep { color: var(--outline); margin: 0 0.1rem; }
+  .panel__title-row { display: flex; align-items: baseline; gap: 0.75rem; }
+  .panel__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.2rem;
+    letter-spacing: -0.01em;
+  }
+  .panel__meta { color: var(--on-surface-variant); font-size: 0.8rem; }
+  .panel__version { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .panel__badges { display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.5rem; }
+  .panel__header-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+  .panel__close {
+    background: transparent; border: 0; color: var(--on-surface-variant);
+    font-size: 1.4rem; line-height: 1; cursor: pointer; padding: 0.1rem 0.4rem; margin-left: 0.15rem;
+  }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 0.25rem;
+    padding: 0.1rem 0.4rem; border-radius: var(--radius-sm);
+    font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.02em;
+    background: var(--surface-container-highest); color: var(--on-surface-variant);
+  }
+  .badge--draft { color: var(--status-draft); }
+  .badge--approved { color: var(--status-approved); }
+  .badge--stale { color: var(--error); background: color-mix(in srgb, var(--error) 14%, transparent); }
+  .badge--meta { opacity: 0.6; }
+
+  .btn {
+    background: var(--surface-container-high);
+    color: var(--on-surface);
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius-md);
+    padding: 0.32rem 0.75rem;
+    font-family: var(--font-body); font-size: 0.8rem; cursor: pointer;
+  }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn--primary {
+    border-color: color-mix(in srgb, var(--primary-container) 70%, transparent);
+    color: var(--on-surface);
+    background: var(--gradient-primary);
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--primary) 55%, transparent);
+  }
+  .btn--ghost { border-color: transparent; background: transparent; color: var(--on-surface-variant); }
+
+  /* Stale section (unchanged chrome) */
+  .panel__stale {
+    background: color-mix(in srgb, var(--error) 9%, transparent);
+    border-bottom: 1px solid var(--outline-variant);
+    padding: 0.75rem 1.25rem; font-size: 0.85rem;
+  }
+  .panel__stale strong { color: var(--error); }
+  .stale-list { margin: 0.5rem 0 0; padding: 0; list-style: none; font-family: var(--font-mono); font-size: 0.78rem; color: var(--on-surface-variant); }
+  .stale-list__item { padding: 0.15rem 0; }
+  .link { background: transparent; border: 0; color: var(--primary); cursor: pointer; padding: 0; font: inherit; text-decoration: underline; }
+  .drift-tag { background: var(--error); color: var(--on-error); padding: 0 0.3rem; border-radius: var(--radius-sm); margin-left: 0.4rem; font-size: 0.65rem; }
+
+  /* Banners (unchanged chrome) */
+  .banner { padding: 0.55rem 1.25rem; font-size: 0.8rem; display: flex; gap: 0.6rem; align-items: center; border-bottom: 1px solid var(--outline-variant); }
+  .banner--warn { background: color-mix(in srgb, var(--tertiary) 12%, transparent); color: var(--tertiary); }
+  .banner--ok { background: color-mix(in srgb, var(--success) 14%, transparent); color: var(--success); }
+
+  /* ===== NEW: formatting toolbar (replaces the Preview checkbox row) = */
+  .md-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.45rem 1.25rem;
+    border-bottom: 1px solid var(--outline-variant);
+    background: var(--surface-container);
+  }
+  .md-toolbar .tb-spacer { flex: 1; }
+  .tb-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 1.85rem; height: 1.85rem;
+    padding: 0 0.45rem;
+    background: transparent;
+    color: var(--on-surface-variant);
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    cursor: pointer;
+  }
+  .tb-btn:hover { color: var(--on-surface); border-color: var(--outline-variant); background: var(--surface-container-high); }
+  .tb-btn b { font-weight: 700; }
+  .tb-btn i { font-style: italic; }
+  .tb-btn .mono { font-family: var(--font-mono); font-size: 0.74rem; }
+  /* Active / selected state — caret/selection currently has this mark on */
+  .tb-btn--active {
+    color: var(--primary);
+    border-color: color-mix(in srgb, var(--primary) 55%, var(--outline-variant));
+    background: color-mix(in srgb, var(--primary) 14%, transparent);
+  }
+  .tb-sep { width: 1px; align-self: stretch; margin: 0.25rem 0.4rem; background: var(--outline-variant); }
+  .tb-toggle {
+    font-size: 0.78rem; color: var(--on-surface-variant);
+    display: inline-flex; align-items: center; gap: 0.3rem; cursor: default;
+  }
+  .tb-toggle input { accent-color: var(--primary); }
+  /* Heading dropdown caret affordance */
+  .tb-btn .caret { font-size: 0.6rem; margin-left: 0.2rem; opacity: 0.7; }
+
+  /* ===== Body: single WYSIWYG surface ============================== */
+  .panel__body { flex: 1; display: grid; grid-template-columns: 1fr; overflow: hidden; }
+  .panel__body--withchat { grid-template-columns: 1.55fr 1fr; }
+
+  .md-surface {
+    overflow: auto;
+    background: var(--surface);
+    padding: var(--space-lg) var(--space-md) var(--space-xl);
+  }
+  /* Centered prose measure — ~72ch (PRD goal #2 / arch §Layout) */
+  .prose {
+    max-width: 72ch;
+    margin-inline: auto;
+    color: var(--on-surface);
+  }
+  /* Reuse the app's .markdown rules so editing == reading */
+  .prose h1 { font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; margin: 0.6rem 0 0.8rem; letter-spacing: -0.01em; }
+  .prose h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; margin: 1.3rem 0 0.5rem; letter-spacing: -0.01em; }
+  .prose h3 { font-size: 0.95rem; margin: 1rem 0 0.4rem; font-weight: 600; }
+  .prose p, .prose li { font-size: 0.95rem; line-height: 1.62; }
+  .prose p { margin: 0.55rem 0; }
+  .prose ul, .prose ol { margin: 0.5rem 0; padding-left: 1.3rem; }
+  .prose li { margin: 0.28rem 0; }
+  .prose a { color: var(--primary); }
+  .prose strong { font-weight: 700; color: var(--on-surface); }
+  .prose em { font-style: italic; }
+  .prose code {
+    background: var(--surface-container-highest);
+    padding: 0.05rem 0.3rem; border-radius: var(--radius-sm);
+    font-family: var(--font-mono); font-size: 0.82rem;
+  }
+  .prose pre {
+    background: var(--surface-container-highest);
+    padding: 0.7rem 0.85rem; border-radius: var(--radius-md);
+    overflow: auto; margin: 0.7rem 0;
+  }
+  .prose pre code { background: transparent; padding: 0; font-size: 0.8rem; line-height: 1.5; }
+  .prose blockquote { border-left: 3px solid var(--outline-variant); padding-left: 0.8rem; color: var(--on-surface-variant); margin: 0.7rem 0; }
+
+  /* Live caret + selection highlight (for the "editing" screens) */
+  .caret { display: inline-block; width: 2px; height: 1.05em; background: var(--primary); vertical-align: text-bottom; margin: 0 1px; }
+  .sel { background: color-mix(in srgb, var(--primary) 28%, transparent); border-radius: 2px; padding: 0 1px; }
+
+  /* ===== NEW: VS Code-quality table styling ======================== */
+  .prose table {
+    border-collapse: collapse;
+    width: auto;
+    max-width: 100%;
+    margin: 0.9rem 0;
+    font-size: 0.88rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .prose th, .prose td {
+    border: 1px solid var(--outline-variant);
+    padding: 0.42rem 0.7rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  .prose th {
+    background: var(--surface-container-high);
+    font-weight: 600;
+    color: var(--on-surface);
+    white-space: nowrap;
+  }
+  .prose tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--surface-container) 55%, transparent); }
+  .prose td .num { font-family: var(--font-mono); }
+
+  /* Table editing chrome (when the table node is focused in the editor) */
+  .tbl-wrap { position: relative; display: inline-block; max-width: 100%; }
+  .tbl-wrap--editing table { outline: 2px solid color-mix(in srgb, var(--primary) 55%, transparent); outline-offset: 2px; border-radius: 2px; }
+  .tbl-grip {
+    position: absolute; top: -10px; left: -10px;
+    width: 18px; height: 18px;
+    border-radius: var(--radius-sm);
+    background: var(--primary); color: var(--on-primary);
+    font-size: 0.62rem; line-height: 18px; text-align: center;
+    font-family: var(--font-mono);
+  }
+  .tbl-addrow {
+    margin-top: 0.3rem;
+    font-family: var(--font-mono); font-size: 0.72rem;
+    color: var(--primary); opacity: 0.75; cursor: pointer;
+  }
+
+  /* Chat column (unchanged chrome) */
+  .panel__chat { border-left: 1px solid var(--outline-variant); display: flex; flex-direction: column; background: var(--surface); }
+  .chat__header { display: flex; align-items: center; gap: 0.5rem; padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--outline-variant); font-size: 0.8rem; color: var(--on-surface-variant); }
+  .chat__messages { flex: 1; overflow: auto; padding: 0.7rem 0.8rem; display: flex; flex-direction: column; gap: 0.65rem; }
+  .msg { display: flex; flex-direction: column; gap: 0.15rem; }
+  .msg__label { font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--on-surface-variant); }
+  .msg--user .msg__body { background: var(--surface-container); border: 1px solid var(--outline-variant); border-radius: var(--radius-md); padding: 0.4rem 0.6rem; font-size: 0.85rem; line-height: 1.5; }
+  .msg--assistant .msg__body { background: color-mix(in srgb, var(--primary) 5%, transparent); border-left: 2px solid var(--primary); padding: 0.4rem 0.6rem; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 0.85rem; line-height: 1.5; }
+  .chat__composer { display: flex; gap: 0.4rem; padding: 0.5rem 0.6rem; border-top: 1px solid var(--outline-variant); }
+  .chat__composer textarea {
+    flex: 1; background: var(--surface-container-lowest); border: 1px solid var(--outline-variant);
+    border-radius: var(--radius-md); color: var(--on-surface-variant); font-family: var(--font-body);
+    font-size: 0.85rem; padding: 0.4rem 0.5rem; resize: none; height: 2.2rem;
+  }
+
+  /* Footer (unchanged chrome) */
+  .panel__footer {
+    padding: 0.4rem 1.25rem; border-top: 1px solid var(--outline-variant);
+    font-family: var(--font-mono); font-size: 0.72rem; color: var(--on-surface-variant);
+  }
+
+  /* Old (before) split layout reproduction for the width comparison */
+  .panel__body--split { grid-template-columns: 1fr 1fr; }
+  .old-editor {
+    overflow: auto; border-right: 1px solid var(--outline-variant);
+    background: var(--surface-container-lowest);
+    font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.55;
+    color: var(--on-surface-variant); padding: 0.8rem 0.9rem;
+  }
+  .old-editor .ln { display: inline-block; width: 1.6rem; color: var(--outline); user-select: none; }
+  .old-editor .tok-h { color: var(--secondary); }
+  .old-editor .tok-em { color: var(--tertiary); }
+  .old-preview {
+    overflow: auto; padding: 0.9rem 1.1rem; background: var(--surface-container-low);
+    max-width: none;
+  }
+  .old-toolbar {
+    display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.25rem;
+    border-bottom: 1px solid var(--outline-variant);
+  }
+  .old-toolbar .sp { flex: 1; }
+  .old-toggle { font-size: 0.78rem; color: var(--on-surface-variant); display: inline-flex; align-items: center; gap: 0.3rem; }
+  .old-toggle input { accent-color: var(--primary); }
+
+  .callout-bad, .callout-good {
+    align-self: stretch; margin-top: 0.6rem; font-size: 0.78rem;
+    font-family: var(--font-mono); display: flex; gap: 0.5rem; align-items: center;
+  }
+  .callout-bad { color: var(--error); }
+  .callout-good { color: var(--success); }
+
+  /* Read-only treatment */
+  .md-surface--ro { background: var(--surface); }
+  .ro-hint {
+    font-family: var(--font-mono); font-size: 0.72rem; color: var(--on-surface-variant);
+    padding: 0.45rem 1.25rem; border-bottom: 1px solid var(--outline-variant);
+    background: var(--surface-container-low);
+    display: flex; align-items: center; gap: 0.45rem;
+  }
+  .ro-hint .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); box-shadow: 0 0 6px var(--success); }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header class="doc-head">
+    <h1>Markdown viewer — document panel mockups</h1>
+    <p>High-fidelity screens for replacing the board's split <code>Editor</code> + <code>marked</code> preview with a single WYSIWYG markdown surface, a formatting toolbar, a wider reading-width panel, and VS Code-quality tables. Frontend-only; lives in <code>plugins/specmanager/ui/</code>. All chrome — title, version, Save/Approve, status/stale badges, the 409 conflict banner, and chat — is preserved.</p>
+    <p>Everything is drawn with the real Obsidian Flux tokens from <code>tokens.css</code> / <code>styles.css</code>: dark <code>--surface #131315</code>, violet-indigo <code>--primary #c0c1ff</code>, Hanken Grotesk display / Inter body / Geist Mono. The drawer is the existing <code>.panel</code>, now widened from <code>min(60rem,65vw)</code> to <code>min(64rem,68vw)</code>.</p>
+    <div class="pillrow">
+      <span class="pill">feat-markdown-viewer</span>
+      <span class="pill">based on prd-markdown-viewer-005 v3</span>
+      <span class="pill">based on arch-markdown-viewer-004 v2</span>
+      <span class="pill">6 screens</span>
+    </div>
+  </header>
+
+  <!-- ============================================================ -->
+  <!-- SCREEN 1 — Read mode (default open) -->
+  <!-- ============================================================ -->
+  <section class="sm-screen">
+    <div class="frame-label">Screen 1 — <b>Read mode</b> · doc opens, rendered prose at ~72ch, no toggle</div>
+    <div class="stage">
+      <div class="board-ghost" aria-hidden="true">
+        <div class="bg-title">SpecManager</div>
+        <div class="bg-grid">
+          <div class="bg-cell lbl"></div><div class="bg-cell"></div><div class="bg-cell"></div><div class="bg-cell dash"></div><div class="bg-cell dash"></div>
+          <div class="bg-cell lbl"></div><div class="bg-cell"></div><div class="bg-cell"></div><div class="bg-cell"></div><div class="bg-cell dash"></div>
+          <div class="bg-cell lbl"></div><div class="bg-cell"></div><div class="bg-cell dash"></div><div class="bg-cell dash"></div><div class="bg-cell dash"></div>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <header class="panel__header">
+          <div class="panel__header-main">
+            <nav class="panel__crumb">Markdown Viewer <span class="panel__crumb-sep">›</span> PRD</nav>
+            <div class="panel__title-row">
+              <h2 class="panel__title">Markdown viewer PRD</h2>
+              <span class="panel__meta">PRD · <span class="panel__version">v3</span></span>
+            </div>
+            <div class="panel__badges">
+              <span class="badge badge--approved">approved</span>
+              <span class="badge badge--meta">prd-markdown-viewer-005</span>
+              <span class="badge badge--meta">human</span>
+            </div>
+          </div>
+          <div class="panel__header-actions">
+            <button class="btn" disabled>Saved</button>
+            <button class="btn">Edit</button>
+            <button class="btn btn--ghost">Gate?</button>
+            <button class="panel__close">×</button>
+          </div>
+        </header>
+
+        <div class="ro-hint"><span class="dot"></span> Approved — read-only. Choose <b>Edit</b> to reopen as a draft and format.</div>
+
+        <div class="panel__body">
+          <div class="md-surface md-surface--ro">
+            <div class="prose">
+              <h1>Markdown viewer PRD</h1>
+              <h2>Problem</h2>
+              <p>The board's document panel currently splits markdown editing into <strong>two distinct surfaces shown side by side</strong>: a raw CodeMirror source editor on the left and a <code>marked</code>-rendered preview on the right, toggled by a “Preview” checkbox.</p>
+              <p>This split creates real friction for the one person who lives in these documents:</p>
+              <ul>
+                <li><strong>Two mental models for one document.</strong> The author reads finished prose in the preview but edits raw <code>##</code>, <code>-</code>, <code>**bold**</code> syntax in the monospace pane.</li>
+                <li><strong>Half the panel is “wasted” on source.</strong> With Preview on, neither pane reaches a comfortable reading width.</li>
+                <li><strong>Tables render poorly</strong> — weak borders, no header styling, cramped padding.</li>
+              </ul>
+              <h2>Goals</h2>
+              <p>Replace the split editor with one WYSIWYG surface, give rendered prose a comfortable reading width (~65–80 characters per line), and ship a formatting toolbar with bold / italic / heading at minimum.</p>
+            </div>
+          </div>
+        </div>
+
+        <footer class="panel__footer">.claude/specs/features/markdown-viewer/prd/prd.md</footer>
+      </aside>
+    </div>
+  </section>
+
+  <section class="sm-note">
+    <p class="kicker">Screen 1 · Read mode (default)</p>
+    <h2>The panel opens as a document, not as source</h2>
+    <p>This is the dominant case — most panel opens are to <em>review and approve</em>, not to type. The body renders immediately as styled prose in a <strong>centered ~72ch column</strong> (<code>max-width: 72ch; margin-inline: auto</code>), so lines land in the 65–80 char target the PRD asks for. There is no “Preview” checkbox and no monospace pane — the rendered surface <em>is</em> the surface.</p>
+    <ul>
+      <li><strong>Chrome preserved verbatim:</strong> the breadcrumb (<code>Markdown Viewer › PRD</code>), title, <code>v3</code> version, the <code>approved</code> badge, the doc-id / <code>human</code> meta badges, and the Save / Edit / Gate? actions are exactly today's <code>DocPanel</code> header.</li>
+      <li><strong>Read-only because approved:</strong> <code>readOnly = doc.status === "approved"</code>. The formatting toolbar is hidden (see Screen 2 for the editable case); a slim hint row explains why and points at <strong>Edit</strong>.</li>
+      <li><strong>Tokens:</strong> surface <code>--surface</code>, prose reuses the existing <code>.markdown h1/h2/p/li/code</code> rules; body lifted slightly to <code>0.95rem</code> for long-form comfort at the wider measure.</li>
+    </ul>
+    <p>Builder note: this replaces the <code>marked.parse</code> preview path for markdown stages. The wider <code>.panel</code> (<code>min(64rem,68vw)</code>) plus the centered column is what produces the readable measure — the panel is wider but the text column is not.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SCREEN 2 — Edit mode with toolbar (resting) -->
+  <!-- ============================================================ -->
+  <section class="sm-screen">
+    <div class="frame-label">Screen 2 — <b>Edit mode</b> · WYSIWYG surface + formatting toolbar (resting state)</div>
+    <div class="stage">
+      <div class="board-ghost" aria-hidden="true">
+        <div class="bg-title">SpecManager</div>
+        <div class="bg-grid">
+          <div class="bg-cell lbl"></div><div class="bg-cell"></div><div class="bg-cell"></div><div class="bg-cell dash"></div><div class="bg-cell dash"></div>
+          <div class="bg-cell lbl"></div><div class="bg-cell"></div><div class="bg-cell"></div><div class="bg-cell"></div><div class="bg-cell dash"></div>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <header class="panel__header">
+          <div class="panel__header-main">
+            <nav class="panel__crumb">Markdown Viewer <span class="panel__crumb-sep">›</span> Architecture</nav>
+            <div class="panel__title-row">
+              <h2 class="panel__title">Markdown viewer architecture</h2>
+              <span class="panel__meta">Architecture · <span class="panel__version">v2</span></span>
+            </div>
+            <div class="panel__badges">
+              <span class="badge badge--draft">draft</span>
+              <span class="badge badge--meta">arch-markdown-viewer-004</span>
+              <span class="badge badge--meta">human</span>
+            </div>
+          </div>
+          <div class="panel__header-actions">
+            <button class="btn" disabled>Saved</button>
+            <button class="btn btn--primary">Approve</button>
+            <button class="btn btn--ghost">Gate?</button>
+            <button class="panel__close">×</button>
+          </div>
+        </header>
+
+        <!-- The new formatting toolbar replaces the old Preview-checkbox row -->
+        <div class="md-toolbar" role="toolbar" aria-label="Formatting">
+          <button class="tb-btn" title="Bold (⌘B)"><b>B</b></button>
+          <button class="tb-btn" title="Italic (⌘I)"><i>I</i></button>
+          <button class="tb-btn" title="Heading"><span>H</span><span class="caret">▾</span></button>
+          <span class="tb-sep"></span>
+          <button class="tb-btn" title="Bullet list">☰</button>
+          <button class="tb-btn" title="Link">🔗</button>
+          <button class="tb-btn" title="Table">▦</button>
+          <button class="tb-btn" title="Code block"><span class="mono">&lt;/&gt;</span></button>
+          <span class="tb-spacer"></span>
+          <label class="tb-toggle"><input type="checkbox" /> Chat</label>
+        </div>
+
+        <div class="panel__body">
+          <div class="md-surface">
+            <div class="prose">
+              <h1>Markdown viewer architecture</h1>
+              <h2>Summary</h2>
+              <p>Replace the document panel's split <em>raw CodeMirror source + <code>marked</code> HTML preview</em> with a <strong>single WYSIWYG markdown surface</strong> plus a <strong>formatting toolbar</strong>, give the rendered prose a centered reading column, and ship VS Code-quality table styling.<span class="caret"></span></p>
+              <p>This is a <strong>frontend-only</strong> change confined to <code>plugins/specmanager/ui/</code>. The body contract with the board server — markdown in via <code>fetchDoc</code>, markdown out via <code>putDoc</code> carrying <code>baseVersion</code> — is unchanged.</p>
+            </div>
+          </div>
+        </div>
+
+        <footer class="panel__footer">.claude/specs/features/markdown-viewer/architecture/architecture.md</footer>
+      </aside>
+    </div>
+  </section>
+
+  <section class="sm-note">
+    <p class="kicker">Screen 2 · Edit mode — toolbar resting state</p>
+    <h2>One surface to read and write; the toolbar lives with it</h2>
+    <p>A draft opens editable. The caret sits in the prose (end of the Summary paragraph) and what the author edits is already rendered — a heading stays a heading, bold is bold. The old <code>.panel__toolbar</code> row that held the <strong>Preview</strong> checkbox is gone; in its place is the formatting bar (<code>MarkdownToolbar.tsx</code>). The <strong>Chat</strong> toggle survives and moves to the right of the bar.</p>
+    <ul>
+      <li><strong>v1 toolbar set (expanded per PRD answers):</strong> Bold, Italic, Heading — plus Bullet list, Link, Table, Code block. Heading carries a <code>▾</code> caret hinting at the H1/H2/H3 menu.</li>
+      <li><strong>Resting style:</strong> ghost buttons (transparent, <code>--on-surface-variant</code> glyphs) that gain an <code>--outline-variant</code> border + <code>--surface-container-high</code> fill on hover — echoing the existing <code>.btn--ghost</code> language. The bar sits on <code>--surface-container</code>.</li>
+      <li><strong>Both input paths agree:</strong> clicking a button and typing markdown (<code>**bold**</code>, <code># </code>, <code>- </code>) both mutate the same ProseMirror state via Milkdown, so they serialize to one identical markdown string (PRD goal #4).</li>
+    </ul>
+    <p>Builder note: buttons dispatch <code>ToolbarAction</code> commands (<code>"bold" | "italic" | "heading" | "bulletList" | "link" | "table" | "codeBlock"</code>) against the current selection. The whole bar is hidden/disabled when <code>readOnly</code> (Screen 1).</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SCREEN 3 — Toolbar active state + dirty/Save -->
+  <!-- ============================================================ -->
+  <section class="sm-screen">
+    <div class="frame-label">Screen 3 — <b>Toolbar active state</b> · text selected, Bold engaged, panel dirty</div>
+    <div class="stage">
+      <div class="board-ghost" aria-hidden="true">
+        <div class="bg-title">SpecManager</div>
+        <div class="bg-grid">
+          <div class="bg-cell lbl"></div><div class="bg-cell"></div><div class="bg-cell"></div><div class="bg-cell dash"></div><div class="bg-cell dash"></div>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <header class="panel__header">
+          <div class="panel__header-main">
+            <nav class="panel__crumb">Markdown Viewer <span class="panel__crumb-sep">›</span> Architecture</nav>
+            <div class="panel__title-row">
+              <h2 class="panel__title">Markdown viewer architecture</h2>
+              <span class="panel__meta">Architecture · <span class="panel__version">v2</span></span>
+            </div>
+            <div class="panel__badges">
+              <span class="badge badge--draft">draft</span>
+              <span class="badge badge--meta">arch-markdown-viewer-004</span>
+              <span class="badge badge--meta">human</span>
+            </div>
+          </div>
+          <div class="panel__header-actions">
+            <button class="btn">Save</button>
+            <button class="btn btn--primary" disabled title="save your changes first">Approve</button>
+            <button class="btn btn--ghost">Gate?</button>
+            <button class="panel__close">×</button>
+          </div>
+        </header>
+
+        <div class="md-toolbar" role="toolbar" aria-label="Formatting">
+          <button class="tb-btn tb-btn--active" title="Bold (⌘B)" aria-pressed="true"><b>B</b></button>
+          <button class="tb-btn" title="Italic (⌘I)"><i>I</i></button>
+          <button class="tb-btn" title="Heading"><span>H</span><span class="caret">▾</span></button>
+          <span class="tb-sep"></span>
+          <button class="tb-btn" title="Bullet list">☰</button>
+          <button class="tb-btn" title="Link">🔗</button>
+          <button class="tb-btn" title="Table">▦</button>
+          <button class="tb-btn" title="Code block"><span class="mono">&lt;/&gt;</span></button>
+          <span class="tb-spacer"></span>
+          <label class="tb-toggle"><input type="checkbox" /> Chat</label>
+        </div>
+
+        <div class="panel__body">
+          <div class="md-surface">
+            <div class="prose">
+              <h1>Markdown viewer architecture</h1>
+              <h2>Summary</h2>
+              <p>Replace the document panel's split editor with a single WYSIWYG markdown surface plus a <strong><span class="sel">formatting toolbar</span></strong><span class="caret"></span>, give the rendered prose a centered reading column, and ship VS Code-quality table styling.</p>
+              <p>The body contract with the board server — markdown in via <code>fetchDoc</code>, markdown out via <code>putDoc</code> — is unchanged.</p>
+            </div>
+          </div>
+        </div>
+
+        <footer class="panel__footer">.claude/specs/features/markdown-viewer/architecture/architecture.md</footer>
+      </aside>
+    </div>
+  </section>
+
+  <section class="sm-note">
+    <p class="kicker">Screen 3 · Toolbar active / selected state</p>
+    <h2>Selection drives the toolbar's active state</h2>
+    <p>The author has selected the words “formatting toolbar” and applied Bold. Two things change versus Screen 2:</p>
+    <ul>
+      <li><strong>The Bold button reads active</strong> — <code>--primary</code> glyph, a <code>color-mix(--primary 14%)</code> fill, and a primary-tinted border (<code>aria-pressed="true"</code>). This is the required “active/selected” state: any mark covering the current selection lights its button, mirroring VS Code / Notion toolbars.</li>
+      <li><strong>The selection is highlighted</strong> with a <code>--primary 28%</code> wash, and the now-bolded run renders bold inline — no syntax markers shown.</li>
+      <li><strong>Panel goes dirty:</strong> <code>Save</code> enables (<code>dirty = body !== doc.body</code>), and <code>Approve</code> disables until the edit is saved — today's exact gating (“save your changes first”).</li>
+    </ul>
+    <p>Builder note: the toolbar reads active marks from the ProseMirror selection on every transaction; toggling Bold a second time removes the mark and the button returns to resting. <code>onChange</code> emits the serialized markdown so the dirty check and Save flow are unchanged.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SCREEN 4 — Width before/after comparison -->
+  <!-- ============================================================ -->
+  <section class="sm-screen">
+    <div class="frame-label">Screen 4 — <b>Reading width</b> · old cramped split (left) vs. new wide panel + centered column (right)</div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 18px; width:100%;">
+
+      <!-- BEFORE -->
+      <div>
+        <div class="frame-label" style="color:var(--error)">Before — <b style="color:var(--error)">~60rem panel, 1fr/1fr split</b></div>
+        <div class="stage" style="border-radius:var(--radius-md)">
+          <aside class="panel panel--narrow" style="border-radius:var(--radius-md)">
+            <header class="panel__header" style="padding:0.7rem 0.9rem 0.55rem">
+              <div class="panel__header-main">
+                <nav class="panel__crumb">Markdown Viewer <span class="panel__crumb-sep">›</span> PRD</nav>
+                <div class="panel__title-row"><h2 class="panel__title" style="font-size:1rem">Markdown viewer PRD</h2></div>
+              </div>
+              <div class="panel__header-actions"><button class="panel__close">×</button></div>
+            </header>
+            <div class="old-toolbar">
+              <span class="sp"></span>
+              <label class="old-toggle"><input type="checkbox" checked /> Preview</label>
+              <label class="old-toggle"><input type="checkbox" /> Chat</label>
+            </div>
+            <div class="panel__body panel__body--split" style="min-height:220px">
+              <div class="old-editor">
+<span class="ln">1</span><span class="tok-h">## Problem</span><br/>
+<span class="ln">2</span><br/>
+<span class="ln">3</span>The board's document<br/>
+<span class="ln">4</span>panel currently splits<br/>
+<span class="ln">5</span>markdown editing into<br/>
+<span class="ln">6</span><span class="tok-em">**two distinct</span><br/>
+<span class="ln">7</span><span class="tok-em">surfaces**</span> shown side<br/>
+<span class="ln">8</span>by side: a raw editor<br/>
+<span class="ln">9</span>and a preview, toggled<br/>
+<span class="ln">10</span>by a "Preview" box.<br/>
+              </div>
+              <div class="old-preview prose" style="margin:0">
+                <h2 style="margin-top:0.2rem">Problem</h2>
+                <p style="font-size:0.82rem">The board's document panel currently splits markdown editing into <strong>two distinct surfaces</strong> shown side by side: a raw editor and a preview, toggled by a “Preview” box.</p>
+              </div>
+            </div>
+          </aside>
+        </div>
+        <div class="callout-bad">✕ each column ≈ 30rem — wraps to ~38 chars/line, reads cramped</div>
+      </div>
+
+      <!-- AFTER -->
+      <div>
+        <div class="frame-label" style="color:var(--success)">After — <b style="color:var(--success)">~64rem panel, single 72ch column</b></div>
+        <div class="stage" style="border-radius:var(--radius-md)">
+          <aside class="panel" style="border-radius:var(--radius-md); max-width:100%">
+            <header class="panel__header" style="padding:0.7rem 0.9rem 0.55rem">
+              <div class="panel__header-main">
+                <nav class="panel__crumb">Markdown Viewer <span class="panel__crumb-sep">›</span> PRD</nav>
+                <div class="panel__title-row"><h2 class="panel__title" style="font-size:1rem">Markdown viewer PRD</h2></div>
+              </div>
+              <div class="panel__header-actions"><button class="panel__close">×</button></div>
+            </header>
+            <div class="md-toolbar" style="padding:0.4rem 0.9rem">
+              <button class="tb-btn"><b>B</b></button>
+              <button class="tb-btn"><i>I</i></button>
+              <button class="tb-btn"><span>H</span><span class="caret">▾</span></button>
+              <span class="tb-spacer"></span>
+              <label class="tb-toggle"><input type="checkbox" /> Chat</label>
+            </div>
+            <div class="panel__body" style="min-height:220px">
+              <div class="md-surface" style="padding:0.9rem 0.9rem 1.4rem">
+                <div class="prose">
+                  <h2 style="margin-top:0.2rem">Problem</h2>
+                  <p style="font-size:0.86rem">The board's document panel currently splits markdown editing into <strong>two distinct surfaces shown side by side</strong>: a raw CodeMirror source editor and a <code>marked</code>-rendered preview, toggled by a “Preview” checkbox. The author reads finished prose in one pane but edits raw syntax in the other.</p>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+        <div class="callout-good">✓ one column at 72ch — ~72 chars/line, reads as a document</div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="sm-note">
+    <p class="kicker">Screen 4 · Reading width — before / after</p>
+    <h2>Wider panel, narrower text</h2>
+    <p>The width fix is two moves working together (PRD answer #5, arch §Layout):</p>
+    <ul>
+      <li><strong>Widen the panel ~an inch:</strong> <code>.panel</code> goes from <code>width: min(60rem, 65vw)</code> to <code>min(64rem, 68vw)</code>. The dimmed board stays visible behind it.</li>
+      <li><strong>Constrain the prose to a measure:</strong> the single column is capped at <code>max-width: 72ch; margin-inline: auto</code> inside the surface. So even though the <em>panel</em> is wider, the <em>text</em> column is narrower than today's preview pane — landing in the 65–80 char target.</li>
+      <li><strong>The split is gone.</strong> No more <code>1fr / 1fr</code> editor+preview giving each side ~30rem; one centered column gets the room.</li>
+    </ul>
+    <p>The left frame reproduces today's monospace source (line numbers, syntax tokens in <code>--secondary</code>/<code>--tertiary</code>) beside a cramped preview to make the contrast concrete for the builder. Chat still attaches as a column when toggled (Screen 6), which re-narrows the prose — acceptable, since chat sessions are an editing aid, not the reading default.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SCREEN 5 — Table rendering / editing -->
+  <!-- ============================================================ -->
+  <section class="sm-screen">
+    <div class="frame-label">Screen 5 — <b>Tables</b> · VS Code-quality rendering, table node focused for editing</div>
+    <div class="stage">
+      <div class="board-ghost" aria-hidden="true">
+        <div class="bg-title">SpecManager</div>
+        <div class="bg-grid">
+          <div class="bg-cell lbl"></div><div class="bg-cell"></div><div class="bg-cell"></div><div class="bg-cell dash"></div><div class="bg-cell dash"></div>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <header class="panel__header">
+          <div class="panel__header-main">
+            <nav class="panel__crumb">Markdown Viewer <span class="panel__crumb-sep">›</span> Architecture</nav>
+            <div class="panel__title-row">
+              <h2 class="panel__title">Markdown viewer architecture</h2>
+              <span class="panel__meta">Architecture · <span class="panel__version">v2</span></span>
+            </div>
+            <div class="panel__badges">
+              <span class="badge badge--draft">draft</span>
+              <span class="badge badge--meta">arch-markdown-viewer-004</span>
+              <span class="badge badge--meta">human</span>
+            </div>
+          </div>
+          <div class="panel__header-actions">
+            <button class="btn">Save</button>
+            <button class="btn btn--primary" disabled>Approve</button>
+            <button class="btn btn--ghost">Gate?</button>
+            <button class="panel__close">×</button>
+          </div>
+        </header>
+
+        <div class="md-toolbar" role="toolbar" aria-label="Formatting">
+          <button class="tb-btn"><b>B</b></button>
+          <button class="tb-btn"><i>I</i></button>
+          <button class="tb-btn"><span>H</span><span class="caret">▾</span></button>
+          <span class="tb-sep"></span>
+          <button class="tb-btn">☰</button>
+          <button class="tb-btn">🔗</button>
+          <button class="tb-btn tb-btn--active" title="Table" aria-pressed="true">▦</button>
+          <button class="tb-btn"><span class="mono">&lt;/&gt;</span></button>
+          <span class="tb-spacer"></span>
+          <label class="tb-toggle"><input type="checkbox" /> Chat</label>
+        </div>
+
+        <div class="panel__body">
+          <div class="md-surface">
+            <div class="prose">
+              <h2>Library decision</h2>
+              <p>Three candidates were weighed against the existing CodeMirror 6 stack already pinned in <code>package.json</code>:</p>
+
+              <div class="tbl-wrap tbl-wrap--editing">
+                <span class="tbl-grip">▦</span>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Option</th>
+                      <th>Round-trip fidelity</th>
+                      <th>Tables</th>
+                      <th>Verdict</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>CodeMirror 6 + live decorations</td>
+                      <td>Excellent — the document <em>is</em> the markdown string</td>
+                      <td>No table widgets; renders as styled source</td>
+                      <td>Weak on “looks rendered”</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Milkdown</strong> (ProseMirror + remark)</td>
+                      <td>Very good — remark is the round-trip standard</td>
+                      <td>GFM table plugin with editing</td>
+                      <td><strong>Best match to all three</strong></td>
+                    </tr>
+                    <tr>
+                      <td>TipTap (ProseMirror)</td>
+                      <td>Good for HTML; markdown is a secondary export</td>
+                      <td>Table extension (editing-oriented)</td>
+                      <td>Round-trip diffs leak</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="tbl-addrow">＋ add row · ＋ add column</div>
+
+              <p><strong>Recommendation: adopt Milkdown.</strong> A remark-based pipeline is the only candidate whose document model <em>is</em> markdown while still rendering as true WYSIWYG and offering a real GFM table editing experience.</p>
+            </div>
+          </div>
+        </div>
+
+        <footer class="panel__footer">.claude/specs/features/markdown-viewer/architecture/architecture.md</footer>
+      </aside>
+    </div>
+  </section>
+
+  <section class="sm-note">
+    <p class="kicker">Screen 5 · Tables — render &amp; edit</p>
+    <h2>Tables that read like the VS Code preview</h2>
+    <p>This is the architecture's own library-decision table, rendered the way Plans and rollups need (PRD goal #5). New <code>.markdown table/th/td</code> rules (absent today) bring it up to VS Code-preview quality:</p>
+    <ul>
+      <li><strong>Borders:</strong> <code>border-collapse: collapse</code> with 1px <code>--outline-variant</code> on every cell — a clean grid, not the hairline-free mush of today's <code>marked</code> output.</li>
+      <li><strong>Header row:</strong> <code>--surface-container-high</code> fill, weight 600, left-aligned, <code>white-space: nowrap</code> so column labels don't wrap.</li>
+      <li><strong>Padding &amp; zebra:</strong> <code>0.42rem 0.7rem</code> cells for breathing room; even rows get a faint <code>--surface-container</code> tint for scan-ability. <code>tabular-nums</code> keeps numeric columns aligned.</li>
+      <li><strong>Editing affordance:</strong> the focused table node shows a <code>--primary</code> outline, a corner grip handle, and an “add row / add column” control. Because Milkdown's GFM table node reuses the same <code>.markdown</code>-scoped rules, <em>reading and editing look identical</em>.</li>
+    </ul>
+    <p>Builder note: keep the table styling scoped to <code>.markdown</code> so it covers both the editing surface and any non-panel render path. The grip/add-row chrome is editor-only and disappears in read-only/approved docs.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SCREEN 6 — Conflict (409) + chat -->
+  <!-- ============================================================ -->
+  <section class="sm-screen">
+    <div class="frame-label">Screen 6 — <b>Conflict (409) + chat</b> · WYSIWYG surface inside full panel chrome</div>
+    <div class="stage">
+      <div class="board-ghost" aria-hidden="true">
+        <div class="bg-title">SpecManager</div>
+        <div class="bg-grid">
+          <div class="bg-cell lbl"></div><div class="bg-cell"></div><div class="bg-cell"></div><div class="bg-cell dash"></div><div class="bg-cell dash"></div>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <header class="panel__header">
+          <div class="panel__header-main">
+            <nav class="panel__crumb">Markdown Viewer <span class="panel__crumb-sep">›</span> Plan</nav>
+            <div class="panel__title-row">
+              <h2 class="panel__title">Markdown viewer plan</h2>
+              <span class="panel__meta">Plan · <span class="panel__version">v4</span></span>
+            </div>
+            <div class="panel__badges">
+              <span class="badge badge--draft">draft</span>
+              <span class="badge badge--stale">⚠ stale</span>
+              <span class="badge badge--meta">plan-markdown-viewer-006</span>
+              <span class="badge badge--meta">agent</span>
+            </div>
+          </div>
+          <div class="panel__header-actions">
+            <button class="btn">Save</button>
+            <button class="btn btn--primary" disabled>Approve</button>
+            <button class="btn btn--ghost">Gate?</button>
+            <button class="panel__close">×</button>
+          </div>
+        </header>
+
+        <section class="panel__stale">
+          <strong>This doc is stale.</strong> Dependencies have changed since it was based on them.
+          <ul class="stale-list">
+            <li class="stale-list__item">
+              <button class="link">arch-markdown-viewer-004</button>
+              <span> · based on v1 · now v2</span><span class="drift-tag">drift</span>
+            </li>
+          </ul>
+        </section>
+
+        <div class="md-toolbar" role="toolbar" aria-label="Formatting">
+          <button class="tb-btn"><b>B</b></button>
+          <button class="tb-btn"><i>I</i></button>
+          <button class="tb-btn"><span>H</span><span class="caret">▾</span></button>
+          <span class="tb-sep"></span>
+          <button class="tb-btn">☰</button>
+          <button class="tb-btn">🔗</button>
+          <button class="tb-btn">▦</button>
+          <button class="tb-btn"><span class="mono">&lt;/&gt;</span></button>
+          <span class="tb-spacer"></span>
+          <label class="tb-toggle"><input type="checkbox" checked /> Chat</label>
+        </div>
+
+        <div class="banner banner--warn">
+          File changed on disk (now v5). Your edits weren't saved.
+          <button class="link">Reload from disk</button> to merge by hand.
+        </div>
+
+        <div class="panel__body panel__body--withchat">
+          <div class="md-surface" style="padding-left:var(--space-md); padding-right:var(--space-md)">
+            <div class="prose" style="max-width:62ch">
+              <h1>Markdown viewer plan</h1>
+              <h2>Phase 1 — Editor swap</h2>
+              <ul>
+                <li>Add Milkdown + <code>remark-gfm</code> to <code>package.json</code>.</li>
+                <li>Build <code>MarkdownEditor.tsx</code> mirroring <code>Editor</code>'s <code>{ value, readOnly, onChange }</code> props.<span class="caret"></span></li>
+                <li>Swap it into <code>DocPanel</code>; drop <code>marked.parse</code> + the <code>showPreview</code> toggle.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="panel__chat">
+            <div class="chat__header">💬 Chat · plan-markdown-viewer-006</div>
+            <div class="chat__messages">
+              <div class="msg msg--user">
+                <span class="msg__label">you</span>
+                <div class="msg__body">Add a round-trip acceptance test task to Phase 1.</div>
+              </div>
+              <div class="msg msg--assistant">
+                <span class="msg__label">assistant</span>
+                <div class="msg__body">Added “Round-trip: parse → serialize equals input over real repo docs” as task 1.4. Reloading the doc now.</div>
+              </div>
+            </div>
+            <div class="chat__composer">
+              <textarea placeholder="Ask about this plan…"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <footer class="panel__footer">.claude/specs/features/markdown-viewer/plan/plan.md</footer>
+      </aside>
+    </div>
+  </section>
+
+  <section class="sm-note">
+    <p class="kicker">Screen 6 · Conflict (409) + chat — everything still works</p>
+    <h2>The WYSIWYG surface drops cleanly into existing chrome</h2>
+    <p>This is the “nothing else regresses” screen (PRD goal #6). A stale Plan is open with chat on and a save conflict in flight, and every legacy mechanism is intact around the new surface:</p>
+    <ul>
+      <li><strong>Stale section</strong> renders unchanged — the <code>panel__stale</code> block, the dependency <code>drift</code> tag, and the clickable dep id that jumps to <code>arch-markdown-viewer-004</code>.</li>
+      <li><strong>409 conflict banner</strong> is verbatim today's <code>banner--warn</code>: “File changed on disk (now v5)… Reload from disk.” The WYSIWYG layer never touches version logic — <code>putDoc</code> still carries <code>doc.version</code>.</li>
+      <li><strong>Chat column</strong> mounts to the right via <code>.panel__body--withchat</code>; the prose measure narrows to ~62ch to share the width. Chat-driven reloads replace the ProseMirror doc without firing a spurious <code>onChange</code> (same echo-guard as <code>Editor.tsx</code>).</li>
+      <li><strong>Tokens:</strong> banners, badges, stale wash, and chat bubbles all reuse existing classes — no new color enters the system.</li>
+    </ul>
+    <p>Builder note: <code>DocPanel</code>'s save/approve/reopen/gate/stale/conflict logic is kept verbatim; only the editor/preview region of the body is replaced.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- OPEN QUESTIONS -->
+  <!-- ============================================================ -->
+  <section class="sm-note sm-open-questions">
+    <p class="kicker">For the planner</p>
+    <h2>Open questions &amp; design flags</h2>
+    <ul>
+      <li><strong>✅ RESOLVED — Token source confirmed.</strong> These mockups were grounded in the real, shipped Obsidian Flux token layer (<code>plugins/specmanager/ui/src/tokens.css</code> + <code>styles.css</code>) per the architecture. <em>Decision: confirmed correct — this is the right token source.</em> (Note that the repo <code>./docs/DESIGN.md</code> still holds auto-generated stubs (<code>--primary #1A1C1E</code>); if DESIGN.md is ever meant to be canonical it would need a re-sync to match the live tokens, but the live token layer is authoritative for this work.)</li>
+      <li><strong>New tokens introduced (flagged):</strong> nothing new on the color scale — but four <em>style decisions</em> aren't yet in the token system: the toolbar active-state fill (<code>--primary 14%</code> mix), table header fill (reusing <code>--surface-container-high</code>), even-row zebra (<code>--surface-container 55%</code> mix), and the table cell border (<code>--outline-variant</code>). All are derived from existing tokens, but the planner should decide whether to name them (e.g. <code>--tb-active-bg</code>, <code>--table-header-bg</code>) or inline the <code>color-mix</code>.</li>
+      <li><strong>✅ RESOLVED — Heading control UX.</strong> The heading control is <code>H ▾</code> and <em>opens a menu on click</em> to choose the heading level (H1 / H2 / H3) — it does <em>not</em> cycle on click. <em>Decision: menu, not cycle.</em> Builder: <code>MarkdownToolbar</code>'s heading button opens a small level-picker popover and dispatches the chosen level against the current selection.</li>
+      <li><strong>✅ RESOLVED — Toolbar overflow at narrow widths.</strong> At narrow breakpoints, collapse <strong>list / link / table / code-block</strong> into an overflow <code>⋯</code> menu. <strong>Bold / Italic / Heading stay as primary, always-visible buttons</strong>; the remaining four live behind the overflow menu. <em>Decision: primary trio visible + secondary four in a “⋯” menu.</em> Builder: the <code>⋯</code> menu reuses the same <code>ToolbarAction</code> commands as the inline buttons.</li>
+      <li><strong>Read-only hint row.</strong> Screen 1 adds a slim “Approved — read-only” hint where the toolbar would be. This is a small net-new element; confirm it's wanted, or just hide the toolbar with no replacement.</li>
+      <li><strong>✅ RESOLVED — Table on mobile / horizontal scroll.</strong> Wide tables (the 4-col decision table) will overflow the <code>&lt;640px</code> full-width panel. <em>Decision: horizontal scroll within the table wrapper is acceptable</em> — no stacking treatment required. Builder: keep the <code>.tbl-wrap</code> as an <code>overflow-x: auto</code> container so wide tables scroll rather than reflow.</li>
+      <li><strong>Normalization diff on first save.</strong> Not a visual question, but it affects perceived quality: Milkdown's remark round-trip may tidy bullet glyphs / table pipes on the first save of a legacy doc. The arch's Plan-phase round-trip check covers this; the designer assumes the visible result is unchanged.</li>
+    </ul>
+  </section>
+
+</div>
+</body>
+</html>

@@ -2,7 +2,7 @@
 id: wt-rename-execute-command-to-build-006
 featureId: feat-rename-execute-command-to-build
 stage: walkthrough
-status: draft
+status: approved
 stale: false
 title: Rename execute command to build — Phase Rename walkthrough
 dependsOn:
@@ -13,7 +13,7 @@ generatedBy: agent
 version: 1
 phase: Rename
 createdAt: '2026-05-29T11:54:02.671Z'
-updatedAt: '2026-05-29T11:54:02.671Z'
+updatedAt: '2026-05-29T12:20:49.187Z'
 ---
 # Rename execute command to build — Phase Rename walkthrough
 

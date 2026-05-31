@@ -2,6 +2,9 @@
   "name": "specmanager",
   "displayName": "SpecManager",
   "description": "Lifecycle kanban for Claude Code projects (PRD → architecture → plan → tasks → walkthroughs).",
+  "license": "MIT",
+  "homepage": "https://specmanager.org",
+  "author": { "name": "Joanseg", "url": "https://github.com/joanseg" },
   "userConfig": {
     "board_port": {
       "type": "number",

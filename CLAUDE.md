@@ -10,14 +10,14 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 | Rename execute command to build | PRD (approved) | — |
 | Planner output matches phase-tasks.md style | PRD (approved) | — |
 | Post-phase design conformance check | PRD (draft) | — |
-| Markdown viewer | PRD (draft) | — |
+| Markdown viewer | PRD (approved) | — |
 
 **Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation.
 
 **Commands:**
-`/specmanager-feature` · `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-execute` · `/specmanager-walkthrough` · `/specmanager-board`
+`/specmanager-feature` · `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board`
 
-_Last synced: 2026-05-29T11:54:16.190Z_
+_Last synced: 2026-05-31T14:58:45.218Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
