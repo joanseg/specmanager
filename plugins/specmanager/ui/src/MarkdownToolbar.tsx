@@ -61,6 +61,11 @@ export default function MarkdownToolbar({ onAction, disabled, active }: Markdown
           <span className="caret">▾</span>
         </>
       )}
+      <span className="tb-sep" />
+      {btn("bulletList", "Bullet list", "☰")}
+      {btn("link", "Link", "🔗")}
+      {btn("table", "Table", "▦")}
+      {btn("codeBlock", "Code block", <span className="mono">&lt;/&gt;</span>)}
     </div>
   );
 }
