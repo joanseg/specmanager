@@ -133,4 +133,14 @@
   --status-stale: var(--error); /* rose */
   --status-in-progress: var(--tertiary); /* amber */
   --status-done: var(--success); /* emerald */
+
+  /* --- Markdown viewer derived values (design "new tokens introduced") --- *
+   * The four style decisions the markdown surface needs, named here so the
+   * toolbar active-state and table styling can't drift. All derived from the
+   * palette via color-mix / existing surfaces — no new color enters the scale.
+   * styles.css consumes these with the literal color-mix as the fallback. */
+  --tb-active-bg: color-mix(in srgb, var(--primary) 14%, transparent);
+  --table-header-bg: var(--surface-container-high);
+  --table-zebra-bg: color-mix(in srgb, var(--surface-container) 55%, transparent);
+  --table-cell-border: var(--outline-variant);
 }
