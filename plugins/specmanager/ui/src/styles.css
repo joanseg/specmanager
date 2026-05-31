@@ -873,6 +873,19 @@ html, body, #root {
   background: var(--table-zebra-bg, color-mix(in srgb, var(--surface-container) 55%, transparent));
 }
 
+/* Wide tables scroll horizontally inside their wrapper rather than reflowing
+ * (resolved design Q2). `.tbl-wrap` is the design's named container for any
+ * non-editor render path; `.tableWrapper` is the live div prosemirror-tables
+ * emits around the GFM table node in the editing surface — both scroll. */
+.markdown .tbl-wrap,
+.markdown .tableWrapper {
+  overflow-x: auto;
+  max-width: 100%;
+  margin: 0.9rem 0;
+}
+.markdown .tbl-wrap table,
+.markdown .tableWrapper table { margin: 0; }
+
 .panel__footer {
   padding: 0.4rem 1.25rem;
   border-top: 1px solid var(--outline-variant);
