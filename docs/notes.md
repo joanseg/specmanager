@@ -28,7 +28,7 @@ Who to share with:
 
 - Fernando
 - Andre
-- vibecoding club
+- vibecoding club (small wokwhop in a coffee shop first, later an open class)
 - Udemy instructur
 - reddit
 - 
@@ -48,3 +48,8 @@ Improvements
 - Markdown editor should be wysiwig
 - The plan should always allocate a task at the end of the plan in order to review the UIs agains the provided designs in the design phase, if there are no designs in the design step then this task is not needed. The design reviewr task should use the claude code /chrome extension in order to verify the actual look and feel of the UIs in the browser.
 - automate the need to kill claud etc
+- how to avoid:
+pkill -f '^claude$'
+claude daemon stop
+ps aux | grep specmanager | grep -v grep   # kill stragglers
+lsof -nP -iTCP:4317 -sTCP:LISTEN

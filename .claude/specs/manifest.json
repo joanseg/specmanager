@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-31T14:46:36.670Z",
+  "generatedAt": "2026-05-31T15:45:55.163Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -318,9 +318,9 @@
         }
       ],
       "tasks": {
-        "todo": 12,
+        "todo": 0,
         "in_progress": 0,
-        "done": 6,
+        "done": 18,
         "total": 18
       },
       "phases": [
@@ -339,9 +339,9 @@
           "name": "Toolbar",
           "order": 1,
           "taskCount": 6,
-          "doneCount": 0,
+          "doneCount": 6,
           "inProgressCount": 0,
-          "status": "todo",
+          "status": "done",
           "walkthroughId": null,
           "walkthroughStatus": null,
           "walkthroughStale": null
@@ -350,9 +350,9 @@
           "name": "Reading and tables",
           "order": 2,
           "taskCount": 6,
-          "doneCount": 0,
+          "doneCount": 6,
           "inProgressCount": 0,
-          "status": "todo",
+          "status": "done",
           "walkthroughId": null,
           "walkthroughStatus": null,
           "walkthroughStale": null
