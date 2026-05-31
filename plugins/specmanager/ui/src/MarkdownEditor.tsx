@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Editor,
   rootCtx,
@@ -19,8 +19,38 @@ import {
 } from "@milkdown/preset-commonmark";
 import { gfm, insertTableCommand } from "@milkdown/preset-gfm";
 import { listener, listenerCtx } from "@milkdown/plugin-listener";
-import { callCommand, replaceAll } from "@milkdown/utils";
+import { $prose, callCommand, replaceAll } from "@milkdown/utils";
+import { Plugin } from "@milkdown/prose/state";
+import type { EditorState } from "@milkdown/prose/state";
 import MarkdownToolbar, { ToolbarAction } from "./MarkdownToolbar";
+
+// Reads which toolbar actions are "on" for the current selection so the bar can
+// light the matching button (design Screen 3 — active/selected state).
+function activeActions(state: EditorState): Set<ToolbarAction> {
+  const active = new Set<ToolbarAction>();
+  const { schema, selection } = state;
+  const { $from, from, to, empty } = selection;
+
+  const markOn = (name: string): boolean => {
+    const type = schema.marks[name];
+    if (!type) return false;
+    if (empty) return !!type.isInSet(state.storedMarks ?? $from.marks());
+    return state.doc.rangeHasMark(from, to, type);
+  };
+  if (markOn("strong")) active.add("bold");
+  if (markOn("emphasis")) active.add("italic");
+  if (markOn("link")) active.add("link");
+
+  // Walk the ancestor chain of the cursor for block context.
+  for (let d = $from.depth; d > 0; d--) {
+    const name = $from.node(d).type.name;
+    if (name === "heading") active.add("heading");
+    if (name === "bullet_list") active.add("bulletList");
+    if (name === "code_block") active.add("codeBlock");
+    if (name === "table") active.add("table");
+  }
+  return active;
+}
 
 interface MarkdownEditorProps {
   value: string;
@@ -80,6 +110,10 @@ export default function MarkdownEditor({ value, readOnly, onChange }: MarkdownEd
   // Last markdown we emitted/received, so the sync effect can skip a no-op
   // replaceAll when `value` just reflects our own onChange round-trip.
   const lastMarkdown = useRef(value);
+  // Toolbar active state, recomputed from the selection on every transaction.
+  const [active, setActive] = useState<ReadonlySet<ToolbarAction>>(new Set());
+  const setActiveRef = useRef(setActive);
+  setActiveRef.current = setActive;
 
   useEffect(() => {
     if (!hostRef.current) return;
@@ -116,6 +150,17 @@ export default function MarkdownEditor({ value, readOnly, onChange }: MarkdownEd
       .use(commonmark)
       .use(gfm)
       .use(listener)
+      // Recompute the toolbar's active set whenever the selection/doc changes.
+      .use(
+        $prose(
+          () =>
+            new Plugin({
+              view: () => ({
+                update: (view) => setActiveRef.current(activeActions(view.state)),
+              }),
+            })
+        )
+      )
       .create()
       .then((made) => {
         if (destroyed) {
@@ -180,7 +225,7 @@ export default function MarkdownEditor({ value, readOnly, onChange }: MarkdownEd
 
   return (
     <div className="md-editor">
-      <MarkdownToolbar onAction={onAction} disabled={readOnly} />
+      <MarkdownToolbar onAction={onAction} disabled={readOnly} active={active} />
       <div ref={hostRef} className="md-surface" />
     </div>
   );
