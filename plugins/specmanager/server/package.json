@@ -2,6 +2,7 @@
   "name": "@specmanager/server",
   "version": "0.2.0",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "engines": {
     "node": ">=20"
@@ -12,6 +13,7 @@
     "selftest-board": "node dist/selftest-board.js",
     "selftest-phases": "node dist/selftest-phases.js",
     "selftest-build": "node dist/selftest-build.js",
+    "selftest-roundtrip": "node dist/selftest-roundtrip.js",
     "smoke-mcp": "node dist/smoke-mcp.js"
   },
   "dependencies": {
@@ -21,6 +23,10 @@
     "chokidar": "^4.0.0",
     "fastify": "^5.0.0",
     "gray-matter": "^4.0.3",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-stringify": "^11.0.0",
+    "unified": "^11.0.5",
     "ws": "^8.18.0",
     "zod": "^4.0.0"
   },
