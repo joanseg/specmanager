@@ -143,7 +143,7 @@
       "id": "task-007",
       "featureId": "feat-markdown-viewer",
       "title": "Create MarkdownToolbar.tsx with always-visible Bold/Italic/Heading dispatching Milkdown commands; disabled mirrors readOnly",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-markdown-viewer-004",
       "phase": "Toolbar",
       "complexity": 3,
@@ -151,18 +151,24 @@
         "task-004"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "ade0129c35fe36b55974c24a5ccf9fbcacac5411"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/MarkdownToolbar.tsx",
+          "plugins/specmanager/ui/src/MarkdownEditor.tsx",
+          "plugins/specmanager/ui/src/styles.css"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-31T13:50:28.123Z",
-      "updatedAt": "2026-05-31T13:50:28.123Z"
+      "updatedAt": "2026-05-31T15:16:35.475Z"
     },
     {
       "id": "task-008",
       "featureId": "feat-markdown-viewer",
       "title": "Add Bullet list / Link / Table / Code block toolbar actions (bulletList/link/table/codeBlock commands)",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-markdown-viewer-004",
       "phase": "Toolbar",
       "complexity": 2,
@@ -170,18 +176,23 @@
         "task-007"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "0f364165e98b8d81006e4a0664362a48c8879cfe"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/MarkdownToolbar.tsx",
+          "plugins/specmanager/ui/src/MarkdownEditor.tsx"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-31T13:50:46.293Z",
-      "updatedAt": "2026-05-31T13:50:46.293Z"
+      "updatedAt": "2026-05-31T15:19:32.146Z"
     },
     {
       "id": "task-009",
       "featureId": "feat-markdown-viewer",
       "title": "Implement active-mark state: light the matching button (aria-pressed, --tb-active-bg) from the ProseMirror selection",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-markdown-viewer-004",
       "phase": "Toolbar",
       "complexity": 3,
@@ -189,18 +200,22 @@
         "task-007"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "ce5dd675f8b9036ff3785be0b0e00401aea8b747"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/MarkdownEditor.tsx"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-31T13:51:05.796Z",
-      "updatedAt": "2026-05-31T13:51:05.796Z"
+      "updatedAt": "2026-05-31T15:20:51.989Z"
     },
     {
       "id": "task-010",
       "featureId": "feat-markdown-viewer",
       "title": "Implement the H ▾ heading level-picker popover (H1/H2/H3 menu, not click-cycle)",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-markdown-viewer-004",
       "phase": "Toolbar",
       "complexity": 2,
@@ -208,18 +223,22 @@
         "task-007"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "d392c4b3089403821f546f89a524644231863d25"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/MarkdownToolbar.tsx"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-31T13:51:10.079Z",
-      "updatedAt": "2026-05-31T13:51:10.079Z"
+      "updatedAt": "2026-05-31T15:22:24.509Z"
     },
     {
       "id": "task-011",
       "featureId": "feat-markdown-viewer",
       "title": "Implement the narrow-width ⋯ overflow menu collapsing List/Link/Table/Code-block; primary trio stays visible",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-markdown-viewer-004",
       "phase": "Toolbar",
       "complexity": 2,
@@ -227,18 +246,23 @@
         "task-008"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "da31a1bdb5cae99935d2e879333c20a0d8a97d45"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/MarkdownToolbar.tsx",
+          "plugins/specmanager/ui/src/styles.css"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-31T13:51:14.060Z",
-      "updatedAt": "2026-05-31T13:51:14.060Z"
+      "updatedAt": "2026-05-31T15:23:41.097Z"
     },
     {
       "id": "task-012",
       "featureId": "feat-markdown-viewer",
       "title": "Render read-only state: hide the toolbar and show the slim \"Approved — read-only\" hint row",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-markdown-viewer-004",
       "phase": "Toolbar",
       "complexity": 1,
@@ -246,18 +270,22 @@
         "task-007"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "9fbcc7f446de185f22a1c2a6254be76e0d418b18"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/MarkdownEditor.tsx"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-31T13:51:33.738Z",
-      "updatedAt": "2026-05-31T13:51:33.738Z"
+      "updatedAt": "2026-05-31T15:28:52.487Z"
     },
     {
       "id": "task-013",
       "featureId": "feat-markdown-viewer",
       "title": "Widen .panel to min(64rem,68vw) and constrain prose to a centered 72ch column (~62ch with chat)",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-markdown-viewer-004",
       "phase": "Reading and tables",
       "complexity": 2,
@@ -265,18 +293,23 @@
         "task-004"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "4f3b619435400ef0a2b5a541650258bc54c34660"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/styles.css",
+          "plugins/specmanager/ui/src/MarkdownEditor.tsx"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-31T13:51:47.033Z",
-      "updatedAt": "2026-05-31T13:53:55.499Z"
+      "updatedAt": "2026-05-31T15:37:49.666Z"
     },
     {
       "id": "task-014",
       "featureId": "feat-markdown-viewer",
       "title": "Add .md-surface / .md-toolbar / .prose styling from tokens.css (toolbar bar, surface, reading column)",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-markdown-viewer-004",
       "phase": "Reading and tables",
       "complexity": 2,
@@ -284,18 +317,22 @@
         "task-013"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "e4deed84d05cc820010f13d94a7e7ad4513e6f2f"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/styles.css"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-31T13:54:00.155Z",
-      "updatedAt": "2026-05-31T13:54:00.155Z"
+      "updatedAt": "2026-05-31T15:39:00.068Z"
     },
     {
       "id": "task-015",
       "featureId": "feat-markdown-viewer",
       "title": "Add .markdown table/th/td rules: collapsed borders, header fill, zebra, padding scoped to .markdown",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-markdown-viewer-004",
       "phase": "Reading and tables",
       "complexity": 3,
@@ -303,18 +340,22 @@
         "task-014"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "0475f1d2736ab0818ea47cbca69c97163c6a8ba9"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/styles.css"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-31T13:54:05.664Z",
-      "updatedAt": "2026-05-31T13:54:05.664Z"
+      "updatedAt": "2026-05-31T15:40:15.959Z"
     },
     {
       "id": "task-016",
       "featureId": "feat-markdown-viewer",
       "title": "Decide and apply the four derived style values (--tb-active-bg, --table-header-bg, zebra, cell border) in tokens.css or inline color-mix",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-markdown-viewer-004",
       "phase": "Reading and tables",
       "complexity": 1,
@@ -322,18 +363,22 @@
         "task-015"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "881b2071897f58b74f97daa6039e26d18e4a4f20"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/tokens.css"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-31T13:54:10.138Z",
-      "updatedAt": "2026-05-31T13:54:10.138Z"
+      "updatedAt": "2026-05-31T15:42:19.302Z"
     },
     {
       "id": "task-017",
       "featureId": "feat-markdown-viewer",
       "title": "Wrap wide tables in .tbl-wrap (overflow-x: auto) so they scroll horizontally rather than reflowing",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-markdown-viewer-004",
       "phase": "Reading and tables",
       "complexity": 1,
@@ -341,18 +386,22 @@
         "task-015"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "80429fe72b716c3b41bc5334d1dc6650f9270fad"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/styles.css"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-31T13:54:24.372Z",
-      "updatedAt": "2026-05-31T13:54:24.372Z"
+      "updatedAt": "2026-05-31T15:43:41.115Z"
     },
     {
       "id": "task-018",
       "featureId": "feat-markdown-viewer",
       "title": "Remove the dead Editor.tsx and marked dependency after grep-confirming no importer/usage; rebuild and reinstall",
-      "status": "todo",
+      "status": "done",
       "stageRef": "plan-markdown-viewer-004",
       "phase": "Reading and tables",
       "complexity": 3,
@@ -361,12 +410,18 @@
         "task-007"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "d0af45d69e239d16f1ce657d5e316081748e0dff"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/Editor.tsx",
+          "plugins/specmanager/ui/package.json",
+          "plugins/specmanager/ui/package-lock.json"
+        ],
         "pr": null
       },
       "createdAt": "2026-05-31T13:55:14.772Z",
-      "updatedAt": "2026-05-31T13:55:14.772Z"
+      "updatedAt": "2026-05-31T15:45:55.160Z"
     }
   ]
 }
