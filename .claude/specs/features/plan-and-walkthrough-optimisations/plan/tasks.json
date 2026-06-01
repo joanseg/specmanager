@@ -1,0 +1,122 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-plan-and-walkthrough-optimisations",
+      "title": "Rewrite planner.md: single-phase default + AskUserQuestion for big-feature splits",
+      "status": "done",
+      "phase": "core",
+      "complexity": 3,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [
+          "plugins/specmanager/agents/planner.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T12:46:06.187Z",
+      "updatedAt": "2026-06-01T12:56:39.502Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-plan-and-walkthrough-optimisations",
+      "title": "Reconcile specmanager-plan.md: single named phase is the expected output, not \"flat\"",
+      "status": "done",
+      "phase": "core",
+      "complexity": 1,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [
+          "plugins/specmanager/commands/specmanager-plan.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T12:46:09.614Z",
+      "updatedAt": "2026-06-01T12:56:58.753Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-plan-and-walkthrough-optimisations",
+      "title": "Auto-fire walkthrough-writer from specmanager-build.md step 8 (idempotent, gate-rechecked)",
+      "status": "done",
+      "phase": "core",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [
+          "plugins/specmanager/commands/specmanager-build.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T12:46:12.791Z",
+      "updatedAt": "2026-06-01T12:57:21.586Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-plan-and-walkthrough-optimisations",
+      "title": "Rewrite walkthrough-writer.md per-phase mode to the 9-section exemplar skeleton (project-adaptive)",
+      "status": "done",
+      "phase": "core",
+      "complexity": 3,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [
+          "plugins/specmanager/agents/walkthrough-writer.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T12:46:16.115Z",
+      "updatedAt": "2026-06-01T12:58:00.154Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-plan-and-walkthrough-optimisations",
+      "title": "Gate FinalWalkthroughCard on phases.length > 1 in App.tsx; rebuild UI",
+      "status": "done",
+      "phase": "core",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [
+          "plugins/specmanager/ui/src/App.tsx",
+          "plugins/specmanager/ui/dist/assets/index-CIqS_SMz.js"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T12:46:20.274Z",
+      "updatedAt": "2026-06-01T12:58:24.958Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-plan-and-walkthrough-optimisations",
+      "title": "Verify end-to-end against the exit test; author the phase walkthrough and update docs",
+      "status": "done",
+      "phase": "core",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001",
+        "task-002",
+        "task-003",
+        "task-004",
+        "task-005"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [
+          "plugins/specmanager/ui/dist/assets/index-CIqS_SMz.js",
+          "plugins/specmanager/server/dist/selftest.js"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T12:46:24.007Z",
+      "updatedAt": "2026-06-01T13:09:44.594Z"
+    }
+  ]
+}

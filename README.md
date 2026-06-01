@@ -13,17 +13,17 @@ Claude *drafts* each stage from the previous approved one **and your existing co
 ## Quick start
 
 ```text
-# 1. Add the marketplace (from GitHub, or a local checkout)
+# 1. Add the marketplace (from GitHub)
 /plugin marketplace add joanseg/specmanager
-#   /plugin marketplace add /path/to/specmanager     ← local clone
 
 # 2. Install
 /plugin install specmanager@specmanager
 
-# 3. Restart Claude Code so the MCP server boots (it also starts the board)
+# 3. Reload plugins
+/reload-plugins
 
 # 4. Reconnect MCP server
-If /mcp shows specmanager failed, select it and reconnect.
+/mcp       ## If plugin:specmanager:specmanager ✘ failed select and click enter to reconnect
 
 # 4. In your project, scaffold SpecManager and open the board
 /specmanager-init
