@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T10:32:11.789Z",
+  "generatedAt": "2026-06-01T13:10:45.457Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -452,19 +452,56 @@
         {
           "id": "prd-plan-and-walkthrough-optimisations-007",
           "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 3,
+          "title": "Plan and walkthrough optimisations PRD"
+        },
+        {
+          "id": "arch-plan-and-walkthrough-optimisations-006",
+          "stage": "architecture",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Plan and walkthrough optimisations architecture"
+        },
+        {
+          "id": "plan-plan-and-walkthrough-optimisations-006",
+          "stage": "plan",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Plan and walkthrough optimisations plan"
+        },
+        {
+          "id": "wt-plan-and-walkthrough-optimisations-007",
+          "stage": "walkthrough",
           "status": "draft",
           "stale": false,
           "version": 1,
-          "title": "Plan and walkthrough optimisations PRD"
+          "title": "Plan and walkthrough optimisations — Phase core walkthrough",
+          "phase": "core"
         }
       ],
       "tasks": {
         "todo": 0,
         "in_progress": 0,
-        "done": 0,
-        "total": 0
+        "done": 6,
+        "total": 6
       },
-      "phases": []
+      "phases": [
+        {
+          "name": "core",
+          "order": 0,
+          "taskCount": 6,
+          "doneCount": 6,
+          "inProgressCount": 0,
+          "status": "done",
+          "walkthroughId": "wt-plan-and-walkthrough-optimisations-007",
+          "walkthroughStatus": "draft",
+          "walkthroughStale": false
+        }
+      ]
     }
   ]
 }

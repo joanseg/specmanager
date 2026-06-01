@@ -25,9 +25,14 @@ Build one phase of the plan for **$ARGUMENTS**.
    - The target phase name (resolved — not `next`).
    - The Plan doc id (for context).
    - The phase's exit-test line lifted from `plan.md` so the builder knows what "done" looks like.
-8. **Report.** When the builder returns:
-   - List the tasks it completed and the artifacts recorded.
-   - If the phase is now fully done, suggest **`/specmanager-walkthrough <feature> <phaseName>`** as the next step (do NOT invoke it — user reviews first).
+8. **Auto-fire the phase walkthrough (only if the phase is now fully done).** When the builder returns, re-check whether this phase is complete: `check_gate({ featureId, stage: "walkthrough", phase: "<phaseName>" })`. The gate opens only when every task in the phase is `done`.
+   - If the gate is **closed** (the builder stopped mid-phase), skip auto-fire — go to step 9 and report the stop.
+   - If the gate is **open**, guard against duplicates: `list_documents({ featureId, stage: "walkthrough" })` filtered to `frontmatter.phase === "<phaseName>"`. If a walkthrough for this phase already exists, **don't** create another — just note it in the report.
+   - Otherwise, **auto-invoke** `Task({ subagent_type: "walkthrough-writer", prompt: ... })` in per-phase mode (same inputs the `/specmanager-walkthrough` command passes: feature id/title/slug, the phase name, the Plan doc id, the phase's exit-test line, and a hint that this phase's task artifacts are available via `list_tasks` filtered by `phase`). The walkthrough lands in `draft` — never approve it; the user reviews first.
+   - Then call `sync_claude_md`.
+9. **Report.** 
+   - List the tasks the builder completed and the artifacts recorded.
+   - If step 8 auto-created a walkthrough, report its doc id + file path (`walkthroughs/<slug>/phase-<phaseName>.md`) and that it's a `draft` awaiting review. If a walkthrough already existed, say so and point at `/specmanager-walkthrough <feature> <phaseName>` to regenerate manually.
    - If the builder stopped mid-phase on a failure, surface the task id and the error verbatim. Do not retry automatically.
 
 ## Don't

@@ -44,4 +44,4 @@ refuses to open until you either approve it or delete the draft.
 - Don't edit content **between** the design markers in `./docs/DESIGN.md` by
   hand — SpecManager regenerates it after every feature ships. Hand-edits
   belong above the start marker or below the end marker.
-- Don't create features here — point the user at `/specmanager-feature`.
+- Don't create features here — point the user at `/specmanager-prd`.
