@@ -13,17 +13,17 @@ Claude *drafts* each stage from the previous approved one **and your existing co
 ## Quick start
 
 ```text
-# 1. Add the marketplace (from GitHub, or a local checkout)
+# 1. Add the marketplace (from GitHub)
 /plugin marketplace add joanseg/specmanager
-#   /plugin marketplace add /path/to/specmanager     ← local clone
 
 # 2. Install
 /plugin install specmanager@specmanager
 
-# 3. Restart Claude Code so the MCP server boots (it also starts the board)
+# 3. Reload plugins
+/reload-plugins
 
 # 4. Reconnect MCP server
-If /mcp shows specmanager failed, select it and reconnect.
+/mcp       ## If plugin:specmanager:specmanager ✘ failed select and click enter to reconnect
 
 # 4. In your project, scaffold SpecManager and open the board
 /specmanager-init
@@ -41,8 +41,7 @@ That's it — no build step. The compiled server and UI are committed, and a `Se
 Each **feature** is a row on the board that flows left to right through the lifecycle. You drive it with slash commands; Claude does the drafting via dedicated subagents, and you approve each stage in the board before the next unlocks.
 
 ```text
-/specmanager-feature "Checkout corridor"   # new feature pipeline (a board row)
-/specmanager-prd            <feature>       # draft the PRD            → approve in board
+/specmanager-prd "Checkout corridor"       # create the feature + draft its PRD → approve in board
 /specmanager-architecture   <feature>       # draft the Architecture   → approve in board
 /specmanager-design         <feature>       # OPTIONAL high-fi HTML mockups → approve
 /specmanager-plan           <feature>       # plan.md + phased tasks   → approve in board
@@ -52,7 +51,7 @@ Each **feature** is a row on the board that flows left to right through the life
 /specmanager-board                          # open the kanban board anytime
 ```
 
-`<feature>` is the feature's slug or id (from `/specmanager-feature`).
+`<feature>` is the feature's slug or id (reported by `/specmanager-prd` when it creates the feature).
 
 ### Stages and gates
 

@@ -29,10 +29,10 @@ Who to share with:
 - Fernando
 - Andre
 - vibecoding club (small wokwhop in a coffee shop first, later an open class)
+- Startup europe guy
 - Udemy instructur
-- reddit
-- 
 - Zartis
+- reddit
 
 
 Improvements
@@ -45,7 +45,7 @@ Improvements
     - Walkthough agent should do walkthoughs like the ones under /docs
     - Plan agent should do plans like
 
-- Markdown editor should be wysiwig
+- ˜Markdown editor should be wysiwig˜
 - The plan should always allocate a task at the end of the plan in order to review the UIs agains the provided designs in the design phase, if there are no designs in the design step then this task is not needed. The design reviewr task should use the claude code /chrome extension in order to verify the actual look and feel of the UIs in the browser.
 - automate the need to kill claud etc
 - how to avoid:
@@ -53,3 +53,11 @@ pkill -f '^claude$'
 claude daemon stop
 ps aux | grep specmanager | grep -v grep   # kill stragglers
 lsof -nP -iTCP:4317 -sTCP:LISTEN
+
+
+- Plan by default in one phase, unless the feature is a very big project, in that case askuserquestion to confirm the approach to split the feature in phases. Normally the very minimum that makes sense to stop and ask user to test in the middle of the feature build.
+Wlaktrhiough agent should detect a phase has been built and fire automatically to chreate the walkthough.
+Walkthough skill should be updated to write them with the structure correct, see this examples of good structure:
+    - docs/temp/original-specs/phase-design-A-test-walkthrough.md
+    - docs/temp/original-specs/phase-design-B-test-walkthrough.md
+    - docs/temp/original-specs/phase-7-A-test-walkthrough.md

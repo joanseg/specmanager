@@ -307,12 +307,18 @@ function WalkthroughCell({
     if (!priorStageApproved(row, "walkthrough")) return <LockedCell stage="walkthrough" />;
     return <EmptyCell stage="walkthrough" ready={false} />;
   }
+  // The feature roll-up card is only meaningful when there's more than one phase
+  // to tie together. A single-phase feature's phase walkthrough IS the whole story,
+  // so the roll-up would be redundant. Keyed strictly on phase count (not the
+  // `multiPhase` name heuristic above) — and reactive: if a one-phase feature later
+  // grows a second phase, the rollup of `row.phases` updates and this card appears.
+  const showFinal = phases.length > 1;
   return (
     <div className="card card--walkthroughs">
       {phases.map((p) => (
         <PhaseWalkthroughCard key={p.name} phase={p} row={row} onOpen={onOpenDoc} />
       ))}
-      <FinalWalkthroughCard row={row} onOpen={onOpenDoc} />
+      {showFinal && <FinalWalkthroughCard row={row} onOpen={onOpenDoc} />}
     </div>
   );
 }
@@ -404,7 +410,7 @@ export default function App() {
       {board.features.length === 0 ? (
         <section className="empty">
           <p>No features yet.</p>
-          <pre>/specmanager-feature &lt;title&gt;</pre>
+          <pre>/specmanager-prd &lt;title&gt;</pre>
         </section>
       ) : (
         <section

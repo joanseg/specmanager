@@ -68,7 +68,7 @@ export async function renderBlock(root = projectRoot()): Promise<string> {
   );
   lines.push("");
   if (m.features.length === 0) {
-    lines.push("_No features yet. Run `/specmanager-feature \"<title>\"` to create one._");
+    lines.push("_No features yet. Run `/specmanager-prd \"<title>\"` to create one._");
   } else {
     lines.push("| Feature | Current stage | Notes |");
     lines.push("|---------|---------------|-------|");
@@ -83,7 +83,7 @@ export async function renderBlock(root = projectRoot()): Promise<string> {
   lines.push("");
   lines.push("**Commands:**");
   lines.push(
-    "`/specmanager-feature` · `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board`"
+    "`/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board`"
   );
   lines.push("");
   lines.push(`_Last synced: ${m.generatedAt}_`);

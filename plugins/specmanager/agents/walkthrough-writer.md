@@ -30,12 +30,26 @@ This stage only opens for a phase when **every task in that phase is `done`**. T
 - If a file was touched by a prior phase and extended by this one, note the extension only — don't re-explain the file from scratch (the prior phase's walkthrough already did).
 - If you cannot find what this phase delivered (no commits, no files, empty artifacts), refuse and ask the user to fix the task records first.
 
-### What a good per-phase walkthrough contains
-1. **What shipped in this phase** — one paragraph in user terms, anchored to the phase's exit test.
-2. **How it works** — the *actual* implementation, not the planned one. Reference real file paths from the task artifacts.
-3. **Code tour** — for each task in this phase, point at the file(s) it touched and the commit ref. Group by task, not by file.
-4. **How to verify** — restate the phase's `**Exit test:**` from the plan and how to run it.
-5. **Known limitations / follow-ups** — things deferred to a later phase, or discovered during build.
+### Required structure (load-bearing)
+
+A per-phase walkthrough is a **runnable test script**, not prose. Anyone should be able to follow it top to bottom and prove the phase shipped. Emit these sections in order — every exit check must carry a concrete command and its **expected output**, never a vague "verify it works".
+
+1. **Title + framing.** `# <Feature> — Phase <name> walkthrough` (or a close variant). One short paragraph saying what this phase delivers, then **quote the phase's exit criterion verbatim as a blockquote** (`>`), lifted from the plan's `**Exit test:**` line. End the framing with what the reader should already have in place (e.g. "Assumes prior phases pass").
+2. **`## 0. Prerequisites`** — what the reader needs before starting: OS/runtime versions, the repo/branch with this phase's changes, any seed data or scratch project.
+3. **`## 1. Build`** — the exact build/test commands for *this* project (see "Adapt to the project" below), and the **new** assertions or behaviours this phase adds. If the project has a test/selftest suite, list the specific new expected lines so a reader knows what success looks like. End with "if any of these fail, stop here."
+4. **Install / run section** — how to get the built phase actually running for manual checks. For a plugin-style project include the reinstall/reload dance and a troubleshooting block for the reload path; for other projects, the equivalent "start it up" steps.
+5. **`## <n>. Phase <name> exit checks`** — the heart of the document. Numbered sub-sections (`### n.1`, `### n.2`, …), each a single concrete, user-runnable check with its command(s) (shell, `curl`/`jq`, MCP tool calls, slash commands) **and the expected result** (expected JSON, file contents, on-disk layout, UI state). Cover every claim in the exit criterion. Ground each check in the *actual* files/commits from this phase's task artifacts — read them; do not invent.
+6. **`## <n>. Pass criteria`** — a `- [ ]` checklist, **all required**, that mirrors the exit checks. Each item is independently verifiable.
+7. **Deferred / Out of scope** — what intentionally does NOT work yet (later phases, or explicitly cut). Frame these as "expected, not a bug".
+8. **Troubleshooting** — a handful of likely failures as symptom → cause → fix.
+9. **What ships next (preview)** — a short list of what the next phase (or follow-up work) will add. For the final phase, point at the feature roll-up walkthrough instead.
+
+### Adapt to the project (don't hard-code SpecManager)
+
+The Build/install sections depend on what's being built. Detect the project's real commands before writing:
+- Read `package.json` scripts / the project's `CLAUDE.md` / obvious build files to find the actual build, test, and run commands. Use *those* — never assume a fixed `npm run …` set.
+- Include the **plugin reinstall + `/reload-plugins` dance only when the feature under build is itself a Claude Code plugin** (as SpecManager is). For a plain app/library, replace it with that project's start/run/verify steps.
+- The *structure* (sections 1–9) is constant across all projects; only the specific commands inside Build and Install/run change.
 
 ## Final mode (`phase = "final"`)
 

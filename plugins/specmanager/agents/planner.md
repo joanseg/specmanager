@@ -15,10 +15,14 @@ Plan and tasks are produced together — this is the only stage in SpecManager t
 
 **A phase is a testable working-software increment.** Multiple tasks ladder up to one phase. Each phase must end with software the user could install / run / demo.
 
-Every plan is **organised into one or more phases**. A flat task list is not acceptable output — even a small feature has at least one phase.
+**Default to a single phase.** Most features are one phase: the tasks ladder up to one installable, testable increment that the user verifies once, at the end. A single phase is *not* a flat task list — it still uses the `## Phase <name> — <theme>` heading and an exit test; it simply has no mid-build stop point.
 
-For each phase you MUST write:
-- A `## Phase <name> — <theme>` heading (use exactly this shape so downstream tools can parse it).
+**Split into multiple phases only for a genuinely large project** — and only where there is a *real, testable working-software increment partway through* that the user would want to install/run/demo before you continue. The test is simple: "is there a point mid-build where the user should stop and verify a partial result before I keep going?" If no such point exists, it's one phase. Never manufacture phases for ceremony, tidiness, or to group related work — a phase boundary must earn its place as a genuine pause-and-test point. Aim for the **fewest phases that makes sense**.
+
+**Confirm any split with the user first.** When — and only when — you judge a multi-phase split is warranted, call `AskUserQuestion` *before persisting any task*. Present the proposed phase boundaries and the reasoning (what ships at each boundary, why it's worth pausing to test there). Offer at least: the proposed multi-phase split, and a single-phase alternative. If the user declines the split, fall back to a **single phase** — unless their answer specifies different boundaries, in which case follow those. Do not call `AskUserQuestion` for a single-phase plan; that's the default and needs no confirmation.
+
+For each phase (whether one or many) you MUST write:
+- A `## Phase <name> — <theme>` heading (use exactly this shape so downstream tools can parse it). Give the phase a **real, meaningful name** drawn from its theme (e.g. `core`, `api`, `ui`) — never `default`, which is reserved for legacy pre-phase features.
 - A `**Exit test:**` line describing how the user verifies the phase shipped.
 - A table or list of tasks belonging to that phase, in execution order.
 
@@ -69,7 +73,7 @@ Tasks use the **Fibonacci scale**: `1` trivial · `2` small · `3` moderate · `
 Sized expectations:
 - Each **task** is shippable in one sitting (complexity ≤3).
 - Each **phase** is typically 3–10 tasks; one phase total is typically 10–35 points.
-- A small feature might have 1–2 phases. A medium feature 2–4. Don't manufacture phases that aren't real working-software boundaries.
+- **Most features are a single phase.** Reach for a second phase only when a genuinely large project has a real pause-and-test boundary partway through (and confirm it with `AskUserQuestion` first). Don't manufacture phases that aren't real working-software boundaries.
 
 ## Self-check before persisting
 
@@ -77,7 +81,7 @@ Before you call `create_task` for any item:
 
 1. Re-read your own draft.
 2. For each task, ask: "could I score this 5 or higher?" If yes, **split it now** — don't try to persist and let the server reject you.
-3. For each phase, ask: "if the user installed the plugin after only this phase shipped, could they meaningfully test something?" If no, the phase boundary is in the wrong place — merge it with the next or split differently.
+3. Count your phases. If you wrote more than one, ask for **each boundary**: "is there really a point here where the user should stop and test a partial result before I continue?" If not, collapse to a single phase — that's the default. If multiple phases genuinely survive that test, you must have already confirmed the split with `AskUserQuestion` before persisting tasks.
 4. Confirm the house conventions are all present before reporting done:
    - the verbatim `**Scale:**` legend line sits between the Overview paragraph and the phase summary table, followed by the italic ≤3-points note;
    - the phase summary table uses the `| Phase | Theme | Points |` columns and carries a closing bold **Total** row, and no per-phase task table contains a **Total** row;
