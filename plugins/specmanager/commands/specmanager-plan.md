@@ -18,11 +18,11 @@ Generate a Plan + phased tasks for the feature: **$ARGUMENTS**.
    - The Design doc id + version (or `null`), so the planner's design-grounding step can read it.
    - Any extra context the user gave.
 
-   The planner writes `plan.md` (organised into `## Phase <name> — <theme>` sections with `**Exit test:**` lines) AND emits a `create_task` call per Build-order item with `phase` and Fibonacci `complexity` (≤3). When a design doc was passed in, the planner references the brief's screens/components/tokens by name in the plan body.
+   The planner writes `plan.md` (organised into `## Phase <name> — <theme>` sections with `**Exit test:**` lines) AND emits a `create_task` call per Build-order item with `phase` and Fibonacci `complexity` (≤3). Most features come back as a **single named phase** — that is the expected common output, not a degenerate case. The planner only splits into multiple phases for a genuinely large project with a real mid-build test boundary, and confirms any such split with you via `AskUserQuestion` before persisting tasks. When a design doc was passed in, the planner references the brief's screens/components/tokens by name in the plan body.
 6. **Sync CLAUDE.md.** Call `sync_claude_md`.
 7. **Report.** Plan doc id + file path + per-phase task counts (e.g. `Phase A: 5 tasks, Phase B: 7 tasks`) and whether the plan was grounded in a design brief. Suggest opening the board to see the Build column populated.
 
 ## Don't
 - Don't generate the plan inline — go through the subagent.
 - Don't call `create_task` from this orchestration command. The subagent does it so plan body + tasks stay consistent.
-- Don't accept a flat plan with no phases — if the subagent returns one, send it back to redo.
+- Don't accept a truly flat plan with no `## Phase` heading at all — if the subagent returns one, send it back to redo. A **single named phase** is correct and expected, though; don't push the planner to invent extra phases just to have more than one.
