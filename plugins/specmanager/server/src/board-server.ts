@@ -15,8 +15,11 @@ import {
   listFeatures,
   listStale,
   listTasks,
+  pidFilePath,
   projectRoot,
   readDocumentById,
+  reapStalePid,
+  removePidFile,
   setStatus,
   SpecEvent,
   specsDir,
@@ -25,6 +28,7 @@ import {
   TaskStatus,
   updateTask,
   writeDocument,
+  writePidFile,
 } from "./core/index.js";
 import { cancelChat, chatStatus, runChat, type ChatMode } from "./agent-chat.js";
 
@@ -306,6 +310,9 @@ export async function startBoardServer(opts: {
   }
 
   // Listen ----------------------------------------------------------------
+  // Reap a stale predecessor (e.g. a kill -9'd board) so a fresh boot can
+  // reclaim the port. Single bind attempt follows the ~200ms reap wait.
+  await reapStalePid(port);
   try {
     await app.listen({ port, host: "127.0.0.1" });
   } catch (err) {
