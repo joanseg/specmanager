@@ -422,6 +422,54 @@
       },
       "createdAt": "2026-05-31T13:55:14.772Z",
       "updatedAt": "2026-05-31T15:45:55.160Z"
+    },
+    {
+      "id": "task-019",
+      "featureId": "feat-markdown-viewer",
+      "title": "Move the Chat toggle into the MarkdownToolbar (right-most, after the spacer) per design Screen 2",
+      "status": "done",
+      "phase": "Polish",
+      "complexity": 3,
+      "dependsOn": [
+        "task-007",
+        "task-012"
+      ],
+      "artifacts": {
+        "commits": [
+          "a7c0ced"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/MarkdownToolbar.tsx",
+          "plugins/specmanager/ui/src/MarkdownEditor.tsx",
+          "plugins/specmanager/ui/src/DocPanel.tsx",
+          "plugins/specmanager/ui/src/styles.css"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T09:47:52.345Z",
+      "updatedAt": "2026-06-01T09:52:46.665Z"
+    },
+    {
+      "id": "task-020",
+      "featureId": "feat-markdown-viewer",
+      "title": "Widen the prose column to ~90% of the side panel (supersedes the Phase 3 72ch reading width)",
+      "status": "done",
+      "phase": "Polish",
+      "complexity": 2,
+      "dependsOn": [
+        "task-013"
+      ],
+      "artifacts": {
+        "commits": [
+          "cbc0d09"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/styles.css"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T09:47:53.795Z",
+      "updatedAt": "2026-06-01T09:53:24.396Z"
     }
   ]
 }

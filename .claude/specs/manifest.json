@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-31T15:45:55.163Z",
+  "generatedAt": "2026-06-01T10:32:11.789Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -35,8 +35,8 @@
           "id": "wt-redesign-001",
           "stage": "walkthrough",
           "status": "approved",
-          "stale": true,
-          "version": 1,
+          "stale": false,
+          "version": 2,
           "title": "Redesign — Phase A walkthrough",
           "phase": "A"
         },
@@ -84,7 +84,7 @@
           "status": "done",
           "walkthroughId": "wt-redesign-001",
           "walkthroughStatus": "approved",
-          "walkthroughStale": true
+          "walkthroughStale": false
         },
         {
           "name": "B",
@@ -169,7 +169,7 @@
           "id": "wt-rename-execute-command-to-build-006",
           "stage": "walkthrough",
           "status": "approved",
-          "stale": false,
+          "stale": true,
           "version": 1,
           "title": "Rename execute command to build — Phase Rename walkthrough",
           "phase": "Rename"
@@ -191,7 +191,7 @@
           "status": "done",
           "walkthroughId": "wt-rename-execute-command-to-build-006",
           "walkthroughStatus": "approved",
-          "walkthroughStale": false
+          "walkthroughStale": true
         }
       ]
     },
@@ -313,15 +313,15 @@
           "stage": "plan",
           "status": "approved",
           "stale": false,
-          "version": 2,
+          "version": 3,
           "title": "Markdown viewer plan"
         }
       ],
       "tasks": {
         "todo": 0,
         "in_progress": 0,
-        "done": 18,
-        "total": 18
+        "done": 20,
+        "total": 20
       },
       "phases": [
         {
@@ -356,8 +356,115 @@
           "walkthroughId": null,
           "walkthroughStatus": null,
           "walkthroughStale": null
+        },
+        {
+          "name": "Polish",
+          "order": 3,
+          "taskCount": 2,
+          "doneCount": 2,
+          "inProgressCount": 0,
+          "status": "done",
+          "walkthroughId": null,
+          "walkthroughStatus": null,
+          "walkthroughStale": null
         }
       ]
+    },
+    {
+      "id": "feat-reinstall-refactor",
+      "slug": "reinstall-refactor",
+      "title": "Reinstall refactor",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-reinstall-refactor-006",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Reinstall refactor — orphaned board-server process & port 4317 cleanup PRD"
+        },
+        {
+          "id": "arch-reinstall-refactor-005",
+          "stage": "architecture",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Reinstall refactor architecture"
+        },
+        {
+          "id": "plan-reinstall-refactor-005",
+          "stage": "plan",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Reinstall refactor plan"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 14,
+        "total": 14
+      },
+      "phases": [
+        {
+          "name": "A — PID-file helper",
+          "order": 0,
+          "taskCount": 5,
+          "doneCount": 5,
+          "inProgressCount": 0,
+          "status": "done",
+          "walkthroughId": null,
+          "walkthroughStatus": null,
+          "walkthroughStale": null
+        },
+        {
+          "name": "B — Board-server integration",
+          "order": 1,
+          "taskCount": 5,
+          "doneCount": 5,
+          "inProgressCount": 0,
+          "status": "done",
+          "walkthroughId": null,
+          "walkthroughStatus": null,
+          "walkthroughStale": null
+        },
+        {
+          "name": "C — MCP self-termination",
+          "order": 2,
+          "taskCount": 4,
+          "doneCount": 4,
+          "inProgressCount": 0,
+          "status": "done",
+          "walkthroughId": null,
+          "walkthroughStatus": null,
+          "walkthroughStale": null
+        }
+      ]
+    },
+    {
+      "id": "feat-plan-and-walkthrough-optimisations",
+      "slug": "plan-and-walkthrough-optimisations",
+      "title": "Plan and walkthrough optimisations",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-plan-and-walkthrough-optimisations-007",
+          "stage": "prd",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Plan and walkthrough optimisations PRD"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0,
+        "total": 0
+      },
+      "phases": []
     }
   ]
 }

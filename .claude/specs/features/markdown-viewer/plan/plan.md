@@ -12,9 +12,9 @@ basedOn:
   arch-markdown-viewer-004: 2
   design-markdown-viewer-001: 2
 generatedBy: agent
-version: 2
+version: 3
 createdAt: '2026-05-31T13:48:47.960Z'
-updatedAt: '2026-05-31T14:02:44.192Z'
+updatedAt: '2026-06-01T09:47:45.976Z'
 ---
 ## Overview
 
@@ -31,7 +31,8 @@ The phase split follows the only hard sequencing constraint in this codebase: **
 | 1 | WYSIWYG surface swap + round-trip guard | 13 |
 | 2 | Formatting toolbar | 13 |
 | 3 | Reading width, tables, dead-code cleanup | 12 |
-| **Total** | | **38** |
+| 4 | Polish | 5 |
+| **Total** | | **43** |
 
 ---
 
@@ -86,10 +87,27 @@ Ship the layout and table styling that make the panel "feel like reading a docum
 
 ---
 
+## Phase Polish — toolbar chat toggle + full-width prose
+
+Two post-ship refinements requested after the feature shipped, confined to the same `ui/` files as Phases 1–3 (`DocPanel.tsx`, `MarkdownEditor.tsx`, `MarkdownToolbar.tsx`, `styles.css`, `tokens.css`). No `@specmanager/core`, server, MCP, or data-model changes — the body contract and every gate/approval/concurrency path stay verbatim.
+
+- **Chat toggle into the toolbar (corroborated by design).** The approved design brief `design-markdown-viewer-001` (v2) **does** show the Chat control inside the formatting bar. **Screen 2 (resting toolbar)** renders the toggle as the last child of the `.md-toolbar`, after a `.tb-spacer` — `<label class="tb-toggle"><input type="checkbox" /> Chat</label>` — and the brief's prose states: *"the `panel__toolbar` row … is gone; in its place is the formatting bar (`MarkdownToolbar.tsx`). The Chat toggle survives and moves to the right of the bar."* The shipped build left the toggle in the panel chrome (`DocPanel.tsx`) instead; this phase relocates it into `MarkdownToolbar` to match the approved mockup. (Phase 2 task 2.1 already anticipated this — "the Chat toggle moves to the bar's right" — but it was never executed as its own task, so it is captured here.)
+- **~90% prose column supersedes the 72ch reading width.** This **intentionally replaces** the Phase 3 `Reading and tables` decision (tasks 3.1 / 3.2) that capped prose at a centered ~72ch column. Per the user's updated intent, the prose column should fill **~90% of the side-panel width** rather than being constrained to ~72ch; the centered `max-width: 72ch` cap is removed/raised so the column fills ~90% of the panel (chat-open following the same ~90% ratio). Wide-table horizontal scroll inside `.tbl-wrap` (task 3.5) is unaffected.
+
+**Exit test:** Re-install the plugin (`claude plugin install ./specmanager --scope local`); open a draft markdown doc — the **Chat** checkbox now sits inside the formatting toolbar (right of the formatting buttons, after the spacer) and no longer appears in the panel chrome, and toggling it still attaches/detaches the chat column exactly as before; the prose column now fills ~90% of the panel width (no longer capped at a centered ~72ch), and a wide table still scrolls horizontally inside its `.tbl-wrap`. `npm run build` succeeds and the installed board renders both changes.
+
+| # | Task | Pts | Notes |
+|---|---|---|---|
+| 4.1 | Move the Chat toggle out of the panel chrome (`DocPanel.tsx`) and render it inside `MarkdownToolbar.tsx` as the toolbar's right-most control (after the `.tb-spacer`), per design Screen 2; keep the same checked-state and handler so chat attach/detach is unchanged | 3 | Corroborated by design Screen 2's `.md-toolbar > .tb-toggle`. Read-only docs hide the toolbar (task 2.6) — ensure the toggle follows a sensible rule there. |
+| 4.2 | Widen the prose column to ~90% of the panel: remove/raise the centered `max-width: 72ch` reading cap from Phase 3 (tasks 3.1/3.2) so the column fills ~90% of the panel width, chat-open following the same ratio | 2 | **Supersedes** the Phase 3 72ch reading-width decision (`styles.css` ~line 402 / `.prose`). |
+
+---
+
 ## Risk & sequencing notes
 
 - **Phase 1 is the load-bearing phase and must land first.** Everything downstream mounts on `MarkdownEditor`. Its top risk is **round-trip normalization churn** (Milkdown's remark serialize may tidy bullet glyphs/table pipes on first save), which directly threatens the PRD's byte-clean metric — that is exactly why task 1.6 (the `selftest-roundtrip` node script) ships inside Phase 1, not later. Tune `remark-stringify` (task 1.2) until 1.6 passes over real repo docs *before* relying on a real Save.
 - **Dead-code removal is intentionally last (3.6).** `Editor.tsx` and `marked` stay importable through Phases 1–2 so each phase is independently installable and reversible; removing them only after the WYSIWYG surface and toolbar are proven avoids a rollback that would strip the old editor before the new one is trusted.
+- **Polish supersedes a prior approved decision.** Task 4.2 deliberately reverses the Phase 3 72ch reading-width choice; because Phase 3 already shipped, treat 4.2 as a one-line CSS change with an easy revert, and verify chat-open still reads comfortably at ~90% before considering it done.
 - **Bundle size:** ProseMirror+Milkdown+remark is heavier than CodeMirror. Acceptable for a localhost single-user tool, but task 1.1 verifies `vite build` produces a working `dist/` before any wiring, so a build break surfaces immediately.
 - **Design-stage behavior change (1.5):** dropping the HTML editor column is a small but real change to the `isDesign` mount — verify the iframe preview still renders before moving on.
 - **No `core`/server rollback risk:** nothing in this feature touches `core`, the servers, or persisted data, so a rollback is a pure UI revert.
@@ -99,7 +117,7 @@ Ship the layout and table styling that make the panel "feel like reading a docum
 The repo has **no UI test harness** today — server validation is node `selftest-*` scripts. This plan follows that convention rather than introducing a new framework:
 
 - **Phase 1** ships its own automated guard: `selftest-roundtrip` (task 1.6) asserts parse→serialize byte-equality over real repo markdown docs — the one stated success metric with no existing coverage.
-- **Phases 2–3** are verified by the per-phase **Exit test** (manual install + interaction against the running board), consistent with how the board/UI is validated today. Toolbar actions, active state, overflow, width, and table rendering are exercised through the installed plugin.
+- **Phases 2–3 and Polish** are verified by their per-phase **Exit test** (manual install + interaction against the running board), consistent with how the board/UI is validated today. Toolbar actions, active state, overflow, chat-toggle placement, width, and table rendering are exercised through the installed plugin.
 - Every phase ends with `npm run build` (`tsc && vite build`) + `claude plugin install ./specmanager --scope local` as the standing gate.
 
 ## Out of scope
@@ -108,9 +126,9 @@ The repo has **no UI test harness** today — server validation is node `selftes
 - No changes to gate logic, approval flow, staleness computation, or optimistic-concurrency — those are exercised but not modified.
 - No raw-markdown "source mode" escape hatch (resolved PRD Q3 — WYSIWYG only).
 - No redesign of the board itself (cards, columns, header) — only the document panel's editing/reading surface and width.
+- No change to chat behavior itself in the Polish phase — only the toggle's *location* moves; the chat column, `api.ts`, and message flow are untouched.
 - No collaborative editing, comments, or track-changes (single-user local tool).
-- No change to the chat panel, `api.ts`, `types.ts`, `App.tsx`, `tokens.css` color scale, or `fonts.css` (beyond the four optionally-named derived values in task 3.4).
 
 ## Notes on estimates
 
-Points here are **relative complexity, not hours** — calibrate them to your own velocity after the first phase ships, since Phase 1 carries the unfamiliar Milkdown/remark setup and will tell you the most about how the rest will go. Every task is scored **≤3 points**; the two genuinely large items (standing up the Milkdown surface, and the seven-action toolbar) were split into smaller install/mount/wire-state and per-button-cluster tasks — that is a granularity choice that leaves the phase subtotals unchanged, not a scope reduction. Testing is treated as first-class per-phase work, not an afterthought: the round-trip self-test is its own task (1.6) inside Phase 1, and each phase's exit test is the real "installable & testable" gate that must pass before the next phase starts.
+Points here are **relative complexity, not hours** — calibrate them to your own velocity after the first phase ships, since the early phases carry the unfamiliar Milkdown/remark setup and will tell you the most about how the rest will go. Every task is scored **≤3 points**; the genuinely large items (standing up the Milkdown surface, the seven-action toolbar) were split into smaller install/mount/wire-state and per-button-cluster tasks — that is a granularity choice that leaves the phase subtotals unchanged, not a scope reduction. The Polish phase's two tasks are small by nature (a control relocation and a one-line width change), so they were not split. Testing is treated as first-class per-phase work, not an afterthought: the round-trip self-test is its own task (1.6) inside Phase 1, and each phase's exit test — including Polish's — is the real "installable & testable" gate that must pass before the phase is considered done.

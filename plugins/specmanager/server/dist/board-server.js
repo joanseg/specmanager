@@ -1,11 +1,11 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
 import { WebSocketServer } from "ws";
 import chokidar from "chokidar";
-import { buildManifest, checkGate, createTask, events, listDocuments, listFeatures, listStale, listTasks, projectRoot, readDocumentById, setStatus, specsDir, syncDesignMd, updateTask, writeDocument, } from "./core/index.js";
+import { buildManifest, checkGate, createTask, events, listDocuments, listFeatures, listStale, listTasks, pidFilePath, projectRoot, readDocumentById, reapStalePid, removePidFile, setStatus, specsDir, syncDesignMd, updateTask, writeDocument, writePidFile, } from "./core/index.js";
 import { cancelChat, chatStatus, runChat } from "./agent-chat.js";
 const here = path.dirname(fileURLToPath(import.meta.url));
 // dist/board-server.js → plugin root → ui/dist
@@ -207,14 +207,31 @@ export async function startBoardServer(opts = {}) {
         });
     }
     // Listen ----------------------------------------------------------------
+    // Reap a stale predecessor (e.g. a kill -9'd board) so a fresh boot can
+    // reclaim the port. Single bind attempt follows the ~200ms reap wait.
+    await reapStalePid(port);
     try {
         await app.listen({ port, host: "127.0.0.1" });
     }
     catch (err) {
+        // Name the PID still holding the port, if the pid file records one, so the
+        // failure is diagnosable. Fall through to the unchanged `return null`.
+        let holder = "";
+        try {
+            const recorded = readFileSync(pidFilePath(), "utf8").trim();
+            if (recorded)
+                holder = ` (board.pid still holds PID ${recorded})`;
+        }
+        catch {
+            // no readable pid file — nothing extra to report
+        }
         // eslint-disable-next-line no-console
-        console.error(`specmanager: board server failed to bind 127.0.0.1:${port}: ${err.message}`);
+        console.error(`specmanager: board server failed to bind 127.0.0.1:${port}: ${err.message}${holder}`);
         return null;
     }
+    // Record this process as the live owner of the port. Written only after a
+    // successful bind, so board.pid never names a non-owner.
+    await writePidFile();
     // WS --------------------------------------------------------------------
     const wss = new WebSocketServer({ server: app.server, path: "/ws" });
     const clients = new Set();
@@ -272,6 +289,8 @@ export async function startBoardServer(opts = {}) {
             wss.close();
             await watcher.close();
             await app.close();
+            // Last: a clean teardown leaves no stale board.pid behind.
+            await removePidFile();
         },
     };
 }
