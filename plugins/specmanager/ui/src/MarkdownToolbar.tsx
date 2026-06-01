@@ -16,6 +16,10 @@ export interface MarkdownToolbarProps {
   disabled: boolean;
   /** Actions whose mark/node covers the current selection (active state). */
   active?: ReadonlySet<ToolbarAction>;
+  /** Whether the chat column is attached (the right-most Chat toggle). */
+  chatOn: boolean;
+  /** Toggle the chat column on/off (design Screen 2 `.tb-toggle`). */
+  onToggleChat: (next: boolean) => void;
 }
 
 // Below this toolbar width the secondary four collapse into a `⋯` menu.
@@ -36,7 +40,7 @@ const SECONDARY: { action: ToolbarAction; title: string; glyph: ReactNode }[] = 
  * against the current selection. `disabled` mirrors `readOnly`. The Heading
  * button opens an H1/H2/H3 level-picker popover (not a click-cycle).
  */
-export default function MarkdownToolbar({ onAction, disabled, active }: MarkdownToolbarProps) {
+export default function MarkdownToolbar({ onAction, disabled, active, chatOn, onToggleChat }: MarkdownToolbarProps) {
   const [headingOpen, setHeadingOpen] = useState(false);
   const [overflowOpen, setOverflowOpen] = useState(false);
   const [narrow, setNarrow] = useState(false);
@@ -172,6 +176,16 @@ export default function MarkdownToolbar({ onAction, disabled, active }: Markdown
           <span key={action}>{btn(action, title, glyph)}</span>
         ))
       )}
+
+      <span className="tb-spacer" />
+      <label className="tb-toggle">
+        <input
+          type="checkbox"
+          checked={chatOn}
+          onChange={(e) => onToggleChat(e.target.checked)}
+        />
+        Chat
+      </label>
     </div>
   );
 }

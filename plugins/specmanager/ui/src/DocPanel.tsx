@@ -249,17 +249,19 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
           </section>
         )}
 
-        <div className="panel__toolbar">
-          <div className="panel__toolbar-spacer" />
-          <label className="panel__toggle">
-            <input
-              type="checkbox"
-              checked={showChat}
-              onChange={(e) => setShowChat(e.target.checked)}
-            />
-            Chat
-          </label>
-        </div>
+        {isDesign && (
+          <div className="panel__toolbar">
+            <div className="panel__toolbar-spacer" />
+            <label className="panel__toggle">
+              <input
+                type="checkbox"
+                checked={showChat}
+                onChange={(e) => setShowChat(e.target.checked)}
+              />
+              Chat
+            </label>
+          </div>
+        )}
 
         {save.kind === "conflict" && (
           <div className="banner banner--warn">
@@ -296,6 +298,8 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
                 value={body}
                 readOnly={!!readOnly}
                 onChange={setBody}
+                showChat={showChat}
+                onToggleChat={setShowChat}
               />
             </div>
           )}

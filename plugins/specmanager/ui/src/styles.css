@@ -622,6 +622,18 @@ html, body, #root {
   background: var(--surface-container);
 }
 .md-toolbar .tb-spacer { flex: 1; }
+/* Chat toggle — right-most control in the toolbar (design Screen 2). The same
+ * rule serves the read-only hint row, where the toolbar is hidden. */
+.tb-toggle {
+  font-size: 0.78rem;
+  color: var(--on-surface-variant);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: default;
+}
+.tb-toggle input { accent-color: var(--primary); }
+.ro-hint .tb-spacer { flex: 1; }
 .tb-sep {
   width: 1px;
   align-self: stretch;
