@@ -53,7 +53,7 @@ export async function renderBlock(root = projectRoot()) {
     lines.push("Specs live in `.claude/specs/features/`. Read the approved doc for a feature's stage before implementing it.");
     lines.push("");
     if (m.features.length === 0) {
-        lines.push("_No features yet. Run `/specmanager-feature \"<title>\"` to create one._");
+        lines.push("_No features yet. Run `/specmanager-prd \"<title>\"` to create one._");
     }
     else {
         lines.push("| Feature | Current stage | Notes |");
@@ -66,7 +66,7 @@ export async function renderBlock(root = projectRoot()) {
     lines.push("**Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation.");
     lines.push("");
     lines.push("**Commands:**");
-    lines.push("`/specmanager-feature` · `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board`");
+    lines.push("`/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board`");
     lines.push("");
     lines.push(`_Last synced: ${m.generatedAt}_`);
     lines.push(END);
