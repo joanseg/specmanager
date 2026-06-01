@@ -497,6 +497,12 @@ async function main(): Promise<void> {
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
+
+  // Watch stdin for EOF so we self-terminate when the parent `claude` goes away.
+  // Attached AFTER server.connect so it's purely additive to the transport's
+  // established `data` consumer — we don't read data or resume the stream ourselves.
+  process.stdin.on("end", shutdown);
+  process.stdin.on("close", shutdown);
 }
 
 let shuttingDown = false;
