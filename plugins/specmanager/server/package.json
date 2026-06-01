@@ -15,6 +15,7 @@
     "selftest-build": "node dist/selftest-build.js",
     "selftest-roundtrip": "node dist/selftest-roundtrip.js",
     "selftest-pidfile": "node dist/selftest-pidfile.js",
+    "selftest-shutdown": "node dist/selftest-shutdown.js",
     "smoke-mcp": "node dist/smoke-mcp.js"
   },
   "dependencies": {
