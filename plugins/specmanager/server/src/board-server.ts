@@ -380,6 +380,8 @@ export async function startBoardServer(opts: {
       wss.close();
       await watcher.close();
       await app.close();
+      // Last: a clean teardown leaves no stale board.pid behind.
+      await removePidFile();
     },
   };
 }
