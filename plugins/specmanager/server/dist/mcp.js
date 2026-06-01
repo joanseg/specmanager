@@ -344,14 +344,25 @@ async function main() {
     startDesignMdAutoSync(PROJECT_DIR);
     const transport = new StdioServerTransport();
     await server.connect(transport);
+    // Watch stdin for EOF so we self-terminate when the parent `claude` goes away.
+    // Attached AFTER server.connect so it's purely additive to the transport's
+    // established `data` consumer — we don't read data or resume the stream ourselves.
+    process.stdin.on("end", shutdown);
+    process.stdin.on("close", shutdown);
 }
+let shuttingDown = false;
+/** Idempotent teardown: stop the board (frees the port + removes board.pid) and exit. */
 const shutdown = async () => {
+    if (shuttingDown)
+        return;
+    shuttingDown = true;
     if (board)
         await board.stop().catch(() => undefined);
     process.exit(0);
 };
 process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
+process.on("SIGHUP", shutdown);
 main().catch((err) => {
     // eslint-disable-next-line no-console
     console.error("specmanager mcp failed to start:", err);

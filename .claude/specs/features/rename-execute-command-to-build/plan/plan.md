@@ -12,7 +12,7 @@ basedOn:
 generatedBy: human
 version: 2
 createdAt: '2026-05-29T10:38:00.912Z'
-updatedAt: '2026-05-29T10:45:25.078Z'
+updatedAt: '2026-06-01T09:21:57.004Z'
 ---
 ## Overview
 

@@ -1,10 +1,11 @@
 // Phase 2 smoke test — boots board server against a tmp project,
 // hits REST endpoints, opens a WS, and asserts file-change → event.
+import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import WebSocket from "ws";
-import { createFeature, createDocument, initProject } from "./core/index.js";
+import { createFeature, createDocument, initProject, pidFilePath, } from "./core/index.js";
 import { startBoardServer } from "./board-server.js";
 function assert(cond, msg) {
     if (!cond)
@@ -14,6 +15,53 @@ function assert(cond, msg) {
 async function pickPort() {
     // Use a port unlikely to collide with the default 4317.
     return 4317 + Math.floor(Math.random() * 1000);
+}
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+/**
+ * Phase B reap/rebind assertion.
+ *
+ * Seeds a stale board.pid for a spawned-then-killed process, starts the board,
+ * and asserts it reaps the stale PID and binds, that board.pid then names the
+ * new live owner (this process), and that stop() removes the file.
+ */
+async function reapRebindCheck() {
+    const dataDir = await fs.mkdtemp(path.join(os.tmpdir(), "specmanager-pid-"));
+    const prevEnv = process.env.CLAUDE_PLUGIN_DATA;
+    process.env.CLAUDE_PLUGIN_DATA = dataDir;
+    try {
+        const root = await fs.mkdtemp(path.join(os.tmpdir(), "specmanager-reap-"));
+        await initProject(root);
+        // Spawn a short-lived child, kill it, and record its (now stale) PID.
+        const child = spawn("node", ["-e", "setTimeout(() => {}, 60000)"], {
+            stdio: "ignore",
+        });
+        const stalePid = child.pid;
+        child.kill("SIGKILL");
+        await sleep(50);
+        await fs.writeFile(pidFilePath(), String(stalePid), "utf8");
+        const port = await pickPort();
+        const board = await startBoardServer({ root, port });
+        assert(board, `board reaped stale board.pid and bound on port ${port}`);
+        if (!board)
+            return;
+        const owner = (await fs.readFile(pidFilePath(), "utf8")).trim();
+        assert(Number.parseInt(owner, 10) === process.pid, "board.pid now holds the new live owner (this process)");
+        await board.stop();
+        let stillThere = true;
+        try {
+            await fs.access(pidFilePath());
+        }
+        catch {
+            stillThere = false;
+        }
+        assert(!stillThere, "stop() removed board.pid");
+    }
+    finally {
+        if (prevEnv === undefined)
+            delete process.env.CLAUDE_PLUGIN_DATA;
+        else
+            process.env.CLAUDE_PLUGIN_DATA = prevEnv;
+    }
 }
 async function main() {
     const root = await fs.mkdtemp(path.join(os.tmpdir(), "specmanager-board-"));
@@ -244,6 +292,9 @@ async function main() {
     finally {
         await board.stop();
     }
+    // ── Phase B: reap stale board.pid + rebind, then stop() removes it ──────
+    await reapRebindCheck();
+    console.log("\nPhase B reap/rebind assertions passed.");
 }
 main().catch((err) => {
     console.error(err);

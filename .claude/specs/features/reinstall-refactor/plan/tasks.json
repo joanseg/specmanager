@@ -1,0 +1,315 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-reinstall-refactor",
+      "title": "Create core/pidfile.ts with pidFilePath() env resolution",
+      "status": "done",
+      "phase": "A — PID-file helper",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "a536d345cbb189422f614c86f64408e285a8be93"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/pidfile.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T10:06:11.905Z",
+      "updatedAt": "2026-06-01T10:17:38.190Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-reinstall-refactor",
+      "title": "Add writePidFile() / removePidFile() to core/pidfile.ts",
+      "status": "done",
+      "phase": "A — PID-file helper",
+      "complexity": 1,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "54b2a9887a78fc564e4def787e524830087dec57"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/pidfile.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T10:06:14.819Z",
+      "updatedAt": "2026-06-01T10:18:59.667Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-reinstall-refactor",
+      "title": "Add liveness probe + reapStalePid(port) to core/pidfile.ts",
+      "status": "done",
+      "phase": "A — PID-file helper",
+      "complexity": 2,
+      "dependsOn": [
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [
+          "d00b15285f9e158960b3edd0527f7c3b961891c0"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/pidfile.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T10:06:18.232Z",
+      "updatedAt": "2026-06-01T10:19:26.022Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-reinstall-refactor",
+      "title": "Re-export pidfile from core/index.ts",
+      "status": "done",
+      "phase": "A — PID-file helper",
+      "complexity": 1,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "801bdcd48fdadb24284271d67e359a4c4131ba21"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/index.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T10:06:21.719Z",
+      "updatedAt": "2026-06-01T10:19:54.160Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-reinstall-refactor",
+      "title": "Add selftest-pidfile.ts + selftest-pidfile script",
+      "status": "done",
+      "phase": "A — PID-file helper",
+      "complexity": 2,
+      "dependsOn": [
+        "task-003",
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [
+          "fca74dc86472d40cf4d399bfe536212bc441e414"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest-pidfile.ts",
+          "plugins/specmanager/server/package.json"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T10:06:28.480Z",
+      "updatedAt": "2026-06-01T10:20:51.920Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-reinstall-refactor",
+      "title": "Call reapStalePid(port) immediately before app.listen",
+      "status": "done",
+      "phase": "B — Board-server integration",
+      "complexity": 2,
+      "dependsOn": [
+        "task-003",
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [
+          "a48f496aecec26649b3aed4de1c7689716e2a7b1"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/board-server.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T10:06:33.091Z",
+      "updatedAt": "2026-06-01T10:22:10.117Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-reinstall-refactor",
+      "title": "Call writePidFile() after a successful bind",
+      "status": "done",
+      "phase": "B — Board-server integration",
+      "complexity": 1,
+      "dependsOn": [
+        "task-006"
+      ],
+      "artifacts": {
+        "commits": [
+          "4a492cd5d203ef70b2333c49e64ce63a497adcc5"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/board-server.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T10:06:36.268Z",
+      "updatedAt": "2026-06-01T10:22:22.557Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-reinstall-refactor",
+      "title": "Remove board.pid as the last step of stop()",
+      "status": "done",
+      "phase": "B — Board-server integration",
+      "complexity": 1,
+      "dependsOn": [
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [
+          "7c6eb014af2a50f9bfdf563956c92edea4b9345d"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/board-server.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T10:06:39.325Z",
+      "updatedAt": "2026-06-01T10:22:37.698Z"
+    },
+    {
+      "id": "task-009",
+      "featureId": "feat-reinstall-refactor",
+      "title": "Include the offending PID in the bind-failure log",
+      "status": "done",
+      "phase": "B — Board-server integration",
+      "complexity": 1,
+      "dependsOn": [
+        "task-006"
+      ],
+      "artifacts": {
+        "commits": [
+          "a4d8a803e57a55bcfa12e95e6efca453a054ec6f"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/board-server.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T10:06:42.766Z",
+      "updatedAt": "2026-06-01T10:22:57.173Z"
+    },
+    {
+      "id": "task-010",
+      "featureId": "feat-reinstall-refactor",
+      "title": "Add a board reap/rebind assertion to selftest-board.ts",
+      "status": "done",
+      "phase": "B — Board-server integration",
+      "complexity": 2,
+      "dependsOn": [
+        "task-008"
+      ],
+      "artifacts": {
+        "commits": [
+          "ba2b8e0c426bf6f80c561ab96ee37d205178485e"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest-board.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T10:06:46.071Z",
+      "updatedAt": "2026-06-01T10:23:55.658Z"
+    },
+    {
+      "id": "task-011",
+      "featureId": "feat-reinstall-refactor",
+      "title": "Make shutdown idempotent with a shuttingDown guard",
+      "status": "done",
+      "phase": "C — MCP self-termination",
+      "complexity": 2,
+      "dependsOn": [
+        "task-008"
+      ],
+      "artifacts": {
+        "commits": [
+          "29eae64b321775f6cc65336225f69f2122384ccb"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/mcp.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T10:06:49.092Z",
+      "updatedAt": "2026-06-01T10:25:04.059Z"
+    },
+    {
+      "id": "task-012",
+      "featureId": "feat-reinstall-refactor",
+      "title": "Register SIGHUP alongside SIGINT/SIGTERM",
+      "status": "done",
+      "phase": "C — MCP self-termination",
+      "complexity": 1,
+      "dependsOn": [
+        "task-011"
+      ],
+      "artifacts": {
+        "commits": [
+          "02f1c23bc0a17c702a395011ee3fb0f891f6f966"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/mcp.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T10:06:55.209Z",
+      "updatedAt": "2026-06-01T10:25:19.066Z"
+    },
+    {
+      "id": "task-013",
+      "featureId": "feat-reinstall-refactor",
+      "title": "Attach stdin end/close EOF watch after server.connect",
+      "status": "done",
+      "phase": "C — MCP self-termination",
+      "complexity": 2,
+      "dependsOn": [
+        "task-011"
+      ],
+      "artifacts": {
+        "commits": [
+          "981e75aca830964a58b47f5f12dd894d20ac10b3"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/mcp.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T10:06:58.122Z",
+      "updatedAt": "2026-06-01T10:25:37.754Z"
+    },
+    {
+      "id": "task-014",
+      "featureId": "feat-reinstall-refactor",
+      "title": "Add selftest-shutdown.ts + selftest-shutdown script",
+      "status": "done",
+      "phase": "C — MCP self-termination",
+      "complexity": 2,
+      "dependsOn": [
+        "task-012",
+        "task-013"
+      ],
+      "artifacts": {
+        "commits": [
+          "48d6fd8ee6c5168712720fd967334fa15cab714a"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest-shutdown.ts",
+          "plugins/specmanager/server/package.json"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-01T10:07:01.124Z",
+      "updatedAt": "2026-06-01T10:29:08.526Z"
+    }
+  ]
+}
