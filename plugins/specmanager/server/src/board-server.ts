@@ -321,6 +321,10 @@ export async function startBoardServer(opts: {
     return null;
   }
 
+  // Record this process as the live owner of the port. Written only after a
+  // successful bind, so board.pid never names a non-owner.
+  await writePidFile();
+
   // WS --------------------------------------------------------------------
   const wss = new WebSocketServer({ server: app.server, path: "/ws" });
   const clients = new Set<WebSocket>();
