@@ -546,11 +546,11 @@ html, body, #root {
   flex-direction: column;
   overflow: hidden;
 }
-/* The scrollable surface; the prose column inside is centered to a ~72ch
- * reading measure (design Screen 1/4). Milkdown owns the DOM inside, so the
- * measure is applied to the ProseMirror editor root (.prose lands on it via
- * editorViewOptions attributes). ~62ch with chat falls out of the narrower
- * --cols-2 body track. */
+/* The scrollable surface; the prose column inside fills ~90% of the panel
+ * width (Polish task 4.2 — supersedes the Phase 3 centered ~72ch reading cap).
+ * Milkdown owns the DOM inside, so the measure is applied to the ProseMirror
+ * editor root (.prose lands on it via editorViewOptions attributes). Chat-open
+ * follows the same ~90% ratio of the narrower --cols-2 body track. */
 .md-surface {
   flex: 1;
   overflow: auto;
@@ -559,7 +559,8 @@ html, body, #root {
 .md-surface--ro { background: var(--surface); }
 .md-surface .prose,
 .md-surface .ProseMirror {
-  max-width: 72ch;
+  width: 90%;
+  max-width: none;
   margin-inline: auto;
   padding: var(--space-lg) var(--space-md) var(--space-xl);
   color: var(--on-surface);
