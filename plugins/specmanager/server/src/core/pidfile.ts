@@ -39,3 +39,51 @@ export async function removePidFile(): Promise<void> {
     }
   }
 }
+
+/**
+ * Probe whether `pid` names a live process via signal 0.
+ *
+ * Success and `EPERM` both mean the process exists (EPERM = it exists but we
+ * lack permission to signal it). `ESRCH` means no such process. Any other
+ * outcome is treated as not-live.
+ */
+export function isProcessAlive(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (err) {
+    return (err as NodeJS.ErrnoException).code === "EPERM";
+  }
+}
+
+/** Read the PID file and parse its integer PID, or null if absent/unparsable. */
+async function readPid(): Promise<number | null> {
+  let raw: string;
+  try {
+    raw = await fs.readFile(pidFilePath(), "utf8");
+  } catch {
+    return null;
+  }
+  const pid = Number.parseInt(raw.trim(), 10);
+  return Number.isInteger(pid) && pid > 0 ? pid : null;
+}
+
+/**
+ * Reap a stale board predecessor recorded in the PID file.
+ *
+ * If the file names a live process, SIGTERM it and wait ~200ms for it to
+ * release the port. A missing file, unparsable PID, or already-dead process
+ * is a no-op. The `port` is accepted for caller symmetry with the bind that
+ * follows. Never throws.
+ */
+export async function reapStalePid(port: number): Promise<void> {
+  void port;
+  const pid = await readPid();
+  if (pid === null || !isProcessAlive(pid)) return;
+  try {
+    process.kill(pid, "SIGTERM");
+  } catch {
+    // already gone between the probe and the signal — nothing to reap
+  }
+  await new Promise((resolve) => setTimeout(resolve, 200));
+}
