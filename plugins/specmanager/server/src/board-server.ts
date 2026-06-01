@@ -1,6 +1,6 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import Fastify, { FastifyInstance } from "fastify";
 import fastifyStatic from "@fastify/static";
 import { WebSocketServer, WebSocket } from "ws";
@@ -316,8 +316,17 @@ export async function startBoardServer(opts: {
   try {
     await app.listen({ port, host: "127.0.0.1" });
   } catch (err) {
+    // Name the PID still holding the port, if the pid file records one, so the
+    // failure is diagnosable. Fall through to the unchanged `return null`.
+    let holder = "";
+    try {
+      const recorded = readFileSync(pidFilePath(), "utf8").trim();
+      if (recorded) holder = ` (board.pid still holds PID ${recorded})`;
+    } catch {
+      // no readable pid file — nothing extra to report
+    }
     // eslint-disable-next-line no-console
-    console.error(`specmanager: board server failed to bind 127.0.0.1:${port}: ${(err as Error).message}`);
+    console.error(`specmanager: board server failed to bind 127.0.0.1:${port}: ${(err as Error).message}${holder}`);
     return null;
   }
 
