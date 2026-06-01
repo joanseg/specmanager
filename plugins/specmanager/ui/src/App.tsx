@@ -404,7 +404,7 @@ export default function App() {
       {board.features.length === 0 ? (
         <section className="empty">
           <p>No features yet.</p>
-          <pre>/specmanager-feature &lt;title&gt;</pre>
+          <pre>/specmanager-prd &lt;title&gt;</pre>
         </section>
       ) : (
         <section
