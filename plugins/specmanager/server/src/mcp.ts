@@ -499,7 +499,12 @@ async function main(): Promise<void> {
   await server.connect(transport);
 }
 
+let shuttingDown = false;
+
+/** Idempotent teardown: stop the board (frees the port + removes board.pid) and exit. */
 const shutdown = async (): Promise<void> => {
+  if (shuttingDown) return;
+  shuttingDown = true;
   if (board) await board.stop().catch(() => undefined);
   process.exit(0);
 };
