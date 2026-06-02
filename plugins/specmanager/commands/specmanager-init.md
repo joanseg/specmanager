@@ -23,10 +23,23 @@ Initialize this project for SpecManager.
 
 ## Steps
 
-Call the **`specmanager_init`** MCP tool (idempotent — safe to re-run).
-After it returns, report what changed: which directories were created,
-whether `CLAUDE.md` was created/updated, and whether `./docs/DESIGN.md` was
-created/updated.
+1. Call the **`specmanager_init`** MCP tool first (idempotent — safe to
+   re-run). This creates `.claude/specs/` + `manifest.json`, writes the
+   managed CLAUDE.md block between the `<!-- specmanager:start -->` /
+   `<!-- specmanager:end -->` markers, and creates/refreshes `./docs/DESIGN.md`.
+2. After it returns, run the native **`/init`** slash command in-session to
+   populate CLAUDE.md's general codebase-doc region. `/init` is a native
+   interactive command the agent runs in-session — it is not a server/MCP call.
+   It writes **only outside** the SpecManager markers, so it never clobbers the
+   managed block (the marker-merge in `core/claude-md.ts` is line-anchored, so
+   the regions are disjoint). Running `specmanager_init` first means the markers
+   already exist when `/init` fills the surrounding codebase docs.
+3. Report what changed across **both** regions:
+   - From `specmanager_init`: which directories were created, whether the
+     managed CLAUDE.md block was created/updated, and whether `./docs/DESIGN.md`
+     was created/updated.
+   - From `/init`: that the general codebase docs in CLAUDE.md (outside the
+     markers) were (re)generated — so the user need not run `/init` separately.
 
 ## Notes on the optional Design stage
 
@@ -39,8 +52,12 @@ refuses to open until you either approve it or delete the draft.
 
 ## Don't
 
-- Don't edit files outside the `<!-- specmanager:start -->` / `<!-- specmanager:end -->`
-  markers in `CLAUDE.md`. The user owns that content.
+- Don't hand-edit content **between** the `<!-- specmanager:start -->` /
+  `<!-- specmanager:end -->` markers in `CLAUDE.md` — that managed block is
+  owned by `sync_claude_md`. Native `/init` writes only **outside** those
+  markers (the general codebase-doc region); because the marker-merge in
+  `core/claude-md.ts` is line-anchored, the two regions are disjoint and
+  `/init` never clobbers the managed block.
 - Don't edit content **between** the design markers in `./docs/DESIGN.md` by
   hand — SpecManager regenerates it after every feature ships. Hand-edits
   belong above the start marker or below the end marker.
