@@ -13,14 +13,15 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 | Markdown viewer | PRD (approved) | — |
 | Reinstall refactor | PRD (approved) | — |
 | Plan and walkthrough optimisations | PRD (approved) | — |
-| HTML viewer scroll fix | PRD (draft) | — |
+| HTML viewer scroll fix | PRD (approved) | — |
+| Post-phase doc sync (CLAUDE.md + DESIGN.md) | PRD (approved) | — |
 
 **Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation.
 
 **Commands:**
 `/specmanager-feature` · `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board`
 
-_Last synced: 2026-06-01T13:33:53.513Z_
+_Last synced: 2026-06-02T15:05:19.469Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md

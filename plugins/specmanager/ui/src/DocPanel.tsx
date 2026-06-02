@@ -28,6 +28,23 @@ function featureTitle(featureId: string): string {
     .join(" ");
 }
 
+// The design brief renders verbatim HTML in a sandboxed iframe; parent CSS
+// (tokens.css / styles.css) cannot reach inside it, so the reset + custom
+// scrollbar must be injected. Prepend (not onLoad-write) so it lands before
+// the body paints. html,body{margin:0} removes the default 8px margin that
+// fights the canvas; the scrollbar rules mirror .md-surface for parity, with
+// the thumb border tracking the iframe's own surface (--surface-container-lowest
+// = #0e0e10). Values are inlined literals because the iframe document has no
+// access to the parent ':root' custom properties.
+const PREVIEW_STYLE = `<style>
+  html, body { margin: 0; }
+  html { scrollbar-width: thin; scrollbar-color: #464554 transparent; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #464554; border-radius: 999px; border: 2px solid #0e0e10; }
+  ::-webkit-scrollbar-thumb:hover { background: #908fa0; }
+</style>`;
+
 const STAGE_LABEL: Record<Stage, string> = {
   prd: "PRD",
   architecture: "Architecture",
@@ -289,7 +306,7 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
               className="panel__preview panel__preview--iframe"
               title="design brief preview"
               sandbox="allow-same-origin"
-              srcDoc={body}
+              srcDoc={PREVIEW_STYLE + body}
             />
           ) : (
             <div className="panel__editor">
