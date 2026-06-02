@@ -815,6 +815,8 @@ html, body, #root {
  * its own white background by design and the dark .markdown rules below must
  * NOT bleed into it (the iframe is a separate document, so they cannot). */
 .panel__preview--iframe {
+  display: block; /* replaced inline default leaves a baseline descender gap
+                   * that forces wrapper overflow; block removes it. */
   padding: 0;
   border: 0;
   border-left: 1px solid var(--outline-variant);
