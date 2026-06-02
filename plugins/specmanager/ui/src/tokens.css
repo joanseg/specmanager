@@ -143,4 +143,14 @@
   --table-header-bg: var(--surface-container-high);
   --table-zebra-bg: color-mix(in srgb, var(--surface-container) 55%, transparent);
   --table-cell-border: var(--outline-variant);
+
+  /* --- Custom scrollbar (HTML viewer scroll-fix — design Screen 2/3) ----- *
+   * Shared thumb width + colour so the design-brief iframe and the markdown
+   * surface scroll identically. Colours reuse existing outline tokens — no new
+   * colour enters the scale; --scrollbar-size is the one new dimension value
+   * (10px, the agreed on-brand thin bar). */
+  --scrollbar-size: 10px;
+  --scrollbar-thumb: var(--outline-variant);
+  --scrollbar-thumb-hover: var(--outline);
+  --scrollbar-track: transparent;
 }
