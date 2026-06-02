@@ -53,7 +53,12 @@ Build one phase of the plan for **$ARGUMENTS**.
 9. **Report.** 
    - List the tasks the builder completed and the artifacts recorded.
    - If step 8 auto-created a walkthrough, report its doc id + file path (`walkthroughs/<slug>/phase-<phaseName>.md`) and that it's a `draft` awaiting review. If a walkthrough already existed, say so and point at `/specmanager-walkthrough <feature> <phaseName>` to regenerate manually.
-   - If the builder stopped mid-phase on a failure, surface the task id and the error verbatim. Do not retry automatically.
+   - **State which post-phase doc-sync path ran** (only on the open-gate path where the question was asked), using the wording for the chosen branch:
+     - **Full sync now** → "Codebase docs regenerated via `/init` + both managed blocks refreshed (CLAUDE.md and DESIGN.md)."
+     - **Managed blocks only** → "Both managed blocks refreshed (CLAUDE.md and DESIGN.md); codebase-doc region left as-is."
+     - **Wait / cancel / decline** → "Docs intentionally not synced — manual re-sync command printed above."
+     - If a sync tool errored mid-sequence, surface its error verbatim and note which steps did/didn't run; do not retry automatically.
+   - If the builder stopped **mid-phase** (walkthrough gate closed), report the stop only — there was no sync prompt, so say nothing about syncing. Surface the failing task id and the error verbatim. Do not retry automatically.
 
 ## Don't
 - Don't bypass the plan-approved check. The Plan is the contract.
@@ -61,3 +66,5 @@ Build one phase of the plan for **$ARGUMENTS**.
 - Don't approve any documents.
 - Don't mark tasks `done` from this command — the builder owns task state transitions.
 - Don't drive a phase that is already done.
+- Don't sync docs unconditionally. The post-phase doc-sync `AskUserQuestion` fires **only** on the open-gate path (phase fully done); a mid-phase stop must stay prompt-free and sync nothing.
+- Don't run `/init` on the **Managed blocks only** branch, and don't refresh any managed block on the **Wait** branch — all three sync steps defer together. Never leave a half-synced state.
