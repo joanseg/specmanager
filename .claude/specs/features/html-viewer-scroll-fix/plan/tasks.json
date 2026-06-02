@@ -1,0 +1,115 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-html-viewer-scroll-fix",
+      "title": "Add shared scrollbar tokens to tokens.css",
+      "status": "done",
+      "phase": "viewer-parity",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "4939db4e028f1e7c09fe17840883a1717292b086"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/tokens.css"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-02T13:19:52.332Z",
+      "updatedAt": "2026-06-02T13:26:44.536Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-html-viewer-scroll-fix",
+      "title": "Add display: block to .panel__preview--iframe in styles.css",
+      "status": "done",
+      "phase": "viewer-parity",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "322fdcaead6c2b08d941097d2855d55876ebd54c"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/styles.css"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-02T13:19:56.684Z",
+      "updatedAt": "2026-06-02T13:27:53.007Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-html-viewer-scroll-fix",
+      "title": "Add scoped .scroll-styled utility in styles.css and apply it to .md-surface",
+      "status": "done",
+      "phase": "viewer-parity",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "62c4bdbdb0c812859c88deeeb4d569364b932a09"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/styles.css"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-02T13:19:57.615Z",
+      "updatedAt": "2026-06-02T13:28:25.601Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-html-viewer-scroll-fix",
+      "title": "Inject srcDoc-prepended style reset + scrollbar rules in DocPanel.tsx",
+      "status": "done",
+      "phase": "viewer-parity",
+      "complexity": 3,
+      "dependsOn": [
+        "task-001",
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [
+          "6c8fbecc19632b35dc37b291561f8a20ab57393f"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/DocPanel.tsx"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-02T13:20:04.227Z",
+      "updatedAt": "2026-06-02T13:29:50.460Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-html-viewer-scroll-fix",
+      "title": "Verify against the wide QA fixture and confirm no markdown regression",
+      "status": "done",
+      "phase": "viewer-parity",
+      "complexity": 2,
+      "dependsOn": [
+        "task-002",
+        "task-003",
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [
+          "be1466ac55bf3c5b6bd4d706aa065706a13dd3da"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/tokens.css",
+          "plugins/specmanager/ui/src/styles.css",
+          "plugins/specmanager/ui/src/DocPanel.tsx"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-02T13:20:07.571Z",
+      "updatedAt": "2026-06-02T13:32:55.131Z"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T13:33:40.688Z",
+  "generatedAt": "2026-06-02T15:00:29.448Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -512,19 +512,115 @@
         {
           "id": "prd-html-viewer-scroll-fix-008",
           "stage": "prd",
-          "status": "draft",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "HTML viewer scroll fix PRD"
+        },
+        {
+          "id": "arch-html-viewer-scroll-fix-007",
+          "stage": "architecture",
+          "status": "approved",
           "stale": false,
           "version": 1,
-          "title": "HTML viewer scroll fix PRD"
+          "title": "HTML viewer scroll fix architecture"
+        },
+        {
+          "id": "design-html-viewer-scroll-fix-002",
+          "stage": "design",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "HTML viewer scroll fix mockups"
+        },
+        {
+          "id": "plan-html-viewer-scroll-fix-007",
+          "stage": "plan",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "HTML viewer scroll fix plan"
+        },
+        {
+          "id": "wt-html-viewer-scroll-fix-008",
+          "stage": "walkthrough",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "HTML viewer scroll fix — Phase viewer-parity walkthrough",
+          "phase": "viewer-parity"
         }
       ],
       "tasks": {
         "todo": 0,
         "in_progress": 0,
-        "done": 0,
-        "total": 0
+        "done": 5,
+        "total": 5
       },
-      "phases": []
+      "phases": [
+        {
+          "name": "viewer-parity",
+          "order": 0,
+          "taskCount": 5,
+          "doneCount": 5,
+          "inProgressCount": 0,
+          "status": "done",
+          "walkthroughId": "wt-html-viewer-scroll-fix-008",
+          "walkthroughStatus": "approved",
+          "walkthroughStale": false
+        }
+      ]
+    },
+    {
+      "id": "feat-post-phase-doc-sync-claude-md-design-md",
+      "slug": "post-phase-doc-sync-claude-md-design-md",
+      "title": "Post-phase doc sync (CLAUDE.md + DESIGN.md)",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-post-phase-doc-sync-claude-md-design-md-009",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Post-phase doc sync (CLAUDE.md + DESIGN.md) PRD"
+        },
+        {
+          "id": "arch-post-phase-doc-sync-claude-md-design-md-008",
+          "stage": "architecture",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Post-phase doc sync (CLAUDE.md + DESIGN.md) architecture"
+        },
+        {
+          "id": "plan-post-phase-doc-sync-claude-md-design-md-008",
+          "stage": "plan",
+          "status": "draft",
+          "stale": false,
+          "version": 2,
+          "title": "Post-phase doc sync (CLAUDE.md + DESIGN.md) plan"
+        }
+      ],
+      "tasks": {
+        "todo": 5,
+        "in_progress": 0,
+        "done": 0,
+        "total": 5
+      },
+      "phases": [
+        {
+          "name": "Phase A",
+          "order": 0,
+          "taskCount": 5,
+          "doneCount": 0,
+          "inProgressCount": 0,
+          "status": "todo",
+          "walkthroughId": null,
+          "walkthroughStatus": null,
+          "walkthroughStale": null
+        }
+      ]
     }
   ]
 }

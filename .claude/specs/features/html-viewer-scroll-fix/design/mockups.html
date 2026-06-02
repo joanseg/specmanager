@@ -1,0 +1,523 @@
+---
+id: design-html-viewer-scroll-fix-002
+featureId: feat-html-viewer-scroll-fix
+stage: design
+status: approved
+stale: false
+title: HTML viewer scroll fix mockups
+dependsOn:
+  - prd-html-viewer-scroll-fix-008
+  - arch-html-viewer-scroll-fix-007
+basedOn:
+  prd-html-viewer-scroll-fix-008: 2
+  arch-html-viewer-scroll-fix-007: 1
+generatedBy: agent
+version: 2
+createdAt: '2026-06-02T11:40:02.037Z'
+updatedAt: '2026-06-02T12:35:28.805Z'
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HTML viewer scroll fix — mockups</title>
+<style>
+  /* ============================================================
+   * Grounded in plugins/specmanager/ui/src/tokens.css ("Obsidian Flux").
+   * The repo ./docs/DESIGN.md frontmatter is still the auto-generated
+   * placeholder stub; the REAL tokens live in tokens.css (its header says
+   * "Values map 1:1 to ... DESIGN.md frontmatter"). Every colour/radius/
+   * spacing below traces to a tokens.css custom property. No new colours.
+   * ============================================================ */
+  :root {
+    --surface: #131315;
+    --surface-container-lowest: #0e0e10;
+    --surface-container-low: #1b1b1d;
+    --surface-container: #201f21;
+    --surface-container-high: #2a2a2c;
+    --surface-container-highest: #353437;
+    --on-surface: #e5e1e4;
+    --on-surface-variant: #c7c4d7;
+    --outline: #908fa0;
+    --outline-variant: #464554;
+    --primary: #c0c1ff;
+    --secondary: #ddb7ff;
+    --secondary-container: #6f00be;
+    --on-secondary-container: #d6a9ff;
+    --tertiary: #ffb783;
+    --success: #10b981;
+    --error: #ffb4ab;
+    --design-preview-bg: #ffffff;
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 1rem;
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 40px;
+    --font-display: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --shadow-overlay: 0px 20px 50px rgba(0,0,0,0.5);
+    --glass-edge: rgba(192,193,255,0.08);
+
+    /* PROPOSED shared scrollbar tokens (flagged in Open questions — these are
+     * the values the planner must pin in tokens.css; derived from existing
+     * --outline-variant / --outline, no new colour introduced). */
+    --scrollbar-size: 10px;
+    --scrollbar-thumb: #464554;       /* == --outline-variant */
+    --scrollbar-thumb-hover: #908fa0; /* == --outline */
+    --scrollbar-track: transparent;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--surface-container-lowest);
+    color: var(--on-surface);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- page scaffold: stacked screens + notes ---- */
+  .sm-page { max-width: 1080px; margin: 0 auto; padding: var(--space-xl) var(--space-lg) 80px; }
+  .sm-doc-title { font-family: var(--font-display); font-size: 1.9rem; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 6px; }
+  .sm-doc-sub { color: var(--on-surface-variant); font-size: 0.95rem; margin: 0 0 8px; }
+  .sm-doc-meta { font-family: var(--font-mono); font-size: 0.72rem; color: var(--outline); letter-spacing: 0.02em; }
+
+  .sm-screen { margin: var(--space-xl) 0 var(--space-md); }
+  .sm-screen-label {
+    font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--on-surface-variant);
+    margin-bottom: var(--space-sm); display: flex; align-items: center; gap: 8px;
+  }
+  .sm-screen-label .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--secondary); }
+
+  /* ---- note blocks ---- */
+  .sm-note {
+    margin: 0 0 var(--space-xl);
+    padding: var(--space-lg) var(--space-lg) calc(var(--space-lg) - 4px);
+    background: linear-gradient(135deg, var(--surface-container), var(--surface-container-low));
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius-lg);
+  }
+  .sm-note h2 { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 0.5rem; }
+  .sm-note p { font-size: 0.92rem; color: var(--on-surface); margin: 0.55rem 0; }
+  .sm-note ul { margin: 0.5rem 0; padding-left: 1.2rem; }
+  .sm-note li { font-size: 0.9rem; color: var(--on-surface-variant); margin: 0.32rem 0; }
+  .sm-note li strong { color: var(--on-surface); }
+  .sm-note code, .tok {
+    font-family: var(--font-mono); font-size: 0.82em;
+    background: var(--surface-container-highest); color: var(--primary);
+    padding: 0.05rem 0.35rem; border-radius: var(--radius-sm);
+  }
+  .sm-open-questions { border-color: color-mix(in srgb, var(--tertiary) 40%, var(--outline-variant)); }
+  .sm-open-questions h2 { color: var(--tertiary); }
+
+  /* ============================================================
+   * The board drawer chrome — faithful to .panel in styles.css.
+   * Rendered as a fixed device frame at the panel's real width feel.
+   * ============================================================ */
+  .frame {
+    border: 1px solid var(--glass-edge);
+    border-left: 2px solid color-mix(in srgb, var(--primary) 22%, var(--outline-variant));
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow-overlay);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    height: 540px;
+  }
+  .panel__header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: var(--space-md); padding: 1rem 1.25rem 0.75rem;
+    border-bottom: 1px solid var(--outline-variant);
+  }
+  .panel__crumb { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.02em; color: var(--on-surface-variant); margin-bottom: 0.3rem; }
+  .panel__crumb-sep { color: var(--outline); margin: 0 0.1rem; }
+  .panel__title-row { display: flex; align-items: baseline; gap: 0.75rem; }
+  .panel__title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; letter-spacing: -0.01em; }
+  .panel__meta { color: var(--on-surface-variant); font-size: 0.8rem; }
+  .panel__version { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .panel__badges { display: flex; gap: 0.35rem; margin-top: 0.5rem; }
+  .badge {
+    font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.04em;
+    padding: 0.12rem 0.45rem; border-radius: var(--radius-sm); border: 1px solid transparent;
+  }
+  .badge--design { background: var(--secondary-container); color: var(--on-secondary-container); }
+  .badge--approved { background: color-mix(in srgb, var(--success) 18%, transparent); color: var(--success); border-color: color-mix(in srgb, var(--success) 40%, transparent); }
+  .panel__header-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+  .btn {
+    font-family: var(--font-body); font-size: 0.8rem; font-weight: 600;
+    padding: 0.35rem 0.7rem; border-radius: var(--radius-md); cursor: default;
+    border: 1px solid var(--outline-variant); background: var(--surface-container-high); color: var(--on-surface);
+  }
+  .btn--primary { border: 0; color: #1000a9; background: linear-gradient(135deg, #8083ff, var(--secondary-container)); color: #fff; }
+  .panel__close { background: transparent; border: 0; color: var(--on-surface-variant); font-size: 1.4rem; line-height: 1; padding: 0.1rem 0.4rem; }
+
+  .panel__toolbar { display: flex; align-items: center; padding: 0.4rem 1.25rem; border-bottom: 1px solid var(--outline-variant); }
+  .panel__toolbar-spacer { flex: 1; }
+  .panel__toggle { display: flex; align-items: center; gap: 0.4rem; font-size: 0.82rem; color: var(--on-surface-variant); }
+  .panel__toggle input { accent-color: var(--primary); }
+
+  .panel__body { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr; }
+
+  .panel__footer {
+    padding: 0.5rem 1.25rem; border-top: 1px solid var(--outline-variant);
+    font-family: var(--font-mono); font-size: 0.7rem; color: var(--outline);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  /* ---- the design iframe wrapper (.panel__preview--iframe) ---- */
+  .iframe-wrap {
+    position: relative; height: 100%; min-height: 0;
+    border-left: 1px solid var(--outline-variant);
+    background: var(--design-preview-bg);
+  }
+
+  /* Simulated iframe document — its own scroll surface. Renders srcDoc verbatim,
+   * so a real SpecManager brief paints its OWN (dark, Obsidian Flux) background
+   * over the white --design-preview-bg fallback. We show that dark reality. */
+  .iframe-doc {
+    position: absolute; inset: 0;
+    background: var(--surface-container-lowest);
+    color: var(--on-surface);
+    overflow: auto;
+  }
+  .iframe-doc.block { /* display:block fix removes baseline gap; here we just fill */ }
+
+  /* The "before" buggy variant: a descender gap below the doc + forced overflow. */
+  .iframe-wrap--buggy .iframe-doc { bottom: 6px; /* descender gap artifact */ }
+  .iframe-wrap--buggy { overflow: auto; }
+
+  /* mock dark-document content (stand-in for a verbatim Obsidian Flux brief body) */
+  .mk { font-family: var(--font-body); color: var(--on-surface); padding: 28px 34px; }
+  .mk h1 { font-family: var(--font-display); font-size: 1.5rem; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .mk .mk-sub { color: var(--on-surface-variant); font-size: 0.85rem; margin: 0 0 18px; }
+  .mk-card { border: 1px solid var(--outline-variant); border-radius: 10px; padding: 16px 18px; margin: 0 0 14px; background: linear-gradient(135deg, var(--surface-container), var(--surface-container-low)); }
+  .mk-card h3 { margin: 0 0 6px; font-size: 1rem; }
+  .mk-card p { margin: 0; font-size: 0.86rem; color: var(--on-surface-variant); }
+  .mk-cta { display: inline-block; margin-top: 4px; background: linear-gradient(135deg, var(--primary), var(--secondary-container)); color: #fff; font-size: 0.82rem; font-weight: 600; padding: 8px 16px; border-radius: 8px; }
+  .mk-row { display: flex; gap: 12px; }
+  .mk-row .mk-card { flex: 1; }
+
+  /* unified custom scrollbar — applied to BOTH the iframe doc and md surface */
+  .scroll-styled { scrollbar-width: thin; scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track); }
+  .scroll-styled::-webkit-scrollbar { width: var(--scrollbar-size); height: var(--scrollbar-size); }
+  .scroll-styled::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+  .scroll-styled::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 999px; border: 2px solid var(--surface-container-lowest); }
+  .scroll-styled::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+  /* on the dark md surface the thumb border matches its slightly lighter surface */
+  .scroll-styled--dark::-webkit-scrollbar-thumb { border-color: var(--surface); }
+
+  /* ---- markdown reference surface (.md-surface) ---- */
+  .md-surface { height: 100%; min-height: 0; overflow: auto; background: var(--surface); }
+  .md-col { width: 90%; margin: 0 auto; padding: var(--space-lg) var(--space-md) var(--space-xl); }
+  .md-col h1 { font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; margin: 0.6rem 0 0.8rem; letter-spacing: -0.01em; }
+  .md-col h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; margin: 1.3rem 0 0.5rem; }
+  .md-col p, .md-col li { font-size: 0.95rem; line-height: 1.62; color: var(--on-surface); }
+  .md-col code { background: var(--surface-container-highest); padding: 0.05rem 0.3rem; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.85em; }
+
+  /* annotation pins overlaid on screens */
+  .pin {
+    position: absolute; z-index: 5;
+    font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.02em;
+    background: var(--surface-container-highest); color: var(--on-surface);
+    border: 1px solid var(--outline); border-radius: var(--radius-sm);
+    padding: 3px 7px; box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+  }
+  .pin--bad { border-color: var(--error); color: var(--error); }
+  .pin--good { border-color: var(--success); color: var(--success); }
+  .anno-host { position: relative; }
+
+  /* the wide QA mockup body (intentionally overflows horizontally) */
+  .wide-doc { padding: 26px 30px; min-width: 1680px; font-family: var(--font-body); color: var(--on-surface); }
+  .wide-doc h1 { font-family: var(--font-display); font-size: 1.4rem; margin: 0 0 4px; }
+  .wide-doc .mk-sub { color: var(--on-surface-variant); font-size: 0.85rem; margin: 0 0 16px; }
+  .wide-grid { display: grid; grid-template-columns: repeat(8, 190px); gap: 14px; }
+  .wide-cell { border: 1px solid var(--outline-variant); border-radius: 10px; padding: 14px; background: var(--surface-container); }
+  .wide-cell h4 { margin: 0 0 6px; font-size: 0.88rem; }
+  .wide-cell p { margin: 0; font-size: 0.78rem; color: var(--on-surface-variant); }
+  .wide-bar { margin-top: 16px; height: 10px; width: 1620px; border-radius: 999px; background: linear-gradient(90deg,#6f00be,#8083ff,#c0c1ff); }
+
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 10px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--on-surface-variant); }
+  .legend i { width: 22px; height: 8px; border-radius: 999px; display: inline-block; }
+  .legend .sb-thumb { background: var(--scrollbar-thumb); }
+  .legend .sb-hover { background: var(--scrollbar-thumb-hover); }
+</style>
+</head>
+<body>
+<div class="sm-page">
+
+  <p class="sm-doc-meta">feat-html-viewer-scroll-fix · design/mockups.html</p>
+  <h1 class="sm-doc-title">HTML viewer scroll fix</h1>
+  <p class="sm-doc-sub">Bringing the board's sandboxed design-brief iframe to scroll parity with the markdown viewer: one vertical scroll, no spurious horizontal scrollbar, no descender gap, and a unified custom scrollbar (width + colour) across both surfaces.</p>
+
+  <!-- ============================== SCREEN 1 (BEFORE / BUG) ============================== -->
+  <div class="sm-screen">
+    <div class="sm-screen-label"><span class="dot"></span>Screen 1 · Design viewer — current (the bug)</div>
+    <div class="frame anno-host">
+      <div class="panel__header">
+        <div>
+          <div class="panel__crumb">Redesign <span class="panel__crumb-sep">/</span> design <span class="panel__crumb-sep">/</span> mockups.html</div>
+          <div class="panel__title-row">
+            <h2 class="panel__title">Redesign mockups</h2>
+            <span class="panel__meta">edited 2m ago · <span class="panel__version">v3</span></span>
+          </div>
+          <div class="panel__badges">
+            <span class="badge badge--design">DESIGN</span>
+            <span class="badge badge--approved">APPROVED</span>
+          </div>
+        </div>
+        <div class="panel__header-actions">
+          <button class="btn">Edit</button>
+          <button class="panel__close">&times;</button>
+        </div>
+      </div>
+      <div class="panel__toolbar">
+        <div class="panel__toolbar-spacer"></div>
+        <label class="panel__toggle"><input type="checkbox" />Chat</label>
+      </div>
+      <div class="panel__body">
+        <div class="iframe-wrap iframe-wrap--buggy">
+          <div class="iframe-doc">
+            <div class="mk">
+              <h1>Board redesign — drawer</h1>
+              <p class="mk-sub">Obsidian Flux · document panel mockup</p>
+              <div class="mk-row">
+                <div class="mk-card"><h3>Reading column</h3><p>Prose capped at 90% of panel width for long-form comfort.</p></div>
+                <div class="mk-card"><h3>Stage badges</h3><p>DESIGN · APPROVED roles map to the palette.</p></div>
+              </div>
+              <div class="mk-card"><h3>Primary action</h3><p>The gradient CTA used for high-intent approve.</p><span class="mk-cta">Approve document</span></div>
+            </div>
+          </div>
+          <div class="pin pin--bad" style="right:16px; bottom:26px;">spurious vertical scrollbar →</div>
+          <div class="pin pin--bad" style="left:50%; transform:translateX(-50%); bottom:4px;">↓ spurious horizontal scrollbar + descender gap</div>
+        </div>
+      </div>
+      <div class="panel__footer">.claude/specs/features/redesign/design/mockups.html</div>
+    </div>
+  </div>
+
+  <div class="sm-note">
+    <h2>Screen 1 — what's broken today</h2>
+    <p>This is the existing state the fix targets. The design brief renders verbatim HTML inside a sandboxed <code>&lt;iframe class="panel__preview panel__preview--iframe" sandbox="allow-same-origin"&gt;</code> in <code>DocPanel.tsx</code>. The iframe is styled <code>width/height: 100%</code> but has <strong>no <code>display: block</code></strong> (<code>styles.css</code> ~L817), so as a replaced inline element it sits on the text baseline and leaves a few-px <strong>descender gap</strong> below it. Against a <code>height: 100%</code> iframe in an <code>overflow: hidden</code> grid cell, that gap forces the wrapper to overflow — producing the <strong>spurious horizontal scrollbar</strong> at the bottom plus an out-of-parity vertical one.</p>
+    <ul>
+      <li><strong>Two scrollbars, native OS styling</strong> — no <code>::-webkit-scrollbar</code> or <code>scrollbar-color</code> rules exist anywhere in <code>ui/src/</code> today, so this viewer doesn't match the markdown one even on the vertical axis.</li>
+      <li><strong>Tokens shown:</strong> drawer chrome on <code>--surface</code> / <code>--outline-variant</code>; iframe document renders its own dark Obsidian Flux body (real SpecManager briefs are dark — <code>--design-preview-bg</code> #ffffff is only the fallback behind the iframe, visible here as the thin white sliver in the descender gap); DESIGN badge on <code>--secondary-container</code> / <code>--on-secondary-container</code>; APPROVED on <code>--success</code>.</li>
+      <li>This screen is the "before" reference for the builder — it is the regression to eliminate, not a target.</li>
+    </ul>
+  </div>
+
+  <!-- ============================== SCREEN 2 (AFTER / FIXED) ============================== -->
+  <div class="sm-screen">
+    <div class="sm-screen-label"><span class="dot"></span>Screen 2 · Design viewer — fixed (normal-width mockup)</div>
+    <div class="frame anno-host">
+      <div class="panel__header">
+        <div>
+          <div class="panel__crumb">Redesign <span class="panel__crumb-sep">/</span> design <span class="panel__crumb-sep">/</span> mockups.html</div>
+          <div class="panel__title-row">
+            <h2 class="panel__title">Redesign mockups</h2>
+            <span class="panel__meta">edited 2m ago · <span class="panel__version">v3</span></span>
+          </div>
+          <div class="panel__badges">
+            <span class="badge badge--design">DESIGN</span>
+            <span class="badge badge--approved">APPROVED</span>
+          </div>
+        </div>
+        <div class="panel__header-actions">
+          <button class="btn">Edit</button>
+          <button class="panel__close">&times;</button>
+        </div>
+      </div>
+      <div class="panel__toolbar">
+        <div class="panel__toolbar-spacer"></div>
+        <label class="panel__toggle"><input type="checkbox" />Chat</label>
+      </div>
+      <div class="panel__body">
+        <div class="iframe-wrap">
+          <div class="iframe-doc block scroll-styled">
+            <div class="mk">
+              <h1>Board redesign — drawer</h1>
+              <p class="mk-sub">Obsidian Flux · document panel mockup</p>
+              <div class="mk-row">
+                <div class="mk-card"><h3>Reading column</h3><p>Prose capped at 90% of panel width for long-form comfort.</p></div>
+                <div class="mk-card"><h3>Stage badges</h3><p>DESIGN · APPROVED roles map to the palette.</p></div>
+              </div>
+              <div class="mk-card"><h3>Primary action</h3><p>The gradient CTA used for high-intent approve.</p><span class="mk-cta">Approve document</span></div>
+              <div class="mk-card"><h3>Footer breadcrumb</h3><p>The file path renders mono and low-contrast in the panel footer.</p></div>
+              <div class="mk-card"><h3>More content to scroll</h3><p>Vertical scroll only — the thumb uses the unified custom styling.</p></div>
+            </div>
+          </div>
+          <div class="pin pin--good" style="right:18px; top:14px;">unified custom scrollbar →</div>
+          <div class="pin pin--good" style="left:50%; transform:translateX(-50%); bottom:6px;">no horizontal scrollbar · no descender gap</div>
+        </div>
+      </div>
+      <div class="panel__footer">.claude/specs/features/redesign/design/mockups.html</div>
+    </div>
+  </div>
+
+  <div class="sm-note">
+    <h2>Screen 2 — the fixed viewer</h2>
+    <p>Same drawer, after the fix. Three changes land together:</p>
+    <ul>
+      <li><strong>Kill the descender gap.</strong> Add <code>display: block</code> to <code>.panel__preview--iframe</code>. The iframe now fills its grid cell with no baseline space below it, so the wrapper never overflows and the spurious horizontal scrollbar disappears.</li>
+      <li><strong>Reset inside the iframe.</strong> Prepend a <code>&lt;style&gt;html,body{margin:0}&lt;/style&gt;</code> block to <code>srcDoc</code> so the verbatim mockup body has no default 8px margin fighting the canvas. Parent CSS cannot reach inside a sandboxed iframe, so this must be injected.</li>
+      <li><strong>Unified scrollbar (width + colour).</strong> The same injected <code>&lt;style&gt;</code> carries the custom-scrollbar rules so the iframe document's vertical scrollbar matches the markdown surface — <code>scrollbar-width: thin</code> + <code>scrollbar-color</code> for standards engines, <code>::-webkit-scrollbar</code> for WebKit.</li>
+    </ul>
+    <p><strong>Scrollbar tokens (proposed):</strong> thumb <span class="tok">--scrollbar-thumb = --outline-variant (#464554)</span>, hover <span class="tok">--scrollbar-thumb-hover = --outline (#908fa0)</span>, width <span class="tok">10px</span>, transparent track. All derived from existing tokens — no new colour. The <code>sandbox="allow-same-origin"</code> attribute and the <code>--design-preview-bg</code> fallback are preserved exactly — but because the brief paints its own dark body and <code>html,body{margin:0}</code> removes the gap, that white fallback is no longer visible.</p>
+  </div>
+
+  <!-- ============================== SCREEN 3 (MARKDOWN REFERENCE) ============================== -->
+  <div class="sm-screen">
+    <div class="sm-screen-label"><span class="dot"></span>Screen 3 · Markdown viewer — the reference (now also custom-styled)</div>
+    <div class="frame anno-host">
+      <div class="panel__header">
+        <div>
+          <div class="panel__crumb">Redesign <span class="panel__crumb-sep">/</span> prd <span class="panel__crumb-sep">/</span> prd.md</div>
+          <div class="panel__title-row">
+            <h2 class="panel__title">Redesign PRD</h2>
+            <span class="panel__meta">edited 11m ago · <span class="panel__version">v2</span></span>
+          </div>
+          <div class="panel__badges">
+            <span class="badge" style="background:var(--surface-container-high);color:var(--on-surface-variant);">PRD</span>
+            <span class="badge badge--approved">APPROVED</span>
+          </div>
+        </div>
+        <div class="panel__header-actions">
+          <button class="btn">Edit</button>
+          <button class="panel__close">&times;</button>
+        </div>
+      </div>
+      <div class="panel__body">
+        <div class="md-surface scroll-styled scroll-styled--dark">
+          <div class="md-col">
+            <h1>Problem</h1>
+            <p>The board's document panel renders two kinds of content in the same drawer, but they do not scroll the same way.</p>
+            <h2>Goals</h2>
+            <p>The HTML/design viewer should scroll like the markdown viewer: a single, consistent vertical scroll, with <code>scrollbar-color</code> matching across both surfaces.</p>
+            <h2>Constraints</h2>
+            <p>Keep the iframe sandboxed. Use the existing Obsidian Flux design tokens. No new ad-hoc colours.</p>
+            <p>The prose column fills 90% of the panel width and never overflows horizontally — the reference behaviour this fix matches.</p>
+          </div>
+          <div class="pin pin--good" style="right:18px; top:14px;">same thumb width + colour →</div>
+        </div>
+      </div>
+      <div class="panel__footer">.claude/specs/features/redesign/prd/prd.md</div>
+    </div>
+  </div>
+
+  <div class="sm-note">
+    <h2>Screen 3 — the markdown reference, brought into the same scrollbar family</h2>
+    <p>The markdown viewer (<code>.md-surface</code>, <code>flex: 1; overflow: auto</code>) is the reference: its prose column is capped at <code>width: 90%</code> so it only ever scrolls vertically. Its behaviour is a non-goal to change — but PRD open-Q2 ("width and colour across both viewers") means the <strong>same custom-scrollbar styling is added here too</strong>, so the two drawers feel identical.</p>
+    <ul>
+      <li>The shared rule is applied via a scoped utility (e.g. <code>.scroll-surface</code>) on the two named surfaces — <strong>never a global <code>*</code> rule</strong> — to avoid regressing anything else in the board.</li>
+      <li>Both surfaces are dark, so the thumb's faux-padding border tracks the surface it sits on — <code>--surface</code> on the markdown column, <code>--surface-container-lowest</code> on the iframe document. Same thumb colour and width across both.</li>
+      <li><strong>No change</strong> to <code>MarkdownEditor</code> behaviour or the 90% column — only the scrollbar appearance is added.</li>
+    </ul>
+    <div class="legend">
+      <span><i class="sb-thumb"></i> thumb · --outline-variant</span>
+      <span><i class="sb-hover"></i> hover · --outline</span>
+    </div>
+  </div>
+
+  <!-- ============================== SCREEN 4 (WIDE QA FIXTURE) ============================== -->
+  <div class="sm-screen">
+    <div class="sm-screen-label"><span class="dot"></span>Screen 4 · Wide-mockup QA fixture — intentional horizontal scroll INSIDE the iframe</div>
+    <div class="frame anno-host">
+      <div class="panel__header">
+        <div>
+          <div class="panel__crumb">QA fixture <span class="panel__crumb-sep">/</span> design <span class="panel__crumb-sep">/</span> wide.html</div>
+          <div class="panel__title-row">
+            <h2 class="panel__title">Wide mockup (1680px)</h2>
+            <span class="panel__meta">test fixture · <span class="panel__version">v1</span></span>
+          </div>
+          <div class="panel__badges">
+            <span class="badge badge--design">DESIGN</span>
+            <span class="badge" style="background:color-mix(in srgb, var(--tertiary) 18%, transparent);color:var(--tertiary);border-color:color-mix(in srgb,var(--tertiary) 40%,transparent);">DRAFT</span>
+          </div>
+        </div>
+        <div class="panel__header-actions">
+          <button class="btn btn--primary">Approve</button>
+          <button class="panel__close">&times;</button>
+        </div>
+      </div>
+      <div class="panel__body">
+        <div class="iframe-wrap">
+          <div class="iframe-doc block scroll-styled">
+            <div class="wide-doc">
+              <h1>Dashboard — 8-column wide layout</h1>
+              <p class="mk-sub">Fixed 1680px design · deliberately wider than the drawer viewport</p>
+              <div class="wide-grid">
+                <div class="wide-cell"><h4>Pipeline</h4><p>42 active features</p></div>
+                <div class="wide-cell"><h4>PRDs</h4><p>9 approved</p></div>
+                <div class="wide-cell"><h4>Architecture</h4><p>7 approved</p></div>
+                <div class="wide-cell"><h4>Plans</h4><p>5 in review</p></div>
+                <div class="wide-cell"><h4>In build</h4><p>3 phases live</p></div>
+                <div class="wide-cell"><h4>Walkthroughs</h4><p>2 pending</p></div>
+                <div class="wide-cell"><h4>Stale</h4><p>1 flagged</p></div>
+                <div class="wide-cell"><h4>Shipped</h4><p>14 total</p></div>
+              </div>
+              <div class="wide-bar"></div>
+            </div>
+          </div>
+          <div class="pin" style="left:50%; transform:translateX(-50%); bottom:6px;">↔ horizontal scroll lives INSIDE the iframe — wrapper does not overflow</div>
+        </div>
+      </div>
+      <div class="panel__footer">.claude/specs/features/_qa/design/wide.html · QA fixture (1680px content)</div>
+    </div>
+  </div>
+
+  <!-- The live, file-level wide QA fixture: this section itself overflows horizontally
+       so it can be loaded into the real iframe to verify scroll containment. -->
+  <div class="sm-screen">
+    <div class="sm-screen-label"><span class="dot"></span>Screen 4b · Live wide fixture block (this strip intentionally overflows →)</div>
+    <div style="border:1px solid var(--outline-variant); border-radius: var(--radius-md); overflow:auto; background: var(--surface-container-lowest);" class="scroll-styled">
+      <div class="wide-doc" style="min-width:1760px;">
+        <h1>QA strip — must scroll horizontally without breaking the page</h1>
+        <p class="mk-sub">When this mockup file is opened in the real design iframe, this 1760px strip is the fixture that proves containment: horizontal scroll appears here, not on the drawer wrapper.</p>
+        <div class="wide-grid" style="grid-template-columns: repeat(9, 190px);">
+          <div class="wide-cell"><h4>Col 1</h4><p>edge marker</p></div>
+          <div class="wide-cell"><h4>Col 2</h4><p>content</p></div>
+          <div class="wide-cell"><h4>Col 3</h4><p>content</p></div>
+          <div class="wide-cell"><h4>Col 4</h4><p>content</p></div>
+          <div class="wide-cell"><h4>Col 5</h4><p>content</p></div>
+          <div class="wide-cell"><h4>Col 6</h4><p>content</p></div>
+          <div class="wide-cell"><h4>Col 7</h4><p>content</p></div>
+          <div class="wide-cell"><h4>Col 8</h4><p>content</p></div>
+          <div class="wide-cell"><h4>Col 9</h4><p>far edge →</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sm-note">
+    <h2>Screen 4 — the wide QA fixture (PRD open-Q3 deliverable)</h2>
+    <p>PRD open-Q3 was answered "construct one on design phase," and the Architecture flags the lack of a wide brief to test against. <strong>This screen is that fixture.</strong> Its inner content is a fixed ~1680–1760px layout — genuinely wider than the ~64rem drawer.</p>
+    <ul>
+      <li><strong>Expected behaviour:</strong> horizontal scroll appears <strong>inside the iframe document only</strong> (intentional, per PRD open-Q1 answered "correct") — the <code>.panel__preview--iframe</code> wrapper itself must <strong>not</strong> show a wrapper-level horizontal scrollbar, and the drawer must not clip or rescale (no zoom/fit-to-width — PRD non-goal).</li>
+      <li><strong>How to use it:</strong> the builder opens this very <code>mockups.html</code> in the board's design viewer. Screen 4b is a real horizontally-overflowing strip — if the fix is correct, that strip scrolls sideways within the iframe and the surrounding drawer stays put. If the wrapper itself grows a horizontal bar, the descender/overflow regression is back.</li>
+      <li><strong>The distinction the fix must preserve:</strong> spurious wrapper-level horizontal scroll (the bug — eliminate) vs. legitimate content-wider-than-viewport scroll inside the iframe (intentional — keep). The custom scrollbar styling applies to this horizontal bar too (matching <code>height</code> + colour), so even the intentional scroll looks on-brand.</li>
+    </ul>
+  </div>
+
+  <!-- ============================== OPEN QUESTIONS ============================== -->
+  <div class="sm-note sm-open-questions">
+    <h2>Open questions for the planner</h2>
+    <ul>
+      <li><strong>DESIGN.md stub vs. real tokens.</strong> The repo's <code>./docs/DESIGN.md</code> frontmatter is still the auto-generated placeholder (<code>primary: #1A1C1E</code>, one body type role). These mockups are grounded in <code>plugins/specmanager/ui/src/tokens.css</code> ("Obsidian Flux"), whose header states it maps 1:1 to the real DESIGN.md. Confirm tokens.css is the canonical source for this feature, and that DESIGN.md will be re-synced — no design decision here depends on the stub.</li>
+      <li><strong>New scrollbar tokens — name or inline?</strong> No scrollbar token exists today (Architecture open-Q1). This brief proposes <code>--scrollbar-thumb</code> (= <code>--outline-variant</code>), <code>--scrollbar-thumb-hover</code> (= <code>--outline</code>), and <code>--scrollbar-size: 10px</code>. These reuse existing colours (no new colour) but <code>--scrollbar-size: 10px</code> is a <strong>new dimension value not currently in tokens.css</strong>. Planner to decide: add semantic aliases to tokens.css, or inline the existing tokens directly. Flagging the 10px as the one non-token value introduced.</li>
+      <li><strong>Scrollbar width target.</strong> 10px is a proposal for a comfortable, on-brand thin bar. Confirm the exact width (8px aligns to the 8px spacing grid; 10px reads slightly more present). Whatever is chosen must be identical on both surfaces and on both axes.</li>
+      <li><strong>Injection mechanism.</strong> Architecture recommends prepending the <code>&lt;style&gt;</code> to <code>srcDoc</code> (vs. an <code>onLoad</code> writer). Mockups assume the srcDoc-prepend. Confirm.</li>
+      <li><strong>Where the QA fixture lives.</strong> This mockup file doubles as the fixture (Screen 4b). Should a standalone throwaway wide brief also be created under a <code>_qa</code> feature, or is opening this <code>mockups.html</code> in the viewer sufficient for manual verification?</li>
+    </ul>
+  </div>
+
+</div>
+</body>
+</html>
