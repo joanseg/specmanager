@@ -556,6 +556,30 @@ html, body, #root {
   overflow: auto;
   background: var(--surface);
 }
+/* Unified custom scrollbar — token-driven, scoped to the named markdown
+ * surface (never a global `*` rule, which would regress other board scroll
+ * containers). The iframe document gets the matching rules via injected
+ * srcDoc <style>. The thumb's faux-padding border tracks --surface, the
+ * colour this surface sits on. No change to the 90% prose column. */
+.md-surface {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+.md-surface::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+.md-surface::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+.md-surface::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid var(--surface);
+}
+.md-surface::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
 .md-surface--ro { background: var(--surface); }
 .md-surface .prose,
 .md-surface .ProseMirror {
