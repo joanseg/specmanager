@@ -38,6 +38,15 @@ Build one phase of the plan for **$ARGUMENTS**.
          /init   (then)   sync_claude_md   +   sync_design_md(refresh)
        ```
      - If the user **cancels or declines** the question, treat it as **Wait**: run no sync and print the manual re-sync block above.
+
+     The exact per-branch action sequences (run the tools in this order):
+
+     | Answer | Actions, in order |
+     |---|---|
+     | **Full sync now** *(recommended, default)* | `/init` → `sync_claude_md` → `sync_design_md({ mode: "refresh" })` |
+     | **Managed blocks only** | `sync_claude_md` → `sync_design_md({ mode: "refresh" })` (no `/init`) |
+     | **Wait until I've verified the phase** | no sync; print the manual re-sync block |
+     | *(cancel / decline)* | same as **Wait** |
 9. **Report.** 
    - List the tasks the builder completed and the artifacts recorded.
    - If step 8 auto-created a walkthrough, report its doc id + file path (`walkthroughs/<slug>/phase-<phaseName>.md`) and that it's a `draft` awaiting review. If a walkthrough already existed, say so and point at `/specmanager-walkthrough <feature> <phaseName>` to regenerate manually.
