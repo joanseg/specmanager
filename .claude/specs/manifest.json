@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-01T13:10:45.457Z",
+  "generatedAt": "2026-06-01T13:33:40.688Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -476,7 +476,7 @@
         {
           "id": "wt-plan-and-walkthrough-optimisations-007",
           "stage": "walkthrough",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
           "version": 1,
           "title": "Plan and walkthrough optimisations — Phase core walkthrough",
@@ -498,10 +498,33 @@
           "inProgressCount": 0,
           "status": "done",
           "walkthroughId": "wt-plan-and-walkthrough-optimisations-007",
-          "walkthroughStatus": "draft",
+          "walkthroughStatus": "approved",
           "walkthroughStale": false
         }
       ]
+    },
+    {
+      "id": "feat-html-viewer-scroll-fix",
+      "slug": "html-viewer-scroll-fix",
+      "title": "HTML viewer scroll fix",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-html-viewer-scroll-fix-008",
+          "stage": "prd",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "HTML viewer scroll fix PRD"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0,
+        "total": 0
+      },
+      "phases": []
     }
   ]
 }
