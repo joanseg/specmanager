@@ -2,7 +2,7 @@
 id: wt-plan-and-walkthrough-optimisations-007
 featureId: feat-plan-and-walkthrough-optimisations
 stage: walkthrough
-status: draft
+status: approved
 stale: false
 title: Plan and walkthrough optimisations — Phase core walkthrough
 dependsOn:
@@ -13,7 +13,7 @@ generatedBy: agent
 version: 1
 phase: core
 createdAt: '2026-06-01T13:10:45.452Z'
-updatedAt: '2026-06-01T13:10:45.452Z'
+updatedAt: '2026-06-01T13:30:33.357Z'
 ---
 # Plan and walkthrough optimisations — Phase core walkthrough
 

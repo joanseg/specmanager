@@ -29,6 +29,7 @@ Claude *drafts* each stage from the previous approved one **and your existing co
 /specmanager-init
 /specmanager-board
 ```
+![Specmanager board](assets/Specmanager-board.png)
 
 That's it — no build step. The compiled server and UI are committed, and a `SessionStart` hook installs runtime dependencies into the plugin's data dir on first launch.
 
