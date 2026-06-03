@@ -29,11 +29,36 @@ Build one phase of the plan for **$ARGUMENTS**.
    - If the gate is **closed** (the builder stopped mid-phase), skip auto-fire — go to step 9 and report the stop.
    - If the gate is **open**, guard against duplicates: `list_documents({ featureId, stage: "walkthrough" })` filtered to `frontmatter.phase === "<phaseName>"`. If a walkthrough for this phase already exists, **don't** create another — just note it in the report.
    - Otherwise, **auto-invoke** `Task({ subagent_type: "walkthrough-writer", prompt: ... })` in per-phase mode (same inputs the `/specmanager-walkthrough` command passes: feature id/title/slug, the phase name, the Plan doc id, the phase's exit-test line, and a hint that this phase's task artifacts are available via `list_tasks` filtered by `phase`). The walkthrough lands in `draft` — never approve it; the user reviews first.
-   - Then call `sync_claude_md`.
+   - **Then offer a post-phase doc sync (only on this open-gate path).** After the walkthrough has been auto-fired or deduped, present an `AskUserQuestion` with exactly **three** options so the user decides how to reconcile project docs now that the phase has landed. List **"Full sync now"** first and label it *(recommended)* — it is the default; convey the default by ordering it first and labelling it, matching the lightweight `AskUserQuestion` style used in `commands/specmanager-plan.md` and `agents/planner.md`. The three options and their action sequences:
+     - **Full sync now** *(recommended)* — run the native `/init` slash command in-session, **then** `sync_claude_md`, **then** `sync_design_md({ mode: "refresh" })`, in that exact order. (`/init` is a native interactive slash command the agent runs in-session — it is not a server/MCP call.)
+     - **Managed blocks only** — run `sync_claude_md`, **then** `sync_design_md({ mode: "refresh" })`. Do **not** run `/init`. (Lighter and faster; refreshes only the SpecManager-managed regions.)
+     - **Wait until I've verified the phase** — run no sync at all (don't refresh the managed block — all three steps defer together). Print the verbatim manual re-sync block (below) so the user can re-trigger the same steps later.
+     - If the user **cancels or declines** the question, treat it as **Wait**: run no sync and print the verbatim manual re-sync block.
+
+     The exact per-branch action sequences (run the tools in this order):
+
+     | Answer | Actions, in order |
+     |---|---|
+     | **Full sync now** *(recommended, default)* | `/init` → `sync_claude_md` → `sync_design_md({ mode: "refresh" })` |
+     | **Managed blocks only** | `sync_claude_md` → `sync_design_md({ mode: "refresh" })` (no `/init`) |
+     | **Wait until I've verified the phase** | no sync; print the manual re-sync block below |
+     | *(cancel / decline)* | same as **Wait** |
+
+     On the **Wait** branch (and on cancel/decline), print this block **exactly as written** — do not paraphrase, reword, or change the spacing:
+
+     ```
+     Docs not synced. After you've verified this phase, re-sync manually:
+       /init   (then)   sync_claude_md   +   sync_design_md(refresh)
+     ```
 9. **Report.** 
    - List the tasks the builder completed and the artifacts recorded.
    - If step 8 auto-created a walkthrough, report its doc id + file path (`walkthroughs/<slug>/phase-<phaseName>.md`) and that it's a `draft` awaiting review. If a walkthrough already existed, say so and point at `/specmanager-walkthrough <feature> <phaseName>` to regenerate manually.
-   - If the builder stopped mid-phase on a failure, surface the task id and the error verbatim. Do not retry automatically.
+   - **State which post-phase doc-sync path ran** (only on the open-gate path where the question was asked), using the wording for the chosen branch:
+     - **Full sync now** → "Codebase docs regenerated via `/init` + both managed blocks refreshed (CLAUDE.md and DESIGN.md)."
+     - **Managed blocks only** → "Both managed blocks refreshed (CLAUDE.md and DESIGN.md); codebase-doc region left as-is."
+     - **Wait / cancel / decline** → "Docs intentionally not synced — manual re-sync command printed above."
+     - If a sync tool errored mid-sequence, surface its error verbatim and note which steps did/didn't run; do not retry automatically.
+   - If the builder stopped **mid-phase** (walkthrough gate closed), report the stop only — there was no sync prompt, so say nothing about syncing. Surface the failing task id and the error verbatim. Do not retry automatically.
 
 ## Don't
 - Don't bypass the plan-approved check. The Plan is the contract.
@@ -41,3 +66,5 @@ Build one phase of the plan for **$ARGUMENTS**.
 - Don't approve any documents.
 - Don't mark tasks `done` from this command — the builder owns task state transitions.
 - Don't drive a phase that is already done.
+- Don't sync docs unconditionally. The post-phase doc-sync `AskUserQuestion` fires **only** on the open-gate path (phase fully done); a mid-phase stop must stay prompt-free and sync nothing.
+- Don't run `/init` on the **Managed blocks only** branch, and don't refresh any managed block on the **Wait** branch — all three sync steps defer together. Never leave a half-synced state.
