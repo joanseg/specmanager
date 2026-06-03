@@ -1,0 +1,117 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-post-phase-doc-sync-claude-md-design-md",
+      "title": "Rewrite step 8 of specmanager-build.md to replace the unconditional sync_claude_md call with the three-option AskUserQuestion, fired only when the walkthrough gate is open",
+      "status": "done",
+      "stageRef": "plan-post-phase-doc-sync-claude-md-design-md-008",
+      "phase": "Phase A",
+      "complexity": 3,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "1ccef0411ac800ffb17c2f522b062da859017932"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-build.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-02T13:41:24.064Z",
+      "updatedAt": "2026-06-02T19:24:08.389Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-post-phase-doc-sync-claude-md-design-md",
+      "title": "Specify the per-branch action sequences inside step 8 (Full sync now / Managed blocks only / Wait) in the exact tool order from the Architecture",
+      "status": "done",
+      "stageRef": "plan-post-phase-doc-sync-claude-md-design-md-008",
+      "phase": "Phase A",
+      "complexity": 1,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "bfe62c2ea5fd8f4254211a065a2205aa4f9b1ff7"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-build.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-02T13:41:28.459Z",
+      "updatedAt": "2026-06-02T19:24:29.719Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-post-phase-doc-sync-claude-md-design-md",
+      "title": "Add the verbatim manual re-sync text block printed on the Wait branch",
+      "status": "done",
+      "stageRef": "plan-post-phase-doc-sync-claude-md-design-md-008",
+      "phase": "Phase A",
+      "complexity": 1,
+      "dependsOn": [
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [
+          "db089c8f1e8af74a2882cdaa388df53de3210faf"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-build.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-02T13:41:32.797Z",
+      "updatedAt": "2026-06-02T19:24:54.789Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-post-phase-doc-sync-claude-md-design-md",
+      "title": "Update step 9 (Report) to state which sync path ran and what it touched; confirm mid-phase stop reports no sync",
+      "status": "done",
+      "stageRef": "plan-post-phase-doc-sync-claude-md-design-md-008",
+      "phase": "Phase A",
+      "complexity": 1,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [
+          "14de2ce1d67b7f45360228ecdd105ca27ca880e9"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-build.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-02T13:41:36.454Z",
+      "updatedAt": "2026-06-02T19:25:21.865Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-post-phase-doc-sync-claude-md-design-md",
+      "title": "Add a native /init step to specmanager-init.md after the specmanager_init MCP call, and update its report + Notes",
+      "status": "done",
+      "stageRef": "plan-post-phase-doc-sync-claude-md-design-md-008",
+      "phase": "Phase A",
+      "complexity": 2,
+      "dependsOn": [
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [
+          "6dfa71a6732c7087c6b464f6957b39cef8c60729"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-init.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-02T13:41:40.041Z",
+      "updatedAt": "2026-06-02T20:01:18.936Z"
+    }
+  ]
+}

@@ -19,9 +19,9 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 **Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation.
 
 **Commands:**
-`/specmanager-feature` · `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board`
+`/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board`
 
-_Last synced: 2026-06-02T15:05:19.469Z_
+_Last synced: 2026-06-03T08:34:18.739Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
