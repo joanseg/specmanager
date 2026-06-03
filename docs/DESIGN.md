@@ -2,10 +2,20 @@
 ---
 version: alpha
 name: specmanager
-description: "Auto-generated design system spec. Tokens inferred from 0 UI dir(s); fill in real values to harden."
+description: "Auto-generated design system spec. Tokens inferred from 1 UI dir(s); fill in real values to harden."
 colors:
-  primary: "#1A1C1E"     # TODO: replace with real brand color
-  neutral: "#F7F5F2"
+  bg: var(--surface)
+  surface-2: var(--surface-container-high)
+  border: var(--outline-variant)
+  text: var(--on-surface)
+  text-dim: var(--on-surface-variant)
+  accent: var(--primary)
+  draft: var(--status-draft)
+  approved: var(--status-approved)
+  stale: var(--status-stale)
+  build-prog: var(--status-in-progress)
+  build-done: var(--status-done)
+  surface: "#131315"
 typography:
   body-md:
     fontFamily: system-ui
@@ -34,11 +44,24 @@ _This file follows the [Stitch DESIGN.md spec](./references/stitch-design-md.md)
 
 ## Overview
 
-_No UI source directory detected yet. Once the project grows a `src/`, `app/`, `ui/`, `web/`, `frontend/`, or `client/` directory with component files, the next re-sync will populate this section._
+Inferred from `plugins/specmanager/ui` (7 component file(s)). The project's voice and feel should be described here — replace this paragraph with brand personality, target audience, and the emotional response the UI should evoke.
 
 ## Colors
 
-No color CSS variables detected. Add `:root { --primary: #…; }` declarations in your UI's main stylesheet and re-run `/specmanager-init` (or POST `/api/design/sync`) to populate this section.
+Colors harvested from CSS custom properties in the UI source:
+
+- `--bg`: `var(--surface)`
+- `--surface-2`: `var(--surface-container-high)`
+- `--border`: `var(--outline-variant)`
+- `--text`: `var(--on-surface)`
+- `--text-dim`: `var(--on-surface-variant)`
+- `--accent`: `var(--primary)`
+- `--draft`: `var(--status-draft)`
+- `--approved`: `var(--status-approved)`
+- `--stale`: `var(--status-stale)`
+- `--build-prog`: `var(--status-in-progress)`
+- `--build-done`: `var(--status-done)`
+- `--surface`: `#131315`
 
 ## Typography
 
@@ -58,7 +81,17 @@ Corner radii and edge treatments. See `rounded.*` in the frontmatter for the sca
 
 ## Components
 
-No component files detected yet. Once UI components exist in the repo, the next re-sync will surface them here.
+Sample component files discovered:
+
+- `plugins/specmanager/ui/src/App.tsx`
+- `plugins/specmanager/ui/src/BuildPanel.tsx`
+- `plugins/specmanager/ui/src/ChatPanel.tsx`
+- `plugins/specmanager/ui/src/DocPanel.tsx`
+- `plugins/specmanager/ui/src/MarkdownEditor.tsx`
+- `plugins/specmanager/ui/src/MarkdownToolbar.tsx`
+- `plugins/specmanager/ui/src/main.tsx`
+
+Define style guidance for the component atoms used in this project (Buttons, Inputs, Cards, Lists, etc.) in the frontmatter `components` map.
 
 ## Do's and Don'ts
 

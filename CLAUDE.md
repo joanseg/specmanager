@@ -21,52 +21,87 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 **Commands:**
 `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board`
 
-_Last synced: 2026-06-03T08:34:18.739Z_
+_Last synced: 2026-06-03T08:56:16.361Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Repository status
+## What this repo is
 
-This repo currently contains **only design documents** — no code, no `package.json`, no plugin scaffold yet. The implementation has not started. The two documents under `docs/` are the source of truth and should be read before any work:
+This repo **is** the SpecManager plugin (implemented, not a spec). SpecManager is a Claude Code **plugin** that turns a project's lifecycle (PRD → Architecture → optional Design → Plan + tasks → Build → Walkthroughs) into a localhost kanban board backed by plain markdown in the *target* project's repo. Single-user, fully local, bound to `127.0.0.1`, no auth. Claude drafts each stage from the previous approved one plus the existing codebase; the human edits and approves in the board; git tracks every artifact.
 
-- `docs/architecture-and-spec.md` — full architecture & specification for the SpecManager plugin.
-- `docs/phase-tasks.md` — six-phase implementation plan with per-task complexity points (every task ≤3 pts).
+The repo also dogfoods itself: its own features live under `.claude/specs/features/` and are driven with the same `/specmanager-*` commands.
 
-When implementation begins, follow the **phased plan**: each of Phases 1–6 must end with an installable, testable plugin (`claude plugin install ./specmanager --scope local`). Do not skip phase exit tests.
+## Layout
 
-## What SpecManager is
+- **`.claude-plugin/marketplace.json`** — marketplace manifest, at the repo root.
+- **`plugins/specmanager/`** — the plugin itself:
+  - `.claude-plugin/plugin.json` — plugin manifest (`board_port` user config, default 4317).
+  - `.mcp.json` — wires the MCP server: `node server/dist/mcp.js`, with `SPECMANAGER_PROJECT_DIR=${CLAUDE_PROJECT_DIR}`, `SPECMANAGER_BOARD_PORT=${user_config.board_port}`, `NODE_PATH=${CLAUDE_PLUGIN_DATA}/node_modules`.
+  - `commands/*.md` — the user-facing slash commands (orchestration prompts).
+  - `agents/*.md` — the subagents each command delegates to (prd-writer, architect, designer, planner, builder, walkthrough-writer).
+  - `hooks/hooks.json` — `SessionStart` installs runtime deps into `${CLAUDE_PLUGIN_DATA}` once and symlinks them back into `server/node_modules`; `FileChanged` on `.claude/specs/**` nudges a re-read.
+  - `server/` — `@specmanager/server`, TypeScript, ships compiled `dist/`.
+  - `ui/` — `@specmanager/ui`, React 18 + Vite, ships compiled `dist/`.
+- **`docs/`** — architecture & design docs; `docs/architecture-and-spec.md` is the original full spec, `docs/phase-tasks.md` the original phased plan, `docs/DESIGN.md` the managed design-system spec.
 
-A Claude Code **plugin** that turns the project lifecycle (PRD → Architecture → Plan+tasks → Build → Walkthroughs) into a localhost kanban board. Single-user, fully local. Markdown files under `.claude/specs/` in the *target* project are the source of truth; git handles history.
+## Architecture (the big picture)
 
-### Architectural pillars (load-bearing — don't drift)
+Two server entry points, **one shared `core/` module** under `server/src/core/` (re-exported from `core/index.ts`) imported by both. Every mutation — agent or human — flows through `core`, so validation, state transitions, and events are identical; do not duplicate that logic in either entry point.
 
-- **One shared `@specmanager/core` library** is imported by both the MCP server (Claude's interface) and the board server (the UI's interface). Every mutation — agent or human — flows through `core`, so validation, state transitions, and events are identical. Do not duplicate logic in either server.
-- **Gate enforcement lives in `core`, not in prompts.** Skills call `check_gate` and refuse if the prior stage isn't approved. The model cannot bypass it by being told otherwise.
-- **Staleness is computed in `core`** by walking the `dependsOn` graph on any `approved→draft` transition or write to an approved doc — non-blocking badge, cleared on reconciliation.
+- **`server/src/mcp.ts`** — the MCP stdio server (Claude's interface). Registers all the tools (`specmanager_init`, `list/create_feature`, `*_document`, `set_status`, `check_gate`, `list_stale`, `*_task`, `list_phases`, `get_next_phase`, `sync_claude_md`, `sync_design_md`, `open_board`, …). **It also boots the board server in-process** (`startBoardServer`), so one `claude` session brings up everything. It runs `startClaudeMdAutoSync` / `startDesignMdAutoSync` listeners that refresh the managed CLAUDE.md block on doc/status events and `docs/DESIGN.md` on `feature.shipped`.
+- **`server/src/board-server.ts`** — Fastify + `ws` + `chokidar`. Serves `ui/dist`, exposes the REST API the UI calls, pushes live updates over websockets, and watches `.claude/specs/**`. Its REST writes emit the same `core` events as the MCP tools, so the two views never drift.
+
+Load-bearing invariants (don't drift):
+
+- **Gate enforcement lives in `core`, not in prompts** (`checkGate`). The model cannot bypass a closed gate by being told to.
+- **Staleness is computed in `core`** by walking the `dependsOn` graph on any `approved→draft` transition or write to an approved doc — a non-blocking badge cleared on reconciliation.
 - **Frontmatter is authoritative; `manifest.json` is a rebuildable cache.** Deleting the manifest must not lose data.
-- **The plugin writes into the *project's* `CLAUDE.md`**, never its own — plugin-shipped `CLAUDE.md` is not loaded as project context. The managed region is strictly between `<!-- specmanager:start -->` / `<!-- specmanager:end -->` markers; never edit outside them programmatically.
-- **Resolve the project root from `${CLAUDE_PROJECT_DIR}`**, never from cwd.
-- **Bind the board server to `127.0.0.1` only.** No auth in single-user local mode.
+- **The plugin writes into the *project's* `CLAUDE.md`**, never its own. The managed region is strictly between `<!-- specmanager:start -->` / `<!-- specmanager:end -->`. The marker-merge in `core/claude-md.ts` is **line-anchored**, so native `/init` content (which lives *outside* the markers) and the managed block never clobber each other. `docs/DESIGN.md` works the same way with `<!-- specmanager:design:start/end -->`.
+- **Resolve the project root from the env** (`SPECMANAGER_PROJECT_DIR` ?? `CLAUDE_PROJECT_DIR` ?? cwd), never assume cwd.
 - **Optimistic concurrency on AI writes:** every `write_document` carries the base `version` it read; mismatched versions are rejected so manual edits aren't clobbered.
-- **One MCP process boots the board server** so a single `claude` session brings up everything.
 
 ### Lifecycle gate quirks worth memorising
 
-- Stages 1–3 (PRD, Architecture, Plan) gate on the *previous stage being `approved`*.
-- **Plan emits both `plan.md` and the task records (`tasks.json` + rollup) in one step.** There is no separate "tasks" stage.
-- **Build has no document** — it is execution. It is "complete" when every task in `tasks.json` is `done`.
-- **Walkthroughs gate on tasks `done`, not on an approved doc** — the one stage whose gate is completion, not approval.
-
-## Conventions
-
-- **Latest APIs** — pin to current versions of `@modelcontextprotocol/sdk`, `@anthropic-ai/claude-agent-sdk`, React 18+, Vite, Fastify, `chokidar`, `gray-matter`, `zod`.
-- **Tech stack** (per spec §12): Node 20+, TypeScript, MCP stdio transport, Fastify + `ws`, React 18 + Vite, CodeMirror 6 or TipTap.
-- **Plugin layout** (per spec §5): plugin manifest lives in `.claude-plugin/plugin.json`; everything else (skills, agents, hooks, server, ui) lives at the plugin root.
-- **Persistent deps via `${CLAUDE_PLUGIN_DATA}`** — the `SessionStart` hook installs `node_modules` there once so it survives plugin updates.
+- Stages PRD / Architecture / Plan gate on the *previous stage being `approved`* (Plan also requires an approved Design doc *if one exists*).
+- **Plan emits both `plan.md` and the task records (`tasks.json` + rollup) in one step.** There is no separate "tasks" stage. Plans are organised into **phases**; tasks carry a Fibonacci `complexity` and anything over 3 must be split.
+- **Build has no document** — it is execution, "complete" when every task in `tasks.json` is `done`. `/specmanager-build` builds one phase and stops at its boundary.
+- **Walkthroughs gate on tasks `done`, not on an approved doc** — the one stage whose gate is completion, not approval. Approving the `phase: "final"` walkthrough fires `feature.shipped`, which refreshes `docs/DESIGN.md`.
 
 ## Build / test commands
 
-Not applicable yet — no build system in place. When Phase 1 lands, the expected commands (from the spec) will be `npm install`, a TypeScript build (`tsc` or `esbuild`), and `claude plugin validate` plus `claude plugin install ./specmanager --scope local` for end-to-end validation. Update this section when those are real.
+The plugin ships compiled `server/dist` and `ui/dist`, so end users install with no build step. **Rebuild before committing source changes** — the committed `dist/` is what ships.
+
+```bash
+# Server (@specmanager/server)
+cd plugins/specmanager/server
+npm install
+npm run build            # tsc -p tsconfig.json → dist/
+
+# Self-tests (hand-rolled scripts in dist/, not a test runner — run one by name)
+npm run selftest          # core flow against a tmp dir
+npm run selftest-board    # boots board: REST + WS + file watcher
+npm run selftest-phases   # phase rollup + Fibonacci ≤3 validation
+npm run selftest-build    # per-phase gates + walkthrough storage
+npm run selftest-roundtrip
+npm run selftest-pidfile
+npm run selftest-shutdown
+npm run smoke-mcp         # MCP wire protocol + tools registered
+# (equivalently: node dist/<name>.js)
+
+# UI (@specmanager/ui)
+cd ../ui
+npm install
+npm run dev              # vite dev server
+npm run build            # tsc + vite build → ui/dist (served by the board server)
+```
+
+Validate the plugin manifest/commands with `claude plugin validate plugins/specmanager`. To reinstall after rebuilding: `/plugin marketplace update specmanager` → `/plugin install specmanager@specmanager` → `/reload-plugins`, then reconnect via `/mcp` (a full Claude restart is the reliable fix if reconnect fails — see README Troubleshooting).
+
+## Conventions
+
+- **Latest APIs** — current versions of `@modelcontextprotocol/sdk`, `@anthropic-ai/claude-agent-sdk`, React 18+, Vite, Fastify, `chokidar`, `gray-matter`, `zod`. Server and UI are both `"type": "module"`, Node 20+.
+- **Editors:** the UI uses CodeMirror 6 (HTML design briefs, live sandboxed `<iframe>` preview) and Milkdown (markdown docs).
+- **Persistent deps via `${CLAUDE_PLUGIN_DATA}`** — the `SessionStart` hook installs `node_modules` there once so they survive plugin updates.

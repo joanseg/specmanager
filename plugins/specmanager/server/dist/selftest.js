@@ -8,7 +8,7 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { initProject, createFeature, createDocument, setStatus, readDocumentById, listStale, syncClaudeMd, syncDesignMd, sanitizeDesignBriefBody, } from "./core/index.js";
+import { initProject, createFeature, createDocument, setStatus, readDocumentById, listStale, syncClaudeMd, syncDesignMd, scanUiSources, sanitizeDesignBriefBody, } from "./core/index.js";
 function assert(condition, message) {
     if (!condition) {
         throw new Error(`FAIL: ${message}`);
@@ -48,6 +48,21 @@ async function main() {
     await syncDesignMd(root, { mode: "refresh" });
     const designMd3 = await fs.readFile(initRes.designMd, "utf8");
     assert(designMd3 === designMd2, "DESIGN.md refresh is idempotent (byte-identical)");
+    // 1.6 Regression — scanUiSources must find UI nested in a monorepo / plugin
+    // layout (plugins/<name>/ui/src), not only root-relative dirs, and must NOT
+    // misclassify a sibling backend src/ as UI.
+    const nestedRoot = await fs.mkdtemp(path.join(os.tmpdir(), "specmanager-selftest-nested-"));
+    await fs.mkdir(path.join(nestedRoot, "plugins/acme/ui/src"), { recursive: true });
+    await fs.writeFile(path.join(nestedRoot, "plugins/acme/ui/src/Widget.tsx"), "export const Widget = () => null;\n", "utf8");
+    await fs.writeFile(path.join(nestedRoot, "plugins/acme/ui/src/theme.css"), ":root {\n  --brand: #0af;\n}\n", "utf8");
+    // Decoy backend source that must NOT be picked up as a UI dir.
+    await fs.mkdir(path.join(nestedRoot, "plugins/acme/server/src"), { recursive: true });
+    await fs.writeFile(path.join(nestedRoot, "plugins/acme/server/src/index.ts"), "export const x = 1;\n", "utf8");
+    const nestedDigest = await scanUiSources(nestedRoot);
+    assert(nestedDigest.uiDirs.includes("plugins/acme/ui"), "scanUiSources finds nested UI dir plugins/acme/ui");
+    assert(!nestedDigest.uiDirs.some((d) => d.includes("server")), "scanUiSources does not misclassify a backend server/src as UI");
+    assert(nestedDigest.componentSamples.some((s) => s.endsWith("Widget.tsx")), "scanUiSources counts the nested component file");
+    assert("brand" in nestedDigest.cssVars, "scanUiSources harvests CSS vars from the nested UI dir");
     // 2. create feature
     const feature = await createFeature("Checkout corridor", root);
     assert(feature.slug === "checkout-corridor", "feature slug is kebab-case");

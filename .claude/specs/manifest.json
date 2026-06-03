@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-02T20:03:54.739Z",
+  "generatedAt": "2026-06-03T08:56:16.304Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -604,7 +604,7 @@
         {
           "id": "wt-post-phase-doc-sync-claude-md-design-md-009",
           "stage": "walkthrough",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
           "version": 1,
           "title": "Post-phase doc sync (CLAUDE.md + DESIGN.md) — Phase A walkthrough",
@@ -626,7 +626,7 @@
           "inProgressCount": 0,
           "status": "done",
           "walkthroughId": "wt-post-phase-doc-sync-claude-md-design-md-009",
-          "walkthroughStatus": "draft",
+          "walkthroughStatus": "approved",
           "walkthroughStale": false
         }
       ]

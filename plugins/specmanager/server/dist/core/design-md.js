@@ -30,6 +30,11 @@ const UI_DIR_CANDIDATES = [
     "client/src",
     "packages/ui/src",
 ];
+// Candidates generic enough that a nested match would wrongly catch a
+// backend dir (e.g. server/src). We only trust these at the repo root; the
+// UI-specific names are searched at any depth so monorepo / plugin layouts
+// like plugins/specmanager/ui/src are found.
+const ROOT_ONLY_CANDIDATES = new Set(["src", "app"]);
 const COMPONENT_EXTENSIONS = [".tsx", ".jsx", ".vue", ".svelte"];
 const MAX_SAMPLE = 8;
 const MAX_DEPTH = 4;
@@ -122,6 +127,29 @@ async function harvestCssVars(start, out, depth = 0) {
         }
     }
 }
+/** Non-ignored subdirectories under `start`, relative to it, up to MAX_DEPTH.
+ * Used as base dirs so UI-specific candidates are found when nested (monorepos,
+ * the plugin's own plugins/<name>/ui layout). */
+async function collectSubdirs(start, rel = "", depth = 0, out = []) {
+    if (depth >= MAX_DEPTH)
+        return out;
+    let entries = [];
+    try {
+        const raw = await fs.readdir(start, { withFileTypes: true });
+        entries = raw
+            .filter((e) => e.isDirectory() && !e.name.startsWith(".") && e.name !== "node_modules" && e.name !== "dist")
+            .map((e) => ({ name: e.name, isDir: true }));
+    }
+    catch {
+        return out;
+    }
+    for (const e of entries) {
+        const childRel = rel ? path.join(rel, e.name) : e.name;
+        out.push(childRel);
+        await collectSubdirs(path.join(start, e.name), childRel, depth + 1, out);
+    }
+    return out;
+}
 export async function scanUiSources(root = projectRoot()) {
     const digest = {
         uiDirs: [],
@@ -133,12 +161,21 @@ export async function scanUiSources(root = projectRoot()) {
         projectName: await readProjectName(root),
         hadDocsDir: await exists(path.join(root, "docs")),
     };
-    // Discover UI dirs.
+    // Discover UI dirs: every candidate at the root, plus the UI-specific
+    // candidates nested under any non-ignored subdirectory (bounded depth).
     for (const rel of UI_DIR_CANDIDATES) {
         if (await exists(path.join(root, rel)))
             digest.uiDirs.push(rel);
     }
-    // Dedupe nested entries (keep deeper one — they're more specific).
+    const nestedCandidates = UI_DIR_CANDIDATES.filter((c) => !ROOT_ONLY_CANDIDATES.has(c));
+    for (const base of await collectSubdirs(root)) {
+        for (const rel of nestedCandidates) {
+            const abs = path.join(root, base, rel);
+            if (await exists(abs))
+                digest.uiDirs.push(path.relative(root, abs));
+        }
+    }
+    // Dedupe nested entries (keep the shallower one — it contains the rest).
     digest.uiDirs = dedupeNested(digest.uiDirs);
     // Components.
     const compAcc = { samples: [], count: 0 };
