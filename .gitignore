@@ -9,3 +9,5 @@ node_modules/
 #   cd plugins/specmanager/ui     && npm install && npm run build
 # before committing source changes.
 .gstack/
+docs/notes.md
+docs/temp

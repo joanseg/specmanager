@@ -1,6 +1,6 @@
 # SpecManager
 
-A Claude Code plugin that turns your project's lifecycle — **PRD → Architecture → (Design) → Plan + tasks → Build → Walkthroughs** — into a localhost kanban board backed by plain markdown in your repo.
+Spec-driven development for Claude Code. A Claude Code plugin that replaces ad-hoc vibe coding with a gated lifecycle — PRD → Architecture → (Design) → Plan + tasks → Build → Walkthroughs — rendered as a localhost kanban board backed by plain markdown in your repo.
 
 Claude *drafts* each stage from the previous approved one **and your existing codebase**; you *edit and approve* in the board. Every artifact is git-tracked markdown, so it diffs, reviews, and travels with the code. Single-user, fully local, no auth, bound to `127.0.0.1`.
 
