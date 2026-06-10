@@ -7,6 +7,7 @@ import { spawn } from "node:child_process";
 
 import {
   STAGE,
+  DOC_KIND,
   DOC_STATUS,
   TASK_STATUS,
   TASK_COMPLEXITY,
@@ -127,7 +128,7 @@ server.registerTool(
   "create_document",
   {
     description:
-      "Create a draft document in a feature+stage. For walkthrough docs, pass `phase` (e.g. \"Foundation\") so the manifest can link the doc to its phase; the filename is derived from `phase` (`phase-<name>.md`, or `feature.md` for `phase: \"final\"`).",
+      "Create a draft document in a feature+stage. For walkthrough docs, pass `phase` (e.g. \"Foundation\") so the manifest can link the doc to its phase; the filename is derived from `phase` (`phase-<name>.md`, or `feature.md` for `phase: \"final\"`). Pass `kind: \"interview\"` with stage `prd` to store a pre-PRD interview artifact; filename defaults to `interview.md`.",
     inputSchema: z.object({
       featureId: z.string(),
       stage: STAGE,
@@ -138,6 +139,7 @@ server.registerTool(
       dependsOn: z.array(z.string()).optional(),
       basedOn: z.record(z.string(), z.number()).optional(),
       phase: z.string().optional(),
+      kind: DOC_KIND.optional(),
     }),
   },
   async (input) => {
