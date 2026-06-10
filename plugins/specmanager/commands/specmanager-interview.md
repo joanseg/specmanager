@@ -24,6 +24,7 @@ one-shot prompt.
    - If a doc with `kind: "interview"` exists, this is a **re-interview**:
      `read_document` it and open the session by briefly summarising what's
      already captured, then interview to extend/revise rather than repeat.
+     Remember its `id` and `version` — the storage step updates it in place.
    - If a PRD already exists, note it to the user in one sentence ("a PRD
      already exists; this interview can feed a rewrite") and **proceed anyway**
      — re-interviewing before a PRD rewrite is legitimate.
@@ -31,13 +32,44 @@ one-shot prompt.
    **Forcing-question method** to probe and challenge.
 4. **Synthesise.** When the user ends the interview or the plan is exhausted,
    print the synthesis in the four-section format defined in the protocol.
-5. **Storage (stubbed in this phase).** Persistence is not built yet. After
-   printing the synthesis, tell the user:
-   > Persistence isn't wired up yet — nothing has been written to disk. When
-   > the feature is complete, this step will offer to store the interview as
-   > `interview.md` in the feature's PRD folder, visible on the board.
+5. **Storage.** After printing the synthesis, ask:
+   > Store this interview as a markdown file for this feature? It will appear
+   > in the PRD column on the board. (yes / no)
 
-   Do **not** create or write any document, and do not call `sync_claude_md`.
+   The stored body is the synthesis in markdown: a one-line *mode* note at the
+   top (which mode(s) ran, with the method credit), then the four sections —
+   `## Extracted`, `## Critique`, `## Recommended wedge`, `## Unresolved` — so
+   the chat and the artifact match.
+
+   - **Yes, no interview exists yet** (step 2 found none):
+     ```
+     create_document({
+       featureId: "<feat-...>",
+       stage: "prd",
+       kind: "interview",
+       title: "<Feature title> interview",
+       body: <the synthesis markdown>,
+       generatedBy: "agent",
+       dependsOn: [],
+       basedOn: {}
+     })
+     ```
+     `dependsOn: []` / `basedOn: {}` is a hard contract — the interview sits
+     outside the staleness graph; never link it to anything. The filename
+     defaults to `interview.md` in the feature's `prd/` folder.
+   - **Yes, an interview already exists** (re-interview, step 2 found one):
+     update it in place with optimistic concurrency, where `baseVersion` is
+     the `version` you read in step 2:
+     ```
+     write_document({ id: "<the existing interview id>", body: <the synthesis markdown>, baseVersion: <version> })
+     ```
+     On a `version conflict` error (the user edited it on the board
+     mid-session), `read_document` it again, merge your synthesis with
+     whatever changed, and retry with the fresh version.
+   - **No:** stop. Nothing is written; the synthesis lives only in the chat.
+
+   On success, call `sync_claude_md`, then report the document id and file
+   path (e.g. `prd-<slug>-NNN → .claude/specs/features/<slug>/prd/interview.md`).
 
 ## Interview protocol
 
@@ -173,8 +205,11 @@ wastes the user's turns.
 
 ## Don't
 
-- Don't write anything to disk — no `create_document`, no `write_document`,
-  no files. The storage step is a stub in this phase.
+- Don't write anything before the user says yes at the storage prompt, and
+  never write files directly — all persistence goes through the
+  `create_document` / `write_document` MCP tools.
+- Don't give the interview any `dependsOn`/`basedOn` links, and don't approve
+  it — it has no lifecycle; it stays a `draft`-status reference doc forever.
 - Don't delegate to a subagent; the conversation must stay in this session.
 - Don't draft a PRD — that is `/specmanager-prd`'s job, later.
 - Don't ask more than one question per turn, and don't re-print the full plan
