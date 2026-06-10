@@ -5,7 +5,7 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 
 | Feature | Current stage | Notes |
 |---------|---------------|-------|
-| Redesign | PRD (approved) | Walkthroughs, Walkthroughs ⚠️ stale |
+| Redesign | PRD (draft) | Architecture, Plan, Walkthroughs, Walkthroughs, Walkthroughs, Walkthroughs ⚠️ stale |
 | Dummy feature | PRD | — |
 | Rename execute command to build | PRD (approved) | Walkthroughs ⚠️ stale |
 | Planner output matches phase-tasks.md style | PRD (approved) | — |
@@ -15,13 +15,14 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 | Plan and walkthrough optimisations | PRD (approved) | — |
 | HTML viewer scroll fix | PRD (approved) | — |
 | Post-phase doc sync (CLAUDE.md + DESIGN.md) | PRD (approved) | — |
+| Interview command | PRD (approved) | — |
 
 **Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation.
 
 **Commands:**
 `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board`
 
-_Last synced: 2026-06-03T08:56:16.361Z_
+_Last synced: 2026-06-10T14:44:44.292Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
@@ -40,12 +41,12 @@ The repo also dogfoods itself: its own features live under `.claude/specs/featur
 - **`plugins/specmanager/`** — the plugin itself:
   - `.claude-plugin/plugin.json` — plugin manifest (`board_port` user config, default 4317).
   - `.mcp.json` — wires the MCP server: `node server/dist/mcp.js`, with `SPECMANAGER_PROJECT_DIR=${CLAUDE_PROJECT_DIR}`, `SPECMANAGER_BOARD_PORT=${user_config.board_port}`, `NODE_PATH=${CLAUDE_PLUGIN_DATA}/node_modules`.
-  - `commands/*.md` — the user-facing slash commands (orchestration prompts).
-  - `agents/*.md` — the subagents each command delegates to (prd-writer, architect, designer, planner, builder, walkthrough-writer).
+  - `commands/*.md` — the user-facing slash commands (orchestration prompts). `specmanager-interview.md` is the exception to the delegation pattern: a multi-turn conversation can't live in a single-shot subagent, so its full interview protocol runs in the main session.
+  - `agents/*.md` — the subagents the drafting/build commands delegate to (prd-writer, architect, designer, planner, builder, walkthrough-writer).
   - `hooks/hooks.json` — `SessionStart` installs runtime deps into `${CLAUDE_PLUGIN_DATA}` once and symlinks them back into `server/node_modules`; `FileChanged` on `.claude/specs/**` nudges a re-read.
   - `server/` — `@specmanager/server`, TypeScript, ships compiled `dist/`.
   - `ui/` — `@specmanager/ui`, React 18 + Vite, ships compiled `dist/`.
-- **`docs/`** — architecture & design docs; `docs/architecture-and-spec.md` is the original full spec, `docs/phase-tasks.md` the original phased plan, `docs/DESIGN.md` the managed design-system spec.
+- **`docs/`** — `docs/DESIGN.md` is the managed design-system spec; the original full spec and phased plan are archived under `docs/temp/original-specs/` (historical snapshots — don't edit).
 
 ## Architecture (the big picture)
 
@@ -65,6 +66,7 @@ Load-bearing invariants (don't drift):
 
 ### Lifecycle gate quirks worth memorising
 
+- **The interview is optional and pre-PRD** — `/specmanager-interview` runs an adaptive idea-extraction chat (office-hours forcing questions) in the main session; nothing gates on it and it gates nothing. It stores as a `kind: "interview"` doc inside the prd stage (`interview.md`, `dependsOn: []`, status frozen at `draft`); `checkGate`, `currentStageLabel`, and the UI's `findDoc` all exclude `kind === "interview"` so it can never open a gate, shadow the PRD's stage label, or become the PRD column's primary card. Re-interviews update the doc in place (`write_document` + `baseVersion`).
 - Stages PRD / Architecture / Plan gate on the *previous stage being `approved`* (Plan also requires an approved Design doc *if one exists*).
 - **Plan emits both `plan.md` and the task records (`tasks.json` + rollup) in one step.** There is no separate "tasks" stage. Plans are organised into **phases**; tasks carry a Fibonacci `complexity` and anything over 3 must be split.
 - **Build has no document** — it is execution, "complete" when every task in `tasks.json` is `done`. `/specmanager-build` builds one phase and stops at its boundary.

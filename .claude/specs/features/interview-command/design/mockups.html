@@ -1,0 +1,750 @@
+---
+id: design-interview-command-003
+featureId: feat-interview-command
+stage: design
+status: approved
+stale: false
+title: Interview command mockups
+dependsOn:
+  - prd-interview-command-010
+  - arch-interview-command-009
+basedOn:
+  prd-interview-command-010: 2
+  arch-interview-command-009: 3
+generatedBy: agent
+version: 1
+createdAt: '2026-06-10T12:49:52.988Z'
+updatedAt: '2026-06-10T13:14:37.111Z'
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Interview command — mockups</title>
+<style>
+/* ============================================================
+   Obsidian Flux token layer — copied 1:1 from ui/src/tokens.css
+   so every value in these mockups traces to the shipped system.
+   Fonts fall back to the system stacks (self-contained file:
+   the real UI self-hosts Hanken Grotesk / Inter / Geist Mono).
+   ============================================================ */
+:root {
+  --surface: #131315;
+  --surface-container-lowest: #0e0e10;
+  --surface-container-low: #1b1b1d;
+  --surface-container: #201f21;
+  --surface-container-high: #2a2a2c;
+  --surface-container-highest: #353437;
+  --on-surface: #e5e1e4;
+  --on-surface-variant: #c7c4d7;
+  --outline: #908fa0;
+  --outline-variant: #464554;
+  --primary: #c0c1ff;
+  --primary-container: #8083ff;
+  --secondary: #ddb7ff;
+  --secondary-container: #6f00be;
+  --tertiary: #ffb783;
+  --error: #ffb4ab;
+  --on-error: #690005;
+  --success: #10b981;
+  --status-draft: var(--tertiary);
+  --status-approved: var(--success);
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 40px;
+  --font-display: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --shadow-overlay: 0px 20px 50px rgba(0, 0, 0, 0.5);
+  --glass-bg: rgba(24, 24, 27, 0.8);
+  --card-gradient: linear-gradient(135deg, var(--surface-container), var(--surface-container-low));
+  --card-border: color-mix(in srgb, var(--outline-variant) 80%, transparent);
+  --card-border-hover: color-mix(in srgb, var(--primary) 55%, var(--outline-variant));
+  --shadow-card: 0 6px 20px rgba(0,0,0,0.35), 0 0 0 1px color-mix(in srgb, var(--primary) 12%, transparent);
+  --backdrop-dim: rgba(0, 0, 0, 0.55);
+  --gradient-primary: linear-gradient(135deg, var(--primary-container), var(--secondary-container));
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #0a0a0b;
+  color: var(--on-surface);
+  font-family: var(--font-body);
+  font-size: 14px;
+  padding: var(--space-xl) var(--space-lg) 80px;
+}
+
+/* ---- Mockup page chrome (not product UI) ------------------- */
+.sm-screen {
+  max-width: 1340px;
+  margin: 0 auto var(--space-md);
+}
+.sm-frame {
+  border: 1px solid #2c2b30;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.45);
+}
+.sm-frame__bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 14px;
+  background: #18181a;
+  border-bottom: 1px solid #232226;
+  font-family: var(--font-mono); font-size: 0.7rem; color: #6f6d7a;
+}
+.sm-frame__bar .dots { display: flex; gap: 6px; }
+.sm-frame__bar .dot { width: 10px; height: 10px; border-radius: 50%; background: #2e2d32; }
+.sm-frame__bar .url { margin-left: 8px; letter-spacing: 0.02em; }
+.sm-note {
+  max-width: 880px;
+  margin: var(--space-lg) auto 56px;
+  color: #b9b6c6;
+  line-height: 1.6;
+  font-size: 0.92rem;
+}
+.sm-note h1 {
+  font-family: var(--font-display); font-weight: 600; letter-spacing: -0.02em;
+  color: var(--on-surface); font-size: 1.7rem; margin: 0 0 0.4rem;
+}
+.sm-note h2 {
+  font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em;
+  color: var(--on-surface); font-size: 1.2rem; margin: 0 0 0.5rem;
+}
+.sm-note .kicker {
+  font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--primary); display: block; margin-bottom: 0.5rem;
+}
+.sm-note ul { margin: 0.5rem 0; padding-left: 1.25rem; }
+.sm-note li { margin: 0.3rem 0; }
+.sm-note code {
+  font-family: var(--font-mono); font-size: 0.8rem;
+  background: #1d1c20; border: 1px solid #2a2930;
+  padding: 0.05rem 0.35rem; border-radius: var(--radius-sm); color: #d8d5e6;
+}
+.sm-note strong { color: var(--on-surface); }
+.sm-note .rec {
+  border-left: 3px solid var(--success);
+  background: color-mix(in srgb, var(--success) 7%, transparent);
+  padding: 0.6rem 0.9rem; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin: 0.8rem 0;
+}
+
+/* ============================================================
+   Product UI — mirrors ui/src/styles.css class-for-class
+   ============================================================ */
+.board { padding: 0 24px 32px; background: var(--surface); }
+.board__header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-md);
+  margin: 0 -24px var(--space-lg);
+  padding: var(--space-md) 24px;
+  background: var(--glass-bg);
+  border-bottom: 1px solid var(--outline-variant);
+}
+.board__title {
+  margin: 0; font-family: var(--font-display); font-weight: 600;
+  font-size: 3rem; line-height: 3.5rem; letter-spacing: -0.02em;
+}
+.board__meta {
+  color: var(--on-surface-variant); font-size: 0.85rem;
+  display: flex; gap: var(--space-sm); align-items: center;
+}
+.board__count { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.02em; }
+.board__pulse { color: var(--primary); }
+
+.grid {
+  display: grid;
+  grid-template-columns: 11.5rem repeat(4, minmax(10rem, 1fr)) 12.5rem minmax(10rem, 1fr);
+  gap: var(--space-sm);
+  align-items: stretch;
+}
+.grid__corner, .grid__header {
+  font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--on-surface-variant); padding: 0 0.5rem 0.4rem;
+}
+.grid__header--build { color: var(--primary); }
+.row__label { display: flex; flex-direction: column; padding: 0.6rem 0.5rem; }
+.row__label strong { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em; }
+.row__label small { color: var(--on-surface-variant); font-family: var(--font-mono); font-size: 0.7rem; margin-top: 0.2rem; }
+.row__cell { display: flex; min-height: 5.5rem; align-items: flex-start; }
+.row__cell > .card { flex: 1; height: 5.5rem; }
+
+/* NEW — .cell-stack: column wrapper the prd Cell gains so the chip can sit
+   beneath the card without disturbing the 5.5rem card cap. */
+.cell-stack { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.cell-stack > .card { height: 5.5rem; }
+
+.card {
+  display: flex; flex-direction: column; gap: 0.35rem;
+  background: var(--card-gradient);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 0.7rem;
+  cursor: pointer;
+}
+.card--hover { /* frozen hover state for the mock */
+  border-color: var(--card-border-hover);
+  box-shadow: var(--shadow-card);
+}
+.card--empty, .card--locked {
+  background: transparent; border-style: dashed; cursor: default;
+  color: var(--on-surface-variant); justify-content: center; align-items: center;
+  font-size: 0.78rem; text-align: center;
+}
+.card--ready { border-color: var(--primary); color: var(--primary); cursor: pointer; }
+.card--optional { border-style: dotted; opacity: 0.85; }
+.card--optional-ready { border-color: var(--secondary); color: var(--secondary); opacity: 1; }
+.card__optional-tag {
+  font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--secondary); opacity: 0.85;
+}
+.card__empty-label, .card__locked-label { font-weight: 500; }
+.card__empty-sub, .card__locked-sub { font-size: 0.7rem; opacity: 0.7; margin-top: 0.15rem; }
+.card__locked-sub::before { content: "🔒 "; }
+.card__empty-cmd { font-size: 0.7rem; color: var(--primary); font-family: var(--font-mono); margin-top: 0.15rem; }
+.card__title {
+  font-weight: 500; font-size: 0.85rem; line-height: 1.25; color: var(--on-surface);
+}
+.card__badges { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: auto; }
+.badge {
+  display: inline-flex; align-items: center; gap: 0.25rem;
+  padding: 0.1rem 0.4rem; border-radius: var(--radius-sm);
+  font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500;
+  letter-spacing: 0.02em;
+  background: var(--surface-container-highest); color: var(--on-surface-variant);
+}
+.badge--draft { color: var(--status-draft); }
+.badge--approved { color: var(--status-approved); }
+.badge--meta { opacity: 0.6; }
+/* NEW — neutral interview tag: outline ghost, deliberately NOT on the
+   draft/approved status hues. Derived entirely from existing tokens. */
+.badge--interview {
+  background: transparent;
+  border: 1px solid var(--outline-variant);
+  color: var(--on-surface-variant);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+
+.card--build { background: var(--surface-container-low); cursor: pointer; }
+.card--build .card__title {
+  font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--on-surface-variant); font-weight: 400;
+}
+.bar { background: var(--surface-container-highest); border-radius: var(--radius-sm); height: 0.4rem; overflow: hidden; display: flex; }
+.bar__seg--done { background: var(--success); height: 100%; }
+.card__build-counts { font-family: var(--font-mono); font-size: 0.7rem; color: var(--on-surface-variant); }
+
+.card--walkthroughs { display: flex; flex-direction: column; gap: 0.3rem; padding: 0.4rem 0.45rem; background: transparent; border: 0; cursor: default; }
+.row__cell > .card--walkthroughs { height: auto; flex: 1; }
+.card--sub {
+  padding: 0.5rem 0.55rem 0.42rem; border-radius: var(--radius-sm);
+  gap: 0.2rem; background: var(--card-gradient); border: 1px solid var(--card-border);
+  height: auto !important;
+}
+.card__sub-label { font-size: 0.74rem; font-weight: 500; line-height: 1.15; color: var(--on-surface); }
+
+/* NEW — the Interview chip (Option A, recommended).
+   Pill under the PRD card / EmptyCell. Hollow dot = "reference material,
+   not a status"; the glowing filled dot is reserved for status pills. */
+.chip-interview {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  align-self: flex-start;
+  margin-top: 0.35rem;
+  padding: 0.24rem 0.6rem;
+  background: var(--surface-container-low);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.02em;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+}
+.chip-interview .ring {
+  width: 0.42rem; height: 0.42rem; border-radius: 50%;
+  border: 1.5px solid var(--primary); background: transparent; flex-shrink: 0;
+}
+.chip-interview .meta { opacity: 0.55; }
+.chip-interview--hover { /* frozen hover state */
+  border-color: var(--card-border-hover);
+  color: var(--on-surface);
+}
+
+/* Option B — stacked second sub-card (mocked for comparison) */
+.card--interview-sub { width: 100%; cursor: pointer; }
+.card--interview-sub .card__badges { margin-top: 0.25rem; }
+
+/* Annotation overlays on screens */
+.callout {
+  position: absolute;
+  font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.04em;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 12%, #131315);
+  border: 1px solid color-mix(in srgb, var(--primary) 45%, transparent);
+  border-radius: var(--radius-sm);
+  padding: 0.2rem 0.5rem;
+  white-space: nowrap;
+}
+
+/* ---- DocPanel mock ----------------------------------------- */
+.panel-scene { position: relative; height: 660px; background: var(--surface); overflow: hidden; }
+.panel-scene__board {
+  position: absolute; inset: 0; padding: 18px 24px;
+  filter: blur(1px); opacity: 0.5;
+}
+.panel-backdrop { position: absolute; inset: 0; background: var(--backdrop-dim); display: flex; justify-content: flex-end; }
+.panel {
+  width: 68%; height: 100%;
+  background: var(--surface);
+  border-left: 1px solid color-mix(in srgb, var(--primary) 8%, var(--glass-bg));
+  border-top-left-radius: var(--radius-lg);
+  border-bottom-left-radius: var(--radius-lg);
+  box-shadow: var(--shadow-overlay), inset 1px 0 0 color-mix(in srgb, var(--primary) 14%, transparent);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.panel__header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: var(--space-md); padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid var(--outline-variant);
+}
+.panel__crumb { font-family: var(--font-mono); font-size: 0.72rem; color: var(--on-surface-variant); margin-bottom: 0.3rem; }
+.panel__crumb-sep { color: var(--outline); margin: 0 0.1rem; }
+.panel__title-row { display: flex; align-items: baseline; gap: 0.75rem; }
+.panel__title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; letter-spacing: -0.01em; }
+.panel__meta { color: var(--on-surface-variant); font-size: 0.8rem; }
+.panel__version { font-family: var(--font-mono); }
+.panel__badges { display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.5rem; }
+.panel__header-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+.panel__close { background: transparent; border: 0; color: var(--on-surface-variant); font-size: 1.4rem; line-height: 1; padding: 0.1rem 0.4rem; }
+.btn {
+  background: var(--surface-container-high); color: var(--on-surface);
+  border: 1px solid var(--outline-variant); border-radius: var(--radius-md);
+  padding: 0.32rem 0.75rem; font-family: var(--font-body); font-size: 0.8rem;
+}
+.btn:disabled, .btn--disabled { opacity: 0.45; }
+.md-toolbar {
+  display: flex; align-items: center; gap: 0.25rem;
+  padding: 0.45rem 1.25rem; border-bottom: 1px solid var(--outline-variant);
+  background: var(--surface-container);
+}
+.tb-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 1.85rem; height: 1.85rem; padding: 0 0.45rem;
+  color: var(--on-surface-variant); border: 1px solid transparent;
+  border-radius: var(--radius-sm); font-size: 0.82rem; background: transparent;
+}
+.tb-btn b { font-weight: 700; } .tb-btn i { font-style: italic; }
+.tb-btn .mono { font-family: var(--font-mono); font-size: 0.74rem; }
+.tb-btn .caret { font-size: 0.6rem; margin-left: 0.2rem; opacity: 0.7; }
+.tb-sep { width: 1px; align-self: stretch; margin: 0.25rem 0.4rem; background: var(--outline-variant); }
+.tb-spacer { flex: 1; }
+.tb-toggle { font-size: 0.78rem; color: var(--on-surface-variant); display: inline-flex; align-items: center; gap: 0.3rem; }
+.md-surface { flex: 1; overflow: hidden; background: var(--surface); }
+.prose { width: 90%; margin-inline: auto; padding: var(--space-lg) var(--space-md) var(--space-xl); }
+.prose h1 { font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; margin: 0.6rem 0 0.8rem; letter-spacing: -0.01em; }
+.prose h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; margin: 1.3rem 0 0.5rem; letter-spacing: -0.01em; }
+.prose p, .prose li { font-size: 0.95rem; line-height: 1.62; }
+.prose p { margin: 0.55rem 0; }
+.prose ul { margin: 0.5rem 0; padding-left: 1.3rem; }
+.prose li { margin: 0.28rem 0; }
+.prose strong { font-weight: 700; }
+.prose code { background: var(--surface-container-highest); padding: 0.05rem 0.3rem; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.82rem; }
+.prose blockquote { border-left: 3px solid var(--outline-variant); padding-left: 0.8rem; color: var(--on-surface-variant); margin: 0.7rem 0; }
+.panel__footer {
+  padding: 0.4rem 1.25rem; border-top: 1px solid var(--outline-variant);
+  font-family: var(--font-mono); font-size: 0.72rem; color: var(--on-surface-variant);
+}
+
+/* ---- Terminal mock ------------------------------------------ */
+.term {
+  background: var(--surface-container-lowest);
+  font-family: var(--font-mono);
+  font-size: 0.8rem; line-height: 1.65;
+  padding: 18px 22px 26px;
+  color: var(--on-surface-variant);
+}
+.term .u { color: var(--on-surface); }
+.term .u::before { content: "❯ "; color: var(--primary); }
+.term .a { color: var(--on-surface-variant); }
+.term .hd { color: var(--on-surface); font-weight: 700; }
+.term .dim { opacity: 0.55; }
+.term .plan {
+  border-left: 2px solid var(--primary);
+  background: color-mix(in srgb, var(--primary) 5%, transparent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 0.5rem 0.8rem; margin: 0.5rem 0 0.7rem;
+}
+.term .plan .t { color: var(--primary); font-weight: 700; }
+.term .add { color: var(--success); }
+.term .del { color: var(--error); }
+.term .exit { color: var(--tertiary); }
+.term .gap { display: block; height: 0.7rem; }
+.term .syn {
+  border: 1px dashed var(--outline-variant); border-radius: var(--radius-sm);
+  padding: 0.5rem 0.8rem; margin: 0.5rem 0;
+}
+</style>
+</head>
+<body>
+
+<section class="sm-note">
+  <span class="kicker">feat-interview-command · design mockups</span>
+  <h1>Interview command — board-facing surface</h1>
+  <p>The interview itself happens in the terminal; the board's job is only to <strong>show the stored artifact in the PRD column, visibly distinct from the PRD, never approvable</strong> (Architecture, decisions 1 and 6). Four screens follow: the board with the recommended chip treatment in both PRD states, the chip-vs-stacked-card exploration the Architecture's open question #1 asked for, the DocPanel viewing an interview, and a stylised terminal-flow reference for the command prompt's textual UX. All values trace to <code>ui/src/tokens.css</code> (the canonical Obsidian Flux layer behind the DESIGN.md frontmatter aliases).</p>
+</section>
+
+<!-- ============ SCREEN 1 — Board with interview chips ============ -->
+<section class="sm-screen">
+  <div class="sm-frame">
+    <div class="sm-frame__bar"><span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span><span class="url">127.0.0.1:4317 — SpecManager board</span></div>
+    <div class="board">
+      <header class="board__header">
+        <h1 class="board__title">SpecManager</h1>
+        <div class="board__meta"><span class="board__count">3 features</span><span class="board__pulse">· document.created</span></div>
+      </header>
+      <section class="grid" style="position: relative;">
+        <div class="grid__corner">Feature</div>
+        <div class="grid__header">PRD</div>
+        <div class="grid__header">Architecture</div>
+        <div class="grid__header">Design</div>
+        <div class="grid__header">Plan</div>
+        <div class="grid__header grid__header--build">Build</div>
+        <div class="grid__header">Walkthroughs</div>
+
+        <!-- Row 1: PRD exists + interview chip -->
+        <div class="row__label"><strong>Interview command</strong><small>interview-command</small></div>
+        <div class="row__cell">
+          <div class="cell-stack">
+            <div class="card">
+              <span class="card__title">Interview command PRD</span>
+              <span class="card__badges">
+                <span class="badge badge--approved">approved</span>
+                <span class="badge badge--meta">v2</span>
+              </span>
+            </div>
+            <button class="chip-interview" type="button" title="prd-interview-command-011">
+              <span class="ring"></span>Interview <span class="meta">· v2</span>
+            </button>
+          </div>
+          <span class="callout" style="right: -8px; bottom: -26px;">interview chip — opens DocPanel</span>
+        </div>
+        <div class="row__cell"><div class="card">
+          <span class="card__title">Interview command architecture</span>
+          <span class="card__badges"><span class="badge badge--approved">approved</span><span class="badge badge--meta">v3</span></span>
+        </div></div>
+        <div class="row__cell"><div class="card card--empty card--optional card--optional-ready">
+          <span class="card__empty-label">Design</span>
+          <span class="card__optional-tag">optional</span>
+          <span class="card__empty-cmd">/specmanager-design</span>
+        </div></div>
+        <div class="row__cell"><div class="card card--empty card--ready">
+          <span class="card__empty-label">Generate</span>
+          <span class="card__empty-cmd">/specmanager-plan</span>
+        </div></div>
+        <div class="row__cell"><div class="card card--empty">
+          <span class="card__empty-label">Build</span>
+          <span class="card__empty-sub">plan not approved</span>
+        </div></div>
+        <div class="row__cell"><div class="card card--empty">
+          <span class="card__empty-label">Walkthroughs</span>
+          <span class="card__empty-sub">—</span>
+        </div></div>
+
+        <!-- Row 2: interview exists, no PRD yet -->
+        <div class="row__label"><strong>Session timeline</strong><small>session-timeline</small></div>
+        <div class="row__cell" style="position: relative;">
+          <div class="cell-stack">
+            <div class="card card--empty card--ready">
+              <span class="card__empty-label">Generate</span>
+              <span class="card__empty-cmd">/specmanager-prd</span>
+            </div>
+            <button class="chip-interview chip-interview--hover" type="button" title="prd-session-timeline-001">
+              <span class="ring"></span>Interview <span class="meta">· v1</span>
+            </button>
+          </div>
+          <span class="callout" style="left: 0; bottom: -26px;">interview-first flow: chip below the generate affordance</span>
+        </div>
+        <div class="row__cell"><div class="card card--locked">
+          <span class="card__locked-label">Architecture locked</span>
+          <span class="card__locked-sub">prior stage not approved</span>
+        </div></div>
+        <div class="row__cell"><div class="card card--empty card--optional">
+          <span class="card__empty-label">Design</span>
+          <span class="card__empty-sub">optional · PRD not approved</span>
+        </div></div>
+        <div class="row__cell"><div class="card card--locked">
+          <span class="card__locked-label">Plan locked</span>
+          <span class="card__locked-sub">prior stage not approved</span>
+        </div></div>
+        <div class="row__cell"><div class="card card--empty">
+          <span class="card__empty-label">Build</span>
+          <span class="card__empty-sub">plan not approved</span>
+        </div></div>
+        <div class="row__cell"><div class="card card--locked">
+          <span class="card__locked-label">Walkthroughs locked</span>
+          <span class="card__locked-sub">prior stage not approved</span>
+        </div></div>
+
+        <!-- Row 3: ordinary feature, no interview (the norm) -->
+        <div class="row__label" style="margin-top: 14px;"><strong>HTML viewer scroll fix</strong><small>html-viewer-scroll-fix</small></div>
+        <div class="row__cell" style="margin-top: 14px;"><div class="card">
+          <span class="card__title">HTML viewer scroll fix PRD</span>
+          <span class="card__badges"><span class="badge badge--approved">approved</span><span class="badge badge--meta">v1</span></span>
+        </div></div>
+        <div class="row__cell" style="margin-top: 14px;"><div class="card">
+          <span class="card__title">Scroll fix architecture</span>
+          <span class="card__badges"><span class="badge badge--approved">approved</span><span class="badge badge--meta">v2</span></span>
+        </div></div>
+        <div class="row__cell" style="margin-top: 14px;"><div class="card">
+          <span class="card__title">Scroll fix mockups</span>
+          <span class="card__badges"><span class="badge badge--approved">approved</span><span class="badge badge--meta">v1</span></span>
+        </div></div>
+        <div class="row__cell" style="margin-top: 14px;"><div class="card">
+          <span class="card__title">Scroll fix plan</span>
+          <span class="card__badges"><span class="badge badge--approved">approved</span><span class="badge badge--meta">v1</span></span>
+        </div></div>
+        <div class="row__cell" style="margin-top: 14px;"><div class="card card--build">
+          <span class="card__title">Build</span>
+          <div class="bar"><div class="bar__seg--done" style="width: 100%;"></div></div>
+          <span class="card__build-counts">6/6 done</span>
+        </div></div>
+        <div class="row__cell" style="margin-top: 14px;"><div class="card card--walkthroughs">
+          <div class="card card--sub">
+            <span class="card__sub-label">Phase scroll-fix</span>
+            <span class="card__badges"><span class="badge badge--approved">approved</span></span>
+          </div>
+        </div></div>
+      </section>
+      <div style="height: 34px;"></div>
+    </div>
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2>Screen 1 — PRD column with the Interview chip (recommended treatment)</h2>
+  <p>The full board, three rows covering the three states that matter:</p>
+  <ul>
+    <li><strong>Row 1 (PRD + interview):</strong> the normal <code>DocCellView</code> PRD card keeps its pinned <code>5.5rem</code> height; the chip renders beneath it inside a new <code>.cell-stack</code> column wrapper. Because <code>.row__cell</code> is already <code>align-items: flex-start</code>, the slightly taller cell pins to the top of the row track and nothing else moves.</li>
+    <li><strong>Row 2 (interview, no PRD yet):</strong> the interview-first flow. The chip sits beneath the existing <code>card--ready</code> generate affordance — exactly the Architecture's "Interview exists, PRD doesn't" edge case. Row 2's chip is shown in its frozen hover state (border tints toward <code>--card-border-hover</code>, text lifts to <code>--on-surface</code>).</li>
+    <li><strong>Row 3 (no interview):</strong> chip absent — the column reads identically to today, so the optional artifact costs nothing when unused.</li>
+  </ul>
+  <p><strong>Chip anatomy:</strong> pill (<code>border-radius: 999px</code> — the only fully-round element on the board, which is what makes it read as "not a card"), <code>--surface-container-low</code> fill, <code>--card-border</code> hairline, <code>--font-mono</code> at <code>0.68rem</code> like other meta text, label "Interview" plus a dimmed <code>· vN</code>. The leading <strong>hollow ring</strong> in <code>--primary</code> deliberately inverts the status pills' glowing <em>filled</em> dot: filled = lifecycle status, hollow = reference material with no status. No new color enters the scale.</p>
+  <p><strong>Interactions:</strong> the whole chip is a button wired to the existing <code>onOpenDoc(id)</code>; <code>title</code> carries the doc id like the cards do. No badge, no stale state, no approve affordance — interviews are outside the staleness graph by contract.</p>
+</section>
+
+<!-- ============ SCREEN 2 — Option exploration ============ -->
+<section class="sm-screen" style="max-width: 980px;">
+  <div class="sm-frame">
+    <div class="sm-frame__bar"><span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span><span class="url">PRD cell close-up — option A vs option B (Architecture open question #1)</span></div>
+    <div style="background: var(--surface); padding: 28px 32px 36px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+      <div>
+        <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--success); margin-bottom: 12px;">Option A — chip · recommended</div>
+        <div style="max-width: 270px;">
+          <div class="cell-stack">
+            <div class="card" style="height: 5.5rem;">
+              <span class="card__title">Interview command PRD</span>
+              <span class="card__badges">
+                <span class="badge badge--approved">approved</span>
+                <span class="badge badge--meta">v2</span>
+              </span>
+            </div>
+            <button class="chip-interview" type="button"><span class="ring"></span>Interview <span class="meta">· v2</span></button>
+          </div>
+        </div>
+        <div style="margin-top: 18px; font-size: 0.8rem; color: var(--on-surface-variant); line-height: 1.55;">
+          Cell grows ~28px. The PRD stays the unmistakable primary object; the interview reads as an attachment. One interview per feature, so a pill is enough.
+        </div>
+      </div>
+      <div>
+        <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--on-surface-variant); margin-bottom: 12px;">Option B — stacked sub-card · rejected</div>
+        <div style="max-width: 270px;">
+          <div class="cell-stack" style="gap: 0.3rem;">
+            <div class="card" style="height: 5.5rem;">
+              <span class="card__title">Interview command PRD</span>
+              <span class="card__badges">
+                <span class="badge badge--approved">approved</span>
+                <span class="badge badge--meta">v2</span>
+              </span>
+            </div>
+            <div class="card card--sub card--interview-sub">
+              <span class="card__sub-label">Interview command interview</span>
+              <span class="card__badges"><span class="badge badge--interview">interview</span><span class="badge badge--meta">v2</span></span>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 18px; font-size: 0.8rem; color: var(--on-surface-variant); line-height: 1.55;">
+          Borrows the walkthrough sub-card pattern, but two card-shaped objects in one cell read as two peer documents — it dilutes the "one card per stage" scan rhythm and costs ~56px of row height.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2>Screen 2 — Resolving Architecture open question #1: chip vs stacked card</h2>
+  <p>Both options rendered against the same PRD card at true cell width.</p>
+  <div class="rec"><strong>Recommendation: Option A, the chip.</strong> Card shape on this board means "stage document with a lifecycle"; the interview has no lifecycle — it is upstream raw material. A pill (the board's only fully-rounded element) plus the hollow ring gives instant visual separation at a fraction of the vertical cost, and keeps the columns' one-card scan rhythm intact. Option B's sub-card earns its place only in the Walkthroughs column, where the sub-cards genuinely <em>are</em> peer stage documents with approve states.</div>
+  <ul>
+    <li>Option B is preserved here so the planner sees what was rejected and why; do not build both.</li>
+    <li>If a future feature ever produces multiple interviews per feature, revisit — chips stack vertically fine up to ~2, after which Option B wins.</li>
+  </ul>
+</section>
+
+<!-- ============ SCREEN 3 — DocPanel with interview open ============ -->
+<section class="sm-screen" style="max-width: 1240px;">
+  <div class="sm-frame">
+    <div class="sm-frame__bar"><span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span><span class="url">127.0.0.1:4317 — interview open in DocPanel (Milkdown)</span></div>
+    <div class="panel-scene">
+      <div class="panel-scene__board">
+        <div style="font-family: var(--font-display); font-weight: 600; font-size: 2.2rem; letter-spacing: -0.02em; margin-bottom: 18px;">SpecManager</div>
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; max-width: 900px;">
+          <div class="card" style="height: 5.2rem;"></div><div class="card" style="height: 5.2rem;"></div>
+          <div class="card card--empty" style="height: 5.2rem;"></div><div class="card card--empty" style="height: 5.2rem;"></div>
+          <div class="card" style="height: 5.2rem;"></div>
+        </div>
+      </div>
+      <div class="panel-backdrop">
+        <aside class="panel">
+          <header class="panel__header">
+            <div style="min-width: 0; flex: 1;">
+              <nav class="panel__crumb">Interview Command <span class="panel__crumb-sep">›</span> PRD</nav>
+              <div class="panel__title-row">
+                <h2 class="panel__title">Interview command interview</h2>
+                <span class="panel__meta">PRD · <span class="panel__version">v2</span></span>
+              </div>
+              <div class="panel__badges">
+                <span class="badge badge--interview">interview</span>
+                <span class="badge badge--meta">prd-interview-command-011</span>
+                <span class="badge badge--meta">agent</span>
+              </div>
+            </div>
+            <div class="panel__header-actions">
+              <button class="btn btn--disabled">Saved</button>
+              <button class="panel__close">×</button>
+            </div>
+          </header>
+          <div class="md-toolbar">
+            <button class="tb-btn"><span class="mono">H</span><span class="caret">▾</span></button>
+            <span class="tb-sep"></span>
+            <button class="tb-btn"><b>B</b></button>
+            <button class="tb-btn"><i>I</i></button>
+            <button class="tb-btn"><span class="mono">&lt;/&gt;</span></button>
+            <span class="tb-sep"></span>
+            <button class="tb-btn">•≡</button>
+            <button class="tb-btn">1.≡</button>
+            <button class="tb-btn">❝</button>
+            <span class="tb-spacer"></span>
+            <label class="tb-toggle"><input type="checkbox"> Chat</label>
+          </div>
+          <div class="md-surface">
+            <div class="prose">
+              <h1>Interview — Interview command</h1>
+              <p><em style="color: var(--on-surface-variant);">Mode: startup interrogation → switched to builder mode at turn 9 (internal tooling; demand evidence is your own dogfooding history). Method credit: gstack office-hours forcing questions.</em></p>
+              <h2>Context extracted</h2>
+              <ul>
+                <li><strong>Problem:</strong> the lifecycle starts at <code>/specmanager-prd</code> with a one-shot prompt; the richest context never leaves the orchestrator's head and gets re-injected during review churn.</li>
+                <li><strong>Users:</strong> the orchestrator (terminal + board); the prd-writer as indirect consumer of the stored artifact.</li>
+                <li><strong>Constraints surfaced:</strong> subagents are single-shot — a multi-turn interview must run in the main session; all persistence through <code>core</code> via MCP tools.</li>
+              </ul>
+              <h2>Critique (forcing questions)</h2>
+              <ul>
+                <li><strong>Demand reality:</strong> claimed pain is PRD review churn. Evidence: 3 of the last 5 PRDs in this repo needed 2+ human edit passes. Real, but thin — track it.</li>
+                <li><strong>Status quo:</strong> today you paste a long prompt and fix the draft on the board. Cheap. The interview must beat "just type more" or it dies of friction.</li>
+                <li><strong>Narrowest wedge:</strong> terminal-only chat, one markdown artifact, zero board UX beyond display. Agreed during the session — board-side interviewing was cut.</li>
+              </ul>
+              <h2>Recommended wedge</h2>
+              <p>Ship the conversation quality first (phase 1 go/no-go), persistence and board chip second. If the chat is not better than typing a long prompt, stop.</p>
+            </div>
+          </div>
+          <footer class="panel__footer">
+            <span>/Users/joan/Documents/projects/specmanager/.claude/specs/features/interview-command/prd/interview.md</span>
+          </footer>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2>Screen 3 — DocPanel viewing an interview</h2>
+  <p>Clicking the chip opens the standard right-side drawer (<code>.panel</code>, 68% width, dimmed board behind) with the Milkdown markdown surface. Everything is the existing DocPanel except three deliberate deltas for <code>kind: "interview"</code>:</p>
+  <ul>
+    <li><strong>Neutral tag instead of status badge:</strong> the badge row leads with <code>.badge--interview</code> — transparent fill, <code>--outline-variant</code> 1px border, <code>--on-surface-variant</code> text, uppercase mono. Ghost-outline where status badges are filled: visibly "a label, not a state". It never shows draft amber or approved emerald.</li>
+    <li><strong>No Approve / Edit / Gate? actions:</strong> the header keeps only Save (shown in its idle "Saved" disabled state) and the close ×. Interviews stay editable forever (status is frozen at <code>draft</code> internally per Architecture decision 6), so the read-only hint row never appears either.</li>
+    <li><strong>No stale banner, ever:</strong> <code>dependsOn: []</code> by contract, so the stale section cannot render.</li>
+  </ul>
+  <p>The formatting toolbar, prose typography (<code>.prose</code> rules verbatim from <code>styles.css</code>), footer file path, and Esc-to-close all behave exactly as for any markdown doc. The crumb reads <code>Interview Command › PRD</code> — same derivation as today; the title plus tag carry the distinction, so no crumb special-case is needed.</p>
+  <p>The body shown is the realistic shape the command's synthesis step should emit: a mode line (with method credit), <strong>Context extracted</strong>, <strong>Critique (forcing questions)</strong>, <strong>Recommended wedge</strong> — useful as the prd-writer's required input.</p>
+</section>
+
+<!-- ============ SCREEN 4 — Terminal flow (reference, not board UI) ============ -->
+<section class="sm-screen" style="max-width: 900px;">
+  <div class="sm-frame">
+    <div class="sm-frame__bar"><span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span><span class="url">claude — terminal session (textual UX reference — NOT board UI)</span></div>
+    <div class="term">
+      <div class="u">/specmanager:specmanager-interview "Session timeline"</div>
+      <span class="gap"></span>
+      <div class="a"><span class="hd">Interview: Session timeline</span> <span class="dim">(new feature created: feat-session-timeline)</span></div>
+      <div class="a">I'll pull the context out of your head and stress-test the idea as we go.</div>
+      <div class="plan">
+        <div class="t">Interview plan</div>
+        <div>1. The problem and who hits it &nbsp;<span class="dim">2. Demand evidence</span></div>
+        <div><span class="dim">3. Status quo &amp; workarounds &nbsp;4. Constraints you take for granted</span></div>
+        <div><span class="dim">5. Narrowest wedge &nbsp;6. Success criteria</span></div>
+      </div>
+      <div class="a exit">You can end at any time — just say "finish interview now" (or any obvious version of it).</div>
+      <span class="gap"></span>
+      <div class="a"><span class="hd">Q1.</span> What actually happened, recently and concretely, that made you want a session timeline?</div>
+      <div class="u">After long builds I lose track of what the agent changed and when. Also my teammate wants to replay sessions…</div>
+      <span class="gap"></span>
+      <div class="a"><span class="hd">Hold on — "my teammate".</span> SpecManager is single-user by design. That's a second user type and a sharing requirement hiding in one word. Worth its own questions.</div>
+      <div class="plan">
+        <div class="t">Plan update</div>
+        <div class="add">+ multi-user / sharing reality check (you mentioned a teammate)</div>
+        <div class="del">− demand evidence (covered: the post-build blindness is concrete)</div>
+      </div>
+      <div class="a"><span class="hd">Q2.</span> When your teammate "replays" a session today, what do they actually do — and how often has that happened in the last month?</div>
+      <div class="u">finish interview now</div>
+      <span class="gap"></span>
+      <div class="a"><span class="hd">Synthesis</span> <span class="dim">(ending immediately — 2 of 6 areas covered)</span></div>
+      <div class="syn">
+        <div><span class="hd">Extracted:</span> post-build change blindness (concrete, recurring); possible second user (teammate replay — unverified).</div>
+        <div><span class="hd">Critique:</span> the teammate use case smells solution-first; one anecdote, zero observations.</div>
+        <div><span class="hd">Recommended wedge:</span> local-only timeline of doc/task events for yourself; cut sharing until observed twice.</div>
+        <div><span class="hd">Unresolved:</span> demand for replay; where timeline data lives.</div>
+      </div>
+      <div class="a">Store this interview as a markdown file for this feature? It will appear in the PRD column on the board. <span class="dim">(yes / no)</span></div>
+      <div class="u">yes</div>
+      <div class="a dim">Stored: prd-session-timeline-001 → .claude/specs/features/session-timeline/prd/interview.md</div>
+    </div>
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2>Screen 4 — Terminal interview flow (reference for the command prompt, not board UI)</h2>
+  <p>This is a <strong>stylised reference for the textual UX</strong> that <code>commands/specmanager-interview.md</code> should produce in the Claude Code session. Nothing here is rendered by the board; the builder uses it as the target shape of the conversation, not as a screen to implement.</p>
+  <ul>
+    <li><strong>Opening turn:</strong> goal, the numbered interview plan (6 one-line areas, current area highlighted), and the exit phrase — stated up front, restated roughly every five turns.</li>
+    <li><strong>Plan diff, not plan dump:</strong> when the plan changes, print a short <code>+ added / − dropped (reason)</code> block — never re-print the whole plan as a wall of text.</li>
+    <li><strong>Critique woven in:</strong> the "Hold on — my teammate" beat shows the forcing-question style: challenge the claim the moment it appears, then fold it into the plan.</li>
+    <li><strong>Early exit honored instantly:</strong> "finish interview now" (and obvious paraphrases) goes straight to synthesis — no "are you sure", however thin the material.</li>
+    <li><strong>Synthesis block:</strong> Extracted / Critique / Recommended wedge / Unresolved — the same four sections the stored markdown body uses (Screen 3), so the chat and the artifact match.</li>
+    <li><strong>Storage prompt names the consequence:</strong> "It will appear in the PRD column on the board" — connecting the terminal act to the board surface; on yes, report id + path like every other command.</li>
+  </ul>
+</section>
+
+<!-- ============ Open questions ============ -->
+<section class="sm-note sm-open-questions">
+  <h2>Open questions for the planner</h2>
+  <ul>
+    <li><strong>✅ RESOLVED — Option A (chip) confirmed by the user (2026-06-10).</strong> Architecture open question #1 asked for options; Screen 2 mocks both and recommends the chip. Accepted: the only new UI primitives are <code>.cell-stack</code>, <code>.chip-interview</code>, and <code>.badge--interview</code> — all derived from existing tokens, no new colors or radii beyond the chip's <code>999px</code> pill radius (precedent: <code>--radius-full</code> is already referenced by <code>.status-pill--on::before</code> in styles.css). Screen 2's Option B (stacked sub-card) is rejected.</li>
+    <li><strong>Chip metadata:</strong> mocked as "Interview · vN". Is the version worth the pixels, or should the chip be just "Interview"? Lean: keep vN — it is the only place the update-in-place re-interview behavior is visible on the board.</li>
+    <li><strong>✅ RESOLVED — hiding Gate? confirmed by the user (2026-06-10).</strong> The panel removes Approve/Edit <em>and</em> the "Gate?" ghost button for interviews (a gate answer is meaningless for a status-less doc); only Save and close remain, as mocked.</li>
+    <li><strong>Row 2 empty-cell pairing:</strong> chip-below-generate is mocked as the interview-first state. Alternative considered and rejected: putting the chip <em>inside</em> the empty card — it would make the generate affordance ambiguous to click.</li>
+    <li><strong>Token note:</strong> these mockups use the system font fallbacks since the file is self-contained; the real UI self-hosts Hanken Grotesk / Inter / Geist Mono via <code>fonts.css</code>. No DESIGN.md token was missing for this feature.</li>
+  </ul>
+</section>
+
+</body>
+</html>

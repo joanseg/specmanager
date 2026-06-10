@@ -2,7 +2,7 @@
 id: prd-redesign-001
 featureId: feat-redesign
 stage: prd
-status: approved
+status: draft
 stale: false
 title: Redesign PRD
 dependsOn: []
@@ -10,7 +10,7 @@ basedOn: {}
 generatedBy: human
 version: 2
 createdAt: '2026-05-28T11:26:54.969Z'
-updatedAt: '2026-05-28T11:39:31.106Z'
+updatedAt: '2026-06-10T12:40:51.217Z'
 ---
 > Status: draft · awaiting human review and approval in the board UI.
 

@@ -1,0 +1,394 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-interview-command",
+      "title": "Scaffold commands/specmanager-interview.md: frontmatter, feature resolve/create, existing-interview detection, stubbed persistence",
+      "status": "done",
+      "phase": "chat",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "ba342d9"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-interview.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-10T13:17:22.651Z",
+      "updatedAt": "2026-06-10T13:25:28.220Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-interview-command",
+      "title": "Write the interview protocol: opening turn, one-question loop, plan diffs, exit handling, synthesis format",
+      "status": "done",
+      "phase": "chat",
+      "complexity": 3,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "ad41c11"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-interview.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-10T13:17:28.369Z",
+      "updatedAt": "2026-06-10T13:26:12.848Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-interview-command",
+      "title": "Embed the office-hours forcing-question method with mode selection and mid-interview switching (credited to gstack office-hours)",
+      "status": "done",
+      "phase": "chat",
+      "complexity": 2,
+      "dependsOn": [
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [
+          "cc86ca5"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-interview.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-10T13:17:34.132Z",
+      "updatedAt": "2026-06-10T13:26:57.757Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-interview-command",
+      "title": "Validate and reinstall the plugin for live testing (claude plugin validate, marketplace update, reload)",
+      "status": "done",
+      "phase": "chat",
+      "complexity": 1,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [
+          "cc86ca5"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-interview.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-10T13:17:39.354Z",
+      "updatedAt": "2026-06-10T13:29:31.351Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-interview-command",
+      "title": "Live dogfood sessions: run real multi-turn interviews (startup + builder mode) and record the go/no-go on conversation quality",
+      "status": "done",
+      "phase": "chat",
+      "complexity": 3,
+      "dependsOn": [
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [
+          "cc86ca5"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-interview.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-10T13:17:46.182Z",
+      "updatedAt": "2026-06-10T14:08:00.644Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-interview-command",
+      "title": "core/types.ts: add DOC_KIND enum and optional kind on DocFrontmatterSchema",
+      "status": "done",
+      "phase": "complete",
+      "complexity": 1,
+      "dependsOn": [
+        "task-005"
+      ],
+      "artifacts": {
+        "commits": [
+          "dee5a7d"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/types.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-10T13:17:52.849Z",
+      "updatedAt": "2026-06-10T14:19:50.047Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-interview-command",
+      "title": "core/documents.ts: kind on CreateDocInput, prd-only validation, interview.md default filename, frontmatter stamping",
+      "status": "done",
+      "phase": "complete",
+      "complexity": 2,
+      "dependsOn": [
+        "task-006"
+      ],
+      "artifacts": {
+        "commits": [
+          "f2e15da"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/documents.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-10T13:17:58.087Z",
+      "updatedAt": "2026-06-10T14:21:13.284Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-interview-command",
+      "title": "core/dependencies.ts: checkGate skips kind interview docs in prior-stage lookup and emptiness check",
+      "status": "done",
+      "phase": "complete",
+      "complexity": 2,
+      "dependsOn": [
+        "task-006"
+      ],
+      "artifacts": {
+        "commits": [
+          "4d483e7"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/dependencies.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-10T13:18:03.188Z",
+      "updatedAt": "2026-06-10T14:22:43.096Z"
+    },
+    {
+      "id": "task-009",
+      "featureId": "feat-interview-command",
+      "title": "core/manifest.ts kind passthrough + core/claude-md.ts: currentStageLabel skips interviews, Commands line gains /specmanager-interview",
+      "status": "done",
+      "phase": "complete",
+      "complexity": 2,
+      "dependsOn": [
+        "task-006"
+      ],
+      "artifacts": {
+        "commits": [
+          "608455b"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/manifest.ts",
+          "plugins/specmanager/server/src/core/claude-md.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-10T13:18:08.894Z",
+      "updatedAt": "2026-06-10T14:24:17.084Z"
+    },
+    {
+      "id": "task-010",
+      "featureId": "feat-interview-command",
+      "title": "mcp.ts: create_document inputSchema gains kind + description sentence",
+      "status": "done",
+      "phase": "complete",
+      "complexity": 1,
+      "dependsOn": [
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [
+          "cd0fd47"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/mcp.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-10T13:18:14.528Z",
+      "updatedAt": "2026-06-10T14:25:33.536Z"
+    },
+    {
+      "id": "task-011",
+      "featureId": "feat-interview-command",
+      "title": "UI types.ts + App.tsx: findDoc interview exclusion, findInterview, .cell-stack + .chip-interview chip in the prd Cell (design Option A)",
+      "status": "done",
+      "phase": "complete",
+      "complexity": 3,
+      "dependsOn": [
+        "task-009"
+      ],
+      "artifacts": {
+        "commits": [
+          "d6f588f"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/types.ts",
+          "plugins/specmanager/ui/src/App.tsx",
+          "plugins/specmanager/ui/src/styles.css"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-10T13:18:24.150Z",
+      "updatedAt": "2026-06-10T14:27:53.903Z"
+    },
+    {
+      "id": "task-012",
+      "featureId": "feat-interview-command",
+      "title": "DocPanel.tsx: neutral .badge--interview tag; hide Approve/Edit/Gate? for interviews (Save + close only)",
+      "status": "done",
+      "phase": "complete",
+      "complexity": 2,
+      "dependsOn": [
+        "task-011"
+      ],
+      "artifacts": {
+        "commits": [
+          "c9f3f18"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/types.ts",
+          "plugins/specmanager/ui/src/DocPanel.tsx"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-10T13:18:29.817Z",
+      "updatedAt": "2026-06-10T14:29:50.215Z"
+    },
+    {
+      "id": "task-013",
+      "featureId": "feat-interview-command",
+      "title": "Prompt updates: agents/prd-writer.md required-if-present interview grounding; commands/specmanager-prd.md duplicate check ignores interviews",
+      "status": "done",
+      "phase": "complete",
+      "complexity": 2,
+      "dependsOn": [
+        "task-005"
+      ],
+      "artifacts": {
+        "commits": [
+          "1298053"
+        ],
+        "files": [
+          "plugins/specmanager/agents/prd-writer.md",
+          "plugins/specmanager/commands/specmanager-prd.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-10T13:18:38.019Z",
+      "updatedAt": "2026-06-10T14:30:41.032Z"
+    },
+    {
+      "id": "task-014",
+      "featureId": "feat-interview-command",
+      "title": "commands/specmanager-interview.md: replace stub with real persistence (create / update with baseVersion / discard) + sync_claude_md",
+      "status": "done",
+      "phase": "complete",
+      "complexity": 2,
+      "dependsOn": [
+        "task-010"
+      ],
+      "artifacts": {
+        "commits": [
+          "05bcfb0"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-interview.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-10T13:18:43.314Z",
+      "updatedAt": "2026-06-10T14:31:45.493Z"
+    },
+    {
+      "id": "task-015",
+      "featureId": "feat-interview-command",
+      "title": "Extend server/src/selftest.ts: interview creation defaults, non-prd rejection, gate exclusion, stage label unaffected, update version bump, manifest rebuild keeps kind",
+      "status": "done",
+      "phase": "complete",
+      "complexity": 3,
+      "dependsOn": [
+        "task-007",
+        "task-008",
+        "task-009"
+      ],
+      "artifacts": {
+        "commits": [
+          "b872ba2"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-10T13:18:49.073Z",
+      "updatedAt": "2026-06-10T14:33:47.402Z"
+    },
+    {
+      "id": "task-016",
+      "featureId": "feat-interview-command",
+      "title": "README + docs/architecture-and-spec.md command-list sweep: add /specmanager-interview (optional, pre-PRD)",
+      "status": "done",
+      "phase": "complete",
+      "complexity": 1,
+      "dependsOn": [
+        "task-014"
+      ],
+      "artifacts": {
+        "commits": [
+          "3cdd05b"
+        ],
+        "files": [
+          "README.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-10T13:18:55.112Z",
+      "updatedAt": "2026-06-10T14:35:07.427Z"
+    },
+    {
+      "id": "task-017",
+      "featureId": "feat-interview-command",
+      "title": "Rebuild server/dist + ui/dist, run selftest suite + smoke-mcp, claude plugin validate, end-to-end board check",
+      "status": "done",
+      "phase": "complete",
+      "complexity": 2,
+      "dependsOn": [
+        "task-012",
+        "task-013",
+        "task-014",
+        "task-015",
+        "task-016"
+      ],
+      "artifacts": {
+        "commits": [
+          "96aae7f"
+        ],
+        "files": [
+          "plugins/specmanager/server/dist/mcp.js",
+          "plugins/specmanager/server/dist/core/types.js",
+          "plugins/specmanager/server/dist/core/documents.js",
+          "plugins/specmanager/server/dist/core/dependencies.js",
+          "plugins/specmanager/server/dist/core/manifest.js",
+          "plugins/specmanager/server/dist/core/claude-md.js",
+          "plugins/specmanager/server/dist/selftest.js",
+          "plugins/specmanager/ui/dist/index.html"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-10T13:19:00.669Z",
+      "updatedAt": "2026-06-10T14:38:15.325Z"
+    }
+  ]
+}

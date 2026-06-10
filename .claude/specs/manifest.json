@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-03T08:56:16.304Z",
+  "generatedAt": "2026-06-10T14:42:23.455Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -10,7 +10,7 @@
         {
           "id": "prd-redesign-001",
           "stage": "prd",
-          "status": "approved",
+          "status": "draft",
           "stale": false,
           "version": 2,
           "title": "Redesign PRD"
@@ -19,7 +19,7 @@
           "id": "arch-redesign-001",
           "stage": "architecture",
           "status": "approved",
-          "stale": false,
+          "stale": true,
           "version": 4,
           "title": "Redesign architecture"
         },
@@ -27,7 +27,7 @@
           "id": "plan-redesign-001",
           "stage": "plan",
           "status": "approved",
-          "stale": false,
+          "stale": true,
           "version": 7,
           "title": "Redesign plan"
         },
@@ -35,7 +35,7 @@
           "id": "wt-redesign-001",
           "stage": "walkthrough",
           "status": "approved",
-          "stale": false,
+          "stale": true,
           "version": 2,
           "title": "Redesign — Phase A walkthrough",
           "phase": "A"
@@ -62,7 +62,7 @@
           "id": "wt-redesign-004",
           "stage": "walkthrough",
           "status": "approved",
-          "stale": false,
+          "stale": true,
           "version": 1,
           "title": "Redesign — Phase D walkthrough",
           "phase": "D"
@@ -84,7 +84,7 @@
           "status": "done",
           "walkthroughId": "wt-redesign-001",
           "walkthroughStatus": "approved",
-          "walkthroughStale": false
+          "walkthroughStale": true
         },
         {
           "name": "B",
@@ -117,7 +117,7 @@
           "status": "done",
           "walkthroughId": "wt-redesign-004",
           "walkthroughStatus": "approved",
-          "walkthroughStale": false
+          "walkthroughStale": true
         }
       ]
     },
@@ -627,6 +627,94 @@
           "status": "done",
           "walkthroughId": "wt-post-phase-doc-sync-claude-md-design-md-009",
           "walkthroughStatus": "approved",
+          "walkthroughStale": false
+        }
+      ]
+    },
+    {
+      "id": "feat-interview-command",
+      "slug": "interview-command",
+      "title": "Interview command",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-interview-command-010",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Interview command PRD"
+        },
+        {
+          "id": "arch-interview-command-009",
+          "stage": "architecture",
+          "status": "approved",
+          "stale": false,
+          "version": 3,
+          "title": "Interview command architecture"
+        },
+        {
+          "id": "design-interview-command-003",
+          "stage": "design",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Interview command mockups"
+        },
+        {
+          "id": "plan-interview-command-009",
+          "stage": "plan",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Interview command plan"
+        },
+        {
+          "id": "wt-interview-command-010",
+          "stage": "walkthrough",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Interview command — Phase chat walkthrough",
+          "phase": "chat"
+        },
+        {
+          "id": "wt-interview-command-011",
+          "stage": "walkthrough",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Interview command — Phase complete walkthrough",
+          "phase": "complete"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 17,
+        "total": 17
+      },
+      "phases": [
+        {
+          "name": "chat",
+          "order": 0,
+          "taskCount": 5,
+          "doneCount": 5,
+          "inProgressCount": 0,
+          "status": "done",
+          "walkthroughId": "wt-interview-command-010",
+          "walkthroughStatus": "approved",
+          "walkthroughStale": false
+        },
+        {
+          "name": "complete",
+          "order": 1,
+          "taskCount": 12,
+          "doneCount": 12,
+          "inProgressCount": 0,
+          "status": "done",
+          "walkthroughId": "wt-interview-command-011",
+          "walkthroughStatus": "draft",
           "walkthroughStale": false
         }
       ]

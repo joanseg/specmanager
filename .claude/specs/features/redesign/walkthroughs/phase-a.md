@@ -3,7 +3,7 @@ id: wt-redesign-001
 featureId: feat-redesign
 stage: walkthrough
 status: approved
-stale: false
+stale: true
 title: Redesign — Phase A walkthrough
 dependsOn:
   - plan-redesign-001
@@ -13,7 +13,7 @@ generatedBy: human
 version: 2
 phase: A
 createdAt: '2026-05-28T13:16:30.302Z'
-updatedAt: '2026-06-01T09:29:02.117Z'
+updatedAt: '2026-06-10T12:40:51.254Z'
 ---
 # Redesign — Phase A walkthrough 
 
