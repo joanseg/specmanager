@@ -50,9 +50,13 @@ function notesFor(f: {
 
 function currentStageLabel(f: {
   currentStage: string;
-  documents: Array<{ stage: string; status: string }>;
+  documents: Array<{ stage: string; status: string; kind?: string }>;
 }): string {
-  const doc = f.documents.find((d) => d.stage === f.currentStage);
+  // Skip interview artifacts: readdir puts interview.md before prd.md, so
+  // without this the interview's status would shadow the PRD's in the table.
+  const doc = f.documents.find(
+    (d) => d.stage === f.currentStage && d.kind !== "interview"
+  );
   if (!doc) return stageLabel(f.currentStage);
   return `${stageLabel(f.currentStage)} (${doc.status})`;
 }
@@ -83,7 +87,7 @@ export async function renderBlock(root = projectRoot()): Promise<string> {
   lines.push("");
   lines.push("**Commands:**");
   lines.push(
-    "`/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board`"
+    "`/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)"
   );
   lines.push("");
   lines.push(`_Last synced: ${m.generatedAt}_`);

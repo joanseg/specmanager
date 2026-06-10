@@ -27,6 +27,7 @@ export interface Manifest {
       version: number;
       title: string;
       phase?: string;
+      kind?: string;
     }>;
     tasks: { todo: number; in_progress: number; done: number; total: number };
     phases: PhaseManifestEntry[];
@@ -78,6 +79,7 @@ export async function buildManifest(root = projectRoot()): Promise<Manifest> {
         version: d.frontmatter.version,
         title: d.frontmatter.title,
         ...(d.frontmatter.phase ? { phase: d.frontmatter.phase } : {}),
+        ...(d.frontmatter.kind ? { kind: d.frontmatter.kind } : {}),
       })),
       tasks: counts,
       phases,
