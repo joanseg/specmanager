@@ -303,6 +303,67 @@ html, body, #root {
 }
 .badge--meta     { opacity: 0.6; }
 .badge--design   { color: var(--secondary); }
+/* Neutral interview tag: outline ghost, deliberately NOT on the draft/approved
+ * status hues — "a label, not a state" (design Screen 3). */
+.badge--interview {
+  background: transparent;
+  border: 1px solid var(--outline-variant);
+  color: var(--on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Interview chip (design Option A) ----------------------------------
+ * Column wrapper for the prd cell so the chip can sit beneath the card
+ * without disturbing the 5.5rem card cap. The cell is align-items:
+ * flex-start, so the taller stack pins to the top of the row track. */
+.cell-stack {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+.cell-stack > .card,
+.cell-stack > .card--button {
+  /* Mirrors .row__cell > .card: same pinned height, border-box across both
+   * the plain .card and the `all: unset` button variant. */
+  box-sizing: border-box;
+  height: 5.5rem;
+}
+/* Pill under the PRD card / generate affordance. The hollow --primary ring
+ * inverts the status pills' glowing filled dot: filled = lifecycle status,
+ * hollow = reference material with no status. */
+.chip-interview {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  align-self: flex-start;
+  margin-top: 0.35rem;
+  padding: 0.24rem 0.6rem;
+  background: var(--surface-container-low);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  transition: border-color 0.14s ease, color 0.14s ease;
+}
+.chip-interview .ring {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--primary);
+  background: transparent;
+  flex-shrink: 0;
+}
+.chip-interview .meta { opacity: 0.55; }
+.chip-interview:hover {
+  border-color: var(--card-border-hover);
+  color: var(--on-surface);
+}
+.chip-interview:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
 
 /* BUILD region — reserved right-hand track per row (Architecture §6, A).
  * A read-only progress glance that opens the existing BuildPanel overlay. */

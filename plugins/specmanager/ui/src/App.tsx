@@ -17,7 +17,14 @@ const STAGE_LABEL: Record<Column, string> = {
 };
 
 function findDoc(row: FeatureRow, stage: Stage): DocCard | undefined {
-  return row.documents.find((d) => d.stage === stage);
+  // Interviews live in the prd stage but are reference material, not the
+  // stage's primary document — skipping them keeps the PRD column's card the
+  // PRD and keeps priorStageApproved from reading the interview's status.
+  return row.documents.find((d) => d.stage === stage && d.kind !== "interview");
+}
+
+function findInterview(row: FeatureRow): DocCard | undefined {
+  return row.documents.find((d) => d.kind === "interview");
 }
 
 function priorStageApproved(row: FeatureRow, stage: Stage): boolean {
@@ -338,6 +345,27 @@ function Cell({
   if (column === "walkthrough") return <WalkthroughCell row={row} onOpenDoc={onOpenDoc} />;
   const stage: Stage = column;
   const doc = findDoc(row, stage);
+  // PRD cell with an interview attached (design Option A): stack the normal
+  // card (or the generate affordance) above the Interview chip.
+  if (stage === "prd") {
+    const interview = findInterview(row);
+    if (interview) {
+      return (
+        <div className="cell-stack">
+          {doc ? <DocCellView doc={doc} onOpen={onOpenDoc} /> : <EmptyCell stage="prd" ready />}
+          <button
+            type="button"
+            className="chip-interview"
+            onClick={() => onOpenDoc(interview.id)}
+            title={interview.id}
+          >
+            <span className="ring" />
+            Interview <span className="meta">· v{interview.version}</span>
+          </button>
+        </div>
+      );
+    }
+  }
   if (doc) return <DocCellView doc={doc} onOpen={onOpenDoc} />;
   // Design is optional — never show a hard "locked" cell; show the optional affordance.
   if (stage === "design") {

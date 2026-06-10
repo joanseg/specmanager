@@ -16,6 +16,9 @@ export interface DocCard {
   version: number;
   title: string;
   phase?: string;
+  // "interview" = pre-PRD interview artifact in the prd stage; rendered as a
+  // chip beneath the PRD card, never as the column's primary card.
+  kind?: "interview";
 }
 
 export interface DocFull {
