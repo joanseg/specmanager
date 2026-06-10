@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { DEFAULT_PHASE, DocFrontmatter, DocumentRecord, Stage } from "./types.js";
+import { DEFAULT_PHASE, DocFrontmatter, DocKind, DocumentRecord, Stage } from "./types.js";
 import { projectRoot, stageDir, STAGES } from "./paths.js";
 import { docId, nowIso } from "./ids.js";
 import { readDoc, writeDoc } from "./frontmatter.js";
@@ -163,6 +163,9 @@ export interface CreateDocInput {
   dependsOn?: string[];
   basedOn?: Record<string, number>;
   phase?: string;
+  // Only valid with stage "prd"; filename defaults to "interview.md".
+  // Immutable after creation — writeDocument never touches it.
+  kind?: DocKind;
 }
 
 export async function createDocument(
@@ -171,11 +174,19 @@ export async function createDocument(
 ): Promise<DocumentRecord> {
   const feature = await findFeatureById(input.featureId, root);
   if (!feature) throw new Error(`feature not found: ${input.featureId}`);
+  if (input.kind === "interview" && input.stage !== "prd") {
+    throw new Error(
+      `kind "interview" requires stage "prd" (got stage "${input.stage}")`
+    );
+  }
   const dir = stageDir(feature.slug, input.stage, root);
   await fs.mkdir(dir, { recursive: true });
   const phase = input.stage === "walkthrough" ? input.phase ?? DEFAULT_PHASE : undefined;
   const filename =
-    input.filename ?? defaultFilename(input.stage, feature.slug, input.title, phase);
+    input.filename ??
+    (input.kind === "interview"
+      ? "interview.md"
+      : defaultFilename(input.stage, feature.slug, input.title, phase));
   const filePath = path.join(dir, filename);
   const exists = await fs
     .stat(filePath)
@@ -196,6 +207,7 @@ export async function createDocument(
     generatedBy: input.generatedBy ?? "human",
     version: 1,
     ...(phase !== undefined ? { phase } : {}),
+    ...(input.kind !== undefined ? { kind: input.kind } : {}),
     createdAt: now,
     updatedAt: now,
   };
