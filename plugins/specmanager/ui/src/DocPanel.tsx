@@ -109,7 +109,10 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
   }, [onClose]);
 
   const dirty = useMemo(() => doc !== null && body !== doc.body, [doc, body]);
-  const readOnly = doc?.status === "approved";
+  // Interviews have no lifecycle: stay editable forever (status is frozen at
+  // draft by contract; an accidental API approve must not lock the editor).
+  const isInterview = doc?.kind === "interview";
+  const readOnly = doc?.status === "approved" && !isInterview;
   const isDesign = doc?.stage === "design";
 
   const reload = async (): Promise<void> => {
@@ -202,7 +205,11 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
               </span>
             </div>
             <div className="panel__badges">
-              <span className={`badge badge--${doc.status}`}>{doc.status}</span>
+              {isInterview ? (
+                <span className="badge badge--interview">interview</span>
+              ) : (
+                <span className={`badge badge--${doc.status}`}>{doc.status}</span>
+              )}
               {doc.stale && <span className="badge badge--stale">⚠ stale</span>}
               <span className="badge badge--meta" title={doc.id}>{doc.id}</span>
               <span className="badge badge--meta">{doc.generatedBy}</span>
@@ -216,27 +223,33 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
             >
               {save.kind === "saving" ? "Saving…" : dirty ? "Save" : "Saved"}
             </button>
-            {doc.status === "draft" ? (
-              <button
-                className="btn btn--primary"
-                disabled={dirty}
-                title={dirty ? "save your changes first" : ""}
-                onClick={onApprove}
-              >
-                Approve
-              </button>
-            ) : (
-              <button
-                className="btn"
-                onClick={onReopen}
-                title="Editing an approved doc reopens it as a draft"
-              >
-                Edit
-              </button>
+            {/* Interviews have no approval lifecycle and no gate — Save +
+                close only (design Screen 3, resolved decisions). */}
+            {!isInterview && (
+              <>
+                {doc.status === "draft" ? (
+                  <button
+                    className="btn btn--primary"
+                    disabled={dirty}
+                    title={dirty ? "save your changes first" : ""}
+                    onClick={onApprove}
+                  >
+                    Approve
+                  </button>
+                ) : (
+                  <button
+                    className="btn"
+                    onClick={onReopen}
+                    title="Editing an approved doc reopens it as a draft"
+                  >
+                    Edit
+                  </button>
+                )}
+                <button className="btn btn--ghost" onClick={onShowGate}>
+                  Gate?
+                </button>
+              </>
             )}
-            <button className="btn btn--ghost" onClick={onShowGate}>
-              Gate?
-            </button>
             <button className="panel__close" onClick={onClose}>×</button>
           </div>
         </header>

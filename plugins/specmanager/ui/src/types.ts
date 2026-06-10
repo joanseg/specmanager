@@ -27,6 +27,7 @@ export interface DocFull {
   stage: Stage;
   status: DocStatus;
   stale: boolean;
+  kind?: "interview";
   title: string;
   body: string;
   version: number;
