@@ -43,6 +43,7 @@ That's it — no build step. The compiled server and UI are committed, and a `Se
 Each **feature** is a row on the board that flows left to right through the lifecycle. You drive it with slash commands; Claude does the drafting via dedicated subagents, and you approve each stage in the board before the next unlocks.
 
 ```text
+/specmanager-interview "Checkout corridor" # OPTIONAL pre-PRD interview — extracts & stress-tests the idea
 /specmanager-prd "Checkout corridor"       # create the feature + draft its PRD → approve in board
 /specmanager-architecture   <feature>       # draft the Architecture   → approve in board
 /specmanager-design         <feature>       # OPTIONAL high-fi HTML mockups → approve
@@ -54,6 +55,8 @@ Each **feature** is a row on the board that flows left to right through the life
 ```
 
 `<feature>` is the feature's slug or id (reported by `/specmanager-prd` when it creates the feature).
+
+`/specmanager-interview` is optional: a multi-turn interview in your Claude session that pulls the idea out of your head and challenges it (using the [gstack office-hours](https://github.com/garrytan/gstack/tree/main/office-hours) forcing-question method) before any PRD exists. The result can be stored as `interview.md` in the feature's PRD folder — shown as a chip on the board, never gating anything — and the PRD drafter grounds itself in it when present.
 
 ### Stages and gates
 
@@ -144,7 +147,7 @@ Then open CLaude Code sesion and reconnect mcp:
 
 **Tech stack:** Node 20+, TypeScript, MCP stdio transport, Fastify + `ws`, `chokidar`, `gray-matter`, `zod`, React 18 + Vite, CodeMirror 6. One shared `@specmanager/core` library backs both the MCP server (Claude's interface) and the board server (the UI's interface); one MCP process boots the board.
 
-**Repo layout:** the marketplace manifest is at the repo root (`.claude-plugin/marketplace.json`); the plugin itself lives in `plugins/specmanager/`. Architecture and design docs are under `docs/` — start with `docs/architecture-and-spec.md`.
+**Repo layout:** the marketplace manifest is at the repo root (`.claude-plugin/marketplace.json`); the plugin itself lives in `plugins/specmanager/`. Design docs are under `docs/` (the original full spec is archived at `docs/temp/original-specs/architecture-and-spec.md`).
 
 ---
 
