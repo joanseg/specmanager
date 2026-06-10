@@ -24,9 +24,10 @@ Keep it tight. A draft of 200–500 lines is normal; longer is worse.
 ## How to write it
 
 1. Call `list_features` to confirm the feature exists and read its title.
-2. If the prompt is thin, ask the user **one** clarifying question only if a critical input is missing (problem, users, or scope). Otherwise infer and mark assumptions in the draft.
-3. Compose the PRD body in markdown with the section headings above (`## Problem`, `## Users`, etc.). Do **not** add a top-level `# title` line — the frontmatter carries it.
-4. Persist with the `create_document` MCP tool:
+2. Call `list_documents({ featureId, stage: "prd" })`. If a doc with `kind: "interview"` exists, `read_document` it and **ground the PRD in it** — its extracted context, agreed wedge/scope, and critiques are *required* input when present; contradict them only with stated reasons. Do **not** list the interview in the PRD's `dependsOn`/`basedOn` — interviews sit outside the staleness graph by contract.
+3. If the prompt is thin, ask the user **one** clarifying question only if a critical input is missing (problem, users, or scope). Otherwise infer and mark assumptions in the draft.
+4. Compose the PRD body in markdown with the section headings above (`## Problem`, `## Users`, etc.). Do **not** add a top-level `# title` line — the frontmatter carries it.
+5. Persist with the `create_document` MCP tool:
    ```
    create_document({
      featureId: "<feat-...>",
@@ -36,7 +37,7 @@ Keep it tight. A draft of 200–500 lines is normal; longer is worse.
      generatedBy: "agent"
    })
    ```
-5. Report the new document id and file path back to the user.
+6. Report the new document id and file path back to the user.
 
 ## Don't
 - Don't design the solution — that's the architect's job.

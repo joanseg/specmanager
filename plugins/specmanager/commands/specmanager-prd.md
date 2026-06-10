@@ -19,9 +19,12 @@ existing feature, the PRD is drafted for that feature instead.
      Report the new `id`, `slug`, and folder path.
    - If no argument was given, ask the user for one short title and stop.
 2. **Check for an existing draft.** Call
-   `list_documents({ featureId, stage: "prd" })`. If a PRD already exists, ask
-   whether to (a) iterate on it via the panel UI or (b) start over (the user
-   must delete it manually). Do **not** create a duplicate.
+   `list_documents({ featureId, stage: "prd" })`. **Ignore docs with
+   `kind: "interview"`** — an interview is pre-PRD material, not a PRD; an
+   interview-first flow must not be reported as "a PRD already exists". If a
+   non-interview PRD already exists, ask whether to (a) iterate on it via the
+   panel UI or (b) start over (the user must delete it manually). Do **not**
+   create a duplicate.
 3. **Invoke the subagent.** Use the `Task` tool with `subagent_type: "prd-writer"`
    and a prompt that includes:
    - The feature id and title.
