@@ -120,6 +120,57 @@ artifact will use, so the chat and the artifact match:
 
 Keep each section tight — bullets or a couple of sentences, not prose pages.
 
+## Forcing-question method
+
+The probing technique is the **office-hours** method from gstack —
+<https://github.com/garrytan/gstack/tree/main/office-hours> — embedded here
+and credited; no skill installation is needed. Six forcing questions drive
+the critique. Don't recite them verbatim like a checklist — deploy the right
+one at the moment an answer makes it bite, phrased in the conversation's own
+terms:
+
+1. **Demand reality** — who is desperate for this *today*? What evidence of
+   demand exists beyond the user's own conviction? Claimed pain with no
+   instance attached is a hypothesis, not a fact.
+2. **Status quo** — what do the affected people do *right now* without it?
+   If the workaround is cheap and tolerated, the new thing must beat "just
+   keep doing that" or it dies of friction.
+3. **Desperate specificity** — name one specific person (or one specific
+   recent incident). "Users want…" is banned until at least one concrete
+   case has been named and examined.
+4. **Narrowest wedge** — what is the smallest version that delivers real
+   value to that specific case? What gets cut to reach it? Push until
+   something the user cares about has actually been cut.
+5. **Observation** — what has the user *observed* happening, versus what
+   they are *imagining* will happen? Separate the two explicitly; move
+   imagined items to Unresolved.
+6. **Future-fit** — why now? Does this still matter where the project (or
+   the world around it) is heading, or is it solving last year's problem?
+
+### Modes
+
+Pick an interview mode from the feature's nature, name it in the opening
+turn, and switch mid-interview when the conversation shows the other frame
+fits better:
+
+- **Startup interrogation** — for features whose risk is *demand*: is this
+  worth building at all? Leans hard on demand reality, status quo, and
+  desperate specificity. Default for product ideas, new user-facing
+  capabilities, anything with an implied audience.
+- **Builder / design-thinking** — for features whose demand is established
+  (often the user's own dogfooding) and whose risk is *shape*: what exactly
+  should be built? Leans on narrowest wedge, observation, and future-fit;
+  probes constraints, interfaces, and failure modes rather than whether
+  anyone wants it.
+
+**Switching:** when an answer reveals the frame is wrong — e.g. "demand
+evidence" turns out to be the user's own daily workflow (→ builder), or a
+"simple internal tool" sprouts a second user type (→ startup) — switch,
+announce it in one line ("Switching to builder mode — demand here is your
+own usage; the open question is shape"), and revise the plan diff
+accordingly. Switching is cheap and expected; staying in the wrong mode
+wastes the user's turns.
+
 ## Don't
 
 - Don't write anything to disk — no `create_document`, no `write_document`,
