@@ -39,7 +39,9 @@ function notesFor(f) {
     return "—";
 }
 function currentStageLabel(f) {
-    const doc = f.documents.find((d) => d.stage === f.currentStage);
+    // Skip interview artifacts: readdir puts interview.md before prd.md, so
+    // without this the interview's status would shadow the PRD's in the table.
+    const doc = f.documents.find((d) => d.stage === f.currentStage && d.kind !== "interview");
     if (!doc)
         return stageLabel(f.currentStage);
     return `${stageLabel(f.currentStage)} (${doc.status})`;
@@ -66,7 +68,7 @@ export async function renderBlock(root = projectRoot()) {
     lines.push("**Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation.");
     lines.push("");
     lines.push("**Commands:**");
-    lines.push("`/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board`");
+    lines.push("`/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)");
     lines.push("");
     lines.push(`_Last synced: ${m.generatedAt}_`);
     lines.push(END);

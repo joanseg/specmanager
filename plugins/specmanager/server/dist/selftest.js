@@ -8,7 +8,7 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { initProject, createFeature, createDocument, setStatus, readDocumentById, listStale, syncClaudeMd, syncDesignMd, scanUiSources, sanitizeDesignBriefBody, } from "./core/index.js";
+import { initProject, createFeature, createDocument, writeDocument, setStatus, readDocumentById, checkGate, listStale, syncClaudeMd, syncDesignMd, scanUiSources, sanitizeDesignBriefBody, manifestPath, writeManifest, } from "./core/index.js";
 function assert(condition, message) {
     if (!condition) {
         throw new Error(`FAIL: ${message}`);
@@ -151,6 +151,75 @@ async function main() {
     const { buildManifest } = await import("./core/index.js");
     const manifestAfterRogue = await buildManifest(root);
     assert(manifestAfterRogue.features.length >= 1, "buildManifest survives a frontmatter-less doc file (skips it, no throw)");
+    // 11. Interview artifacts (kind: "interview") — pre-PRD interview stored in
+    // the prd stage, excluded from gating, stage labels, and never load-bearing.
+    const ivFeature = await createFeature("Session timeline", root);
+    // 11.1 kind "interview" is prd-only — any other stage is rejected.
+    let interviewRejected = false;
+    try {
+        await createDocument({
+            featureId: ivFeature.id,
+            stage: "architecture",
+            title: "bad interview",
+            kind: "interview",
+        }, root);
+    }
+    catch {
+        interviewRejected = true;
+    }
+    assert(interviewRejected, "kind interview with non-prd stage is rejected");
+    // 11.2 Creation defaults: interview.md filename, kind stamped, draft, no deps.
+    const interview = await createDocument({
+        featureId: ivFeature.id,
+        stage: "prd",
+        kind: "interview",
+        title: "Session timeline interview",
+        body: "## Extracted\n\n- post-build change blindness",
+        generatedBy: "agent",
+        dependsOn: [],
+        basedOn: {},
+    }, root);
+    assert(interview.frontmatter.kind === "interview", "interview kind stamped in frontmatter");
+    assert(interview.filePath.endsWith("/prd/interview.md"), "interview lands at prd/interview.md by default");
+    assert(interview.frontmatter.status === "draft", "interview starts draft");
+    assert(interview.frontmatter.dependsOn.length === 0, "interview has no dependsOn");
+    // 11.3 Gate exclusion — the load-bearing rule. An approved interview must
+    // neither satisfy the "a prd doc exists" check nor open the Architecture gate.
+    await setStatus(interview.frontmatter.id, "approved", root);
+    const gateNoPrd = await checkGate(ivFeature.id, "architecture", root);
+    assert(gateNoPrd.ok === false, "approved interview alone does not open the architecture gate (no prd doc)");
+    const ivPrd = await createDocument({
+        featureId: ivFeature.id,
+        stage: "prd",
+        title: "Session timeline PRD",
+        body: "# PRD\n\nDraft.",
+    }, root);
+    const gateDraftPrd = await checkGate(ivFeature.id, "architecture", root);
+    assert(gateDraftPrd.ok === false &&
+        (gateDraftPrd.reason ?? "").includes("not approved"), "approved interview does not open the gate while the PRD is draft");
+    // 11.4 currentStageLabel skips the interview: readdir puts interview.md
+    // before prd.md, so without the filter the (approved) interview would shadow
+    // the draft PRD's status in the CLAUDE.md feature table.
+    await syncClaudeMd(root);
+    const claudeMd3 = await fs.readFile(path.join(root, "CLAUDE.md"), "utf8");
+    assert(claudeMd3.includes("| Session timeline | PRD (draft) |"), "CLAUDE.md stage label reflects the PRD, not the interview");
+    // 11.5 Re-interview updates in place with a version bump (optimistic concurrency).
+    const interviewV2 = await writeDocument({
+        id: interview.frontmatter.id,
+        body: "## Extracted\n\n- revised after re-interview",
+        baseVersion: interview.frontmatter.version,
+    }, root);
+    assert(interviewV2.frontmatter.version === interview.frontmatter.version + 1, "re-interview write bumps the interview version");
+    assert(interviewV2.frontmatter.kind === "interview", "kind survives writeDocument");
+    // 11.6 Manifest delete + rebuild preserves kind (frontmatter is authoritative).
+    await fs.rm(manifestPath(root), { force: true });
+    const rebuilt = await writeManifest(root);
+    const ivRow = rebuilt.features.find((f) => f.id === ivFeature.id);
+    assert(ivRow !== undefined, "rebuilt manifest contains the interview feature");
+    const ivEntry = ivRow.documents.find((d) => d.id === interview.frontmatter.id);
+    assert(ivEntry?.kind === "interview", "rebuilt manifest preserves kind on the interview");
+    const prdEntry = ivRow.documents.find((d) => d.id === ivPrd.frontmatter.id);
+    assert(prdEntry !== undefined && prdEntry.kind === undefined, "prd entry carries no kind");
     console.log("\nAll Phase 1 assertions passed.");
     console.log(`Inspect the tmp project at: ${root}`);
 }

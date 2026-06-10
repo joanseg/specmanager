@@ -147,10 +147,16 @@ export async function createDocument(input, root = projectRoot()) {
     const feature = await findFeatureById(input.featureId, root);
     if (!feature)
         throw new Error(`feature not found: ${input.featureId}`);
+    if (input.kind === "interview" && input.stage !== "prd") {
+        throw new Error(`kind "interview" requires stage "prd" (got stage "${input.stage}")`);
+    }
     const dir = stageDir(feature.slug, input.stage, root);
     await fs.mkdir(dir, { recursive: true });
     const phase = input.stage === "walkthrough" ? input.phase ?? DEFAULT_PHASE : undefined;
-    const filename = input.filename ?? defaultFilename(input.stage, feature.slug, input.title, phase);
+    const filename = input.filename ??
+        (input.kind === "interview"
+            ? "interview.md"
+            : defaultFilename(input.stage, feature.slug, input.title, phase));
     const filePath = path.join(dir, filename);
     const exists = await fs
         .stat(filePath)
@@ -172,6 +178,7 @@ export async function createDocument(input, root = projectRoot()) {
         generatedBy: input.generatedBy ?? "human",
         version: 1,
         ...(phase !== undefined ? { phase } : {}),
+        ...(input.kind !== undefined ? { kind: input.kind } : {}),
         createdAt: now,
         updatedAt: now,
     };

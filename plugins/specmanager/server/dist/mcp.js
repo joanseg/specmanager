@@ -4,7 +4,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { startBoardServer } from "./board-server.js";
 import { spawn } from "node:child_process";
-import { STAGE, DOC_STATUS, TASK_STATUS, TASK_COMPLEXITY, GENERATED_BY, events, initProject, listFeatures, createFeature, listDocuments, readDocumentById, createDocument, sanitizeDesignBriefBody, DESIGN_BRIEF_MAX_BYTES, writeDocument, setStatus, checkGate, listStale, linkDocuments, listTasks, createTask, updateTask, listPhases, getNextPhase, syncClaudeMd, syncDesignMd, writeManifest, } from "./core/index.js";
+import { STAGE, DOC_KIND, DOC_STATUS, TASK_STATUS, TASK_COMPLEXITY, GENERATED_BY, events, initProject, listFeatures, createFeature, listDocuments, readDocumentById, createDocument, sanitizeDesignBriefBody, DESIGN_BRIEF_MAX_BYTES, writeDocument, setStatus, checkGate, listStale, linkDocuments, listTasks, createTask, updateTask, listPhases, getNextPhase, syncClaudeMd, syncDesignMd, writeManifest, } from "./core/index.js";
 const PROJECT_DIR = process.env.SPECMANAGER_PROJECT_DIR ?? process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
 const BOARD_PORT = Number(process.env.SPECMANAGER_BOARD_PORT ?? 4317);
 function text(payload) {
@@ -63,7 +63,7 @@ server.registerTool("read_document", {
     }
 });
 server.registerTool("create_document", {
-    description: "Create a draft document in a feature+stage. For walkthrough docs, pass `phase` (e.g. \"Foundation\") so the manifest can link the doc to its phase; the filename is derived from `phase` (`phase-<name>.md`, or `feature.md` for `phase: \"final\"`).",
+    description: "Create a draft document in a feature+stage. For walkthrough docs, pass `phase` (e.g. \"Foundation\") so the manifest can link the doc to its phase; the filename is derived from `phase` (`phase-<name>.md`, or `feature.md` for `phase: \"final\"`). Pass `kind: \"interview\"` with stage `prd` to store a pre-PRD interview artifact; filename defaults to `interview.md`.",
     inputSchema: z.object({
         featureId: z.string(),
         stage: STAGE,
@@ -74,6 +74,7 @@ server.registerTool("create_document", {
         dependsOn: z.array(z.string()).optional(),
         basedOn: z.record(z.string(), z.number()).optional(),
         phase: z.string().optional(),
+        kind: DOC_KIND.optional(),
     }),
 }, async (input) => {
     try {

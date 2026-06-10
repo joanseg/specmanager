@@ -15,6 +15,10 @@ export const TASK_COMPLEXITY = z.union([
 export const MAX_TASK_COMPLEXITY = 3;
 export const DEFAULT_PHASE = "default";
 export const GENERATED_BY = z.enum(["agent", "human"]);
+// Discriminates non-lifecycle artifacts that live inside a stage folder.
+// "interview" = the optional pre-PRD interview stored in the prd stage;
+// excluded from gating, stage labels, and the board's primary stage card.
+export const DOC_KIND = z.enum(["interview"]);
 export const FeatureSchema = z.object({
     id: z.string(),
     slug: z.string(),
@@ -36,6 +40,9 @@ export const DocFrontmatterSchema = z.object({
     // Only meaningful for walkthrough docs; omitted on PRD/Architecture/Plan.
     // "default" = legacy per-feature walkthrough; "final" = the 7.C roll-up.
     phase: z.string().optional(),
+    // Only meaningful for prd-stage docs; absent everywhere else. "interview"
+    // marks the pre-PRD interview artifact (kind is immutable after creation).
+    kind: DOC_KIND.optional(),
     createdAt: z.string(),
     updatedAt: z.string(),
 });

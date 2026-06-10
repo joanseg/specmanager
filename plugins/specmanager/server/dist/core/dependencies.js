@@ -90,7 +90,11 @@ export async function checkGate(featureId, stage, rootOrOpts, optsArg) {
         return { ok: true };
     }
     const prior = PRIOR_STAGE[stage];
-    const docs = await listDocuments({ featureId, stage: prior }, resolvedRoot);
+    const allDocs = await listDocuments({ featureId, stage: prior }, resolvedRoot);
+    // Interviews live inside the prd stage but are not lifecycle documents:
+    // an approved interview must never open the Architecture/Design gates,
+    // and an interview alone must not satisfy the "a prd doc exists" check.
+    const docs = allDocs.filter((d) => d.frontmatter.kind !== "interview");
     if (docs.length === 0) {
         return { ok: false, reason: `no ${prior} document for feature ${featureId}` };
     }

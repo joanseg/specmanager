@@ -49,6 +49,7 @@ export async function buildManifest(root = projectRoot()) {
                 version: d.frontmatter.version,
                 title: d.frontmatter.title,
                 ...(d.frontmatter.phase ? { phase: d.frontmatter.phase } : {}),
+                ...(d.frontmatter.kind ? { kind: d.frontmatter.kind } : {}),
             })),
             tasks: counts,
             phases,
