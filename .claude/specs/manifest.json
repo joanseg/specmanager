@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-12T13:11:03.960Z",
+  "generatedAt": "2026-06-12T13:23:38.881Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -993,15 +993,15 @@
         {
           "id": "plan-token-usage-optimisation-011",
           "stage": "plan",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
           "version": 1,
           "title": "Token usage optimisation plan"
         }
       ],
       "tasks": {
-        "todo": 14,
-        "in_progress": 0,
+        "todo": 13,
+        "in_progress": 1,
         "done": 0,
         "total": 14
       },
@@ -1011,8 +1011,8 @@
           "order": 0,
           "taskCount": 14,
           "doneCount": 0,
-          "inProgressCount": 0,
-          "status": "todo",
+          "inProgressCount": 1,
+          "status": "in_progress",
           "walkthroughId": null,
           "walkthroughStatus": null,
           "walkthroughStale": null

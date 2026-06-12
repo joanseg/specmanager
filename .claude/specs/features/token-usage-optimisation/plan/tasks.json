@@ -4,7 +4,7 @@
       "id": "task-001",
       "featureId": "feat-token-usage-optimisation",
       "title": "Create and push branch feat/token-usage-optimisation from main",
-      "status": "todo",
+      "status": "in_progress",
       "phase": "economy",
       "complexity": 1,
       "dependsOn": [],
@@ -14,7 +14,7 @@
         "pr": null
       },
       "createdAt": "2026-06-12T13:09:43.861Z",
-      "updatedAt": "2026-06-12T13:09:43.861Z"
+      "updatedAt": "2026-06-12T13:23:38.873Z"
     },
     {
       "id": "task-002",

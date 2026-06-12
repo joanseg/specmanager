@@ -2,7 +2,7 @@
 id: plan-token-usage-optimisation-011
 featureId: feat-token-usage-optimisation
 stage: plan
-status: draft
+status: approved
 stale: false
 title: Token usage optimisation plan
 dependsOn:
@@ -12,7 +12,7 @@ basedOn:
 generatedBy: agent
 version: 1
 createdAt: '2026-06-12T13:09:36.297Z'
-updatedAt: '2026-06-12T13:09:36.297Z'
+updatedAt: '2026-06-12T13:22:02.573Z'
 ---
 ## Overview
 
