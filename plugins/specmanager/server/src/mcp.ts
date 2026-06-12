@@ -59,6 +59,11 @@ function docSummary(d: { frontmatter: DocFrontmatter; filePath: string }) {
   return { id, featureId, stage, kind, status, stale, title, version, phase, filePath: d.filePath };
 }
 
+/** Slim mutation ack for document writes: the caller already holds the rest. */
+function docAck(d: { frontmatter: DocFrontmatter; filePath: string }) {
+  return { id: d.frontmatter.id, version: d.frontmatter.version, filePath: d.filePath };
+}
+
 function fail(message: string) {
   return text({ ok: false, error: message });
 }
@@ -153,7 +158,7 @@ server.registerTool(
     try {
       const d = await createDocument(input, PROJECT_DIR);
       await writeManifest(PROJECT_DIR);
-      return ok({ ...d.frontmatter, filePath: d.filePath });
+      return ok(docAck(d));
     } catch (err) {
       return fail((err as Error).message);
     }
@@ -194,7 +199,7 @@ server.registerTool(
         PROJECT_DIR
       );
       await writeManifest(PROJECT_DIR);
-      return ok({ ...d.frontmatter, filePath: d.filePath });
+      return ok(docAck(d));
     } catch (err) {
       return fail((err as Error).message);
     }
@@ -220,7 +225,7 @@ server.registerTool(
     try {
       const d = await writeDocument(input, PROJECT_DIR);
       await writeManifest(PROJECT_DIR);
-      return ok({ ...d.frontmatter, filePath: d.filePath });
+      return ok(docAck(d));
     } catch (err) {
       return fail((err as Error).message);
     }
@@ -239,7 +244,7 @@ server.registerTool(
       const d = await setStatus(id, status, PROJECT_DIR);
       await writeManifest(PROJECT_DIR);
       await syncClaudeMd(PROJECT_DIR);
-      return ok({ ...d.frontmatter });
+      return ok({ id: d.frontmatter.id, status: d.frontmatter.status, stale: d.frontmatter.stale });
     } catch (err) {
       return fail((err as Error).message);
     }
@@ -316,7 +321,7 @@ server.registerTool(
     try {
       const t = await createTask(input, PROJECT_DIR);
       await writeManifest(PROJECT_DIR);
-      return ok(t);
+      return ok({ id: t.id, status: t.status, phase: t.phase, complexity: t.complexity });
     } catch (err) {
       return fail((err as Error).message);
     }
@@ -347,7 +352,7 @@ server.registerTool(
     try {
       const t = await updateTask(input, PROJECT_DIR);
       await writeManifest(PROJECT_DIR);
-      return ok(t);
+      return ok({ id: t.id, status: t.status, phase: t.phase, complexity: t.complexity });
     } catch (err) {
       return fail((err as Error).message);
     }
