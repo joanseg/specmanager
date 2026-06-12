@@ -43,7 +43,7 @@ const BOARD_PORT = Number(process.env.SPECMANAGER_BOARD_PORT ?? 4317);
 function text(payload: unknown) {
   return {
     content: [
-      { type: "text" as const, text: typeof payload === "string" ? payload : JSON.stringify(payload, null, 2) },
+      { type: "text" as const, text: typeof payload === "string" ? payload : JSON.stringify(payload) },
     ],
   };
 }
