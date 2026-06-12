@@ -1,0 +1,733 @@
+---
+id: design-cursor-plugin-006
+featureId: feat-cursor-plugin
+stage: design
+status: approved
+stale: false
+title: Cursor plugin mockups
+dependsOn:
+  - prd-cursor-plugin-015
+  - arch-cursor-plugin-012
+basedOn:
+  prd-cursor-plugin-015: 1
+  arch-cursor-plugin-012: 2
+generatedBy: agent
+version: 1
+createdAt: '2026-06-11T19:53:14.143Z'
+updatedAt: '2026-06-11T19:55:01.387Z'
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cursor plugin — screen mockups</title>
+<style>
+  /* ============================================================
+     Obsidian Flux tokens — copied verbatim from ui/src/tokens.css
+     (the implementation behind docs/DESIGN.md frontmatter).
+     ============================================================ */
+  :root {
+    --surface: #131315;
+    --surface-container-lowest: #0e0e10;
+    --surface-container-low: #1b1b1d;
+    --surface-container: #201f21;
+    --surface-container-high: #2a2a2c;
+    --surface-container-highest: #353437;
+    --on-surface: #e5e1e4;
+    --on-surface-variant: #c7c4d7;
+    --outline: #908fa0;
+    --outline-variant: #464554;
+    --primary: #c0c1ff;
+    --primary-container: #8083ff;
+    --secondary: #ddb7ff;
+    --secondary-container: #6f00be;
+    --tertiary: #ffb783;            /* draft / warning amber */
+    --error: #ffb4ab;               /* stale / error rose */
+    --success: #10b981;             /* approved / done emerald */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 40px;
+    --font-display: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --card-gradient: linear-gradient(135deg, var(--surface-container), var(--surface-container-low));
+    --gradient-primary: linear-gradient(135deg, var(--primary-container), var(--secondary-container));
+    --shadow-card: 0 6px 20px rgba(0,0,0,.35), 0 0 0 1px rgba(192,193,255,.10);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--surface-container-lowest);
+    color: var(--on-surface);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    padding: var(--space-xl) var(--space-md) 120px;
+  }
+
+  /* ---- page chrome: screens + notes rhythm ---- */
+  .sm-screen {
+    max-width: 1040px;
+    margin: 0 auto var(--space-lg);
+  }
+  .sm-screen .frame-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--on-surface-variant);
+    background: var(--surface-container);
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius-sm);
+    padding: 3px 10px;
+    margin-bottom: 10px;
+  }
+  .frame-label .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--primary); }
+  .sm-note {
+    max-width: 860px;
+    margin: 0 auto var(--space-xl);
+    background: var(--card-gradient);
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg) 28px;
+  }
+  .sm-note h2 {
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 650;
+    margin: 0 0 8px;
+    color: var(--on-surface);
+  }
+  .sm-note p { margin: 8px 0; color: var(--on-surface-variant); font-size: 14.5px; }
+  .sm-note ul { margin: 8px 0; padding-left: 22px; color: var(--on-surface-variant); font-size: 14.5px; }
+  .sm-note li { margin: 5px 0; }
+  .sm-note code, .sm-note .tk {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    background: var(--surface-container-high);
+    border-radius: var(--radius-sm);
+    padding: 1px 5px;
+    color: var(--primary);
+  }
+  .sm-open-questions { border-color: rgba(255,183,131,.45); }
+  .sm-open-questions h2 { color: var(--tertiary); }
+
+  .page-head { max-width: 860px; margin: 0 auto var(--space-xl); }
+  .page-head h1 { font-family: var(--font-display); font-size: 26px; font-weight: 700; margin: 0 0 6px; }
+  .page-head p { color: var(--on-surface-variant); font-size: 14.5px; margin: 0; }
+
+  /* ============================================================
+     Shared mockup atoms (board-faithful, per ui/src/styles.css)
+     ============================================================ */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 7px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 10.5px; font-weight: 500; letter-spacing: .02em;
+    background: var(--surface-container-highest);
+    color: var(--on-surface-variant);
+  }
+  .badge--draft    { color: var(--tertiary); }
+  .badge--approved { color: var(--success); }
+  .badge--meta     { opacity: .6; }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--gradient-primary);
+    color: #fff;
+    border: 0; border-top: 1px solid rgba(255,255,255,.25);
+    border-radius: var(--radius-md);
+    padding: 8px 16px;
+    font-family: var(--font-body); font-size: 13px; font-weight: 600;
+  }
+  .btn-ghost {
+    display: inline-flex; align-items: center;
+    background: transparent; color: var(--on-surface-variant);
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius-md);
+    padding: 7px 14px; font-size: 13px;
+  }
+
+  /* ============================================================
+     Screen 1 — INSTALL.md (rendered markdown)
+     ============================================================ */
+  .doc-frame {
+    max-width: 780px; margin: 0 auto;
+    background: var(--surface-container-low);
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+  .doc-frame__bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 16px;
+    background: var(--surface-container);
+    border-bottom: 1px solid var(--outline-variant);
+    font-family: var(--font-mono); font-size: 12px; color: var(--on-surface-variant);
+  }
+  .doc-frame__bar .crumb { opacity: .65; }
+  .doc-body { padding: 36px 44px 44px; }
+  .doc-body h1 {
+    font-family: var(--font-display); font-size: 28px; font-weight: 700;
+    margin: 0 0 4px; letter-spacing: -.01em;
+  }
+  .doc-body .meta-row { display: flex; gap: 8px; margin: 10px 0 18px; flex-wrap: wrap; }
+  .doc-body h2 {
+    font-family: var(--font-display); font-size: 18px; font-weight: 650;
+    margin: 30px 0 8px; padding-top: 18px;
+    border-top: 1px solid var(--outline-variant);
+  }
+  .doc-body h2 .step-no {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; margin-right: 8px;
+    border-radius: 50%; background: var(--surface-container-highest);
+    color: var(--primary); font-family: var(--font-mono); font-size: 12px;
+    vertical-align: 2px;
+  }
+  .doc-body p { font-size: 14px; color: var(--on-surface-variant); margin: 8px 0; }
+  .doc-body p strong { color: var(--on-surface); }
+  .doc-body .callout {
+    display: flex; gap: 10px;
+    background: rgba(192,193,255,.07);
+    border: 1px solid rgba(192,193,255,.25);
+    border-radius: var(--radius-md);
+    padding: 12px 14px; margin: 14px 0;
+    font-size: 13.5px; color: var(--on-surface-variant);
+  }
+  .doc-body .callout--warn { background: rgba(255,183,131,.07); border-color: rgba(255,183,131,.3); }
+  .doc-body .callout .ic { font-family: var(--font-mono); color: var(--primary); }
+  .doc-body .callout--warn .ic { color: var(--tertiary); }
+  .doc-body pre {
+    background: var(--surface-container-lowest);
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius-md);
+    padding: 12px 16px; margin: 10px 0;
+    font-family: var(--font-mono); font-size: 12.5px; line-height: 1.6;
+    color: var(--on-surface); overflow-x: auto;
+  }
+  .doc-body pre .cm { color: var(--outline); }
+  .doc-body pre .hl { color: var(--primary); }
+  .doc-body code {
+    font-family: var(--font-mono); font-size: 12.5px;
+    background: var(--surface-container-high); border-radius: var(--radius-sm);
+    padding: 1px 5px;
+  }
+  .doc-body .option-tag {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: .05em;
+    color: var(--secondary); text-transform: uppercase;
+    display: block; margin: 16px 0 4px;
+  }
+  .verify-list { list-style: none; padding: 0; margin: 12px 0; }
+  .verify-list li {
+    display: flex; gap: 12px; align-items: baseline;
+    padding: 10px 0; border-bottom: 1px dashed var(--outline-variant);
+    font-size: 14px; color: var(--on-surface-variant);
+  }
+  .verify-list li:last-child { border-bottom: 0; }
+  .verify-list .n {
+    flex: none; width: 22px; height: 22px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--surface-container-highest); color: var(--primary);
+    font-family: var(--font-mono); font-size: 12px; align-self: center;
+  }
+  .verify-list .expect { margin-left: auto; font-family: var(--font-mono); font-size: 11.5px; color: var(--success); white-space: nowrap; }
+  .trouble dt { font-size: 13.5px; font-weight: 600; color: var(--on-surface); margin-top: 12px; }
+  .trouble dd { font-size: 13.5px; color: var(--on-surface-variant); margin: 3px 0 0 0; }
+
+  /* ============================================================
+     Screen 2 — installer terminal output
+     ============================================================ */
+  .term {
+    max-width: 780px; margin: 0 auto;
+    background: #0c0c0e;
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+  .term__bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px;
+    background: var(--surface-container-low);
+    border-bottom: 1px solid var(--outline-variant);
+  }
+  .term__bar .tl { width: 11px; height: 11px; border-radius: 50%; background: var(--surface-container-highest); }
+  .term__bar .title { margin-left: 8px; font-family: var(--font-mono); font-size: 11.5px; color: var(--on-surface-variant); opacity: .8; }
+  .term__body {
+    padding: 20px 24px 26px;
+    font-family: var(--font-mono); font-size: 12.5px; line-height: 1.75;
+    color: var(--on-surface);
+    white-space: pre-wrap;
+  }
+  .term .dim { color: var(--outline); }
+  .term .ok { color: var(--success); }
+  .term .warn { color: var(--tertiary); }
+  .term .acc { color: var(--primary); }
+  .term .sec { color: var(--secondary); }
+  .term .hr { color: var(--outline-variant); }
+
+  /* ============================================================
+     Screens 3 & 4 — Cursor agent panel (illustrative chrome)
+     ============================================================ */
+  .cursor-row { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+  .cursor-panel {
+    width: 420px;
+    background: #1a1a1f;                 /* neutral IDE dark — NOT a board token; illustrative Cursor chrome */
+    border: 1px solid #2e2e36;
+    border-radius: 10px;
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    font-size: 13px;
+  }
+  .cursor-panel__head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 14px;
+    border-bottom: 1px solid #2e2e36;
+    font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em;
+    color: #8b8b96; text-transform: uppercase;
+  }
+  .cursor-panel__head .model {
+    margin-left: auto; text-transform: none; letter-spacing: 0;
+    background: #26262d; border: 1px solid #34343d; border-radius: 99px;
+    padding: 2px 9px; font-size: 10.5px; color: #b9b9c4;
+  }
+  .cursor-panel__body { padding: 14px; display: flex; flex-direction: column; gap: 10px; min-height: 420px; }
+  .u-msg {
+    align-self: flex-end; max-width: 88%;
+    background: #26262d; border: 1px solid #34343d;
+    border-radius: 10px; padding: 8px 12px;
+    color: #e8e8ee; font-size: 13px;
+  }
+  .u-msg .slash { color: var(--primary); font-family: var(--font-mono); font-size: 12.5px; }
+  .a-msg { color: #c9c9d3; font-size: 13px; line-height: 1.55; padding: 0 2px; }
+  .a-msg strong { color: #e8e8ee; }
+  .a-msg a { color: var(--primary); text-decoration: none; border-bottom: 1px solid rgba(192,193,255,.4); }
+  .cmd-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono); font-size: 11px;
+    background: rgba(192,193,255,.08); border: 1px solid rgba(192,193,255,.25);
+    border-radius: 6px; padding: 3px 9px; color: var(--primary);
+    align-self: flex-start;
+  }
+  .tool-row {
+    display: flex; align-items: baseline; gap: 8px;
+    font-family: var(--font-mono); font-size: 11.5px;
+    background: #1f1f25; border: 1px solid #2c2c34;
+    border-radius: 7px; padding: 6px 10px;
+    color: #a7a7b2;
+  }
+  .tool-row .st { flex: none; }
+  .tool-row .st.ok { color: var(--success); }
+  .tool-row .st.err { color: var(--error); }
+  .tool-row .name { color: #d6d6e0; }
+  .tool-row .arg { color: #767681; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tool-row.err-row { border-color: rgba(255,180,171,.35); background: rgba(255,180,171,.05); }
+  .tool-row.err-row .arg { color: rgba(255,180,171,.8); }
+  .tool-tag {
+    margin-left: auto; flex: none;
+    font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--secondary); background: rgba(221,183,255,.08);
+    border: 1px solid rgba(221,183,255,.25); border-radius: 4px; padding: 1px 6px;
+  }
+  .cursor-input {
+    margin: auto 0 0; position: relative;
+    border-top: 1px solid #2e2e36; padding-top: 12px;
+  }
+  .cursor-input .box {
+    background: #222228; border: 1px solid #34343d; border-radius: 8px;
+    padding: 9px 12px; font-size: 13px; color: #e8e8ee;
+    display: flex; align-items: center; gap: 2px;
+  }
+  .cursor-input .box .typed { font-family: var(--font-mono); font-size: 12.5px; color: var(--primary); }
+  .cursor-input .box .caret { width: 1.5px; height: 15px; background: var(--primary); }
+  .cursor-input .box .ph { color: #6d6d78; }
+  .ac-pop {
+    position: absolute; left: 0; right: 0; bottom: calc(100% + 6px);
+    background: #222228; border: 1px solid #34343d; border-radius: 8px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.5);
+    overflow: hidden;
+  }
+  .ac-pop .hdr {
+    padding: 6px 12px; font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: .08em; text-transform: uppercase; color: #767681;
+    border-bottom: 1px solid #2c2c34;
+  }
+  .ac-item {
+    display: flex; align-items: baseline; gap: 10px;
+    padding: 6px 12px; font-family: var(--font-mono); font-size: 12px; color: #d6d6e0;
+  }
+  .ac-item .desc { font-family: var(--font-body); font-size: 11.5px; color: #767681; margin-left: auto; text-align: right; }
+  .ac-item.sel { background: rgba(192,193,255,.10); color: var(--primary); }
+  .ac-item.sel .desc { color: #a7a7b2; }
+  .phase-card {
+    background: #1f1f25; border: 1px solid #2c2c34; border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .phase-card .ph-head {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12.5px; font-weight: 600; color: #e8e8ee; margin-bottom: 8px;
+  }
+  .phase-card .ph-head .cnt { margin-left: auto; font-family: var(--font-mono); font-size: 10.5px; color: #8b8b96; }
+  .task-line {
+    display: flex; align-items: baseline; gap: 8px;
+    font-family: var(--font-mono); font-size: 11.5px; color: #a7a7b2;
+    padding: 3px 0;
+  }
+  .task-line .tick { color: var(--success); }
+  .task-line .fib { margin-left: auto; color: #767681; font-size: 10px; }
+  .task-line.done .lbl { color: #8b8b96; text-decoration: line-through; text-decoration-color: rgba(139,139,150,.5); }
+
+  /* ============================================================
+     Screen 5 — board doc panel + chat unavailable (board-faithful)
+     ============================================================ */
+  .board-frame {
+    max-width: 960px; margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+  .board-frame__head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 20px;
+    background: var(--surface-container);
+    border-bottom: 1px solid var(--outline-variant);
+  }
+  .board-frame__head h3 {
+    margin: 0; font-family: var(--font-display); font-size: 16px; font-weight: 650;
+  }
+  .board-frame__head .actions { margin-left: auto; display: flex; gap: 8px; }
+  .board-split { display: flex; min-height: 380px; }
+  .board-doc {
+    flex: 1.6; padding: 24px 28px;
+    border-right: 1px solid var(--outline-variant);
+  }
+  .board-doc h4 { font-family: var(--font-display); font-size: 15px; margin: 0 0 6px; }
+  .board-doc p { font-size: 13px; color: var(--on-surface-variant); margin: 6px 0; line-height: 1.6; }
+  .board-doc .md-h { font-family: var(--font-display); font-size: 13.5px; font-weight: 650; color: var(--on-surface); margin: 16px 0 4px; }
+  .board-chat { flex: 1; display: flex; flex-direction: column; background: var(--surface-container-low); }
+  .board-chat__head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 13px; border-bottom: 1px solid var(--outline-variant);
+    font-size: 12.5px; font-weight: 600;
+  }
+  .chat--unavailable {
+    padding: 24px 20px;
+    color: var(--on-surface-variant);
+    font-size: 13.5px; line-height: 1.5;
+  }
+  .chat--unavailable strong { color: var(--error); display: block; margin-bottom: 5px; }
+  .chat--unavailable p { margin: 3px 0; }
+  .chat--unavailable .hint { margin-top: 12px; font-size: 12.5px; color: var(--outline); }
+  .chat--unavailable .hint code { font-family: var(--font-mono); font-size: 11.5px; background: var(--surface-container-high); border-radius: var(--radius-sm); padding: 1px 5px; color: var(--primary); }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>Cursor plugin — screens</h1>
+  <p>The board ships unchanged ("No new MCP tools. No REST changes. The board is untouched"), so these mockups cover the delivery-surface touchpoints the port actually introduces: the INSTALL.md experience, the installer's terminal output and verification checklist, the in-Cursor command interactions, and the one board state a Cursor-driven session will hit — the pre-accepted chat-unavailable panel. All board-side visuals use the Obsidian Flux tokens from <code>ui/src/tokens.css</code> (the implementation of docs/DESIGN.md).</p>
+</div>
+
+<!-- ================================================================
+     SCREEN 1 — INSTALL.md, rendered
+     ================================================================ -->
+<section class="sm-screen">
+  <span class="frame-label"><span class="dot"></span>Screen 1 · cursor/INSTALL.md (rendered)</span>
+  <div class="doc-frame">
+    <div class="doc-frame__bar">
+      <span class="crumb">specmanager / plugins / specmanager / cursor /</span> INSTALL.md
+    </div>
+    <div class="doc-body">
+      <h1>SpecManager for Cursor</h1>
+      <div class="meta-row">
+        <span class="badge">cursor &ge; 0.50</span>
+        <span class="badge">node &ge; 20</span>
+        <span class="badge badge--approved">local-only · 127.0.0.1</span>
+      </div>
+      <p>SpecManager turns your feature lifecycle (PRD &rarr; Architecture &rarr; Design &rarr; Plan &rarr; Build &rarr; Walkthroughs) into a localhost kanban board backed by plain markdown in your repo. This guide installs the <strong>Cursor delivery surface</strong>; the board, gates, and artifacts are byte-identical to the Claude Code plugin — a repo can be driven from either client interchangeably.</p>
+
+      <h2><span class="step-no">1</span>Get SpecManager</h2>
+      <pre><span class="cm"># keep the checkout somewhere stable — .cursor/mcp.json will point at it by absolute path</span>
+git clone https://github.com/joan/specmanager <span class="hl">~/tools/specmanager</span>
+cd ~/tools/specmanager/plugins/specmanager/server &amp;&amp; npm install</pre>
+
+      <h2><span class="step-no">2</span>Install into your project</h2>
+      <span class="option-tag">Option A — installer script (recommended)</span>
+      <pre>node ~/tools/specmanager/plugins/specmanager/server/dist/cursor-install.js \
+  --project <span class="hl">/absolute/path/to/your/project</span></pre>
+      <p>The installer merges a <code>specmanager</code> entry into your project's <code>.cursor/mcp.json</code> (creating it if missing, preserving any other servers), copies the 9 commands into <code>.cursor/commands/</code>, the rules file into <code>.cursor/rules/</code>, and the trampoline prompts into <code>.cursor/specmanager/prompts/</code>. It is idempotent — re-run it any time.</p>
+      <span class="option-tag">Option B — let Cursor's agent do it</span>
+      <p>Paste the bootstrap prompt from the bottom of this file into Cursor's agent panel; it runs the same installer with your workspace path filled in.</p>
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <span><strong>One machine-specific file.</strong> <code>.cursor/mcp.json</code> carries absolute paths (the SpecManager checkout and your project root). Commit everything else in <code>.cursor/</code> so teammates inherit the commands; after cloning, each machine re-runs the installer once.</span>
+      </div>
+
+      <h2><span class="step-no">3</span>Verify</h2>
+      <ol class="verify-list">
+        <li><span class="n">1</span><span>Reload Cursor (<code>Cmd+Shift+P</code> &rarr; "Reload Window") and enable <code>specmanager</code> under Settings &rarr; MCP.</span><span class="expect">~20 tools listed</span></li>
+        <li><span class="n">2</span><span>Type <code>/specmanager-</code> in the agent input.</span><span class="expect">9 commands autocomplete</span></li>
+        <li><span class="n">3</span><span>Ask the agent to "initialise SpecManager" (or run <code>/specmanager-init</code>).</span><span class="expect">.claude/specs/ scaffolded</span></li>
+        <li><span class="n">4</span><span>Open <code>http://127.0.0.1:4317</code>.</span><span class="expect">board loads</span></li>
+      </ol>
+
+      <h2>Troubleshooting</h2>
+      <dl class="trouble">
+        <dt>Tools fail with "could not find .claude/specs"</dt>
+        <dd>The project root didn't resolve — re-run the installer so <code>SPECMANAGER_PROJECT_DIR</code> matches your workspace, then reload Cursor.</dd>
+        <dt>Cloned the repo on a new machine and commands stopped working</dt>
+        <dd><code>.cursor/mcp.json</code> is the one machine-specific file. Re-run the installer; it merges, never overwrites.</dd>
+        <dt>Board port already in use</dt>
+        <dd>Another client (e.g. Claude Code) already runs the board. That's fine — the second instance defers via the pidfile takeover logic. Both clients share one board.</dd>
+        <dt>Board chat says "Chat unavailable"</dt>
+        <dd>Expected. The in-board chat needs Anthropic credentials and is supported in Claude Code sessions only. Drafting and edits work from Cursor via the <code>/specmanager-*</code> commands.</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2>Screen 1 — INSTALL.md: the self-serve story</h2>
+  <p>This is PRD success metric 1 made tangible: a Cursor user must complete the install <em>without Joan's help</em>. The doc is structured as exactly three numbered steps plus troubleshooting — no branching narrative, one recommended path (Option A), the agent-bootstrap path (Option B) as a one-liner.</p>
+  <ul>
+    <li><strong>Decisions a builder must honour:</strong> the amber callout about <code>.cursor/mcp.json</code> being the one machine-specific file is load-bearing (architecture "Failure &amp; edge cases" names this exact failure); the verification list mirrors, word for word, the checklist the installer prints (Screen 2) so the doc and the terminal never disagree; the chat-unavailable troubleshooting entry pre-empts the one "is this broken?" moment a Cursor user will hit (Screen 5).</li>
+    <li><strong>Each verify step has a machine-checkable expectation</strong> (right-aligned, emerald <span class="tk">--success</span> mono) — pass/fail, not vibes, matching the coverage-scorecard discipline.</li>
+    <li><strong>Tokens:</strong> frame and code blocks on <span class="tk">--surface-container-low/lowest</span>, hairline <span class="tk">--outline-variant</span>, step numbers and inline paths in <span class="tk">--primary</span>, warning callout on <span class="tk">--tertiary</span>, radii <span class="tk">--radius-md/lg</span>. Headings in the display face, body at 14px.</li>
+    <li>This mockup defines the doc's <em>structure and tone</em>; the markdown source ships in <code>plugins/specmanager/cursor/INSTALL.md</code> and renders wherever the user reads it (GitHub, Cursor's preview) — the visual treatment here shows intent, not a CSS deliverable.</li>
+  </ul>
+</section>
+
+<!-- ================================================================
+     SCREEN 2 — installer terminal output
+     ================================================================ -->
+<section class="sm-screen">
+  <span class="frame-label"><span class="dot"></span>Screen 2 · cursor-install.js — terminal output</span>
+  <div class="term">
+    <div class="term__bar">
+      <span class="tl"></span><span class="tl"></span><span class="tl"></span>
+      <span class="title">zsh — node cursor-install.js</span>
+    </div>
+    <div class="term__body"><span class="dim">$</span> node ~/tools/specmanager/plugins/specmanager/server/dist/cursor-install.js \
+    --project /Users/dana/dev/checkout-service
+
+<span class="acc">SpecManager → Cursor</span> <span class="dim">installer v0.9.0</span>
+
+  project   <span class="dim">/Users/dana/dev/checkout-service</span>
+  source    <span class="dim">~/tools/specmanager/plugins/specmanager</span>
+
+  <span class="ok">✔</span> .cursor/mcp.json                merged "specmanager" entry <span class="dim">(1 existing server preserved: linear)</span>
+  <span class="ok">✔</span> .cursor/commands/               9 commands <span class="dim">(specmanager-init … specmanager-board)</span>
+  <span class="ok">✔</span> .cursor/rules/specmanager.mdc   alwaysApply: true
+  <span class="ok">✔</span> .cursor/specmanager/prompts/    4 trampoline prompts <span class="dim">(plan · build · interview · walkthrough)</span>
+
+  <span class="warn">!</span> .cursor/mcp.json carries absolute paths — the one machine-specific file.
+    <span class="dim">Teammates re-run this installer after cloning. Everything else in .cursor/ is committable.</span>
+
+  <span class="hr">────────────────────────────────────────────────────────────</span>
+  <span class="sec">Verify your install</span>
+
+  1. Reload Cursor <span class="dim">(Cmd+Shift+P → "Reload Window")</span>, enable specmanager under Settings → MCP
+       <span class="dim">expect:</span> <span class="ok">~20 tools listed</span>
+  2. Type /specmanager- in the agent input
+       <span class="dim">expect:</span> <span class="ok">9 commands autocomplete</span>
+  3. Run /specmanager-init <span class="dim">(first time in this project)</span>
+       <span class="dim">expect:</span> <span class="ok">.claude/specs/ scaffolded</span>
+  4. Open http://127.0.0.1:4317
+       <span class="dim">expect:</span> <span class="ok">board loads</span>
+
+<span class="dim">Done in 0.4s. Re-running is safe — the merge is idempotent.</span></div>
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2>Screen 2 — installer output: merge report + printed checklist</h2>
+  <p>The architecture specifies that <code>cursor-install.ts</code> "prints the verification checklist" — this screen is that contract. The output reads in three beats: <em>what I touched</em> (four check lines), <em>the one thing you must know</em> (amber machine-specific warning), <em>how you prove it worked</em> (the same four-step checklist as INSTALL.md, with explicit <code>expect:</code> lines).</p>
+  <ul>
+    <li><strong>The merge line says what it preserved</strong> ("1 existing server preserved: linear") — this surfaces the selftest's clobber-protection guarantee to the user, building trust in the idempotent re-run story.</li>
+    <li><strong>ANSI mapping:</strong> checks in green (&asymp; <span class="tk">--success</span> #10b981), the machine-specific warning in yellow (&asymp; <span class="tk">--tertiary</span>), the brand/section headers in the terminal's blue/magenta (&asymp; <span class="tk">--primary</span>/<span class="tk">--secondary</span>), paths and asides dim. Use standard 16-color ANSI (not truecolor) so it survives any terminal theme; the hues here are the design intent, not literal escapes.</li>
+    <li><strong>Failure variants (same layout, builder implements):</strong> missing <code>--project</code> or a relative path &rarr; one rose <code>✖</code> line + usage; unwritable <code>.cursor/</code> &rarr; <code>✖</code> on that row, remaining rows skipped, non-zero exit. Errors keep the column alignment of the success rows.</li>
+    <li>No spinner, no progress bar — the whole run is sub-second; print the report once, exit.</li>
+  </ul>
+</section>
+
+<!-- ================================================================
+     SCREEN 3 — Cursor agent panel: discovery + draft loop
+     ================================================================ -->
+<section class="sm-screen">
+  <span class="frame-label"><span class="dot"></span>Screen 3 · in-Cursor — command discovery &amp; PRD draft loop</span>
+  <div class="cursor-row">
+
+    <!-- 3a: autocomplete -->
+    <div class="cursor-panel">
+      <div class="cursor-panel__head">Agent <span class="model">gpt-5.2</span></div>
+      <div class="cursor-panel__body">
+        <div class="a-msg" style="color:#767681; font-size:12px;">New chat — checkout-service</div>
+        <div class="cursor-input">
+          <div class="ac-pop">
+            <div class="hdr">Commands · .cursor/commands</div>
+            <div class="ac-item sel">/specmanager-prd <span class="desc">draft a PRD for a feature</span></div>
+            <div class="ac-item">/specmanager-interview <span class="desc">pre-PRD idea interview</span></div>
+            <div class="ac-item">/specmanager-architecture <span class="desc">draft the architecture doc</span></div>
+            <div class="ac-item">/specmanager-design <span class="desc">screen mockups (optional)</span></div>
+            <div class="ac-item">/specmanager-plan <span class="desc">plan + task records</span></div>
+            <div class="ac-item">/specmanager-build <span class="desc">build one phase, then stop</span></div>
+            <div class="ac-item">/specmanager-walkthrough <span class="desc">document a finished phase</span></div>
+            <div class="ac-item">/specmanager-board <span class="desc">open the kanban board</span></div>
+            <div class="ac-item">/specmanager-init <span class="desc">scaffold .claude/specs/</span></div>
+          </div>
+          <div class="box"><span class="typed">/specmanager-</span><span class="caret"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3b: draft loop -->
+    <div class="cursor-panel">
+      <div class="cursor-panel__head">Agent <span class="model">gpt-5.2</span></div>
+      <div class="cursor-panel__body">
+        <div class="u-msg"><span class="slash">/specmanager-prd</span> Stripe webhook retries</div>
+        <div class="cmd-chip">specmanager-prd.md · generated from shared prompt sources</div>
+        <div class="a-msg">Checking lifecycle state and reading the relevant code before drafting.</div>
+        <div class="tool-row"><span class="st ok">✓</span><span class="name">list_features</span><span class="arg">projectDir: "/Users/dana/dev/checkout-service"</span></div>
+        <div class="tool-row"><span class="st ok">✓</span><span class="name">create_feature</span><span class="arg">"Stripe webhook retries"</span></div>
+        <div class="tool-row"><span class="st ok">✓</span><span class="name">Read</span><span class="arg">src/webhooks/handler.ts &nbsp;+3 files</span></div>
+        <div class="tool-row"><span class="st ok">✓</span><span class="name">create_document</span><span class="arg">stage: "prd"</span></div>
+        <div class="a-msg">Drafted <strong>prd-stripe-webhook-retries-001</strong> (draft, v1). I don't approve documents — review and approve it on the board: <a>127.0.0.1:4317</a>. Once approved, <strong>/specmanager-architecture</strong> is the next stage.</div>
+        <div class="u-msg">tighten the success metrics — I already edited the goals on the board</div>
+        <div class="tool-row err-row"><span class="st err">✗</span><span class="name">write_document</span><span class="arg">rejected — baseVersion 1 ≠ current 2</span></div>
+        <div class="tool-row"><span class="st ok">✓</span><span class="name">read_document</span><span class="arg">prd-stripe-webhook-retries-001 · v2</span></div>
+        <div class="tool-row"><span class="st ok">✓</span><span class="name">write_document</span><span class="arg">baseVersion: 2 → v3</span></div>
+        <div class="a-msg">Your board edits were newer than my copy, so I re-read v2 and re-applied the metric changes on top — now <strong>v3</strong>, with your goal edits intact.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2>Screen 3 — command discovery and the draft loop (with concurrency recovery)</h2>
+  <p>Left: typing <code>/specmanager-</code> surfaces all 9 generated commands with one-line descriptions — this is verification step 2 rendered, and the descriptions are a generator output (first line of each command file), so they must be written for this dropdown: verb-first, under ~6 words.</p>
+  <p>Right: the full draft loop under a <strong>non-Claude model</strong> (the model pill deliberately shows GPT — Cursor's population runs mixed models, and the prompts must hold either way). Three designed behaviours:</p>
+  <ul>
+    <li><strong>Every SpecManager tool call shows <code>projectDir</code></strong> on its first row — the rules file (<code>specmanager.mdc</code>, alwaysApply) mandates passing the workspace root per call; making it visible in the transcript is how a user (and the spike) confirms the rules are being obeyed.</li>
+    <li><strong>The closing message has a fixed shape:</strong> doc id + status + version, the "I don't approve documents" line (rules contract), board link, and the named next command. Builders should bake this shape into the generated command epilogues so every stage ends the same way.</li>
+    <li><strong>The <code>baseVersion</code> rejection is shown, not hidden:</strong> rose <code>✗</code> row with the literal reason (<em>baseVersion 1 ≠ current 2</em>), then re-read &rarr; re-apply — the exact recovery move the rules file prescribes. The agent's explanation names whose edits won ("your goal edits intact"). This is PRD metric 2's concurrency guarantee made visible.</li>
+  </ul>
+  <p><strong>Chrome caveat:</strong> the panel framing (header, bubbles, input) is illustrative of Cursor's own UI, which we do not ship. The designed artifacts here are the command names + descriptions, tool-call sequencing, argument surfacing, and the agent copy — all of which come from our generated prompt files.</p>
+</section>
+
+<!-- ================================================================
+     SCREEN 4 — Cursor agent panel: build phase + boundary stop
+     ================================================================ -->
+<section class="sm-screen">
+  <span class="frame-label"><span class="dot"></span>Screen 4 · in-Cursor — /specmanager-build, phase-boundary stop</span>
+  <div class="cursor-row">
+    <div class="cursor-panel" style="width: 480px;">
+      <div class="cursor-panel__head">Agent <span class="model">gpt-5.2</span></div>
+      <div class="cursor-panel__body">
+        <div class="u-msg"><span class="slash">/specmanager-build</span></div>
+        <div class="tool-row"><span class="st ok">✓</span><span class="name">Read</span><span class="arg">.cursor/specmanager/prompts/builder.md</span><span class="tool-tag">trampoline</span></div>
+        <div class="tool-row"><span class="st ok">✓</span><span class="name">get_next_phase</span><span class="arg">feat-stripe-webhook-retries</span></div>
+        <div class="phase-card">
+          <div class="ph-head">Phase B — Retry queue &amp; backoff <span class="cnt">4 tasks · fib ≤ 3</span></div>
+          <div class="task-line done"><span class="tick">✓</span><span class="lbl">task-005 · queue table migration</span><span class="fib">2</span></div>
+          <div class="task-line done"><span class="tick">✓</span><span class="lbl">task-006 · exponential backoff worker</span><span class="fib">3</span></div>
+          <div class="task-line done"><span class="tick">✓</span><span class="lbl">task-007 · dead-letter handling</span><span class="fib">2</span></div>
+          <div class="task-line done"><span class="tick">✓</span><span class="lbl">task-008 · selftest: replay ordering</span><span class="fib">3</span></div>
+        </div>
+        <div class="tool-row"><span class="st ok">✓</span><span class="name">update_task</span><span class="arg">task-008 → done · artifacts: src/webhooks/retry-worker.ts, …</span></div>
+        <div class="tool-row"><span class="st ok">✓</span><span class="name">get_next_phase</span><span class="arg">→ phase C exists — not started (phase boundary)</span></div>
+        <div class="a-msg"><strong>Phase B complete — 4/4 tasks done.</strong> Stopping at the phase boundary; the server won't hand me Phase C in this run. Next: <strong>/specmanager-walkthrough</strong> to document Phase B, or <strong>/specmanager-build</strong> again for Phase C (tracker &amp; alerts, 3 tasks).</div>
+        <div class="cursor-input">
+          <div class="box"><span class="ph">Plan, search, build anything</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2>Screen 4 — the highest-fidelity-risk flow, made legible</h2>
+  <p>Build is the flow the PRD flags as riskiest under a flattened, non-Claude agent (A2/A3). The design counters with structure the user can audit at a glance:</p>
+  <ul>
+    <li><strong>The trampoline is visible and labelled.</strong> The first action after <code>/specmanager-build</code> is a file read of <code>.cursor/specmanager/prompts/builder.md</code>, tagged <span class="tk">trampoline</span> (violet, <span class="tk">--secondary</span> family — a mechanism label, not a status). The user learns the read is expected, not the agent wandering.</li>
+    <li><strong>One phase card, tasks in dependsOn order,</strong> each with its Fibonacci score and an emerald tick as <code>update_task</code> lands. The card is the agent's rendering of <code>get_next_phase</code> output — generated command prompts should instruct the agent to print exactly this checklist shape before working.</li>
+    <li><strong>The stop is attributed to the server, not obedience:</strong> the final <code>get_next_phase</code> row shows the boundary ("phase C exists — not started"), and the closing message says "the server won't hand me Phase C in this run." This phrasing matters — it teaches that gates are enforced in <code>core</code>, which is exactly why a weaker model can't drift past them.</li>
+    <li><strong>The closing message always names both next moves</strong> (walkthrough vs next build) with the next phase's name and task count, so the lifecycle stays self-navigating without the Claude Code docs.</li>
+  </ul>
+</section>
+
+<!-- ================================================================
+     SCREEN 5 — board: chat unavailable on a non-Claude client
+     ================================================================ -->
+<section class="sm-screen">
+  <span class="frame-label"><span class="dot"></span>Screen 5 · board doc panel — chat unavailable (pre-accepted state)</span>
+  <div class="board-frame">
+    <div class="board-frame__head">
+      <h3>Stripe webhook retries PRD</h3>
+      <span class="badge">prd</span>
+      <span class="badge badge--draft">draft</span>
+      <span class="badge badge--meta">v3</span>
+      <div class="actions">
+        <button class="btn-ghost">History</button>
+        <button class="btn-primary">Approve</button>
+      </div>
+    </div>
+    <div class="board-split">
+      <div class="board-doc">
+        <h4>Problem</h4>
+        <p>Stripe webhook deliveries fail silently when the checkout service is mid-deploy; events are dropped with no replay path, and reconciliation is manual…</p>
+        <div class="md-h">Goals</div>
+        <p>1. No webhook event lost across deploys. &nbsp;2. Automatic retry with exponential backoff. &nbsp;3. Dead-letter visibility within 5 minutes…</p>
+        <div class="md-h">Success metrics</div>
+        <p>Zero dropped events over a 7-day window with two forced deploys; replay completes within 60s of recovery…</p>
+      </div>
+      <div class="board-chat">
+        <div class="board-chat__head">Chat</div>
+        <div class="chat--unavailable">
+          <strong>Chat unavailable.</strong>
+          <p>no API credential found — board chat runs on Anthropic credentials and is available in Claude Code sessions only.</p>
+          <p class="hint">Drafting and edits still work from this repo's editor agent — in Cursor, use the <code>/specmanager-*</code> commands. Approvals happen right here on the board.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2>Screen 5 — the one board state a Cursor session changes (and how little it changes)</h2>
+  <p>The architecture pre-accepts the in-board chat as <em>unsupported</em> on non-Claude clients and says "the chat panel's existing <code>available: false</code> state renders with plain copy; no port work targets it." This screen shows that existing state (the real <code>.chat--unavailable</code> styles: rose <span class="tk">--error</span> heading, dim body, no new components) in the context a Cursor user will meet it — everything else on the doc panel works normally: badges, history, the gradient Approve button, live doc content.</p>
+  <ul>
+    <li><strong>One copy change is proposed</strong> (and only one): today the reason renders as the bare server string ("no API credential found"). The mockup appends a clarifying clause plus a dim hint line redirecting to the editor agent. This is a string-level change in the chat-status reason / panel copy, not a component change — but since the architecture scoped <em>zero</em> board work, it needs an explicit scope call (see Open questions).</li>
+    <li><strong>Nothing else on this screen is new.</strong> Header, badges (<span class="tk">badge--draft</span> amber, <span class="tk">badge--meta</span>), split layout, and the Approve CTA (<span class="tk">--gradient-primary</span>) are the shipped board, included so the planner sees the unsupported state is a corner, not a wall — the coverage scorecard marks exactly one cell "unsupported", and this is it.</li>
+  </ul>
+</section>
+
+<!-- ================================================================
+     OPEN QUESTIONS
+     ================================================================ -->
+<section class="sm-note sm-open-questions">
+  <h2>Open questions for the planner</h2>
+  <ul>
+    <li><strong>Chat-unavailable copy (Screen 5):</strong> the friendlier reason + hint line is a one-string-ish change touching the board (server reason text or panel copy), which the architecture scoped to zero. Accept as a deliberate one-line exception, or ship the bare existing string and keep the friendly copy in INSTALL.md's troubleshooting only? Either is fine; decide explicitly.</li>
+    <li><strong>Cursor chrome is illustrative:</strong> Screens 3–4 depict Cursor's own panel, which we don't ship. The binding deliverables are the command names + one-line descriptions (dropdown), the <code>projectDir</code>-on-every-call rule, the closing-message shapes, the phase-checklist rendering instruction, and the baseVersion recovery sequence — all of which live in the generated <code>.cursor/</code> prompt files. Spike item 2 should confirm a non-Claude model actually reproduces these transcript shapes.</li>
+    <li><strong>Command descriptions as generator output:</strong> the autocomplete one-liners (Screen 3a) assume Cursor surfaces a description per command file. If it only shows filenames, the dropdown degrades gracefully (names alone are self-describing) — verify in the spike and note it on the scorecard.</li>
+    <li><strong>Terminal palette has no DESIGN.md token:</strong> Screen 2 maps checks/warnings to standard ANSI colors that approximate <span class="tk">--success</span>/<span class="tk">--tertiary</span>/<span class="tk">--error</span>. DESIGN.md has no terminal-output guidance; if more CLI surfaces appear, consider adding a "CLI output" section to docs/DESIGN.md.</li>
+    <li><strong>DESIGN.md frontmatter lags tokens.css:</strong> the managed frontmatter still lists placeholder values (system-ui body-md, var() color indirections), while <code>ui/src/tokens.css</code> carries the real Obsidian Flux scale (Inter/Hanken Grotesk/Geist Mono, hex palette). These mockups follow tokens.css as ground truth; the next <code>sync_design_md</code> pass should close that gap.</li>
+    <li><strong>Installer version string:</strong> Screen 2 shows "installer v0.9.0" — there's no established version source for the installer banner. Use the server package.json version, or drop the version from the banner.</li>
+  </ul>
+</section>
+
+</body>
+</html>

@@ -3,7 +3,7 @@ id: wt-redesign-004
 featureId: feat-redesign
 stage: walkthrough
 status: approved
-stale: true
+stale: false
 title: Redesign — Phase D walkthrough
 dependsOn:
   - plan-redesign-001
@@ -13,7 +13,7 @@ generatedBy: agent
 version: 1
 phase: D
 createdAt: '2026-05-28T20:51:04.096Z'
-updatedAt: '2026-06-10T12:40:51.260Z'
+updatedAt: '2026-06-11T15:01:44.361Z'
 ---
 # Redesign — Phase D walkthrough
 

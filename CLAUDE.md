@@ -5,7 +5,7 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 
 | Feature | Current stage | Notes |
 |---------|---------------|-------|
-| Redesign | PRD (draft) | Architecture, Plan, Walkthroughs, Walkthroughs, Walkthroughs, Walkthroughs ⚠️ stale |
+| Redesign | PRD (approved) | — |
 | Dummy feature | PRD | — |
 | Rename execute command to build | PRD (approved) | Walkthroughs ⚠️ stale |
 | Planner output matches phase-tasks.md style | PRD (approved) | — |
@@ -16,13 +16,17 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 | HTML viewer scroll fix | PRD (approved) | — |
 | Post-phase doc sync (CLAUDE.md + DESIGN.md) | PRD (approved) | — |
 | Interview command | PRD (approved) | — |
+| Antigravity plugin | PRD (approved) | — |
+| Share docs on public URL | PRD (approved) | — |
+| Cursor plugin | PRD (approved) | — |
+| Codex plugin | PRD (approved) | — |
 
 **Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation.
 
 **Commands:**
-`/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board`
+`/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)
 
-_Last synced: 2026-06-10T14:44:44.292Z_
+_Last synced: 2026-06-11T19:55:01.543Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md

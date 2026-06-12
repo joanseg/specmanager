@@ -1,0 +1,827 @@
+---
+id: design-share-docs-on-public-url-005
+featureId: feat-share-docs-on-public-url
+stage: design
+status: approved
+stale: false
+title: Share docs on public URL mockups
+dependsOn:
+  - prd-share-docs-on-public-url-013
+  - arch-share-docs-on-public-url-011
+basedOn:
+  prd-share-docs-on-public-url-013: 2
+  arch-share-docs-on-public-url-011: 2
+generatedBy: agent
+version: 1
+createdAt: '2026-06-11T19:40:31.518Z'
+updatedAt: '2026-06-11T19:44:18.817Z'
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Share docs on public URL — mockups</title>
+<style>
+/* ==========================================================================
+   Obsidian Flux token layer — values copied verbatim from ui/src/tokens.css.
+   Every screen below consumes these; no other raw hex appears in this file
+   except where tokens.css itself defines one.
+   ========================================================================== */
+:root {
+  --surface: #131315;
+  --surface-container-lowest: #0e0e10;
+  --surface-container-low: #1b1b1d;
+  --surface-container: #201f21;
+  --surface-container-high: #2a2a2c;
+  --surface-container-highest: #353437;
+  --on-surface: #e5e1e4;
+  --on-surface-variant: #c7c4d7;
+  --outline: #908fa0;
+  --outline-variant: #464554;
+  --primary: #c0c1ff;
+  --on-primary: #1000a9;
+  --primary-container: #8083ff;
+  --secondary: #ddb7ff;
+  --secondary-container: #6f00be;
+  --tertiary: #ffb783;              /* draft / warning */
+  --error: #ffb4ab;                 /* stale */
+  --success: #10b981;               /* approved / done */
+  --status-draft: var(--tertiary);
+  --status-approved: var(--success);
+  --status-stale: var(--error);
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 40px;
+  --font-display: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --glass-bg: rgba(24, 24, 27, 0.8);
+  --shadow-overlay: 0px 20px 50px rgba(0, 0, 0, 0.5);
+  --card-gradient: linear-gradient(135deg, var(--surface-container), var(--surface-container-low));
+  --card-border: color-mix(in srgb, var(--outline-variant) 80%, transparent);
+  --card-border-hover: color-mix(in srgb, var(--primary) 55%, var(--outline-variant));
+  --shadow-card: 0 6px 20px rgba(0,0,0,0.35), 0 0 0 1px color-mix(in srgb, var(--primary) 12%, transparent);
+  --gradient-primary: linear-gradient(135deg, var(--primary-container), var(--secondary-container));
+  --backdrop-dim: rgba(0, 0, 0, 0.55);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--surface-container-lowest);
+  color: var(--on-surface);
+  font-family: var(--font-body);
+  font-size: 14px;
+  padding: var(--space-xl) var(--space-lg) 80px;
+}
+
+/* ---- Mockup-page scaffolding (not product UI) --------------------------- */
+.sm-screen { display: flex; justify-content: center; margin: 0 auto var(--space-md); max-width: 1360px; }
+.sm-note {
+  max-width: 860px;
+  margin: 0 auto var(--space-xl);
+  padding: var(--space-md) var(--space-lg);
+  border-left: 2px solid var(--primary);
+  background: var(--surface-container-low);
+  border-radius: var(--radius-md);
+  color: var(--on-surface-variant);
+}
+.sm-note h2 {
+  font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em;
+  font-size: 1.05rem; color: var(--on-surface); margin: 0 0 0.4rem;
+}
+.sm-note h2 .n {
+  font-family: var(--font-mono); font-size: 0.7rem; color: var(--primary);
+  letter-spacing: 0.08em; text-transform: uppercase; margin-right: 0.6rem;
+}
+.sm-note p { margin: 0.45rem 0; line-height: 1.55; font-size: 0.88rem; }
+.sm-note ul { margin: 0.45rem 0; padding-left: 1.2rem; }
+.sm-note li { margin: 0.3rem 0; line-height: 1.5; font-size: 0.88rem; }
+.sm-note code {
+  font-family: var(--font-mono); font-size: 0.78rem;
+  background: var(--surface-container-high); padding: 0.05rem 0.3rem; border-radius: var(--radius-sm);
+  color: var(--on-surface);
+}
+.sm-open-questions { border-left-color: var(--tertiary); }
+
+/* ---- Viewport frames ----------------------------------------------------- */
+.frame {
+  width: 100%; border: 1px solid var(--outline-variant); border-radius: var(--radius-lg);
+  overflow: hidden; background: var(--surface); box-shadow: var(--shadow-overlay);
+}
+.frame--board { max-width: 1280px; }
+.frame--pub { max-width: 1080px; }
+.frame--narrow { max-width: 820px; }
+.chrome {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 14px; background: var(--surface-container-low);
+  border-bottom: 1px solid var(--outline-variant);
+}
+.chrome .dots { display: flex; gap: 6px; }
+.chrome .dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--surface-container-highest); }
+.chrome .url {
+  flex: 1; max-width: 640px; margin: 0 auto;
+  font-family: var(--font-mono); font-size: 0.72rem; color: var(--on-surface-variant);
+  background: var(--surface-container); border: 1px solid var(--outline-variant);
+  border-radius: 999px; padding: 4px 14px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center;
+}
+.chrome .url b { color: var(--on-surface); font-weight: 500; }
+
+/* ==========================================================================
+   Shared product atoms (mirror ui/src/styles.css)
+   ========================================================================== */
+.badge {
+  display: inline-flex; align-items: center; gap: 0.25rem;
+  padding: 0.1rem 0.4rem; border-radius: var(--radius-sm);
+  font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.02em;
+  background: var(--surface-container-highest); color: var(--on-surface-variant);
+}
+.badge--draft    { color: var(--status-draft); }
+.badge--approved { color: var(--status-approved); }
+.badge--meta     { opacity: 0.6; }
+.btn {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  background: var(--surface-container-high); color: var(--on-surface);
+  border: 1px solid var(--outline-variant); border-radius: var(--radius-md);
+  padding: 0.32rem 0.75rem; font-family: var(--font-body); font-size: 0.8rem; cursor: pointer;
+}
+.btn--primary {
+  border-color: color-mix(in srgb, var(--primary-container) 70%, transparent);
+  background: var(--gradient-primary);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--primary) 55%, transparent);
+}
+.btn--ghost { border-color: transparent; background: transparent; color: var(--on-surface-variant); }
+.cmd-chip {
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  font-family: var(--font-mono); font-size: 0.72rem; color: var(--primary);
+  background: var(--surface-container); border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-sm); padding: 0.28rem 0.55rem; cursor: pointer; white-space: nowrap;
+}
+.cmd-chip .copy { color: var(--on-surface-variant); opacity: 0.7; font-size: 0.68rem; }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); box-shadow: 0 0 6px var(--success); display: inline-block; }
+
+/* ==========================================================================
+   Screens 1–2 — local board + share popover
+   ========================================================================== */
+.board { position: relative; padding: 0 24px 32px; min-height: 560px; }
+.board__header {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-md);
+  margin: 0 -24px var(--space-lg); padding: var(--space-md) 24px;
+  background: var(--glass-bg); border-bottom: 1px solid var(--outline-variant);
+}
+.board__title {
+  margin: 0; font-family: var(--font-display); font-weight: 600;
+  font-size: 3rem; line-height: 3.5rem; letter-spacing: -0.02em;
+}
+.board__meta { display: flex; align-items: center; gap: var(--space-md); color: var(--on-surface-variant); font-size: 0.85rem; }
+.board__count { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.02em; }
+.share-trigger {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--surface-container-high); border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md); padding: 0.38rem 0.8rem;
+  font-size: 0.8rem; color: var(--on-surface); cursor: pointer;
+}
+.share-trigger--active { border-color: var(--card-border-hover); box-shadow: var(--shadow-card); }
+.share-trigger .meta { font-family: var(--font-mono); font-size: 0.68rem; color: var(--on-surface-variant); }
+
+.grid { display: grid; grid-template-columns: 11rem repeat(6, minmax(8.5rem, 1fr)); gap: var(--space-sm); }
+.grid__header {
+  font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--on-surface-variant); padding: 0 0.5rem 0.4rem;
+}
+.grid__header--build { color: var(--primary); }
+.row__label { padding: 0.6rem 0.5rem; }
+.row__label strong { display: block; font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em; font-size: 0.88rem; }
+.row__label small { color: var(--on-surface-variant); font-family: var(--font-mono); font-size: 0.7rem; }
+.card {
+  display: flex; flex-direction: column; gap: 0.35rem; height: 5.5rem;
+  background: var(--card-gradient); border: 1px solid var(--card-border);
+  border-radius: var(--radius-md); padding: 0.6rem 0.7rem;
+}
+.card__title { font-weight: 500; font-size: 0.82rem; line-height: 1.25; }
+.card__badges { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: auto; }
+.card--empty {
+  background: transparent; border-style: dashed; color: var(--on-surface-variant);
+  justify-content: center; align-items: center; font-size: 0.78rem; text-align: center;
+}
+.card--empty .sub { font-size: 0.7rem; opacity: 0.7; margin-top: 0.15rem; }
+.card--ready { border-color: var(--primary); color: var(--primary); }
+.card--ready .slash { font-family: var(--font-mono); font-size: 0.7rem; }
+.card--build { background: var(--surface-container-low); }
+.card--build .card__title { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--on-surface-variant); }
+.bar { background: var(--surface-container-highest); border-radius: var(--radius-sm); height: 0.4rem; overflow: hidden; display: flex; }
+.bar__done { background: var(--success); }
+.bar__prog { background: var(--tertiary); }
+.card__counts { font-family: var(--font-mono); font-size: 0.7rem; color: var(--on-surface-variant); }
+
+/* Share popover ------------------------------------------------------------ */
+.share-pop {
+  position: absolute; top: 92px; right: 24px; width: 27rem; z-index: 10;
+  background: var(--surface-container-low);
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--outline-variant));
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-overlay); overflow: hidden;
+}
+.share-pop__header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.85rem 1.1rem 0.7rem; border-bottom: 1px solid var(--outline-variant);
+}
+.share-pop__title { font-family: var(--font-display); font-weight: 600; font-size: 0.98rem; letter-spacing: -0.01em; margin: 0; }
+.share-pop__status { display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--font-mono); font-size: 0.68rem; color: var(--success); }
+.share-pop__status--off { color: var(--on-surface-variant); }
+.share-pop__status--off .live-dot { background: var(--outline-variant); box-shadow: none; }
+.share-pop__section { padding: 0.85rem 1.1rem; }
+.share-pop__section + .share-pop__section { border-top: 1px solid var(--outline-variant); }
+.share-pop__label {
+  font-family: var(--font-mono); font-size: 0.64rem; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--on-surface-variant); margin-bottom: 0.5rem;
+}
+.url-field {
+  display: flex; align-items: center; gap: 0.5rem;
+  background: var(--surface-container); border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md); padding: 0.45rem 0.6rem;
+}
+.url-field .u {
+  flex: 1; font-family: var(--font-mono); font-size: 0.72rem; color: var(--on-surface);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.url-field .u i { color: var(--on-surface-variant); font-style: normal; }
+.url-field .btn { padding: 0.2rem 0.55rem; font-size: 0.72rem; flex-shrink: 0; }
+.share-pop__meta { margin-top: 0.45rem; font-family: var(--font-mono); font-size: 0.68rem; color: var(--on-surface-variant); }
+.share-pop__actions { display: flex; gap: 0.5rem; margin-top: 0.65rem; flex-wrap: wrap; }
+.doc-share { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0; }
+.doc-share + .doc-share { border-top: 1px dashed var(--outline-variant); }
+.doc-share__main { flex: 1; min-width: 0; }
+.doc-share__title { font-size: 0.8rem; font-weight: 500; }
+.doc-share__url { font-family: var(--font-mono); font-size: 0.66rem; color: var(--on-surface-variant); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.doc-share__ver { font-family: var(--font-mono); font-size: 0.64rem; }
+.doc-share__ver--behind { color: var(--tertiary); }
+.doc-share__ver--current { color: var(--success); }
+.share-pop__caveat {
+  background: color-mix(in srgb, var(--tertiary) 9%, transparent);
+  border-top: 1px solid var(--outline-variant);
+  padding: 0.6rem 1.1rem; font-size: 0.72rem; line-height: 1.5; color: var(--on-surface-variant);
+}
+.share-pop__caveat b { color: var(--tertiary); font-weight: 500; }
+.setup-steps { margin: 0; padding: 0; list-style: none; counter-reset: step; }
+.setup-steps li { counter-increment: step; display: flex; gap: 0.65rem; padding: 0.5rem 0; align-items: flex-start; }
+.setup-steps li + li { border-top: 1px dashed var(--outline-variant); }
+.setup-steps li::before {
+  content: counter(step); flex-shrink: 0;
+  width: 1.35rem; height: 1.35rem; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 0.68rem; color: var(--primary);
+  border: 1px solid color-mix(in srgb, var(--primary) 45%, transparent);
+  margin-top: 0.05rem;
+}
+.setup-steps .t { font-size: 0.8rem; line-height: 1.45; }
+.setup-steps .s { display: block; font-size: 0.7rem; color: var(--on-surface-variant); margin-top: 0.15rem; line-height: 1.45; }
+
+/* ==========================================================================
+   Screen 3 — doc panel share strip
+   ========================================================================== */
+.panel-stage { position: relative; min-height: 540px; background: var(--surface-container-lowest); overflow: hidden; }
+.panel-stage__board { filter: brightness(0.5); padding: 18px 24px; pointer-events: none; }
+.panel-stage__dim { position: absolute; inset: 0; background: var(--backdrop-dim); }
+.panel {
+  position: absolute; top: 0; right: 0; width: 68%; height: 100%;
+  background: var(--surface);
+  border-left: 1px solid color-mix(in srgb, var(--primary) 14%, var(--outline-variant));
+  border-top-left-radius: var(--radius-lg); border-bottom-left-radius: var(--radius-lg);
+  box-shadow: var(--shadow-overlay), inset 1px 0 0 color-mix(in srgb, var(--primary) 14%, transparent);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.panel__header {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-md);
+  padding: 1rem 1.25rem 0.75rem; border-bottom: 1px solid var(--outline-variant);
+}
+.panel__crumb { font-family: var(--font-mono); font-size: 0.72rem; color: var(--on-surface-variant); margin-bottom: 0.3rem; }
+.panel__crumb .sep { color: var(--outline); margin: 0 0.15rem; }
+.panel__title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; letter-spacing: -0.01em; }
+.panel__badges { display: flex; gap: 0.35rem; margin-top: 0.5rem; }
+.panel__actions { display: flex; align-items: center; gap: 0.5rem; }
+.panel__close { color: var(--on-surface-variant); font-size: 1.4rem; line-height: 1; padding: 0.1rem 0.4rem; }
+.share-strip {
+  display: flex; align-items: center; gap: 0.7rem;
+  padding: 0.55rem 1.25rem;
+  background: color-mix(in srgb, var(--primary) 7%, transparent);
+  border-bottom: 1px solid var(--outline-variant);
+  font-size: 0.78rem;
+}
+.share-strip__label { display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--font-mono); font-size: 0.68rem; color: var(--primary); text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0; }
+.share-strip__url { flex: 1; font-family: var(--font-mono); font-size: 0.7rem; color: var(--on-surface-variant); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.share-strip__behind { font-family: var(--font-mono); font-size: 0.68rem; color: var(--tertiary); flex-shrink: 0; }
+.panel__prose { padding: var(--space-lg) 5%; color: var(--on-surface); overflow: hidden; }
+.panel__prose h1 { font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; letter-spacing: -0.01em; margin: 0.6rem 0 0.8rem; }
+.panel__prose h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; letter-spacing: -0.01em; margin: 1.3rem 0 0.5rem; }
+.panel__prose p, .panel__prose li { font-size: 0.95rem; line-height: 1.62; }
+.panel__prose p { margin: 0.55rem 0; }
+
+/* ==========================================================================
+   Screens 4–6 — published static snapshot (stakeholder view)
+   ========================================================================== */
+.pub { background: var(--surface); }
+.pub__header { padding: 2.2rem 3rem 1.4rem; border-bottom: 1px solid var(--outline-variant); }
+.pub__kicker { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--primary); margin-bottom: 0.5rem; }
+.pub__title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 2.1rem; letter-spacing: -0.02em; }
+.pub__sub { margin: 0.5rem 0 0; color: var(--on-surface-variant); font-size: 0.88rem; }
+.pub__sub .snap { font-family: var(--font-mono); font-size: 0.76rem; }
+.pub__body { padding: 1.6rem 3rem 2.4rem; }
+.pub-feature { margin-bottom: 2rem; }
+.pub-feature__head { display: flex; align-items: baseline; gap: 0.7rem; margin-bottom: 0.7rem; }
+.pub-feature__title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; letter-spacing: -0.01em; }
+.pub-feature__slug { font-family: var(--font-mono); font-size: 0.7rem; color: var(--on-surface-variant); }
+.pub-feature__build { margin-left: auto; display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-mono); font-size: 0.7rem; color: var(--on-surface-variant); }
+.pub-feature__build .bar { width: 90px; }
+.pub-docs { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-sm); }
+.pub-doc {
+  display: flex; flex-direction: column; gap: 0.35rem; min-height: 4.6rem;
+  background: var(--card-gradient); border: 1px solid var(--card-border);
+  border-radius: var(--radius-md); padding: 0.6rem 0.7rem;
+  text-decoration: none; color: var(--on-surface);
+}
+.pub-doc:hover { border-color: var(--card-border-hover); }
+.pub-doc__stage { font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--on-surface-variant); }
+.pub-doc__title { font-size: 0.78rem; font-weight: 500; line-height: 1.3; }
+.pub-doc--none { background: transparent; border-style: dashed; align-items: center; justify-content: center; color: var(--on-surface-variant); font-size: 0.72rem; }
+.pub-footer {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-md);
+  padding: 0.8rem 3rem; border-top: 1px solid var(--outline-variant);
+  font-family: var(--font-mono); font-size: 0.68rem; color: var(--on-surface-variant);
+}
+.pub-footer .wordmark { letter-spacing: 0.06em; }
+.pub-footer .wordmark b { color: var(--primary); font-weight: 500; }
+
+/* Published doc page */
+.pubdoc__top { display: flex; align-items: center; justify-content: space-between; padding: 1rem 3rem; border-bottom: 1px solid var(--outline-variant); }
+.pubdoc__back { font-family: var(--font-mono); font-size: 0.74rem; color: var(--primary); text-decoration: none; }
+.pubdoc__crumb { font-family: var(--font-mono); font-size: 0.7rem; color: var(--on-surface-variant); }
+.pubdoc__head { padding: 1.8rem 3rem 0; }
+.pubdoc__title-row { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+.pubdoc__title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 1.7rem; letter-spacing: -0.02em; }
+.draft-flag {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.08em; color: var(--status-draft);
+  background: color-mix(in srgb, var(--tertiary) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tertiary) 45%, transparent);
+  border-radius: var(--radius-sm); padding: 0.18rem 0.5rem;
+}
+.approved-flag {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.08em; color: var(--status-approved);
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--success) 40%, transparent);
+  border-radius: var(--radius-sm); padding: 0.18rem 0.5rem;
+}
+.pubdoc__meta { margin-top: 0.45rem; font-family: var(--font-mono); font-size: 0.72rem; color: var(--on-surface-variant); }
+.pubdoc__prose { max-width: 46rem; padding: 1rem 3rem 2.5rem; }
+.pubdoc__prose h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; letter-spacing: -0.01em; margin: 1.4rem 0 0.5rem; }
+.pubdoc__prose p, .pubdoc__prose li { font-size: 0.95rem; line-height: 1.62; color: var(--on-surface); }
+.pubdoc__prose p { margin: 0.55rem 0; }
+.pubdoc__prose ul { margin: 0.5rem 0; padding-left: 1.3rem; }
+.pubdoc__prose li { margin: 0.28rem 0; }
+.pubdoc__prose table { border-collapse: collapse; width: 100%; margin: 0.8rem 0; font-size: 0.85rem; }
+.pubdoc__prose th { background: var(--surface-container-high); text-align: left; font-weight: 500; }
+.pubdoc__prose th, .pubdoc__prose td { border: 1px solid var(--outline-variant); padding: 0.4rem 0.6rem; }
+.pubdoc__prose tr:nth-child(even) td { background: color-mix(in srgb, var(--surface-container) 55%, transparent); }
+.pubdoc__prose code { background: var(--surface-container-highest); padding: 0.05rem 0.3rem; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.82rem; }
+
+/* 404 */
+.pub404 { min-height: 420px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.6rem; padding: 3rem; }
+.pub404__code { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.2em; color: var(--outline); }
+.pub404__msg { font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; letter-spacing: -0.01em; color: var(--on-surface-variant); margin: 0; }
+.pub404__sub { font-size: 0.82rem; color: var(--outline); margin: 0; }
+</style>
+</head>
+<body>
+
+<!-- ===================================================================== -->
+<!-- SCREEN 1 — Local board: published state + share popover               -->
+<!-- ===================================================================== -->
+<section class="sm-screen">
+  <div class="frame frame--board">
+    <div class="board">
+      <header class="board__header">
+        <h1 class="board__title">SpecManager</h1>
+        <div class="board__meta">
+          <span class="board__count">3 features</span>
+          <button class="share-trigger share-trigger--active">
+            <span class="live-dot"></span> Shared
+            <span class="meta">2 h ago</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="grid">
+        <div class="grid__header">Feature</div>
+        <div class="grid__header">PRD</div>
+        <div class="grid__header">Architecture</div>
+        <div class="grid__header">Design</div>
+        <div class="grid__header">Plan</div>
+        <div class="grid__header grid__header--build">Build</div>
+        <div class="grid__header">Walkthroughs</div>
+
+        <div class="row__label"><strong>Usage-based invoicing</strong><small>usage-based-invoicing</small></div>
+        <div class="card"><span class="card__title">Usage-based invoicing PRD</span><span class="card__badges"><span class="badge badge--approved">approved</span><span class="badge badge--meta">v3</span></span></div>
+        <div class="card"><span class="card__title">Usage-based invoicing architecture</span><span class="card__badges"><span class="badge badge--approved">approved</span><span class="badge badge--meta">v2</span></span></div>
+        <div class="card card--empty"><span>Design</span><span class="sub">optional</span></div>
+        <div class="card"><span class="card__title">Usage-based invoicing plan</span><span class="card__badges"><span class="badge badge--approved">approved</span><span class="badge badge--meta">v1</span></span></div>
+        <div class="card card--build"><span class="card__title">Build</span><div class="bar"><div class="bar__done" style="width:62%"></div><div class="bar__prog" style="width:12%"></div></div><span class="card__counts">8/13 done · 1 in progress</span></div>
+        <div class="card card--empty"><span>Walkthroughs</span><span class="sub">2 phase(s) pending</span></div>
+
+        <div class="row__label"><strong>Dunning emails</strong><small>dunning-emails</small></div>
+        <div class="card"><span class="card__title">Dunning emails PRD</span><span class="card__badges"><span class="badge badge--approved">approved</span><span class="badge badge--meta">v2</span></span></div>
+        <div class="card"><span class="card__title">Dunning emails architecture</span><span class="card__badges"><span class="badge badge--draft">draft</span><span class="badge badge--meta">v1</span></span></div>
+        <div class="card card--empty"><span>Design</span><span class="sub">optional</span></div>
+        <div class="card card--empty"><span>Plan locked</span><span class="sub">prior stage not approved</span></div>
+        <div class="card card--empty"><span>Build</span><span class="sub">plan not approved</span></div>
+        <div class="card card--empty"><span>Walkthroughs</span><span class="sub">—</span></div>
+
+        <div class="row__label"><strong>Customer portal revamp</strong><small>customer-portal-revamp</small></div>
+        <div class="card"><span class="card__title">Customer portal revamp PRD</span><span class="card__badges"><span class="badge badge--draft">draft</span><span class="badge badge--meta">v1</span></span></div>
+        <div class="card card--empty"><span>Architecture locked</span><span class="sub">prior stage not approved</span></div>
+        <div class="card card--empty"><span>Design</span><span class="sub">optional · PRD not approved</span></div>
+        <div class="card card--empty"><span>Plan locked</span><span class="sub">prior stage not approved</span></div>
+        <div class="card card--empty"><span>Build</span><span class="sub">plan not approved</span></div>
+        <div class="card card--empty"><span>Walkthroughs</span><span class="sub">—</span></div>
+      </div>
+
+      <!-- Share popover (open) -->
+      <div class="share-pop">
+        <div class="share-pop__header">
+          <h3 class="share-pop__title">Publish &amp; share</h3>
+          <span class="share-pop__status"><span class="live-dot"></span> LIVE</span>
+        </div>
+
+        <div class="share-pop__section">
+          <div class="share-pop__label">Board snapshot</div>
+          <div class="url-field">
+            <span class="u"><i>https://</i>sm-x7k2q.netlify.app<i>/s/</i>Vq3K9tYx2mNwLpA8cDe4fG/</span>
+            <button class="btn">Copy</button>
+          </div>
+          <div class="share-pop__meta">published 11 Jun 2026, 14:32 · 7 docs · 3 features</div>
+          <div class="share-pop__actions">
+            <span class="cmd-chip">/specmanager-publish <span class="copy">⧉ re-publish</span></span>
+            <span class="cmd-chip">/specmanager-publish unpublish <span class="copy">⧉</span></span>
+          </div>
+        </div>
+
+        <div class="share-pop__section">
+          <div class="share-pop__label">Individually shared docs</div>
+          <div class="doc-share">
+            <div class="doc-share__main">
+              <div class="doc-share__title">Usage-based invoicing PRD</div>
+              <div class="doc-share__url">sm-x7k2q.netlify.app/d/8fQ2wRt6yUi3oPa9sDf1gH/</div>
+            </div>
+            <span class="doc-share__ver doc-share__ver--current">shared v3 · current</span>
+            <button class="btn">Copy</button>
+          </div>
+          <div class="doc-share">
+            <div class="doc-share__main">
+              <div class="doc-share__title">Dunning emails architecture</div>
+              <div class="doc-share__url">sm-x7k2q.netlify.app/d/2jKl5mNb8vCx1zAs4qWe7R/</div>
+            </div>
+            <span class="doc-share__ver doc-share__ver--behind">shared v1 · now v2</span>
+            <button class="btn">Copy</button>
+          </div>
+        </div>
+
+        <div class="share-pop__caveat">
+          <b>Anyone with the link can read.</b> Pages are noindexed, but the URL is the
+          only secret — treat it like a password. Repo collaborators can see it in
+          <code style="font-family:var(--font-mono);font-size:0.66rem;">publish.json</code>.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2><span class="n">Screen 1</span>Local board — published state with the share popover open</h2>
+  <p>The only new board surface in v1. The Architecture gives the board a <strong>read-only</strong> <code>GET /api/publish/status</code> (no mutating REST route), so every element here is either display, clipboard-copy of a URL, or clipboard-copy of a slash command — the exact pattern the board already uses for <code>/specmanager-prd</code> generate affordances.</p>
+  <ul>
+    <li><strong>Header trigger:</strong> a "Shared" pill sits in the existing <code>board__meta</code> cluster, next to the feature count. The glowing emerald dot reuses the board's <code>--success</code> live-dot (BuildPanel pattern); the relative timestamp ("2 h ago") comes from <code>publish.json → board.publishedAt</code>, refreshed live via the <code>snapshot.published</code> WS event the Architecture adds.</li>
+    <li><strong>Popover, section 1 — board snapshot:</strong> the full <code>/s/&lt;token&gt;/</code> URL in a mono read-only field with a Copy button (primary job: paste into email/chat — PRD publish flow). Below it, publish metadata and two command chips: re-publish (<code>/specmanager-publish</code>, same URL per PRD Q9) and unpublish. Command chips copy to clipboard like <code>card__empty-cmd</code>.</li>
+    <li><strong>Section 2 — individual doc shares:</strong> one row per entry in <code>publish.json → docs</code>, each with its own <code>/d/&lt;docToken&gt;/</code> URL. The version chip is the freshness signal: emerald "shared v3 · current" when the snapshot matches the live doc, amber "shared v1 · now v2" when the repo has moved on (re-publish to update).</li>
+    <li><strong>Caveat footer:</strong> the "anyone with the link" disclosure the Architecture (Q4) says must be said once per publish — amber-tinted, persistent in the panel so it is never missable.</li>
+    <li>Tokens: panel is <code>--surface-container-low</code> with a primary-tinted border and <code>--shadow-overlay</code>; section labels use the mono uppercase grid-header style; all status colors via <code>--status-*</code>.</li>
+  </ul>
+</section>
+
+<!-- ===================================================================== -->
+<!-- SCREEN 2 — Share popover: never published / first-run setup           -->
+<!-- ===================================================================== -->
+<section class="sm-screen">
+  <div class="frame frame--board">
+    <div class="board" style="min-height:430px;">
+      <header class="board__header">
+        <h1 class="board__title">SpecManager</h1>
+        <div class="board__meta">
+          <span class="board__count">3 features</span>
+          <button class="share-trigger share-trigger--active">Share</button>
+        </div>
+      </header>
+
+      <div class="grid" style="opacity:0.5;">
+        <div class="grid__header">Feature</div>
+        <div class="grid__header">PRD</div>
+        <div class="grid__header">Architecture</div>
+        <div class="grid__header">Design</div>
+        <div class="grid__header">Plan</div>
+        <div class="grid__header grid__header--build">Build</div>
+        <div class="grid__header">Walkthroughs</div>
+        <div class="row__label"><strong>Usage-based invoicing</strong><small>usage-based-invoicing</small></div>
+        <div class="card"><span class="card__title">Usage-based invoicing PRD</span><span class="card__badges"><span class="badge badge--approved">approved</span><span class="badge badge--meta">v3</span></span></div>
+        <div class="card"><span class="card__title">Usage-based invoicing architecture</span><span class="card__badges"><span class="badge badge--approved">approved</span><span class="badge badge--meta">v2</span></span></div>
+        <div class="card card--empty"><span>Design</span><span class="sub">optional</span></div>
+        <div class="card"><span class="card__title">Usage-based invoicing plan</span><span class="card__badges"><span class="badge badge--approved">approved</span><span class="badge badge--meta">v1</span></span></div>
+        <div class="card card--build"><span class="card__title">Build</span><div class="bar"><div class="bar__done" style="width:62%"></div></div><span class="card__counts">8/13 done</span></div>
+        <div class="card card--empty"><span>Walkthroughs</span><span class="sub">2 phase(s) pending</span></div>
+      </div>
+
+      <div class="share-pop">
+        <div class="share-pop__header">
+          <h3 class="share-pop__title">Publish &amp; share</h3>
+          <span class="share-pop__status share-pop__status--off"><span class="live-dot"></span> NOT PUBLISHED</span>
+        </div>
+        <div class="share-pop__section">
+          <p style="margin:0 0 0.7rem; font-size:0.82rem; line-height:1.5; color:var(--on-surface-variant);">
+            Publish a read-only snapshot of this board to your own Netlify account,
+            behind a secret link. No login for readers — open in any browser.
+          </p>
+          <ol class="setup-steps">
+            <li><span class="t">Create a Netlify <b>personal access token</b><span class="s">netlify.com → User settings → Applications → New access token</span></span></li>
+            <li><span class="t">Run <span class="cmd-chip" style="margin-left:0.1rem;">/specmanager-publish <span class="copy">⧉</span></span><span class="s">First run asks for the token, creates the site, and deploys. The token is stored outside the repo and never committed.</span></span></li>
+            <li><span class="t">Copy the secret link and send it to your stakeholders<span class="s">Re-run the command after specs change — the URL stays the same.</span></span></li>
+          </ol>
+        </div>
+        <div class="share-pop__caveat">
+          <b>Heads up:</b> published pages live on the public internet behind an
+          unguessable URL. Anyone who has the link can read them.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2><span class="n">Screen 2</span>Share popover — never published (first-run / credential setup state)</h2>
+  <p>Same trigger, same popover shell, different body: when <code>GET /api/publish/status</code> returns <code>null</code> the panel becomes a three-step onboarding card instead of a settings form. The board deliberately does <em>not</em> collect the Netlify token — credentials are collected in-session by <code>/specmanager-publish</code> (Architecture flow §5, step 1) and stored in <code>${'{'}SPECMANAGER_PLUGIN_DATA{'}'}/publish-credentials.json</code>, so the local-only, no-auth board never handles a secret.</p>
+  <ul>
+    <li>Status chip flips to a hollow grey "NOT PUBLISHED" — the same dot atom, drained of the emerald glow.</li>
+    <li>Step 2's command chip is the single call to action; copying it and pasting into the Claude Code session is the entire interaction, mirroring the board's existing generate affordances.</li>
+    <li>The PRD friction-proxy metric ("never published → stakeholder reading in one sitting") is what this card optimizes: token source spelled out, URL-stability promise stated up front.</li>
+    <li>The caveat footer appears even before first publish so the "public internet behind an unguessable path" assumption (PRD) is consented to, not discovered.</li>
+  </ul>
+</section>
+
+<!-- ===================================================================== -->
+<!-- SCREEN 3 — Doc panel with per-doc share strip                         -->
+<!-- ===================================================================== -->
+<section class="sm-screen">
+  <div class="frame frame--board">
+    <div class="panel-stage">
+      <div class="panel-stage__board">
+        <div class="grid" style="grid-template-columns: 10rem repeat(4, 1fr);">
+          <div class="row__label"><strong>Dunning emails</strong><small>dunning-emails</small></div>
+          <div class="card"><span class="card__title">Dunning emails PRD</span><span class="card__badges"><span class="badge badge--approved">approved</span></span></div>
+          <div class="card"><span class="card__title">Dunning emails architecture</span><span class="card__badges"><span class="badge badge--draft">draft</span></span></div>
+          <div class="card card--empty"><span>Design</span></div>
+          <div class="card card--empty"><span>Plan locked</span></div>
+        </div>
+      </div>
+      <div class="panel-stage__dim"></div>
+      <aside class="panel">
+        <div class="panel__header">
+          <div>
+            <div class="panel__crumb">dunning-emails <span class="sep">·</span> architecture <span class="sep">·</span> v2</div>
+            <h2 class="panel__title">Dunning emails architecture</h2>
+            <div class="panel__badges">
+              <span class="badge badge--draft">draft</span>
+              <span class="badge badge--meta">v2</span>
+            </div>
+          </div>
+          <div class="panel__actions">
+            <button class="btn">Edit</button>
+            <button class="btn btn--primary">Approve</button>
+            <span class="panel__close">×</span>
+          </div>
+        </div>
+
+        <div class="share-strip">
+          <span class="share-strip__label"><span class="live-dot" style="width:6px;height:6px;"></span> Shared</span>
+          <span class="share-strip__url">sm-x7k2q.netlify.app/d/2jKl5mNb8vCx1zAs4qWe7R/</span>
+          <span class="share-strip__behind">shared v1 · now v2 — re-publish to update</span>
+          <button class="btn" style="padding:0.18rem 0.5rem;font-size:0.7rem;">Copy</button>
+        </div>
+
+        <div class="panel__prose">
+          <h1>Dunning emails — Architecture</h1>
+          <p>Based on PRD <code style="font-family:var(--font-mono);font-size:0.8rem;background:var(--surface-container-highest);padding:0.05rem 0.3rem;border-radius:4px;">prd-dunning-emails-007</code> v2. We add a retry scheduler to the billing worker and a templated email pipeline rendered from the invoice state machine.</p>
+          <h2>1. Summary</h2>
+          <p>Failed charges enter a three-step retry ladder (T+3, T+7, T+14). Each step emits a templated email through the existing notification service; the final step downgrades the subscription and notifies the account owner…</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2><span class="n">Screen 3</span>Doc panel — per-doc share strip</h2>
+  <p>The PRD's second sharing mode: "alternatively user can share only individual documents." When the open doc has an entry in <code>publish.json → docs</code>, a one-line share strip renders between the panel header and the doc surface — same slot and geometry as the existing stale banner (<code>panel__stale</code>), but tinted with 7% <code>--primary</code> instead of error rose.</p>
+  <ul>
+    <li><strong>Contents, left to right:</strong> "Shared" label with live dot · the <code>/d/&lt;docToken&gt;/</code> URL (its own token — handing out one doc never reveals the board URL, per the Architecture's URL scheme) · a version-drift note · Copy.</li>
+    <li><strong>Version drift</strong> is amber (<code>--status-draft</code>) when <code>publish.json</code> records an older version than the doc's current <code>version</code> — "shared v1 · now v2 — re-publish to update". When in sync the note reads "shared v2 · current" in emerald. This is the PRD Q5 answer surfaced to the publisher, not just the reader.</li>
+    <li>Docs with no share entry show no strip at all — sharing a single doc is done via <code>/specmanager-publish &lt;docId&gt;</code> from the session (no mutating board route in v1); the board share popover (Screen 1) lists all existing per-doc shares.</li>
+    <li>Interview-kind docs never show the strip: the Architecture excludes them from publishing unconditionally.</li>
+  </ul>
+</section>
+
+<!-- ===================================================================== -->
+<!-- SCREEN 4 — Published board snapshot (stakeholder view)                -->
+<!-- ===================================================================== -->
+<section class="sm-screen">
+  <div class="frame frame--pub">
+    <div class="chrome">
+      <span class="dots"><i></i><i></i><i></i></span>
+      <span class="url">https://sm-x7k2q.netlify.app/s/<b>Vq3K9tYx2mNwLpA8cDe4fG</b>/</span>
+    </div>
+    <div class="pub">
+      <header class="pub__header">
+        <div class="pub__kicker">Specs · read-only snapshot</div>
+        <h1 class="pub__title">Acme Billing</h1>
+        <p class="pub__sub">3 features · 7 documents · <span class="snap">snapshot published 11 Jun 2026, 14:32</span></p>
+      </header>
+
+      <div class="pub__body">
+        <section class="pub-feature">
+          <div class="pub-feature__head">
+            <h2 class="pub-feature__title">Usage-based invoicing</h2>
+            <span class="pub-feature__slug">usage-based-invoicing</span>
+            <span class="pub-feature__build"><span class="bar"><span class="bar__done" style="width:62%"></span></span> build 8/13 tasks done</span>
+          </div>
+          <div class="pub-docs">
+            <a class="pub-doc" href="#"><span class="pub-doc__stage">PRD</span><span class="pub-doc__title">Usage-based invoicing PRD</span><span class="card__badges"><span class="badge badge--approved">approved</span><span class="badge badge--meta">v3</span></span></a>
+            <a class="pub-doc" href="#"><span class="pub-doc__stage">Architecture</span><span class="pub-doc__title">Usage-based invoicing architecture</span><span class="card__badges"><span class="badge badge--approved">approved</span><span class="badge badge--meta">v2</span></span></a>
+            <a class="pub-doc" href="#"><span class="pub-doc__stage">Design</span><span class="pub-doc__title">Usage-based invoicing mockups</span><span class="card__badges"><span class="badge badge--approved">approved</span><span class="badge badge--meta">v1</span></span></a>
+            <a class="pub-doc" href="#"><span class="pub-doc__stage">Plan</span><span class="pub-doc__title">Usage-based invoicing plan</span><span class="card__badges"><span class="badge badge--approved">approved</span><span class="badge badge--meta">v1</span></span></a>
+            <div class="pub-doc pub-doc--none">no walkthroughs yet</div>
+          </div>
+        </section>
+
+        <section class="pub-feature">
+          <div class="pub-feature__head">
+            <h2 class="pub-feature__title">Dunning emails</h2>
+            <span class="pub-feature__slug">dunning-emails</span>
+          </div>
+          <div class="pub-docs">
+            <a class="pub-doc" href="#"><span class="pub-doc__stage">PRD</span><span class="pub-doc__title">Dunning emails PRD</span><span class="card__badges"><span class="badge badge--approved">approved</span><span class="badge badge--meta">v2</span></span></a>
+            <a class="pub-doc" href="#"><span class="pub-doc__stage">Architecture</span><span class="pub-doc__title">Dunning emails architecture</span><span class="card__badges"><span class="badge badge--draft">draft</span><span class="badge badge--meta">v2</span></span></a>
+            <div class="pub-doc pub-doc--none">—</div>
+            <div class="pub-doc pub-doc--none">—</div>
+            <div class="pub-doc pub-doc--none">—</div>
+          </div>
+        </section>
+
+        <section class="pub-feature" style="margin-bottom:0.5rem;">
+          <div class="pub-feature__head">
+            <h2 class="pub-feature__title">Customer portal revamp</h2>
+            <span class="pub-feature__slug">customer-portal-revamp</span>
+          </div>
+          <div class="pub-docs">
+            <a class="pub-doc" href="#"><span class="pub-doc__stage">PRD</span><span class="pub-doc__title">Customer portal revamp PRD</span><span class="card__badges"><span class="badge badge--draft">draft</span><span class="badge badge--meta">v1</span></span></a>
+            <div class="pub-doc pub-doc--none">—</div>
+            <div class="pub-doc pub-doc--none">—</div>
+            <div class="pub-doc pub-doc--none">—</div>
+            <div class="pub-doc pub-doc--none">—</div>
+          </div>
+        </section>
+      </div>
+
+      <footer class="pub-footer">
+        <span>snapshot published 11 Jun 2026, 14:32 · frozen until next publish</span>
+        <span class="wordmark">made with <b>SpecManager</b></span>
+      </footer>
+    </div>
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2><span class="n">Screen 4</span>Published board snapshot — stakeholder's index page</h2>
+  <p>What opens at <code>/s/&lt;boardToken&gt;/</code>. Static HTML, zero client-side JS (Architecture §5d) — every doc card is a plain <code>&lt;a&gt;</code> to <code>/s/&lt;boardToken&gt;/docs/&lt;docId&gt;/</code>. It keeps the product's Obsidian Flux skin (templates lift values from <code>ui/src/tokens.css</code>) so the snapshot is recognizably the same product, but the layout is deliberately simpler than the working board:</p>
+  <ul>
+    <li><strong>Per-feature sections instead of the kanban grid.</strong> Stakeholders read top-to-bottom; the working board's locked/generate/optional cells, slash-command affordances, and BUILD column are publisher concepts and are gone. Missing stages render as quiet dashed placeholders so the lifecycle shape stays legible without explaining gates.</li>
+    <li><strong>Build progress</strong> compresses to a small inline bar + "8/13 tasks done" in the feature header — status, not workflow.</li>
+    <li><strong>Header states the contract:</strong> kicker "read-only snapshot", project name in display type (48px feels self-important here; 2.1rem reads as a document, not an app), and the publish timestamp up top <em>and</em> in the footer.</li>
+    <li>Drafts keep their amber badge exactly as on the board (PRD Q4: everything publishes, with status visible). Interview docs are absent by construction.</li>
+    <li><code>&lt;meta name="robots" content="noindex"&gt;</code> on every page; the secret lives only in the URL path, shown in the browser chrome above.</li>
+    <li>The "made with SpecManager" wordmark is restrained mono in the footer — attribution without branding the stakeholder's content.</li>
+  </ul>
+</section>
+
+<!-- ===================================================================== -->
+<!-- SCREEN 5 — Published document page (draft, stakeholder view)          -->
+<!-- ===================================================================== -->
+<section class="sm-screen">
+  <div class="frame frame--pub">
+    <div class="chrome">
+      <span class="dots"><i></i><i></i><i></i></span>
+      <span class="url">https://sm-x7k2q.netlify.app/s/<b>Vq3K9tYx2mNwLpA8cDe4fG</b>/docs/arch-dunning-emails-009/</span>
+    </div>
+    <div class="pub">
+      <div class="pubdoc__top">
+        <a class="pubdoc__back" href="#">← All features</a>
+        <span class="pubdoc__crumb">dunning-emails · architecture</span>
+      </div>
+      <div class="pubdoc__head">
+        <div class="pubdoc__title-row">
+          <h1 class="pubdoc__title">Dunning emails architecture</h1>
+          <span class="draft-flag">Draft</span>
+        </div>
+        <div class="pubdoc__meta">v2 · updated 9 Jun 2026 · snapshot published 11 Jun 2026, 14:32</div>
+      </div>
+      <div class="pubdoc__prose">
+        <p>Based on PRD <code>prd-dunning-emails-007</code> v2. We add a retry scheduler to the billing worker and a templated email pipeline rendered from the invoice state machine.</p>
+        <h2>1. Summary</h2>
+        <p>Failed charges enter a three-step retry ladder. Each step emits a templated email through the existing notification service; the final step downgrades the subscription and notifies the account owner.</p>
+        <h2>2. Retry ladder</h2>
+        <table>
+          <tr><th>Step</th><th>When</th><th>Email</th><th>On failure</th></tr>
+          <tr><td>1</td><td>T+3 days</td><td>Payment reminder</td><td>schedule step 2</td></tr>
+          <tr><td>2</td><td>T+7 days</td><td>Payment failed — action needed</td><td>schedule step 3</td></tr>
+          <tr><td>3</td><td>T+14 days</td><td>Final notice</td><td>downgrade + owner alert</td></tr>
+        </table>
+        <h2>3. Affected components</h2>
+        <ul>
+          <li><code>billing/worker.ts</code> — retry scheduler, idempotent per invoice</li>
+          <li><code>notifications/templates/</code> — three new MJML templates</li>
+          <li><code>core/subscription.ts</code> — downgrade transition guarded by the ladder state</li>
+        </ul>
+      </div>
+      <footer class="pub-footer">
+        <span>v2 · updated 9 Jun 2026 · snapshot published 11 Jun 2026, 14:32</span>
+        <span class="wordmark">made with <b>SpecManager</b></span>
+      </footer>
+    </div>
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2><span class="n">Screen 5</span>Published document page — draft doc inside the board snapshot</h2>
+  <p>One markdown doc rendered through the remark/rehype pipeline into the same template shell. The reading column matches the board's <code>.prose</code> rules (0.95rem / 1.62 body, Hanken Grotesk headings) but capped at ~46rem — stakeholders get a document measure, not the editor's 90% panel width.</p>
+  <ul>
+    <li><strong>Draft flag</strong> sits beside the title — bordered amber chip, louder than the board's tiny badge because here it is the one piece of workflow context a stakeholder must not miss. Approved docs get the equivalent emerald "Approved" chip.</li>
+    <li><strong>Version line</strong> appears twice: under the title and as the footer the Architecture specifies verbatim — <code>v&lt;version&gt; · &lt;updatedAt&gt; · snapshot published &lt;timestamp&gt;</code> (PRD Q5: show the version being seen).</li>
+    <li><strong>Navigation:</strong> "← All features" + a mono crumb. <em>This top bar only renders for board-snapshot doc pages.</em> An individually shared doc at <code>/d/&lt;docToken&gt;/</code> uses this exact template minus the back link and crumb — linking back would leak the board token, which per-doc shares must never do.</li>
+    <li>Tables get the board's markdown-viewer styling (header on <code>--surface-container-high</code>, zebra rows); raw HTML in markdown is dropped by the pipeline (deliberate sanitization). Design-brief docs ship their self-contained HTML verbatim as the page body instead of this prose shell.</li>
+    <li>Zero JS; every style inlined in the page head by <code>publish/templates.ts</code>.</li>
+  </ul>
+</section>
+
+<!-- ===================================================================== -->
+<!-- SCREEN 6 — Unpublished / unknown path (404)                           -->
+<!-- ===================================================================== -->
+<section class="sm-screen">
+  <div class="frame frame--narrow">
+    <div class="chrome">
+      <span class="dots"><i></i><i></i><i></i></span>
+      <span class="url">https://sm-x7k2q.netlify.app/s/Vq3K9tYx2mNwLpA8cDe4fG/</span>
+    </div>
+    <div class="pub pub404">
+      <span class="pub404__code">404</span>
+      <p class="pub404__msg">Nothing here.</p>
+      <p class="pub404__sub">This page doesn't exist or is no longer shared.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2><span class="n">Screen 6</span>404 — unpublished snapshot, site root, or wrong path</h2>
+  <p>The single 404 page serves three cases identically: a snapshot that was unpublished (the deploy replaces all content with just this page; <code>siteId</code>/<code>baseUrl</code> survive so a later publish returns to the same URL), the bare site root <code>/</code>, and any guessed path.</p>
+  <ul>
+    <li><strong>Deliberately information-free:</strong> no project name, no doc list, no SpecManager wordmark, no hint that valid tokens exist. "No longer shared" is the only concession to the legitimate visitor holding a stale link — it tells them to ask the publisher for a fresh one without confirming anything to a guesser.</li>
+    <li>Same dark canvas and type so a stakeholder who had the site before doesn't think they've landed somewhere malicious.</li>
+    <li>Mono "404", display-face message, dim sub-line — three lines, centered, nothing else.</li>
+  </ul>
+</section>
+
+<!-- ===================================================================== -->
+<!-- Open questions                                                         -->
+<!-- ===================================================================== -->
+<section class="sm-note sm-open-questions">
+  <h2><span class="n">For the planner</span>Open questions</h2>
+  <ul>
+    <li><strong>Unpublish command syntax.</strong> The Architecture defines the <code>unpublish_snapshot</code> MCP tool but only one slash command (<code>specmanager-publish.md</code>). Screen 1 mocks <code>/specmanager-publish unpublish</code> as an argument form — confirm whether unpublish is an argument, a separate command, or conversational only, and update the popover chip text accordingly.</li>
+    <li><strong>Fonts in the static snapshot.</strong> The board self-hosts Hanken Grotesk / Inter / Geist Mono via fontsource. Screens 4–6 assume the snapshot ships the same woff2 files inside the zip (a few hundred KB, keeps zero-external-asset posture). If the planner prefers a leaner zip, the system-ui fallbacks already in the token stacks degrade acceptably — decide one way.</li>
+    <li><strong>Dark-only stakeholder pages.</strong> The published site inherits the product's dark theme (templates lift <code>tokens.css</code>). No light variant exists in the design system; if stakeholder feedback demands one it is a new token set, out of v1.</li>
+    <li><strong>Tokens not in DESIGN.md.</strong> The DESIGN.md frontmatter still holds placeholder var() references; the canonical values used here come from <code>ui/src/tokens.css</code> (the file the Architecture itself points templates at). New, named in this design: the share-strip tint (7% <code>--primary</code> color-mix, same recipe family as existing banners) and the bordered draft/approved flag chips on published doc pages (derived from <code>--status-draft</code>/<code>--status-approved</code> at 14%/12% background mix). No new raw hex anywhere.</li>
+    <li><strong>Share popover live updates.</strong> Screen 1 assumes the popover refreshes on <code>snapshot.published</code>/<code>snapshot.unpublished</code> WS events (the Architecture already broadcasts them). If the popover is open during a publish from the session, the URL/status should update in place — cheap, but worth a task line.</li>
+    <li><strong>Relative timestamps.</strong> "2 h ago" in the header pill implies a relative-time formatter on the board; the popover and all published pages use absolute timestamps. If the planner wants zero new utilities, the pill can show the absolute date too.</li>
+  </ul>
+</section>
+
+</body>
+</html>

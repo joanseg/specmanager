@@ -3,7 +3,7 @@ id: plan-redesign-001
 featureId: feat-redesign
 stage: plan
 status: approved
-stale: true
+stale: false
 title: Redesign plan
 dependsOn:
   - arch-redesign-001
@@ -12,7 +12,7 @@ basedOn:
 generatedBy: agent
 version: 7
 createdAt: '2026-05-28T12:10:28.503Z'
-updatedAt: '2026-06-10T12:40:51.252Z'
+updatedAt: '2026-06-11T15:01:26.871Z'
 ---
 > Status: draft · awaiting human review and approval in the board UI.
 > Based on: Architecture `arch-redesign-001` v4 (approved), which is itself based on PRD `prd-redesign-001` v2 (approved). No SpecManager `design`-stage doc exists for this feature; the visual source-of-truth lives as raw materials under `docs/temp/redesign/` (`DESIGN.md` "Obsidian Flux", reference mockups `board.png` and `panel.png`).

@@ -1,0 +1,474 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-antigravity-plugin",
+      "title": "Spike: register mcp.js in ~/.gemini/config/mcp_config.json; determine per-window vs shared MCP process and its cwd",
+      "status": "todo",
+      "phase": "A",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:34:37.400Z",
+      "updatedAt": "2026-06-11T16:34:37.400Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-antigravity-plugin",
+      "title": "Spike: one full workflow→MCP draft loop end-to-end under Gemini (autocomplete, approvals, // turbo)",
+      "status": "todo",
+      "phase": "A",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:34:43.103Z",
+      "updatedAt": "2026-06-11T16:34:43.103Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-antigravity-plugin",
+      "title": "Spike: hand-rolled bootstrap-prompt install watched once with a non-maintainer driving",
+      "status": "todo",
+      "phase": "A",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:34:44.534Z",
+      "updatedAt": "2026-06-11T16:34:44.534Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-antigravity-plugin",
+      "title": "Spike: board, WS live updates, CodeMirror/Milkdown editors in Antigravity's browser flow",
+      "status": "todo",
+      "phase": "A",
+      "complexity": 1,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:34:45.603Z",
+      "updatedAt": "2026-06-11T16:34:45.603Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-antigravity-plugin",
+      "title": "core/paths.ts: projectRoot(explicit?) per-call resolution + agentsMdPath()",
+      "status": "todo",
+      "phase": "A",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001",
+        "task-002",
+        "task-003",
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:34:50.999Z",
+      "updatedAt": "2026-06-11T16:34:50.999Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-antigravity-plugin",
+      "title": "core/claude-md.ts: extract mergeManagedBlock helper + add syncAgentsMd (writes only when AGENTS.md exists)",
+      "status": "todo",
+      "phase": "A",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001",
+        "task-002",
+        "task-003",
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:34:52.264Z",
+      "updatedAt": "2026-06-11T16:34:52.264Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-antigravity-plugin",
+      "title": "mcp.ts: shared optional projectDir zod base merged into every tool schema",
+      "status": "todo",
+      "phase": "A",
+      "complexity": 2,
+      "dependsOn": [
+        "task-005"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:34:57.573Z",
+      "updatedAt": "2026-06-11T16:34:57.573Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-antigravity-plugin",
+      "title": "mcp.ts: sync_claude_md tool + auto-sync also write AGENTS.md when present",
+      "status": "todo",
+      "phase": "A",
+      "complexity": 1,
+      "dependsOn": [
+        "task-006",
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:35:03.620Z",
+      "updatedAt": "2026-06-11T16:35:03.620Z"
+    },
+    {
+      "id": "task-009",
+      "featureId": "feat-antigravity-plugin",
+      "title": "gen-antigravity.ts: generator core — inline agent protocols, strip Claude-Code steps, rewrite frontmatter, hard-fail >12,000 chars",
+      "status": "todo",
+      "phase": "A",
+      "complexity": 3,
+      "dependsOn": [
+        "task-001",
+        "task-002",
+        "task-003",
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:35:05.635Z",
+      "updatedAt": "2026-06-11T16:35:05.635Z"
+    },
+    {
+      "id": "task-010",
+      "featureId": "feat-antigravity-plugin",
+      "title": "Generator trampoline mode: oversized pairs emit ≤12k workflow reading antigravity/prompts/<agent>.md",
+      "status": "todo",
+      "phase": "A",
+      "complexity": 2,
+      "dependsOn": [
+        "task-009"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:35:11.876Z",
+      "updatedAt": "2026-06-11T16:35:11.876Z"
+    },
+    {
+      "id": "task-011",
+      "featureId": "feat-antigravity-plugin",
+      "title": "Generate + commit antigravity/workflows for init, interview, prd, architecture, design, plan, board + rules/specmanager.md",
+      "status": "todo",
+      "phase": "A",
+      "complexity": 2,
+      "dependsOn": [
+        "task-009",
+        "task-010"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:35:17.921Z",
+      "updatedAt": "2026-06-11T16:35:17.921Z"
+    },
+    {
+      "id": "task-012",
+      "featureId": "feat-antigravity-plugin",
+      "title": "antigravity-install.ts: merge mcp_config.json entry (literal absolute paths, preserve other servers), copy .agent assets, print verification checklist",
+      "status": "todo",
+      "phase": "A",
+      "complexity": 3,
+      "dependsOn": [
+        "task-001",
+        "task-002",
+        "task-003",
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:35:19.254Z",
+      "updatedAt": "2026-06-11T16:35:19.254Z"
+    },
+    {
+      "id": "task-013",
+      "featureId": "feat-antigravity-plugin",
+      "title": "mcp_config.snippet.json + INSTALL.md bootstrap prompt (Screen 1 happy path + Screen 2 failure/recovery copy)",
+      "status": "todo",
+      "phase": "A",
+      "complexity": 2,
+      "dependsOn": [
+        "task-012"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:35:25.930Z",
+      "updatedAt": "2026-06-11T16:35:25.930Z"
+    },
+    {
+      "id": "task-014",
+      "featureId": "feat-antigravity-plugin",
+      "title": "selftest-antigravity.ts + package.json scripts (generator outputs, 12k cap, trampoline targets, projectRoot fallback order, AGENTS.md merge round-trip)",
+      "status": "todo",
+      "phase": "A",
+      "complexity": 2,
+      "dependsOn": [
+        "task-011",
+        "task-012"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:35:31.030Z",
+      "updatedAt": "2026-06-11T16:35:31.030Z"
+    },
+    {
+      "id": "task-015",
+      "featureId": "feat-antigravity-plugin",
+      "title": "Phase A exit run: PRD→plan from Antigravity under Gemini; fix prompt drift at source + regenerate; verify dual-client from Claude Code; rebuild server/dist",
+      "status": "todo",
+      "phase": "A",
+      "complexity": 3,
+      "dependsOn": [
+        "task-008",
+        "task-013",
+        "task-014"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:35:38.256Z",
+      "updatedAt": "2026-06-11T16:35:38.256Z"
+    },
+    {
+      "id": "task-016",
+      "featureId": "feat-antigravity-plugin",
+      "title": "Generate + commit build and walkthrough workflows in trampoline mode; extend selftest-antigravity coverage",
+      "status": "todo",
+      "phase": "B",
+      "complexity": 2,
+      "dependsOn": [
+        "task-015"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:35:45.925Z",
+      "updatedAt": "2026-06-11T16:35:45.925Z"
+    },
+    {
+      "id": "task-017",
+      "featureId": "feat-antigravity-plugin",
+      "title": "Dual-client pidfile/port verification with Claude Code and Antigravity both live",
+      "status": "todo",
+      "phase": "B",
+      "complexity": 2,
+      "dependsOn": [
+        "task-015"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:35:47.048Z",
+      "updatedAt": "2026-06-11T16:35:47.048Z"
+    },
+    {
+      "id": "task-018",
+      "featureId": "feat-antigravity-plugin",
+      "title": "Supervised PM build session: observe a real build phase, set final // turbo aggressiveness and build-workflow tone (fixes at source + regenerate)",
+      "status": "todo",
+      "phase": "B",
+      "complexity": 3,
+      "dependsOn": [
+        "task-016"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:35:52.639Z",
+      "updatedAt": "2026-06-11T16:35:52.639Z"
+    },
+    {
+      "id": "task-019",
+      "featureId": "feat-antigravity-plugin",
+      "title": "Phase B exit run: full lifecycle PRD→final walkthrough from Antigravity; feature.shipped fires; DESIGN.md syncs; re-verify parity from Claude Code",
+      "status": "todo",
+      "phase": "B",
+      "complexity": 2,
+      "dependsOn": [
+        "task-016",
+        "task-017",
+        "task-018"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:35:59.022Z",
+      "updatedAt": "2026-06-11T16:35:59.022Z"
+    },
+    {
+      "id": "task-020",
+      "featureId": "feat-antigravity-plugin",
+      "title": "ChatPanel unavailable-state upgrade per Screen 4: disclosure card, Dismiss only (session-collapse), no add-a-key CTA; rebuild ui/dist",
+      "status": "todo",
+      "phase": "C",
+      "complexity": 2,
+      "dependsOn": [
+        "task-019"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:36:05.609Z",
+      "updatedAt": "2026-06-11T16:36:05.609Z"
+    },
+    {
+      "id": "task-021",
+      "featureId": "feat-antigravity-plugin",
+      "title": "Evaluate native Antigravity 2.0 subagents/hooks: adopt only if declaratively configurable, else record flattened design as permanent",
+      "status": "todo",
+      "phase": "C",
+      "complexity": 2,
+      "dependsOn": [
+        "task-019"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:36:07.019Z",
+      "updatedAt": "2026-06-11T16:36:07.019Z"
+    },
+    {
+      "id": "task-022",
+      "featureId": "feat-antigravity-plugin",
+      "title": "CLI smoke check: run one doc-lifecycle workflow from the Antigravity CLI against the same repo",
+      "status": "todo",
+      "phase": "C",
+      "complexity": 1,
+      "dependsOn": [
+        "task-019"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:36:09.184Z",
+      "updatedAt": "2026-06-11T16:36:09.184Z"
+    },
+    {
+      "id": "task-023",
+      "featureId": "feat-antigravity-plugin",
+      "title": "Publish specmanager-antigravity npm package wrapping the installer; update INSTALL.md to the one-npx path",
+      "status": "todo",
+      "phase": "C",
+      "complexity": 3,
+      "dependsOn": [
+        "task-019"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:36:09.854Z",
+      "updatedAt": "2026-06-11T16:36:09.854Z"
+    },
+    {
+      "id": "task-024",
+      "featureId": "feat-antigravity-plugin",
+      "title": "Publish coverage scorecard: every command/gate/sync/board feature marked supported/degraded/unsupported; chat pre-accepted unsupported; record maintenance delta",
+      "status": "todo",
+      "phase": "C",
+      "complexity": 2,
+      "dependsOn": [
+        "task-020",
+        "task-021",
+        "task-022"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:36:15.922Z",
+      "updatedAt": "2026-06-11T16:36:15.922Z"
+    },
+    {
+      "id": "task-025",
+      "featureId": "feat-antigravity-plugin",
+      "title": "Trigger-user test: PM self-installs SpecManager in Antigravity and completes one full lifecycle unassisted; record pass/fail",
+      "status": "todo",
+      "phase": "C",
+      "complexity": 2,
+      "dependsOn": [
+        "task-023",
+        "task-024"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-11T16:36:21.273Z",
+      "updatedAt": "2026-06-11T16:36:21.273Z"
+    }
+  ]
+}

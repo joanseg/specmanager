@@ -3,7 +3,7 @@ id: arch-redesign-001
 featureId: feat-redesign
 stage: architecture
 status: approved
-stale: true
+stale: false
 title: Redesign architecture
 dependsOn:
   - prd-redesign-001
@@ -12,7 +12,7 @@ basedOn:
 generatedBy: human
 version: 4
 createdAt: '2026-05-28T11:45:54.691Z'
-updatedAt: '2026-06-10T12:40:51.250Z'
+updatedAt: '2026-06-11T15:01:18.468Z'
 ---
 > Status: draft · awaiting human review and approval in the board UI.
 > Based on: PRD `prd-redesign-001` v2 (approved). Design source: `docs/temp/redesign/DESIGN.md` ("Obsidian Flux"), reference mockups `docs/temp/redesign/board.png` and `docs/temp/redesign/panel.png`. No SpecManager `design`-stage doc exists for this feature; the design lives as raw materials under `docs/temp/redesign/`.

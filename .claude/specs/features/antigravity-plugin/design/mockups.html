@@ -1,0 +1,610 @@
+---
+id: design-antigravity-plugin-004
+featureId: feat-antigravity-plugin
+stage: design
+status: approved
+stale: false
+title: Antigravity plugin mockups
+dependsOn:
+  - prd-antigravity-plugin-012
+  - arch-antigravity-plugin-010
+basedOn:
+  prd-antigravity-plugin-012: 2
+  arch-antigravity-plugin-010: 3
+generatedBy: agent
+version: 1
+createdAt: '2026-06-11T16:14:20.389Z'
+updatedAt: '2026-06-11T16:30:31.556Z'
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Antigravity plugin — screen mockups</title>
+<style>
+/* ============================================================
+   Obsidian Flux tokens — copied 1:1 from ui/src/tokens.css.
+   Board surfaces consume ONLY these. Antigravity surfaces use a
+   deliberately different, neutral palette (.ag-*) and are marked
+   "illustrative third-party UI" — they are an experience spec for
+   agent-emitted text, not pixels we ship.
+   ============================================================ */
+:root{
+  --surface:#131315; --surface-container-lowest:#0e0e10; --surface-container-low:#1b1b1d;
+  --surface-container:#201f21; --surface-container-high:#2a2a2c; --surface-container-highest:#353437;
+  --on-surface:#e5e1e4; --on-surface-variant:#c7c4d7;
+  --outline:#908fa0; --outline-variant:#464554;
+  --primary:#c0c1ff; --on-primary:#1000a9; --primary-container:#8083ff; --secondary:#ddb7ff; --secondary-container:#6f00be;
+  --tertiary:#ffb783; --error:#ffb4ab; --error-container:#93000a; --success:#10b981;
+  --status-draft:var(--tertiary); --status-approved:var(--success); --status-stale:var(--error);
+  --status-in-progress:var(--tertiary); --status-done:var(--success);
+  --radius-sm:0.25rem; --radius-md:0.5rem; --radius-lg:1rem;
+  --space-xs:4px; --space-sm:8px; --space-md:16px; --space-lg:24px; --space-xl:40px;
+  --font-display:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --shadow-overlay:0px 20px 50px rgba(0,0,0,.5);
+  --card-gradient:linear-gradient(135deg,var(--surface-container),var(--surface-container-low));
+  --card-border:color-mix(in srgb,var(--outline-variant) 80%,transparent);
+  --backdrop-dim:rgba(0,0,0,.55);
+  --gradient-primary:linear-gradient(135deg,var(--primary-container),var(--secondary-container));
+  /* Antigravity (illustrative, neutral Google-ish) */
+  --ag-bg:#17181c; --ag-panel:#202227; --ag-card:#24262c; --ag-border:#34373f;
+  --ag-text:#e3e5e8; --ag-dim:#9aa0ab; --ag-accent:#8ab4f8; --ag-mono:#aab4c4;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#0b0b0d;color:var(--on-surface);font-family:var(--font-body);font-size:15px;line-height:1.55}
+
+/* ---------- note sections ---------- */
+.sm-note{max-width:880px;margin:0 auto;padding:34px 32px 10px}
+.sm-note h1{font-family:var(--font-display);font-size:30px;margin:0 0 8px}
+.sm-note h2{font-family:var(--font-display);font-size:21px;margin:0 0 10px;color:var(--primary)}
+.sm-note h3{font-family:var(--font-display);font-size:16px;margin:18px 0 6px}
+.sm-note p{margin:8px 0;color:var(--on-surface-variant)}
+.sm-note ul{margin:8px 0;padding-left:22px;color:var(--on-surface-variant)}
+.sm-note li{margin:5px 0}
+.sm-note strong{color:var(--on-surface)}
+.sm-note code{font-family:var(--font-mono);font-size:.85em;background:var(--surface-container);border:1px solid var(--outline-variant);border-radius:var(--radius-sm);padding:1px 5px}
+.sm-kicker{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--outline)}
+
+/* ---------- screen wrapper / window chrome ---------- */
+.sm-screen{padding:44px 24px 52px;display:flex;justify-content:center;gap:24px;flex-wrap:wrap;background:
+  radial-gradient(1200px 500px at 50% 0,rgba(192,193,255,.045),transparent 70%)}
+.frame{border:1px solid var(--outline-variant);border-radius:var(--radius-lg);overflow:hidden;
+  box-shadow:var(--shadow-overlay);background:var(--surface)}
+.frame__bar{height:38px;display:flex;align-items:center;gap:10px;padding:0 14px;
+  background:var(--surface-container-low);border-bottom:1px solid var(--outline-variant);
+  font-size:12px;color:var(--on-surface-variant)}
+.frame--ag .frame__bar{background:#26282e;border-bottom-color:var(--ag-border);color:var(--ag-dim)}
+.dots{display:flex;gap:6px}
+.dots i{width:10px;height:10px;border-radius:50%;background:#3a3b40;display:block}
+.frame__title{font-family:var(--font-mono);font-size:11.5px;opacity:.85}
+.frame__spacer{flex:1}
+.tag-3p{font-size:9.5px;font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase;
+  color:#0b0b0d;background:var(--ag-accent);border-radius:3px;padding:2px 7px;font-weight:600}
+.tag-ours{font-size:9.5px;font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase;
+  color:var(--on-primary);background:var(--primary);border-radius:3px;padding:2px 7px;font-weight:600}
+
+/* ---------- Antigravity agent panel (illustrative) ---------- */
+.ag-body{background:var(--ag-bg);color:var(--ag-text);padding:20px;font-size:13.5px;line-height:1.5}
+.ag-user{background:var(--ag-panel);border:1px solid var(--ag-border);border-radius:10px;
+  padding:12px 14px;margin-bottom:16px;position:relative}
+.ag-user::before{content:"You";position:absolute;top:-8px;left:12px;background:var(--ag-bg);
+  padding:0 6px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ag-dim)}
+.ag-user p{margin:6px 0;color:var(--ag-text)}
+.ag-user .mono{font-family:var(--font-mono);font-size:12px;color:var(--ag-mono)}
+.ag-agent{margin:0 0 14px;position:relative;padding-left:14px;border-left:2px solid var(--ag-border)}
+.ag-agent-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ag-dim);margin-bottom:8px}
+.ag-agent-label b{color:var(--ag-accent);font-weight:600}
+.ag-agent p{margin:8px 0;color:var(--ag-text)}
+.ag-step{display:flex;gap:10px;align-items:flex-start;padding:7px 0}
+.ag-step + .ag-step{border-top:1px dashed #2b2d33}
+.ag-step .ico{width:18px;height:18px;border-radius:50%;flex:none;display:flex;align-items:center;
+  justify-content:center;font-size:11px;font-weight:700;margin-top:1px}
+.ico--done{background:rgba(16,185,129,.16);color:var(--success)}
+.ico--run{background:rgba(255,183,131,.14);color:var(--tertiary)}
+.ico--todo{background:#2b2d33;color:var(--ag-dim)}
+.ico--fail{background:rgba(255,180,171,.15);color:var(--error)}
+.ag-step .t{font-weight:600;font-size:13px}
+.ag-step .ev{display:block;font-family:var(--font-mono);font-size:11px;color:var(--ag-dim);margin-top:2px}
+.ag-step .ev b{color:var(--ag-mono);font-weight:500}
+.ag-sub{margin:4px 0 0;padding-left:14px;font-family:var(--font-mono);font-size:11px;color:var(--ag-dim)}
+.ag-sub li{margin:2px 0;list-style:"· "}
+.ag-card{border-radius:10px;padding:13px 15px;margin:12px 0;border:1px solid}
+.ag-card--ok{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.35)}
+.ag-card--warn{background:rgba(255,183,131,.07);border-color:rgba(255,183,131,.35)}
+.ag-card--err{background:rgba(255,180,171,.07);border-color:rgba(255,180,171,.35)}
+.ag-card h4{margin:0 0 4px;font-size:13.5px;font-family:var(--font-display)}
+.ag-card--ok h4{color:var(--success)} .ag-card--warn h4{color:var(--tertiary)} .ag-card--err h4{color:var(--error)}
+.ag-card p{margin:4px 0;font-size:12.5px;color:var(--ag-text)}
+.ag-card .mono{font-family:var(--font-mono);font-size:11px;color:var(--ag-dim)}
+.ag-btnrow{display:flex;gap:8px;margin-top:10px}
+.ag-btn{font-size:12px;font-weight:600;border-radius:7px;padding:6px 14px;border:1px solid var(--ag-border);
+  background:var(--ag-card);color:var(--ag-text)}
+.ag-btn--primary{background:var(--ag-accent);border-color:var(--ag-accent);color:#101218}
+.ag-btn--success{background:var(--success);border-color:var(--success);color:#062017}
+.ag-tool{display:flex;align-items:baseline;gap:8px;font-family:var(--font-mono);font-size:11px;
+  color:var(--ag-mono);padding:5px 8px;background:#1c1e23;border:1px solid #2b2d33;border-radius:6px;margin:5px 0}
+.ag-tool .pill{flex:none;font-size:9px;font-weight:700;letter-spacing:.08em;color:#101218;
+  background:var(--ag-accent);border-radius:3px;padding:1px 5px}
+.ag-tool .ok{color:var(--success)}
+.ag-tool .arrow{color:var(--ag-dim)}
+.ag-slash{display:inline-block;font-family:var(--font-mono);font-size:12.5px;color:var(--ag-accent);
+  background:rgba(138,180,248,.1);border:1px solid rgba(138,180,248,.3);border-radius:6px;padding:3px 9px}
+.ag-wfchip{display:inline-flex;gap:6px;align-items:center;font-family:var(--font-mono);font-size:10.5px;
+  color:var(--ag-dim);background:#1c1e23;border:1px solid #2b2d33;border-radius:99px;padding:3px 10px;margin:6px 0}
+.ag-wfchip b{color:var(--ag-mono);font-weight:500}
+.ag-composer{margin-top:14px;background:var(--ag-panel);border:1px solid var(--ag-border);border-radius:10px;
+  padding:10px 14px;color:var(--ag-dim);font-size:12.5px;display:flex;justify-content:space-between;align-items:center}
+.ag-composer .hint{font-family:var(--font-mono);font-size:10px}
+
+/* ---------- SpecManager board (real tokens) ---------- */
+.bd{background:var(--surface);color:var(--on-surface);font-size:12px;padding:14px 16px;min-height:430px}
+.bd-header{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
+.bd-title{font-family:var(--font-display);font-size:18px;font-weight:700;margin:0}
+.bd-meta{font-size:11px;color:var(--on-surface-variant)}
+.bd-pulse{font-family:var(--font-mono);font-size:10px;color:var(--primary)}
+.bd-grid{display:grid;gap:6px;align-items:stretch}
+.bd-grid--full{grid-template-columns:104px repeat(6,1fr)}
+.bd-h{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--outline);
+  padding:4px 2px;border-bottom:1px solid var(--outline-variant)}
+.bd-h--build{color:color-mix(in srgb,var(--tertiary) 70%,var(--outline))}
+.bd-rowlabel{padding:8px 2px}
+.bd-rowlabel strong{display:block;font-size:11.5px;font-weight:600}
+.bd-rowlabel small{display:block;font-size:9.5px;color:var(--outline);font-family:var(--font-mono)}
+.bd-card{background:var(--card-gradient);border:1px solid var(--card-border);border-radius:var(--radius-md);
+  padding:7px 8px;min-height:46px;display:flex;flex-direction:column;justify-content:space-between;gap:4px}
+.bd-card--new{border-color:color-mix(in srgb,var(--primary) 55%,var(--outline-variant));
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--primary) 20%,transparent),0 6px 20px rgba(0,0,0,.35)}
+.bd-card__title{font-size:10.5px;font-weight:600;line-height:1.3}
+.bd-badges{display:flex;gap:6px;align-items:center}
+.bd-badge{font-size:8.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.bd-badge--draft{color:var(--status-draft)} .bd-badge--approved{color:var(--status-approved)}
+.bd-badge--meta{color:var(--outline);font-weight:500;font-family:var(--font-mono);text-transform:none;letter-spacing:0}
+.bd-card--empty{background:transparent;border:1px dashed var(--outline-variant);color:var(--outline);
+  align-items:center;justify-content:center;display:flex;font-size:9.5px;text-align:center}
+.bd-card--locked{background:transparent;border:1px dashed color-mix(in srgb,var(--outline-variant) 60%,transparent);
+  color:color-mix(in srgb,var(--outline) 70%,transparent);display:flex;align-items:center;justify-content:center;
+  font-size:9.5px;text-align:center;line-height:1.4}
+.bd-card--optional{background:transparent;border:1px dashed var(--outline-variant);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:2px;color:var(--outline);font-size:9.5px}
+.bd-card--optional .opt{color:var(--secondary);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+
+/* ---------- doc panel / chat (screen 4) ---------- */
+.bd-stage{position:relative;overflow:hidden}
+.bd-dim{position:absolute;inset:0;background:var(--backdrop-dim)}
+.bd-drawer{position:absolute;top:0;right:0;bottom:0;width:66%;background:var(--surface-container-low);
+  border-left:1px solid color-mix(in srgb,var(--primary) 25%,var(--outline-variant));
+  box-shadow:var(--shadow-overlay);display:flex;flex-direction:column}
+.bd-drawer__head{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--outline-variant)}
+.bd-drawer__head h3{font-family:var(--font-display);font-size:14px;margin:0;flex:1}
+.bd-drawer__head .x{color:var(--outline);font-size:14px}
+.bd-drawer__cols{flex:1;display:flex;min-height:0}
+.bd-doc{flex:1.45;padding:16px 18px;border-right:1px solid var(--outline-variant);font-size:12px;color:var(--on-surface-variant)}
+.bd-doc h4{font-family:var(--font-display);color:var(--on-surface);font-size:15px;margin:0 0 8px}
+.bd-doc p{margin:6px 0;line-height:1.55}
+.bd-doc .h5{font-family:var(--font-display);color:var(--on-surface);font-size:12.5px;margin:12px 0 4px;font-weight:700}
+.bd-chatcol{flex:1;display:flex;flex-direction:column;padding:14px}
+.bd-chatcol__head{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--on-surface-variant);
+  text-transform:uppercase;margin-bottom:10px}
+.chat-unavail{background:var(--card-gradient);border:1px solid var(--card-border);border-radius:var(--radius-md);
+  padding:16px 15px}
+.chat-unavail .ic{width:30px;height:30px;border-radius:50%;background:color-mix(in srgb,var(--tertiary) 14%,transparent);
+  color:var(--tertiary);display:flex;align-items:center;justify-content:center;font-size:14px;margin-bottom:10px}
+.chat-unavail h5{font-family:var(--font-display);font-size:13.5px;margin:0 0 6px;color:var(--on-surface)}
+.chat-unavail p{font-size:11.5px;color:var(--on-surface-variant);margin:6px 0;line-height:1.5}
+.chat-unavail code{font-family:var(--font-mono);font-size:10px;background:var(--surface-container-high);
+  border-radius:var(--radius-sm);padding:1px 4px}
+.chat-unavail .row{display:flex;gap:8px;margin-top:12px}
+.btn{font-size:11px;font-weight:600;border-radius:var(--radius-md);padding:6px 12px;
+  border:1px solid var(--outline-variant);background:var(--surface-container);color:var(--on-surface)}
+.btn--primary{background:var(--gradient-primary);border:none;color:#fff}
+.chat-unavail .why{font-size:10px;color:var(--outline);margin-top:12px;font-family:var(--font-mono)}
+.bd-composer{margin-top:auto;border:1px solid var(--outline-variant);border-radius:var(--radius-md);
+  padding:8px 10px;color:var(--outline);font-size:11px;opacity:.5}
+
+/* ---------- editor (screen 5) ---------- */
+.ed{background:var(--ag-bg);font-family:var(--font-mono);font-size:12px;line-height:1.7;padding:14px 0;color:var(--ag-text)}
+.ed .ln{display:flex}
+.ed .no{width:44px;flex:none;text-align:right;padding-right:14px;color:#4a4d55;user-select:none}
+.ed .cd{white-space:pre-wrap;padding-right:18px}
+.ed .cm{color:#6f7683}
+.ed .mk{color:var(--ag-accent)}
+.ed .managed{background:color-mix(in srgb,#c0c1ff 6%,transparent);border-left:2px solid var(--primary)}
+.ed .managed .no{border-left:none}
+.ed .h{color:#ddb7ff;font-weight:600}
+.ed .tbl{color:#aab4c4}
+.ed-chip{position:absolute;right:18px;font-size:9.5px;font-family:var(--font-mono);color:var(--on-primary);
+  background:var(--primary);border-radius:3px;padding:2px 8px;font-weight:600}
+.relwrap{position:relative}
+
+.caption{width:100%;text-align:center;font-family:var(--font-mono);font-size:10.5px;color:var(--outline);
+  letter-spacing:.08em;text-transform:uppercase;margin-top:-30px;padding-bottom:6px}
+hr.sep{border:none;border-top:1px solid var(--outline-variant);max-width:880px;margin:34px auto 0;opacity:.5}
+</style>
+</head>
+<body>
+
+<section class="sm-note">
+  <p class="sm-kicker">feat-antigravity-plugin · design · based on PRD v2 + Architecture v3</p>
+  <h1>Antigravity plugin — experience mockups</h1>
+  <p>This feature ships almost no new board UI — the board is explicitly unchanged in the architecture. What it ships is an <strong>experience on a third-party surface</strong>: Antigravity's agent panel, driven by our generated workflows, rules file, and INSTALL.md bootstrap prompt. The "UI" we control there is <strong>the text the agent emits</strong> — so screens 1–3 are format contracts for prompt output, rendered as stylised, clearly-labelled illustrations of Antigravity (not pixel-accurate Google UI). Screen 4 is the single real board change (the unsupported-chat disclosure — the in-UI chat is <strong>not supported</strong> on Antigravity, by user decision 2026-06-11). Screen 5 shows the AGENTS.md managed block contract.</p>
+  <p>All SpecManager board surfaces below use the real Obsidian Flux tokens from <code>ui/src/tokens.css</code>. One shared color language carries across both surfaces: <strong>amber = waiting/needs you, emerald = done/approved, rose = failed/stale</strong> — the same status roles the PM will learn on the board.</p>
+</section>
+
+<!-- ================= SCREEN 1 : INSTALL, HAPPY PATH ================= -->
+<section class="sm-screen">
+  <div class="frame frame--ag" style="width:760px">
+    <div class="frame__bar">
+      <span class="dots"><i></i><i></i><i></i></span>
+      <span class="frame__title">Antigravity — riverside-app — Agent panel</span>
+      <span class="frame__spacer"></span>
+      <span class="tag-3p">Illustrative · third-party UI</span>
+    </div>
+    <div class="ag-body">
+      <div class="ag-user">
+        <p style="font-size:12.5px">Pasted from <span class="mono">specmanager/antigravity/INSTALL.md</span>:</p>
+        <p class="mono">Install SpecManager for this workspace. 1) Clone (or pull) https://github.com/joan/specmanager into ~/specmanager. 2) Run npm install in plugins/specmanager/server. 3) Run node server/dist/antigravity-install.js --project /Users/maya/riverside-app. 4) Tell me when to enable "specmanager" in the MCP store. 5) Verify the board responds at http://127.0.0.1:4317. Report each step as pass/fail with one line of evidence.</p>
+      </div>
+
+      <div class="ag-agent">
+        <div class="ag-agent-label">Agent · <b>Gemini 3.5 Flash</b></div>
+        <p>Installing SpecManager. Five steps — I'll report each with evidence.</p>
+
+        <div class="ag-step"><span class="ico ico--done">✓</span><div>
+          <span class="t">1 · Clone / update SpecManager</span>
+          <span class="ev">cloned to <b>~/specmanager</b> @ <b>152a058</b> (main)</span>
+        </div></div>
+
+        <div class="ag-step"><span class="ico ico--done">✓</span><div>
+          <span class="t">2 · Install server dependencies</span>
+          <span class="ev">npm install in plugins/specmanager/server — <b>214 packages</b>, 0 vulnerabilities, node <b>v22.4</b> ≥ 20 ✓</span>
+        </div></div>
+
+        <div class="ag-step"><span class="ico ico--done">✓</span><div>
+          <span class="t">3 · Run the installer</span>
+          <span class="ev">node server/dist/antigravity-install.js --project /Users/maya/riverside-app</span>
+          <ul class="ag-sub">
+            <li>merged "specmanager" into ~/.gemini/config/mcp_config.json — literal paths, 2 existing servers preserved</li>
+            <li>copied 9 workflows, 2 prompts, 1 rules file into riverside-app/.agent/</li>
+          </ul>
+        </div></div>
+
+        <div class="ag-card ag-card--warn">
+          <h4>One click I can't do for you</h4>
+          <p>Open the <strong>MCP store</strong> panel (plug icon, top right) and toggle <strong>specmanager</strong> on. Antigravity only lets a human enable a new server. Tell me when it's done.</p>
+        </div>
+
+        <div class="ag-user" style="margin:14px 0"><p>done, it's on</p></div>
+
+        <div class="ag-step"><span class="ico ico--done">✓</span><div>
+          <span class="t">4 · MCP server enabled</span>
+          <span class="ev">22 specmanager_* tools visible — list_features, create_document, check_gate, …</span>
+        </div></div>
+
+        <div class="ag-step"><span class="ico ico--done">✓</span><div>
+          <span class="t">5 · Verify the board</span>
+          <span class="ev">GET http://127.0.0.1:4317 → <b class="ok" style="color:var(--success)">200</b> · board loaded, 0 features, websocket live</span>
+        </div></div>
+
+        <div class="ag-card ag-card--ok">
+          <h4>✓ SpecManager is up</h4>
+          <p>The board is running locally and this workspace is initialised. Keep the board open next to the IDE — it updates live as we work.</p>
+          <div class="ag-btnrow">
+            <button class="ag-btn ag-btn--success">Open board · 127.0.0.1:4317</button>
+            <button class="ag-btn">Show what was installed</button>
+          </div>
+          <p class="mono" style="margin-top:10px">Next: type <span style="color:var(--ag-accent)">/specmanager-prd &lt;feature title&gt;</span> to draft your first feature.</p>
+        </div>
+      </div>
+
+      <div class="ag-composer"><span>Ask anything, or run a /workflow…</span><span class="hint">⏎ send</span></div>
+    </div>
+  </div>
+  <div class="caption">Screen 1 · Terminal-free install — bootstrap prompt → verified "board is up" moment</div>
+</section>
+
+<section class="sm-note">
+  <h2>Screen 1 — The install experience (happy path)</h2>
+  <p>This is the PM success metric made visible: <strong>install without Joan, without a terminal</strong>. The user performs exactly two actions — paste the INSTALL.md bootstrap prompt, and one toggle in the MCP store — and the agent does everything else.</p>
+  <ul>
+    <li><strong>This screen is a format contract, not a UI we render.</strong> The deliverable is the wording of <code>antigravity/INSTALL.md</code>: the prompt explicitly instructs "report each step as pass/fail with one line of evidence", which produces the numbered checklist above. The builder implements this in the INSTALL.md copy and reinforces it in the generated rules file.</li>
+    <li><strong>Every step = name + state icon + one line of mono evidence.</strong> Evidence is specific and checkable (commit hash, package count, node version, tool count, HTTP 200) — a semi-technical PM can read it; Joan can debug from it remotely.</li>
+    <li><strong>The one manual step is designed, not apologised for.</strong> The MCP-store toggle is the only thing the agent can't click (it's Antigravity's own chrome), so it gets a distinct amber "action needed" card with the exact location of the control, and the flow resumes only after the user confirms. Step 4 then re-verifies (tool count) rather than trusting the user.</li>
+    <li><strong>The "board is up" moment is the climax</strong> — an emerald card with the URL as a button and the immediate next action (<code>/specmanager-prd</code>). Install ends with momentum, not a log dump.</li>
+    <li>State colors deliberately mirror the board's status tokens (<code>--status-draft</code>/<code>--status-approved</code>/<code>--status-stale</code> roles): amber, emerald, rose. One color language across both surfaces.</li>
+    <li>Architecture grounding: installer behaviour shown (literal paths in <code>mcp_config.json</code>, preserve other servers, copy <code>.agent/workflows|prompts|rules</code>) matches <code>antigravity-install.ts</code> exactly — the mockup's evidence lines are the installer's required stdout.</li>
+  </ul>
+</section>
+
+<hr class="sep">
+
+<!-- ================= SCREEN 2 : INSTALL FAILURE ================= -->
+<section class="sm-screen">
+  <div class="frame frame--ag" style="width:760px">
+    <div class="frame__bar">
+      <span class="dots"><i></i><i></i><i></i></span>
+      <span class="frame__title">Antigravity — riverside-app — Agent panel</span>
+      <span class="frame__spacer"></span>
+      <span class="tag-3p">Illustrative · third-party UI</span>
+    </div>
+    <div class="ag-body">
+      <div class="ag-agent">
+        <div class="ag-agent-label">Agent · <b>Gemini 3.5 Flash</b></div>
+
+        <div class="ag-step"><span class="ico ico--done">✓</span><div>
+          <span class="t">1 · Clone / update SpecManager</span>
+          <span class="ev">cloned to <b>~/specmanager</b> @ <b>152a058</b> (main)</span>
+        </div></div>
+
+        <div class="ag-step"><span class="ico ico--fail">✕</span><div>
+          <span class="t">2 · Install server dependencies — failed</span>
+          <span class="ev">npm install exited 1 — engine check: found node <b>v16.20</b>, SpecManager needs <b>≥ 20</b></span>
+        </div></div>
+
+        <div class="ag-step"><span class="ico ico--todo">○</span><div>
+          <span class="t" style="color:var(--ag-dim)">3 · Run the installer — waiting on step 2</span>
+        </div></div>
+        <div class="ag-step"><span class="ico ico--todo">○</span><div>
+          <span class="t" style="color:var(--ag-dim)">4 · Enable in MCP store · 5 · Verify board</span>
+        </div></div>
+
+        <div class="ag-card ag-card--err">
+          <h4>Stopped: Node is too old</h4>
+          <p><strong>Root cause:</strong> this machine's default Node is v16.20; SpecManager's server requires Node 20+. Nothing was half-installed — I stopped before the installer ran.</p>
+          <p><strong>Fix I can apply:</strong> install Node 22 LTS with <span class="mono">fnm</span> (user-local, doesn't touch the system Node), then resume from step 2.</p>
+          <div class="ag-btnrow">
+            <button class="ag-btn ag-btn--primary">Install Node 22 &amp; resume</button>
+            <button class="ag-btn">I'll handle it myself</button>
+          </div>
+          <p class="mono" style="margin-top:8px">Full npm output kept — say "show the log" if you want it.</p>
+        </div>
+      </div>
+
+      <div class="ag-composer"><span>Ask anything, or run a /workflow…</span><span class="hint">⏎ send</span></div>
+    </div>
+  </div>
+  <div class="caption">Screen 2 · Install failure — root cause + proposed recovery, never a raw log dump</div>
+</section>
+
+<section class="sm-note">
+  <h2>Screen 2 — Install failure &amp; recovery</h2>
+  <p>The PM refuses terminals; a wall of npm stderr is the moment we lose him. The failure contract INSTALL.md must encode:</p>
+  <ul>
+    <li><strong>The checklist stays visible</strong> — failed step goes rose, downstream steps stay pending (hollow), so the user always knows <em>where</em> it stopped and that nothing after it ran ("nothing was half-installed" is stated explicitly — install must be safe to re-run, which the architecture's installer guarantees via merge-not-overwrite).</li>
+    <li><strong>Root cause first, in one sentence</strong>, then exactly one proposed fix with an approval choice. The raw log is available on request, never shown by default.</li>
+    <li><strong>Recovery resumes, not restarts</strong> — "resume from step 2" reinforces that steps are idempotent and ordered.</li>
+    <li>The two buttons are Antigravity's native command-approval affordance (illustrative rendering); the real mechanism is the agent proposing a command and the IDE asking to run it. <code>// turbo</code> annotations in workflows can auto-approve safe commands later, but the install flow keeps explicit approval — first-run trust matters more than speed.</li>
+  </ul>
+</section>
+
+<hr class="sep">
+
+<!-- ================= SCREEN 3 : DUAL-SURFACE DRAFTING ================= -->
+<section class="sm-screen">
+  <div class="frame frame--ag" style="width:520px">
+    <div class="frame__bar">
+      <span class="dots"><i></i><i></i><i></i></span>
+      <span class="frame__title">Antigravity — Agent panel</span>
+      <span class="frame__spacer"></span>
+      <span class="tag-3p">Illustrative</span>
+    </div>
+    <div class="ag-body" style="font-size:13px">
+      <div class="ag-user">
+        <p><span class="ag-slash">/specmanager-prd</span> Checkout corridor</p>
+      </div>
+      <div class="ag-agent">
+        <div class="ag-agent-label">Agent · <b>Gemini 3.5 Flash</b></div>
+        <div class="ag-wfchip">workflow <b>.agent/workflows/specmanager-prd.md</b></div>
+        <p style="font-size:12.5px">Drafting a PRD for <strong>Checkout corridor</strong>. Checking the board state first.</p>
+
+        <div class="ag-tool"><span class="pill">MCP</span><span>list_features(projectDir:"/Users/maya/riverside-app")</span><span class="arrow">→</span><span class="ok">0 features</span></div>
+        <div class="ag-tool"><span class="pill">MCP</span><span>create_feature(title:"Checkout corridor")</span><span class="arrow">→</span><span class="ok">feat-checkout-corridor</span></div>
+
+        <p style="font-size:12.5px">Reading the codebase for grounding — <span style="font-family:var(--font-mono);font-size:11px;color:var(--ag-dim)">src/checkout/*.ts (14 files), src/cart/store.ts, README.md</span></p>
+
+        <div class="ag-tool"><span class="pill">MCP</span><span>create_document(stage:"prd", featureId:"feat-checkout-corridor", …)</span><span class="arrow">→</span><span class="ok">prd-checkout-corridor-001 · v1 draft</span></div>
+
+        <div class="ag-card ag-card--ok" style="margin-top:14px">
+          <h4>Draft is on the board</h4>
+          <p style="font-size:12px">Review and approve it in the board — I can't approve docs, and the Architecture stage stays locked until you do.</p>
+        </div>
+      </div>
+      <div class="ag-composer"><span>Reply, or /specmanager-architecture when approved…</span><span class="hint">⏎</span></div>
+    </div>
+  </div>
+
+  <div class="frame" style="width:640px">
+    <div class="frame__bar">
+      <span class="dots"><i></i><i></i><i></i></span>
+      <span class="frame__title">Browser — 127.0.0.1:4317 — SpecManager</span>
+      <span class="frame__spacer"></span>
+      <span class="tag-ours">Real board · live</span>
+    </div>
+    <div class="bd">
+      <div class="bd-header">
+        <h2 class="bd-title">SpecManager</h2>
+        <span class="bd-meta">1 feature</span>
+        <span class="bd-pulse">· doc.created</span>
+      </div>
+      <div class="bd-grid bd-grid--full">
+        <div class="bd-h">Feature</div><div class="bd-h">PRD</div><div class="bd-h">Architecture</div>
+        <div class="bd-h">Design</div><div class="bd-h">Plan</div><div class="bd-h bd-h--build">Build</div><div class="bd-h">Walkthroughs</div>
+
+        <div class="bd-rowlabel"><strong>Checkout corridor</strong><small>checkout-corridor</small></div>
+        <div class="bd-card bd-card--new">
+          <span class="bd-card__title">Checkout corridor PRD</span>
+          <span class="bd-badges"><span class="bd-badge bd-badge--draft">draft</span><span class="bd-badge bd-badge--meta">v1 · just now</span></span>
+        </div>
+        <div class="bd-card bd-card--locked">🔒 needs approved PRD</div>
+        <div class="bd-card bd-card--optional"><span class="opt">optional</span><span>design</span></div>
+        <div class="bd-card bd-card--locked">🔒 needs approved<br>architecture</div>
+        <div class="bd-card bd-card--empty">no tasks yet</div>
+        <div class="bd-card bd-card--empty">—</div>
+      </div>
+      <p style="margin-top:18px;font-size:10px;color:var(--outline);font-family:var(--font-mono)">ws: connected · watching .claude/specs/** · same repo drivable from Claude Code</p>
+    </div>
+  </div>
+  <div class="caption">Screen 3 · Drafting a stage — Antigravity panel drives MCP, the board updates live beside it</div>
+</section>
+
+<section class="sm-note">
+  <h2>Screen 3 — Drafting from Antigravity (dual surface)</h2>
+  <p>The core loop: type <code>/specmanager-prd</code> in the IDE, watch the card appear on the board. The two windows are the product — Antigravity is where drafting happens, the board is where the human reviews, approves, and gates open. Nothing on the board side is new; it must look <em>exactly like today</em>, which is itself the design statement (artifact parity, PRD metric 2).</p>
+  <ul>
+    <li><strong>Workflow provenance chip</strong>: the generated workflow's path (<code>.agent/workflows/specmanager-prd.md</code>) is surfaced so issues are debuggable ("which prompt ran?"). This comes free from Antigravity; our generated workflow's opening line should restate it.</li>
+    <li><strong>MCP tool rows show <code>projectDir</code> explicitly</strong> — the rules-file contract ("always pass the workspace root") made visible. The generated workflows should instruct the agent to narrate tool calls in this compact <code>tool(args) → result</code> form rather than prose.</li>
+    <li><strong>The closing card teaches the gate model</strong>: "I can't approve docs; Architecture stays locked until you do." Enforcement is in <code>core</code> (a Gemini agent ignoring its prompt still can't pass <code>check_gate</code>), but the workflow copy keeps the human's mental model right.</li>
+    <li>Board side, real tokens throughout: card gradient (<code>--card-gradient</code>), draft badge <code>--status-draft</code> amber, the new card gets the hover-tier violet border (<code>--primary</code> mix) as a "just arrived" highlight tied to the <code>doc.created</code> WS pulse in the header — this matches existing card/hover styling, no new component.</li>
+    <li>Locked / optional / empty cells render exactly as the existing <code>LockedCell</code> / <code>OptionalDesignCell</code> / <code>EmptyCell</code> components — shown here so the planner sees the gate states an Antigravity-driven repo flows through.</li>
+  </ul>
+</section>
+
+<hr class="sep">
+
+<!-- ================= SCREEN 4 : DEGRADED CHAT ================= -->
+<section class="sm-screen">
+  <div class="frame" style="width:1000px">
+    <div class="frame__bar">
+      <span class="dots"><i></i><i></i><i></i></span>
+      <span class="frame__title">Browser — 127.0.0.1:4317 — SpecManager — doc panel open</span>
+      <span class="frame__spacer"></span>
+      <span class="tag-ours">Real board · the one UI change</span>
+    </div>
+    <div class="bd bd-stage" style="min-height:480px">
+      <div class="bd-header">
+        <h2 class="bd-title">SpecManager</h2><span class="bd-meta">1 feature</span>
+      </div>
+      <div class="bd-grid bd-grid--full" style="opacity:.9">
+        <div class="bd-h">Feature</div><div class="bd-h">PRD</div><div class="bd-h">Architecture</div>
+        <div class="bd-h">Design</div><div class="bd-h">Plan</div><div class="bd-h bd-h--build">Build</div><div class="bd-h">Walkthroughs</div>
+        <div class="bd-rowlabel"><strong>Checkout corridor</strong><small>checkout-corridor</small></div>
+        <div class="bd-card"><span class="bd-card__title">Checkout corridor PRD</span><span class="bd-badges"><span class="bd-badge bd-badge--draft">draft</span><span class="bd-badge bd-badge--meta">v1</span></span></div>
+        <div class="bd-card bd-card--locked">🔒 needs approved PRD</div>
+        <div class="bd-card bd-card--optional"><span class="opt">optional</span><span>design</span></div>
+        <div class="bd-card bd-card--locked">🔒</div>
+        <div class="bd-card bd-card--empty">—</div>
+        <div class="bd-card bd-card--empty">—</div>
+      </div>
+
+      <div class="bd-dim"></div>
+      <div class="bd-drawer">
+        <div class="bd-drawer__head">
+          <h3>Checkout corridor PRD</h3>
+          <span class="bd-badge bd-badge--draft">draft</span>
+          <span class="bd-badge bd-badge--meta">v1</span>
+          <span class="x">✕</span>
+        </div>
+        <div class="bd-drawer__cols">
+          <div class="bd-doc">
+            <h4>Problem</h4>
+            <p>Checkout abandons at 31% on the payment step. Support tickets cluster on "card declined with no explanation" and the corridor between cart and confirmation has four full page loads…</p>
+            <div class="h5">Users &amp; jobs-to-be-done</div>
+            <p>Returning buyers on mobile (62% of sessions) who want to pay in under a minute without re-entering shipping…</p>
+            <div class="h5">Goals</div>
+            <p>1. Single-page corridor, cart → confirmation. 2. Inline decline reasons. 3. …</p>
+          </div>
+          <div class="bd-chatcol">
+            <div class="bd-chatcol__head">Chat</div>
+            <div class="chat-unavail">
+              <span class="ic">◍</span>
+              <h5>In-board chat is off</h5>
+              <p>Chat drafts edits with Claude and needs an Anthropic API key (<code>ANTHROPIC_API_KEY</code>) on the machine running the board. It is <strong style="color:var(--on-surface)">not part of the Antigravity port</strong> — no setup is offered or expected here.</p>
+              <p><strong style="color:var(--on-surface)">Everything else works without it.</strong> Keep drafting from your IDE with <code>/specmanager-prd</code> and friends, and edit this doc right here in the editor.</p>
+              <div class="row">
+                <button class="btn">Dismiss</button>
+              </div>
+              <p class="why">shown because GET /api/chat/status → available: false</p>
+            </div>
+            <div class="bd-composer">Message disabled — chat backend unavailable</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="caption">Screen 4 · Unsupported-feature disclosure — chat is not part of the Antigravity port, said honestly</div>
+</section>
+
+<section class="sm-note">
+  <h2>Screen 4 — The unsupported-chat disclosure (the one real board change)</h2>
+  <p>By user decision (2026-06-11, written acceptance in PRD success metric 3), the board's in-UI chat is <strong>not supported</strong> on Antigravity — the scorecard entry is <em>unsupported</em>, and no port work targets it. Today <code>ChatPanel.tsx</code> renders a terse <em>"Chat unavailable. no API credential found"</em>; for the trigger PM that reads like breakage. This screen upgrades that one state to say plainly that chat is outside the port's scope — with <strong>no "add a key" call-to-action</strong> (we don't upsell a feature we've declared unsupported).</p>
+  <ul>
+    <li><strong>Same trigger, same component</strong>: the existing <code>/api/chat/status → available:false</code> path and the <code>.chat--unavailable</code> branch — only its rendered content changes. No new API, no detection of "is this an Antigravity user" (no such signal exists; the copy works for everyone).</li>
+    <li><strong>Tone: off, not broken.</strong> Amber identity icon (not rose — nothing failed), a plain reason, then the reassurance in bold: <em>everything else works without it</em>, with the concrete alternative (draft from the IDE, edit in Milkdown here).</li>
+    <li><strong>Honesty footer</strong> in mono shows the actual status-check result — consistent with the evidence-line pattern of screens 1–3, and Joan-debuggable.</li>
+    <li>Components/tokens: standard card (<code>--card-gradient</code>, <code>--card-border</code>, <code>--radius-md</code>), single secondary <code>.btn</code> (no primary CTA — unsupported features get no action button), composer rendered disabled at 50% opacity. "Dismiss" collapses the card to a one-line note for the session (no persistence needed).</li>
+    <li>The drawer, dimmed board behind (<code>--backdrop-dim</code>), and editor column are today's UI verbatim — drawn here only for context.</li>
+  </ul>
+</section>
+
+<hr class="sep">
+
+<!-- ================= SCREEN 5 : AGENTS.MD ================= -->
+<section class="sm-screen">
+  <div class="frame frame--ag relwrap" style="width:860px">
+    <div class="frame__bar">
+      <span class="dots"><i></i><i></i><i></i></span>
+      <span class="frame__title">Antigravity — riverside-app/AGENTS.md</span>
+      <span class="frame__spacer"></span>
+      <span class="tag-3p">Illustrative editor</span>
+    </div>
+    <div class="ed">
+      <div class="ln"><span class="no">1</span><span class="cd"># Riverside — agent notes</span></div>
+      <div class="ln"><span class="no">2</span><span class="cd"></span></div>
+      <div class="ln"><span class="no">3</span><span class="cd">Use pnpm, never npm. Checkout code lives in src/checkout/. Ask before touching</span></div>
+      <div class="ln"><span class="no">4</span><span class="cd">payment provider config.   <span class="cm">← user's own content, untouched outside the markers</span></span></div>
+      <div class="ln"><span class="no">5</span><span class="cd"></span></div>
+      <div class="ln managed"><span class="no">6</span><span class="cd"><span class="mk">&lt;!-- specmanager:start --&gt;</span><span class="ed-chip">managed by SpecManager · synced 2026-06-11</span></span></div>
+      <div class="ln managed"><span class="no">7</span><span class="cd"><span class="h">## Project lifecycle (managed by SpecManager — do not edit by hand)</span></span></div>
+      <div class="ln managed"><span class="no">8</span><span class="cd"></span></div>
+      <div class="ln managed"><span class="no">9</span><span class="cd">Specs live in `.claude/specs/features/`. Read the approved doc for a feature's</span></div>
+      <div class="ln managed"><span class="no">10</span><span class="cd">stage before implementing it.</span></div>
+      <div class="ln managed"><span class="no">11</span><span class="cd"></span></div>
+      <div class="ln managed"><span class="no">12</span><span class="cd"><span class="tbl">| Feature           | Current stage  | Notes |</span></span></div>
+      <div class="ln managed"><span class="no">13</span><span class="cd"><span class="tbl">|-------------------|----------------|-------|</span></span></div>
+      <div class="ln managed"><span class="no">14</span><span class="cd"><span class="tbl">| Checkout corridor | PRD (draft)    | —     |</span></span></div>
+      <div class="ln managed"><span class="no">15</span><span class="cd"></span></div>
+      <div class="ln managed"><span class="no">16</span><span class="cd"><span class="tbl">**Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale</span></span></div>
+      <div class="ln managed"><span class="no">17</span><span class="cd"><span class="tbl">docs as needing reconciliation.</span></span></div>
+      <div class="ln managed"><span class="no">18</span><span class="cd"></span></div>
+      <div class="ln managed"><span class="no">19</span><span class="cd"><span class="tbl">**Workflows:** /specmanager-prd · /specmanager-architecture · /specmanager-design ·</span></span></div>
+      <div class="ln managed"><span class="no">20</span><span class="cd"><span class="tbl">/specmanager-plan · /specmanager-build · /specmanager-walkthrough · /specmanager-board</span></span></div>
+      <div class="ln managed"><span class="no">21</span><span class="cd"></span></div>
+      <div class="ln managed"><span class="no">22</span><span class="cd"><span class="cm">_Last synced: 2026-06-11T16:42:10.118Z_</span></span></div>
+      <div class="ln managed"><span class="no">23</span><span class="cd"><span class="mk">&lt;!-- specmanager:end --&gt;</span></span></div>
+      <div class="ln"><span class="no">24</span><span class="cd"></span></div>
+      <div class="ln"><span class="no">25</span><span class="cd">## Deploy notes   <span class="cm">← also the user's; sync never reaches past the end marker</span></span></div>
+      <div class="ln"><span class="no">26</span><span class="cd">Staging deploys from main via Cloud Build…</span></div>
+    </div>
+  </div>
+  <div class="caption">Screen 5 · AGENTS.md — the same managed block as CLAUDE.md, between the same markers</div>
+</section>
+
+<section class="sm-note">
+  <h2>Screen 5 — The AGENTS.md managed block in context</h2>
+  <p>Antigravity prepends <code>AGENTS.md</code> to every prompt the way Claude Code reads <code>CLAUDE.md</code>, so the lifecycle block must live there too. This screen is a <strong>content contract</strong>, not UI — the violet highlight and "managed by" chip are mockup annotations (no editor renders them); what's real is the text.</p>
+  <ul>
+    <li><strong>Identical markers, identical block</strong>: <code>&lt;!-- specmanager:start --&gt;</code> / <code>&lt;!-- specmanager:end --&gt;</code>, same content as the CLAUDE.md block, produced by the same line-anchored merge (<code>core/claude-md.ts</code> → <code>syncAgentsMd</code>). User content above and below the markers is never touched — shown explicitly with user lines on both sides.</li>
+    <li><strong>One adaptation</strong>: the commands line reads "Workflows" and lists the <code>/specmanager-*</code> workflow names — the same names, so a dual-client repo's block is valid for both. (If keeping the literal word "Commands" simplifies sharing one block, that's acceptable — flagged below.)</li>
+    <li>Per the architecture, sync writes AGENTS.md <strong>only if the file already exists</strong> — pure Claude Code projects never grow one.</li>
+  </ul>
+</section>
+
+<hr class="sep">
+
+<!-- ================= OPEN QUESTIONS ================= -->
+<section class="sm-note sm-open-questions" style="padding-bottom:64px">
+  <h2>Open questions for the planner</h2>
+  <ul>
+    <li><strong>Token source of truth:</strong> <code>docs/DESIGN.md</code> frontmatter is thin (one <code>body-md</code> role, indirect color values), so these mockups are grounded in <code>ui/src/tokens.css</code> (Obsidian Flux) as the de facto system. No new tokens were invented; the unsupported-chat card uses only existing roles. DESIGN.md should eventually be re-synced from tokens.css, but that's outside this feature.</li>
+    <li><strong>✅ RESOLVED — chat is unsupported on Antigravity (user decision, 2026-06-11):</strong> the former "How to add a key" CTA is removed from Screen 4; the card states chat is not part of the port and offers only Dismiss. No destination link is needed.</li>
+    <li><strong>Dismiss persistence:</strong> Screen 4's Dismiss is session-only (collapses to a one-liner). If the PM finds it nagging in the supervised session, consider localStorage persistence — defer until observed.</li>
+    <li><strong>MCP-store toggle wording (Screen 1, step 4):</strong> the exact location/label of Antigravity's MCP enable control must be verified in the Phase A spike and the INSTALL.md copy updated to match the real build — the mockup's "plug icon, top right" is a placeholder.</li>
+    <li><strong>Agent output fidelity under Gemini:</strong> screens 1–3 are format contracts carried by prompts; Gemini may drift from the checklist/tool-row format. The Phase A exit test should check the <em>shape</em> of the output (per-step evidence lines present), not exact rendering, and fixes go into <code>commands/*.md</code> / INSTALL.md — never hand-edited generated files.</li>
+    <li><strong>AGENTS.md block sharing:</strong> is one byte-identical block for CLAUDE.md and AGENTS.md acceptable (simplest: keep the "Commands:" label verbatim), or does AGENTS.md get the "Workflows:" variant shown in Screen 5? One block is less code; the variant is clearer for Antigravity users. Recommend the variant only if the merge helper already parameterises content trivially.</li>
+    <li><strong>Event-pulse label:</strong> Screen 3 shows the raw event type (<code>doc.created</code>) in the board header — that's today's behaviour, kept deliberately. No change requested.</li>
+  </ul>
+</section>
+
+</body>
+</html>
