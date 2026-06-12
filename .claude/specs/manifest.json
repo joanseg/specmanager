@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-11T19:53:14.147Z",
+  "generatedAt": "2026-06-12T13:11:03.960Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -882,7 +882,7 @@
         {
           "id": "design-cursor-plugin-006",
           "stage": "design",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
           "version": 1,
           "title": "Cursor plugin mockups"
@@ -926,6 +926,98 @@
         "total": 0
       },
       "phases": []
+    },
+    {
+      "id": "feat-user-adoption-acceleration",
+      "slug": "user-adoption-acceleration",
+      "title": "User adoption acceleration",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-user-adoption-acceleration-019",
+          "stage": "prd",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "User adoption acceleration interview",
+          "kind": "interview"
+        },
+        {
+          "id": "prd-user-adoption-acceleration-020",
+          "stage": "prd",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "User adoption acceleration PRD"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0,
+        "total": 0
+      },
+      "phases": []
+    },
+    {
+      "id": "feat-token-usage-optimisation",
+      "slug": "token-usage-optimisation",
+      "title": "Token usage optimisation",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-token-usage-optimisation-017",
+          "stage": "prd",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Token usage optimisation interview",
+          "kind": "interview"
+        },
+        {
+          "id": "prd-token-usage-optimisation-018",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Token usage optimisation PRD"
+        },
+        {
+          "id": "arch-token-usage-optimisation-014",
+          "stage": "architecture",
+          "status": "approved",
+          "stale": false,
+          "version": 3,
+          "title": "Token usage optimisation architecture"
+        },
+        {
+          "id": "plan-token-usage-optimisation-011",
+          "stage": "plan",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Token usage optimisation plan"
+        }
+      ],
+      "tasks": {
+        "todo": 14,
+        "in_progress": 0,
+        "done": 0,
+        "total": 14
+      },
+      "phases": [
+        {
+          "name": "economy",
+          "order": 0,
+          "taskCount": 14,
+          "doneCount": 0,
+          "inProgressCount": 0,
+          "status": "todo",
+          "walkthroughId": null,
+          "walkthroughStatus": null,
+          "walkthroughStale": null
+        }
+      ]
     }
   ]
 }
