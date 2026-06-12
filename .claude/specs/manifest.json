@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-12T13:23:38.881Z",
+  "generatedAt": "2026-06-12T13:43:39.616Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -1000,9 +1000,9 @@
         }
       ],
       "tasks": {
-        "todo": 13,
+        "todo": 1,
         "in_progress": 1,
-        "done": 0,
+        "done": 12,
         "total": 14
       },
       "phases": [
@@ -1010,7 +1010,7 @@
           "name": "economy",
           "order": 0,
           "taskCount": 14,
-          "doneCount": 0,
+          "doneCount": 12,
           "inProgressCount": 1,
           "status": "in_progress",
           "walkthroughId": null,
@@ -1018,6 +1018,38 @@
           "walkthroughStale": null
         }
       ]
+    },
+    {
+      "id": "feat-viral-loop-feature",
+      "slug": "viral-loop-feature",
+      "title": "Viral loop feature",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-viral-loop-feature-021",
+          "stage": "prd",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Viral loop feature interview",
+          "kind": "interview"
+        },
+        {
+          "id": "prd-viral-loop-feature-022",
+          "stage": "prd",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Viral loop feature PRD"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0,
+        "total": 0
+      },
+      "phases": []
     }
   ]
 }

@@ -4,203 +4,253 @@
       "id": "task-001",
       "featureId": "feat-token-usage-optimisation",
       "title": "Create and push branch feat/token-usage-optimisation from main",
-      "status": "in_progress",
+      "status": "done",
       "phase": "economy",
       "complexity": 1,
       "dependsOn": [],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "bca35af"
+        ],
+        "files": [
+          ".claude/specs/features/token-usage-optimisation/plan/plan.md",
+          ".claude/specs/features/token-usage-optimisation/plan/tasks.json"
+        ],
         "pr": null
       },
       "createdAt": "2026-06-12T13:09:43.861Z",
-      "updatedAt": "2026-06-12T13:23:38.873Z"
+      "updatedAt": "2026-06-12T13:24:08.827Z"
     },
     {
       "id": "task-002",
       "featureId": "feat-token-usage-optimisation",
       "title": "D2: compact text() serialisation in mcp.ts + assertion updates",
-      "status": "todo",
+      "status": "done",
       "phase": "economy",
       "complexity": 2,
       "dependsOn": [
         "task-001"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "824a8c8"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/mcp.ts"
+        ],
         "pr": null
       },
       "createdAt": "2026-06-12T13:09:48.662Z",
-      "updatedAt": "2026-06-12T13:09:48.662Z"
+      "updatedAt": "2026-06-12T13:24:56.202Z"
     },
     {
       "id": "task-003",
       "featureId": "feat-token-usage-optimisation",
       "title": "D2: docSummary() projection for list_documents + assertion updates",
-      "status": "todo",
+      "status": "done",
       "phase": "economy",
       "complexity": 2,
       "dependsOn": [
         "task-002"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "bc8a968"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/mcp.ts"
+        ],
         "pr": null
       },
       "createdAt": "2026-06-12T13:09:54.703Z",
-      "updatedAt": "2026-06-12T13:09:54.703Z"
+      "updatedAt": "2026-06-12T13:27:32.712Z"
     },
     {
       "id": "task-004",
       "featureId": "feat-token-usage-optimisation",
       "title": "D2: slim mutation acks (6 tools) + assertion updates",
-      "status": "todo",
+      "status": "done",
       "phase": "economy",
       "complexity": 3,
       "dependsOn": [
         "task-003"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "ef5280e"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/mcp.ts"
+        ],
         "pr": null
       },
       "createdAt": "2026-06-12T13:10:03.496Z",
-      "updatedAt": "2026-06-12T13:10:03.496Z"
+      "updatedAt": "2026-06-12T13:30:22.772Z"
     },
     {
       "id": "task-005",
       "featureId": "feat-token-usage-optimisation",
       "title": "D6: shipped-row collapse in renderBlock() + selftest coverage",
-      "status": "todo",
+      "status": "done",
       "phase": "economy",
       "complexity": 3,
       "dependsOn": [
         "task-004"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "25a91ec"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/claude-md.ts",
+          "plugins/specmanager/server/src/selftest.ts"
+        ],
         "pr": null
       },
       "createdAt": "2026-06-12T13:10:08.871Z",
-      "updatedAt": "2026-06-12T13:10:08.871Z"
+      "updatedAt": "2026-06-12T13:32:24.184Z"
     },
     {
       "id": "task-006",
       "featureId": "feat-token-usage-optimisation",
       "title": "Rebuild server/dist; full selftest suite + smoke-mcp green",
-      "status": "todo",
+      "status": "done",
       "phase": "economy",
       "complexity": 2,
       "dependsOn": [
         "task-005"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "2478812"
+        ],
+        "files": [
+          "plugins/specmanager/server/dist/mcp.js",
+          "plugins/specmanager/server/dist/core/claude-md.js",
+          "plugins/specmanager/server/dist/selftest.js"
+        ],
         "pr": null
       },
       "createdAt": "2026-06-12T13:10:14.334Z",
-      "updatedAt": "2026-06-12T13:10:14.334Z"
+      "updatedAt": "2026-06-12T13:35:08.342Z"
     },
     {
       "id": "task-007",
       "featureId": "feat-token-usage-optimisation",
       "title": "D3: trim specmanager-interview.md (~10.8 KB to ~6 KB) against invariant checklist",
-      "status": "todo",
+      "status": "done",
       "phase": "economy",
       "complexity": 3,
       "dependsOn": [
         "task-001"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "2846ca9"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-interview.md"
+        ],
         "pr": null
       },
       "createdAt": "2026-06-12T13:10:19.127Z",
-      "updatedAt": "2026-06-12T13:10:19.127Z"
+      "updatedAt": "2026-06-12T13:38:17.762Z"
     },
     {
       "id": "task-008",
       "featureId": "feat-token-usage-optimisation",
       "title": "D3: trim specmanager-build.md (~7.5 KB to ~4.5 KB) against invariant checklist",
-      "status": "todo",
+      "status": "done",
       "phase": "economy",
       "complexity": 2,
       "dependsOn": [
         "task-001"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "c114e8c"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-build.md"
+        ],
         "pr": null
       },
       "createdAt": "2026-06-12T13:10:24.027Z",
-      "updatedAt": "2026-06-12T13:10:24.027Z"
+      "updatedAt": "2026-06-12T13:39:32.920Z"
     },
     {
       "id": "task-009",
       "featureId": "feat-token-usage-optimisation",
       "title": "D3: trim planner.md (~10.9 KB to ~6.5 KB), conventions stated once, parsed constructs verbatim",
-      "status": "todo",
+      "status": "done",
       "phase": "economy",
       "complexity": 3,
       "dependsOn": [
         "task-001"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "9b9b0de"
+        ],
+        "files": [
+          "plugins/specmanager/agents/planner.md"
+        ],
         "pr": null
       },
       "createdAt": "2026-06-12T13:10:30.257Z",
-      "updatedAt": "2026-06-12T13:10:30.257Z"
+      "updatedAt": "2026-06-12T13:40:37.201Z"
     },
     {
       "id": "task-010",
       "featureId": "feat-token-usage-optimisation",
       "title": "D3+D4: trim walkthrough-writer.md (~8.5 KB to ~5.5 KB); per-phase inputs Plan-only, PRD to final mode, Architecture on-demand",
-      "status": "todo",
+      "status": "done",
       "phase": "economy",
       "complexity": 3,
       "dependsOn": [
         "task-001"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "4b0990c"
+        ],
+        "files": [
+          "plugins/specmanager/agents/walkthrough-writer.md"
+        ],
         "pr": null
       },
       "createdAt": "2026-06-12T13:10:39.843Z",
-      "updatedAt": "2026-06-12T13:10:39.843Z"
+      "updatedAt": "2026-06-12T13:41:40.180Z"
     },
     {
       "id": "task-011",
       "featureId": "feat-token-usage-optimisation",
       "title": "D4: builder.md prior-walkthrough-only; mockup reads via Read(filePath) in planner/builder; designer light pass",
-      "status": "todo",
+      "status": "done",
       "phase": "economy",
       "complexity": 2,
       "dependsOn": [
         "task-009"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "1709a4c"
+        ],
+        "files": [
+          "plugins/specmanager/agents/builder.md",
+          "plugins/specmanager/agents/planner.md",
+          "plugins/specmanager/agents/designer.md"
+        ],
         "pr": null
       },
       "createdAt": "2026-06-12T13:10:46.255Z",
-      "updatedAt": "2026-06-12T13:10:46.255Z"
+      "updatedAt": "2026-06-12T13:42:45.855Z"
     },
     {
       "id": "task-012",
       "featureId": "feat-token-usage-optimisation",
       "title": "D5: density contract block into 4 drafting agents + prd-writer length tweak",
-      "status": "todo",
+      "status": "done",
       "phase": "economy",
       "complexity": 2,
       "dependsOn": [
@@ -208,18 +258,25 @@
         "task-010"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "12b8ec4"
+        ],
+        "files": [
+          "plugins/specmanager/agents/prd-writer.md",
+          "plugins/specmanager/agents/architect.md",
+          "plugins/specmanager/agents/planner.md",
+          "plugins/specmanager/agents/walkthrough-writer.md"
+        ],
         "pr": null
       },
       "createdAt": "2026-06-12T13:10:53.978Z",
-      "updatedAt": "2026-06-12T13:10:53.978Z"
+      "updatedAt": "2026-06-12T13:43:39.169Z"
     },
     {
       "id": "task-013",
       "featureId": "feat-token-usage-optimisation",
       "title": "claude plugin validate + cross-file invariant sweep; push branch",
-      "status": "todo",
+      "status": "in_progress",
       "phase": "economy",
       "complexity": 1,
       "dependsOn": [
@@ -234,7 +291,7 @@
         "pr": null
       },
       "createdAt": "2026-06-12T13:10:59.088Z",
-      "updatedAt": "2026-06-12T13:10:59.088Z"
+      "updatedAt": "2026-06-12T13:43:39.611Z"
     },
     {
       "id": "task-014",
