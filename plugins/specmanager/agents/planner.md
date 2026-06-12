@@ -26,7 +26,7 @@ Tasks use the **Fibonacci scale**: `1` trivial · `2` small · `3` moderate · `
 ## Required research
 
 1. `list_documents({ featureId })` → confirm Architecture is approved. Read it and the PRD (`read_document`) — phases and tasks ladder up to PRD goals.
-2. **Design grounding (if present).** `list_documents({ featureId, stage: "design" })`. If a design doc exists, `read_document` it — a self-contained HTML file of stacked high-fi screen mockups with notes. Ground phases/tasks in it: name the screens/components/tokens it specifies and sequence so each screen is shippable. (If you're running, the design is either approved or absent — the Plan gate refuses on a `draft` design.) No design doc → proceed; design is optional.
+2. **Design grounding (if present).** `list_documents({ featureId, stage: "design" })`. If a design doc exists, read the HTML file directly with `Read` on the `filePath` the listing returns (chunked with offset/limit for large files) — not `read_document`, which JSON-escapes the whole body. It's a self-contained HTML file of stacked high-fi screen mockups with notes. Ground phases/tasks in it: name the screens/components/tokens it specifies and sequence so each screen is shippable. (If you're running, the design is either approved or absent — the Plan gate refuses on a `draft` design.) No design doc → proceed; design is optional.
 3. Verify the repo paths the Architecture names (`Read`/`Glob`/`Grep`); flag drift in **Open questions**.
 4. Check existing test infrastructure — tasks follow the project's test conventions.
 
