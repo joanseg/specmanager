@@ -6,6 +6,7 @@ import { startBoardServer, BoardServer } from "./board-server.js";
 import { spawn } from "node:child_process";
 
 import {
+  type DocFrontmatter,
   STAGE,
   DOC_KIND,
   DOC_STATUS,
@@ -50,6 +51,12 @@ function text(payload: unknown) {
 
 function ok<T>(data: T) {
   return text({ ok: true, data });
+}
+
+/** Slim list projection: full metadata stays on read_document. */
+function docSummary(d: { frontmatter: DocFrontmatter; filePath: string }) {
+  const { id, featureId, stage, kind, status, stale, title, version, phase } = d.frontmatter;
+  return { id, featureId, stage, kind, status, stale, title, version, phase, filePath: d.filePath };
 }
 
 function fail(message: string) {
@@ -104,7 +111,7 @@ server.registerTool(
   },
   async (filter) => {
     const docs = await listDocuments(filter, PROJECT_DIR);
-    return ok(docs.map((d) => ({ ...d.frontmatter, filePath: d.filePath })));
+    return ok(docs.map(docSummary));
   }
 );
 
