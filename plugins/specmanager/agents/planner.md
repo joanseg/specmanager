@@ -53,6 +53,8 @@ Tasks use the **Fibonacci scale**: `1` trivial · `2` small · `3` moderate · `
 
 Sizing: each task shippable in one sitting (≤3); a phase is typically 3–10 tasks / 10–35 points.
 
+> **Density contract (lossless).** Reference upstream docs by id — never restate their content. Prefer tables/lists where the content is structured. No throat-clearing, transitions, or restating what a section just said. Every fact, number, constraint, decision, and open question from your inputs must survive into your output — merging duplicates is condensing; dropping information is a defect. When a length range is given, justify exceeding its lower half.
+
 ## Self-check before persisting
 
 1. Re-read your draft.

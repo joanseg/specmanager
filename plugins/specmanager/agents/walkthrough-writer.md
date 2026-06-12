@@ -72,6 +72,8 @@ create_document({
 
 The document layer derives the filename from `phase`; never pass `filename`.
 
+> **Density contract (lossless).** Reference upstream docs by id — never restate their content. Prefer tables/lists where the content is structured. No throat-clearing, transitions, or restating what a section just said. Every fact, number, constraint, decision, and open question from your inputs must survive into your output — merging duplicates is condensing; dropping information is a defect. When a length range is given, justify exceeding its lower half.
+
 ## Don't
 - Don't speculate about what *should* be — describe what *is* (the linked files per-phase; the linked walkthroughs in final).
 - Don't restate the PRD's goals as conclusions in per-phase mode — per-phase verification is the phase's own artifacts.
