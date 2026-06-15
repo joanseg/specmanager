@@ -4,7 +4,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { startBoardServer } from "./board-server.js";
 import { spawn } from "node:child_process";
-import { STAGE, DOC_KIND, DOC_STATUS, TASK_STATUS, TASK_COMPLEXITY, GENERATED_BY, events, initProject, listFeatures, createFeature, listDocuments, readDocumentById, createDocument, sanitizeDesignBriefBody, DESIGN_BRIEF_MAX_BYTES, writeDocument, setStatus, checkGate, listStale, linkDocuments, listTasks, createTask, updateTask, listPhases, getNextPhase, resolveActiveCard, syncClaudeMd, syncDesignMd, writeManifest, } from "./core/index.js";
+import { STAGE, DOC_KIND, DOC_STATUS, TASK_STATUS, TASK_COMPLEXITY, GENERATED_BY, events, initProject, listFeatures, createFeature, listDocuments, readDocumentById, createDocument, sanitizeDesignBriefBody, DESIGN_BRIEF_MAX_BYTES, writeDocument, setStatus, checkGate, listStale, linkDocuments, listTasks, createTask, updateTask, listPhases, getNextPhase, setPhaseMeta, resolveActiveCard, syncClaudeMd, syncDesignMd, writeManifest, } from "./core/index.js";
 const PROJECT_DIR = process.env.SPECMANAGER_PROJECT_DIR ?? process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
 const BOARD_PORT = Number(process.env.SPECMANAGER_BOARD_PORT ?? 4317);
 function text(payload) {
@@ -247,6 +247,23 @@ server.registerTool("get_next_phase", {
     description: "Return the first phase whose tasks aren't all done, or null if every phase is complete. Used by /specmanager-build.",
     inputSchema: z.object({ featureId: z.string() }),
 }, async ({ featureId }) => ok(await getNextPhase(featureId, PROJECT_DIR)));
+server.registerTool("set_phase_meta", {
+    description: "Set a phase's planner metadata in tasks.json: `testCommand` (a runnable shell command, or the literal \"none\" for an intentionally test-less phase — never omit it) and `architectureRefs` (the Architecture anchors that phase implements, e.g. [\"R1\",\"core-active-card\"]). The Stop-gate reads testCommand as its primary verification source; the reviewer slice resolves architectureRefs. Call once per phase after create_task.",
+    inputSchema: z.object({
+        featureId: z.string(),
+        phase: z.string().min(1),
+        testCommand: z.string().min(1),
+        architectureRefs: z.array(z.string()).optional(),
+    }),
+}, async ({ featureId, phase, testCommand, architectureRefs }) => {
+    try {
+        await setPhaseMeta(featureId, phase, { testCommand, architectureRefs }, PROJECT_DIR);
+        return ok({ phase, testCommand, architectureRefs: architectureRefs ?? [] });
+    }
+    catch (err) {
+        return fail(err.message);
+    }
+});
 server.registerTool("resolve_active_card", {
     description: "Resolve the active card deterministically: the feature with open plan tasks, its active phase (first phase not all-done), and that phase's verification target (meta.testCommand primary, plan.md **Exit test:** line fallback) + architectureRefs + open task ids. Returns null when nothing is in flight. Used by the Stop-gate hook.",
     inputSchema: z.object({}),

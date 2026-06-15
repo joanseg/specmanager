@@ -57,6 +57,20 @@ export async function readTasksMeta(featureId, root = projectRoot()) {
     const file = await readTasksFile(featureId, root);
     return file.meta;
 }
+/**
+ * Set the planner-emitted metadata for a phase (R1 testCommand, R3
+ * architectureRefs). `testCommand` is a runnable command or the literal "none".
+ * Idempotent per phase; leaves other phases' meta untouched.
+ */
+export async function setPhaseMeta(featureId, phase, meta, root = projectRoot()) {
+    const file = await readTasksFile(featureId, root);
+    file.meta.phases[phase] = {
+        testCommand: meta.testCommand,
+        architectureRefs: meta.architectureRefs ?? [],
+    };
+    await writeTasksFile(featureId, file, root);
+    events.emit({ type: "task.updated", taskId: `phase:${phase}`, featureId });
+}
 /** Record a blocked note for a phase (R1 iteration-cap surfacing). */
 export async function setPhaseBlocked(featureId, phase, reason, root = projectRoot()) {
     const file = await readTasksFile(featureId, root);

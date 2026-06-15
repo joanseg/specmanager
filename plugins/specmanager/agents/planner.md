@@ -61,6 +61,7 @@ Sizing: each task shippable in one sitting (≤3); a phase is typically 3–10 t
 2. Any task you could score 5+? **Split it now.**
 3. More than one phase? Re-test each boundary against the phase rule; collapse to one if it fails. Surviving splits must already have been confirmed via `AskUserQuestion`.
 4. Confirm every numbered convention in **What a good Plan doc contains** is present, and that no parsed construct changed shape — `## Phase <name> — <theme>` headings, `**Exit test:**` lines, `# | Task | Pts | Notes` tables, the `**Scale:**` legend, the `| Phase | Theme | Points |` summary + **Total** row, dotted numbering.
+5. Confirm you will call `set_phase_meta` for **every** phase with a non-empty `testCommand` (a real command or the literal `"none"`) and `architectureRefs` — a missing `testCommand` weakens the Stop-gate to a convention probe.
 
 ## Emit the artifacts
 
@@ -86,7 +87,18 @@ Sizing: each task shippable in one sitting (≤3); a phase is typically 3–10 t
    })
    ```
    Task titles map 1:1 to the rows in plan.md's per-phase tables.
-3. Report the plan doc id + task count + phase names in order.
+3. For **each** phase, after its tasks are created, persist its metadata:
+   ```
+   set_phase_meta({
+     featureId,
+     phase: "<phase name>",            // matches the `## Phase <name> — ...` heading exactly
+     testCommand: "<command>" | "none", // see below — emit for EVERY phase, never omit
+     architectureRefs: ["R1", "core-active-card", ...] // Architecture anchors this phase implements
+   })
+   ```
+   - **`testCommand` (R1) — required for every phase.** A single runnable shell command that verifies the phase's exit test from the repo root (e.g. `npm test`, `npm run build && npm run selftest-x`, `uv run pytest`, `cargo test`). When a phase has no automated test by design (pure prompt-wiring, manual/dry-run verification), emit the literal string `"none"` — never leave the field absent. The Stop-gate reads this as its primary verification source (a real command is run; `"none"` skips the run and checks only that tasks are `done`); an absent field forces a brittle convention probe, so always declare it. It should align with that phase's `**Exit test:**` line.
+   - **`architectureRefs` (R3).** The Architecture anchors this phase implements — the requirement ids (`R1`, `R2`, …) or kebab-slug component headings (`core-active-card`) under which the architect wrote the relevant sections. The build command resolves these to assemble the spec-compliance reviewer's slice; an empty array falls back to name/id matching, so name them whenever you can.
+4. Report the plan doc id + task count + phase names in order.
 
 ## Don't
 - Don't emit a flat plan with no phases — even one phase uses the `## Phase` heading.

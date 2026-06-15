@@ -32,6 +32,7 @@ import {
   updateTask,
   listPhases,
   getNextPhase,
+  setPhaseMeta,
   resolveActiveCard,
   syncClaudeMd,
   syncDesignMd,
@@ -378,6 +379,28 @@ server.registerTool(
     inputSchema: z.object({ featureId: z.string() }),
   },
   async ({ featureId }) => ok(await getNextPhase(featureId, PROJECT_DIR))
+);
+
+server.registerTool(
+  "set_phase_meta",
+  {
+    description:
+      "Set a phase's planner metadata in tasks.json: `testCommand` (a runnable shell command, or the literal \"none\" for an intentionally test-less phase — never omit it) and `architectureRefs` (the Architecture anchors that phase implements, e.g. [\"R1\",\"core-active-card\"]). The Stop-gate reads testCommand as its primary verification source; the reviewer slice resolves architectureRefs. Call once per phase after create_task.",
+    inputSchema: z.object({
+      featureId: z.string(),
+      phase: z.string().min(1),
+      testCommand: z.string().min(1),
+      architectureRefs: z.array(z.string()).optional(),
+    }),
+  },
+  async ({ featureId, phase, testCommand, architectureRefs }) => {
+    try {
+      await setPhaseMeta(featureId, phase, { testCommand, architectureRefs }, PROJECT_DIR);
+      return ok({ phase, testCommand, architectureRefs: architectureRefs ?? [] });
+    } catch (err) {
+      return fail((err as Error).message);
+    }
+  }
 );
 
 server.registerTool(
