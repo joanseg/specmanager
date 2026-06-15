@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-15T12:17:50.400Z",
+  "generatedAt": "2026-06-15T13:06:53.562Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -1108,16 +1108,34 @@
         {
           "id": "plan-build-leverage-primitives-012",
           "stage": "plan",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
           "version": 1,
           "title": "Build leverage primitives plan"
+        },
+        {
+          "id": "wt-build-leverage-primitives-013",
+          "stage": "walkthrough",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Build leverage primitives — Phase core walkthrough",
+          "phase": "core"
+        },
+        {
+          "id": "wt-build-leverage-primitives-012",
+          "stage": "walkthrough",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Build leverage primitives — Phase wiring walkthrough",
+          "phase": "wiring"
         }
       ],
       "tasks": {
-        "todo": 20,
+        "todo": 0,
         "in_progress": 0,
-        "done": 0,
+        "done": 20,
         "total": 20
       },
       "phases": [
@@ -1125,23 +1143,23 @@
           "name": "core",
           "order": 0,
           "taskCount": 15,
-          "doneCount": 0,
+          "doneCount": 15,
           "inProgressCount": 0,
-          "status": "todo",
-          "walkthroughId": null,
-          "walkthroughStatus": null,
-          "walkthroughStale": null
+          "status": "done",
+          "walkthroughId": "wt-build-leverage-primitives-013",
+          "walkthroughStatus": "draft",
+          "walkthroughStale": false
         },
         {
           "name": "wiring",
           "order": 1,
           "taskCount": 5,
-          "doneCount": 0,
+          "doneCount": 5,
           "inProgressCount": 0,
-          "status": "todo",
-          "walkthroughId": null,
-          "walkthroughStatus": null,
-          "walkthroughStale": null
+          "status": "done",
+          "walkthroughId": "wt-build-leverage-primitives-012",
+          "walkthroughStatus": "draft",
+          "walkthroughStale": false
         }
       ]
     }

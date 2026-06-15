@@ -31,7 +31,7 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 **Commands:**
 `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)
 
-_Last synced: 2026-06-15T12:21:37.086Z_
+_Last synced: 2026-06-15T13:10:58.447Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
