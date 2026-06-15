@@ -11,6 +11,7 @@ export * from "./dependencies.js";
 export * from "./tasks.js";
 export * from "./phases.js";
 export * from "./active-card.js";
+export * from "./active-build.js";
 export * from "./tiers.js";
 export * from "./manifest.js";
 export * from "./claude-md.js";
