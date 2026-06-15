@@ -10,7 +10,9 @@ export type SpecEvent =
   | { type: "task.updated"; taskId: string; featureId: string }
   | { type: "file.changed"; filePath: string }
   | { type: "feature.shipped"; featureId: string }
-  | { type: "design.synced"; path: string; mode: "init" | "refresh" };
+  | { type: "design.synced"; path: string; mode: "init" | "refresh" }
+  | { type: "build.started"; featureId: string; phase: string }
+  | { type: "build.cleared" };
 
 class TypedBus {
   private bus = new EventEmitter();
