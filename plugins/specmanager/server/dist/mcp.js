@@ -4,7 +4,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { startBoardServer } from "./board-server.js";
 import { spawn } from "node:child_process";
-import { STAGE, DOC_KIND, DOC_STATUS, TASK_STATUS, TASK_COMPLEXITY, GENERATED_BY, events, initProject, listFeatures, createFeature, listDocuments, readDocumentById, createDocument, sanitizeDesignBriefBody, DESIGN_BRIEF_MAX_BYTES, writeDocument, setStatus, checkGate, listStale, linkDocuments, listTasks, createTask, updateTask, listPhases, getNextPhase, setPhaseMeta, resolveActiveCard, syncClaudeMd, syncDesignMd, mergeSynthesizedTokens, writeManifest, } from "./core/index.js";
+import { STAGE, DOC_KIND, DOC_STATUS, TASK_STATUS, TASK_COMPLEXITY, GENERATED_BY, events, initProject, listFeatures, createFeature, listDocuments, readDocumentById, createDocument, sanitizeDesignBriefBody, DESIGN_BRIEF_MAX_BYTES, writeDocument, setStatus, checkGate, listStale, linkDocuments, listTasks, createTask, updateTask, listPhases, getNextPhase, setPhaseMeta, resolveActiveCard, setActiveBuild, clearActiveBuild, syncClaudeMd, syncDesignMd, mergeSynthesizedTokens, writeManifest, } from "./core/index.js";
 const PROJECT_DIR = process.env.SPECMANAGER_PROJECT_DIR ?? process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
 const BOARD_PORT = Number(process.env.SPECMANAGER_BOARD_PORT ?? 4317);
 function text(payload) {
@@ -268,6 +268,31 @@ server.registerTool("resolve_active_card", {
     description: "Resolve the active card deterministically: the feature with open plan tasks, its active phase (first phase not all-done), and that phase's verification target (meta.testCommand primary, plan.md **Exit test:** line fallback) + architectureRefs + open task ids. Returns null when nothing is in flight. Used by the Stop-gate hook.",
     inputSchema: z.object({}),
 }, async () => ok(await resolveActiveCard(PROJECT_DIR)));
+server.registerTool("set_active_build", {
+    description: "Write the active-build marker (.cache/active-build.json) pinning the Stop-gate to one {featureId, phase}. Called by /specmanager-build when a phase starts. sessionId is filled from the env for diagnostics only; it is never matched on.",
+    inputSchema: z.object({ featureId: z.string(), phase: z.string() }),
+}, async ({ featureId, phase }) => {
+    try {
+        const sessionId = process.env.CLAUDE_SESSION_ID ?? null;
+        await setActiveBuild({ featureId, phase, sessionId }, PROJECT_DIR);
+        return ok({ featureId, phase, sessionId });
+    }
+    catch (err) {
+        return fail(err.message);
+    }
+});
+server.registerTool("clear_active_build", {
+    description: "Delete the active-build marker (idempotent). Called by /specmanager-build on every terminal path (phase done or blocked) so the next Stop is a no-op.",
+    inputSchema: z.object({}),
+}, async () => {
+    try {
+        await clearActiveBuild(PROJECT_DIR);
+        return ok({ cleared: true });
+    }
+    catch (err) {
+        return fail(err.message);
+    }
+});
 server.registerTool("sync_claude_md", {
     description: "Rewrite the managed SpecManager block in the project CLAUDE.md.",
     inputSchema: z.object({}),
