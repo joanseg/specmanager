@@ -12,6 +12,13 @@ async function ensureDir(p: string): Promise<void> {
 export async function ensureSpecsRoot(root = projectRoot()): Promise<void> {
   await ensureDir(specsDir(root));
   await ensureDir(featuresDir(root));
+  // Keep transient caches (Stop-gate iteration counters) out of git.
+  const ignorePath = path.join(specsDir(root), ".gitignore");
+  try {
+    await fs.access(ignorePath);
+  } catch {
+    await fs.writeFile(ignorePath, ".cache/\n", "utf8");
+  }
 }
 
 export async function listFeatures(root = projectRoot()): Promise<Feature[]> {
