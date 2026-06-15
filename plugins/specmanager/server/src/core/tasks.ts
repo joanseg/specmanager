@@ -58,7 +58,7 @@ async function readTasksFile(featureId: string, root: string): Promise<TasksFile
     const raw = await fs.readFile(p, "utf8");
     return TasksFileSchema.parse(JSON.parse(raw));
   } catch {
-    return { tasks: [] };
+    return { tasks: [], meta: { phases: {}, blocked: {} } };
   }
 }
 

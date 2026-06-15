@@ -64,7 +64,24 @@ export const TaskSchema = z.object({
     createdAt: z.string(),
     updatedAt: z.string(),
 });
+// Per-phase metadata the planner emits (R1 testCommand, R3 architectureRefs).
+// `testCommand`: a runnable shell command, or the literal "none" for an
+// intentionally test-less phase. Absent ⇒ the gate's convention-probe fallback.
+// `architectureRefs`: stable Architecture anchors (e.g. "R1", "core-active-card")
+// the phase implements; used to assemble the reviewer's spec slice.
+export const PhaseMetaSchema = z.object({
+    testCommand: z.string(),
+    architectureRefs: z.array(z.string()).default([]),
+});
+// Optional `blocked` note surfaced by the Stop-gate iteration cap (R1 AC2).
+// Keyed by phase name; cleared when the phase is re-entered and rebuilt.
+export const TasksMetaSchema = z.object({
+    phases: z.record(z.string(), PhaseMetaSchema).default({}),
+    blocked: z.record(z.string(), z.string()).default({}),
+});
 export const TasksFileSchema = z.object({
     tasks: z.array(TaskSchema).default([]),
+    // Zod defaults ⇒ zero migration; pre-existing tasks.json keep working.
+    meta: TasksMetaSchema.default({ phases: {}, blocked: {} }),
 });
 //# sourceMappingURL=types.js.map

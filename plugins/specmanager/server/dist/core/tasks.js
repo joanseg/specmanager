@@ -41,7 +41,7 @@ async function readTasksFile(featureId, root) {
         return TasksFileSchema.parse(JSON.parse(raw));
     }
     catch {
-        return { tasks: [] };
+        return { tasks: [], meta: { phases: {}, blocked: {} } };
     }
 }
 async function writeTasksFile(featureId, file, root) {
