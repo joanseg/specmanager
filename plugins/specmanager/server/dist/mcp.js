@@ -4,7 +4,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { startBoardServer } from "./board-server.js";
 import { spawn } from "node:child_process";
-import { STAGE, DOC_KIND, DOC_STATUS, TASK_STATUS, TASK_COMPLEXITY, GENERATED_BY, events, initProject, listFeatures, createFeature, listDocuments, readDocumentById, createDocument, sanitizeDesignBriefBody, DESIGN_BRIEF_MAX_BYTES, writeDocument, setStatus, checkGate, listStale, linkDocuments, listTasks, createTask, updateTask, listPhases, getNextPhase, setPhaseMeta, resolveActiveCard, syncClaudeMd, syncDesignMd, writeManifest, } from "./core/index.js";
+import { STAGE, DOC_KIND, DOC_STATUS, TASK_STATUS, TASK_COMPLEXITY, GENERATED_BY, events, initProject, listFeatures, createFeature, listDocuments, readDocumentById, createDocument, sanitizeDesignBriefBody, DESIGN_BRIEF_MAX_BYTES, writeDocument, setStatus, checkGate, listStale, linkDocuments, listTasks, createTask, updateTask, listPhases, getNextPhase, setPhaseMeta, resolveActiveCard, syncClaudeMd, syncDesignMd, mergeSynthesizedTokens, writeManifest, } from "./core/index.js";
 const PROJECT_DIR = process.env.SPECMANAGER_PROJECT_DIR ?? process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
 const BOARD_PORT = Number(process.env.SPECMANAGER_BOARD_PORT ?? 4317);
 function text(payload) {
@@ -276,6 +276,25 @@ server.registerTool("sync_design_md", {
     description: "Generate or refresh ./docs/DESIGN.md from the project's UI sources. Idempotent. mode=init creates if missing; mode=refresh updates only the managed block.",
     inputSchema: z.object({ mode: z.enum(["init", "refresh"]).optional() }),
 }, async ({ mode }) => ok(await syncDesignMd(PROJECT_DIR, { mode: mode ?? "refresh" })));
+server.registerTool("bootstrap_design_tokens", {
+    description: "Seed synthesized starter design tokens back into ./docs/DESIGN.md's managed block (R5/AC8). Fills ONLY placeholder/TODO or absent fields — never clobbers harvested real values — and rewrites only the region between the design markers. The single AC8 write path: the designer persists synthesized tokens through this tool, never via raw Write. Pass partial maps; e.g. { colors: { primary: \"#FF5733\" }, rounded: { md: \"10px\" } }.",
+    inputSchema: z.object({
+        tokens: z.object({
+            colors: z.record(z.string(), z.string()).optional(),
+            rounded: z.record(z.string(), z.string()).optional(),
+            spacing: z.record(z.string(), z.string()).optional(),
+            typography: z.record(z.string(), z.record(z.string(), z.union([z.string(), z.number()]))).optional(),
+            components: z.record(z.string(), z.record(z.string(), z.union([z.string(), z.number()]))).optional(),
+        }),
+    }),
+}, async ({ tokens }) => {
+    try {
+        return ok(await mergeSynthesizedTokens(PROJECT_DIR, tokens));
+    }
+    catch (err) {
+        return fail(err.message);
+    }
+});
 let board = null;
 server.registerTool("board_url", {
     description: "Return the localhost URL of the kanban board server, and whether it is currently running.",

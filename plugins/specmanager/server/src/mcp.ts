@@ -36,6 +36,7 @@ import {
   resolveActiveCard,
   syncClaudeMd,
   syncDesignMd,
+  mergeSynthesizedTokens,
   writeManifest,
 } from "./core/index.js";
 
@@ -430,6 +431,30 @@ server.registerTool(
     inputSchema: z.object({ mode: z.enum(["init", "refresh"]).optional() }),
   },
   async ({ mode }) => ok(await syncDesignMd(PROJECT_DIR, { mode: mode ?? "refresh" }))
+);
+
+server.registerTool(
+  "bootstrap_design_tokens",
+  {
+    description:
+      "Seed synthesized starter design tokens back into ./docs/DESIGN.md's managed block (R5/AC8). Fills ONLY placeholder/TODO or absent fields — never clobbers harvested real values — and rewrites only the region between the design markers. The single AC8 write path: the designer persists synthesized tokens through this tool, never via raw Write. Pass partial maps; e.g. { colors: { primary: \"#FF5733\" }, rounded: { md: \"10px\" } }.",
+    inputSchema: z.object({
+      tokens: z.object({
+        colors: z.record(z.string(), z.string()).optional(),
+        rounded: z.record(z.string(), z.string()).optional(),
+        spacing: z.record(z.string(), z.string()).optional(),
+        typography: z.record(z.string(), z.record(z.string(), z.union([z.string(), z.number()]))).optional(),
+        components: z.record(z.string(), z.record(z.string(), z.union([z.string(), z.number()]))).optional(),
+      }),
+    }),
+  },
+  async ({ tokens }) => {
+    try {
+      return ok(await mergeSynthesizedTokens(PROJECT_DIR, tokens));
+    } catch (err) {
+      return fail((err as Error).message);
+    }
+  }
 );
 
 let board: BoardServer | null = null;
