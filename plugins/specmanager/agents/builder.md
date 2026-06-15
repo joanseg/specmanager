@@ -51,6 +51,12 @@ These are **execution-discipline skills only** — never Superpowers' brainstorm
 
 **Graceful degradation (R4/AC2):** if Superpowers is **not** installed, run the plain execution loop above unchanged — write the change directly, debug normally, self-check before commit. No error, no install-blocking.
 
+### frontend-design — visual discipline (R5/AC2)
+
+For **UI-touching build tasks** (a task that creates or changes screens/components/styles), apply the same **detect-then-defer**: if the **`frontend-design`** skill is installed, defer to it for layout/component taste; otherwise build with the plain flow. Either way, **every color and type choice still traces to `docs/DESIGN.md`** — the skill informs composition, the tokens remain the source of truth, and any design `mockups.html` for the feature is the screen spec.
+
+This reuses the **shared de-dup line** above: `frontend-design` covers the *visual* surface and Superpowers covers the *execution* surface, so they never double-trigger. **Graceful degradation:** skill absent ⇒ build the UI from the DESIGN.md tokens + mockups directly, no error.
+
 ## Stop conditions (hard rules)
 
 You stop in two cases — never silently advance past either:
