@@ -6,7 +6,10 @@ export type Stage = z.infer<typeof STAGE>;
 export const DOC_STATUS = z.enum(["draft", "approved"]);
 export type DocStatus = z.infer<typeof DOC_STATUS>;
 
-export const TASK_STATUS = z.enum(["todo", "in_progress", "done"]);
+// `blocked` (R1 AC2 / R3 AC5): the Stop-gate iteration cap flips a phase's open
+// tasks to `blocked` so the board surfaces a first-class state. Remediation:
+// re-enter the phase (counter resets) and rebuild — that clears the block.
+export const TASK_STATUS = z.enum(["todo", "in_progress", "done", "blocked"]);
 export type TaskStatus = z.infer<typeof TASK_STATUS>;
 
 // Fibonacci scale. Anything ≥5 must be split before persisting — the planner

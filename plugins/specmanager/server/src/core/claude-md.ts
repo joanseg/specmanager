@@ -31,7 +31,7 @@ function stageLabel(stage: string): string {
 
 function notesFor(f: {
   documents: Array<{ stage: string; status: string; stale: boolean }>;
-  tasks: { todo: number; in_progress: number; done: number; total: number };
+  tasks: { todo: number; in_progress: number; done: number; blocked?: number; total: number };
   currentStage: string;
   phases?: Array<{ name: string; status: string }>;
 }): string {
@@ -41,7 +41,9 @@ function notesFor(f: {
       f.phases && f.phases.length > 1
         ? ` · phases ${f.phases.filter((p) => p.status === "done").length}/${f.phases.length}`
         : "";
-    const note = `Build (${f.tasks.done}/${f.tasks.total} tasks done)${phaseSummary}`;
+    const blockedPhases = (f.phases ?? []).filter((p) => p.status === "blocked").map((p) => p.name);
+    const blockedNote = blockedPhases.length ? ` · 🚫 blocked: ${blockedPhases.join(", ")}` : "";
+    const note = `Build (${f.tasks.done}/${f.tasks.total} tasks done)${phaseSummary}${blockedNote}`;
     return stale.length ? `${note} · ${stale.join(", ")} ⚠️ stale` : note;
   }
   if (stale.length) return `${stale.join(", ")} ⚠️ stale`;

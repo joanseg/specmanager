@@ -31,7 +31,9 @@ function notesFor(f) {
         const phaseSummary = f.phases && f.phases.length > 1
             ? ` · phases ${f.phases.filter((p) => p.status === "done").length}/${f.phases.length}`
             : "";
-        const note = `Build (${f.tasks.done}/${f.tasks.total} tasks done)${phaseSummary}`;
+        const blockedPhases = (f.phases ?? []).filter((p) => p.status === "blocked").map((p) => p.name);
+        const blockedNote = blockedPhases.length ? ` · 🚫 blocked: ${blockedPhases.join(", ")}` : "";
+        const note = `Build (${f.tasks.done}/${f.tasks.total} tasks done)${phaseSummary}${blockedNote}`;
         return stale.length ? `${note} · ${stale.join(", ")} ⚠️ stale` : note;
     }
     if (stale.length)

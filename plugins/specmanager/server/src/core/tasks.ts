@@ -106,6 +106,31 @@ export async function setPhaseMeta(
   events.emit({ type: "task.updated", taskId: `phase:${phase}`, featureId });
 }
 
+/**
+ * Flip a phase's not-done tasks to the first-class `blocked` status so the board
+ * surfaces it (R1 AC2). Idempotent. Cleared by re-entering the phase (the
+ * builder re-marks tasks in_progress/done on rebuild).
+ */
+export async function blockPhaseTasks(
+  featureId: string,
+  phase: string,
+  root = projectRoot()
+): Promise<void> {
+  const file = await readTasksFile(featureId, root);
+  let changed = false;
+  for (const t of file.tasks) {
+    if (t.phase === phase && t.status !== "done" && t.status !== "blocked") {
+      t.status = "blocked";
+      t.updatedAt = nowIso();
+      changed = true;
+    }
+  }
+  if (changed) {
+    await writeTasksFile(featureId, file, root);
+    events.emit({ type: "task.updated", taskId: `phase:${phase}`, featureId });
+  }
+}
+
 /** Record a blocked note for a phase (R1 iteration-cap surfacing). */
 export async function setPhaseBlocked(
   featureId: string,

@@ -1090,6 +1090,16 @@ html, body, #root {
   color: var(--status-done);
   background: color-mix(in srgb, var(--status-done) 12%, transparent);
 }
+.status-pill--on.status-pill--blocked {
+  border-color: var(--error);
+  color: var(--error);
+  background: color-mix(in srgb, var(--error) 12%, transparent);
+}
+.task--blocked {
+  box-shadow: inset 2px 0 0 var(--error);
+}
+.card__build-blocked,
+.phase-group__count .blocked { color: var(--error); }
 
 .task__toggle {
   background: transparent;
@@ -1305,6 +1315,10 @@ html, body, #root {
 .phase-group--done {
   border-color: color-mix(in srgb, var(--success) 35%, transparent);
   background: color-mix(in srgb, var(--success) 6%, transparent);
+}
+.phase-group--blocked {
+  border-color: color-mix(in srgb, var(--error) 40%, transparent);
+  background: color-mix(in srgb, var(--error) 6%, transparent);
 }
 .phase-group__head {
   display: flex;

@@ -4,6 +4,10 @@ import { DEFAULT_PHASE } from "./types.js";
 function statusOf(taskCount, counts) {
     if (taskCount === 0)
         return "empty";
+    // A blocked task dominates: the phase needs human attention before it can
+    // advance (Stop-gate iteration cap). Cleared by re-entering + rebuilding.
+    if (counts.blocked > 0)
+        return "blocked";
     if (counts.done === taskCount)
         return "done";
     if (counts.in_progress > 0 || counts.done > 0)
@@ -17,7 +21,7 @@ export function rollupPhases(tasks) {
         const name = t.phase || DEFAULT_PHASE;
         if (!order.has(name))
             order.set(name, order.size);
-        const c = counts.get(name) ?? { total: 0, done: 0, in_progress: 0, todo: 0 };
+        const c = counts.get(name) ?? { total: 0, done: 0, in_progress: 0, todo: 0, blocked: 0 };
         c.total++;
         c[t.status]++;
         counts.set(name, c);
@@ -32,7 +36,13 @@ export function rollupPhases(tasks) {
             taskCount: c.total,
             doneCount: c.done,
             inProgressCount: c.in_progress,
-            status: statusOf(c.total, { todo: c.todo, in_progress: c.in_progress, done: c.done }),
+            blockedCount: c.blocked,
+            status: statusOf(c.total, {
+                todo: c.todo,
+                in_progress: c.in_progress,
+                done: c.done,
+                blocked: c.blocked,
+            }),
         };
     });
 }

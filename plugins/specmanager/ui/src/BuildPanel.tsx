@@ -14,8 +14,9 @@ const STATUS_LABEL: Record<TaskStatus, string> = {
   todo: "Todo",
   in_progress: "In progress",
   done: "Done",
+  blocked: "Blocked",
 };
-const STATUS_ORDER: TaskStatus[] = ["todo", "in_progress", "done"];
+const STATUS_ORDER: TaskStatus[] = ["todo", "in_progress", "done", "blocked"];
 
 export default function BuildPanel({ featureId, featureTitle, onClose }: BuildPanelProps) {
   const [tasks, setTasks] = useState<Task[] | null>(null);
@@ -54,7 +55,7 @@ export default function BuildPanel({ featureId, featureTitle, onClose }: BuildPa
   }, [featureId]);
 
   const counts = useMemo(() => {
-    const c: Record<TaskStatus, number> = { todo: 0, in_progress: 0, done: 0 };
+    const c: Record<TaskStatus, number> = { todo: 0, in_progress: 0, done: 0, blocked: 0 };
     for (const t of tasks ?? []) c[t.status]++;
     return c;
   }, [tasks]);
@@ -76,7 +77,7 @@ export default function BuildPanel({ featureId, featureTitle, onClose }: BuildPa
     }
     return order.map((name) => {
       const items = byPhase.get(name)!;
-      const c: Record<TaskStatus, number> = { todo: 0, in_progress: 0, done: 0 };
+      const c: Record<TaskStatus, number> = { todo: 0, in_progress: 0, done: 0, blocked: 0 };
       for (const t of items) c[t.status]++;
       return { name, tasks: items, counts: c, total: items.length };
     });
@@ -169,6 +170,7 @@ export default function BuildPanel({ featureId, featureTitle, onClose }: BuildPa
             <span className="panel__meta">
               {counts.done}/{total} done
               {counts.in_progress > 0 && ` · ${counts.in_progress} in progress`}
+              {counts.blocked > 0 && ` · 🚫 ${counts.blocked} blocked`}
             </span>
           </div>
           {total > 0 && (
@@ -202,6 +204,7 @@ export default function BuildPanel({ featureId, featureTitle, onClose }: BuildPa
                 const phaseProgPct =
                   g.total === 0 ? 0 : Math.round((g.counts.in_progress / g.total) * 100);
                 const allDone = g.total > 0 && g.counts.done === g.total;
+                const hasBlocked = g.counts.blocked > 0;
                 const isCollapsed = collapsed[g.name] ?? false;
                 const slash = `/specmanager-build ${featureId} ${g.name}`;
                 const copySlash = (e: React.MouseEvent): void => {
@@ -209,7 +212,10 @@ export default function BuildPanel({ featureId, featureTitle, onClose }: BuildPa
                   void navigator.clipboard?.writeText(slash);
                 };
                 return (
-                  <section key={g.name} className={`phase-group${allDone ? " phase-group--done" : ""}`}>
+                  <section
+                    key={g.name}
+                    className={`phase-group${allDone ? " phase-group--done" : ""}${hasBlocked ? " phase-group--blocked" : ""}`}
+                  >
                     <header className="phase-group__head">
                       <button
                         type="button"
@@ -222,6 +228,7 @@ export default function BuildPanel({ featureId, featureTitle, onClose }: BuildPa
                         <span className="phase-group__count">
                           {g.counts.done}/{g.total} done
                           {g.counts.in_progress > 0 && ` · ${g.counts.in_progress} in progress`}
+                          {g.counts.blocked > 0 && ` · 🚫 ${g.counts.blocked} blocked`}
                         </span>
                       </button>
                       <button

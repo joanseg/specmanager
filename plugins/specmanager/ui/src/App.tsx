@@ -177,6 +177,7 @@ function BuildCell({
           </span>
         )}
         {tasks.in_progress > 0 && <span>· {tasks.in_progress} in progress</span>}
+        {tasks.blocked > 0 && <span className="card__build-blocked">· 🚫 {tasks.blocked} blocked</span>}
       </span>
       {slash && (
         <span
