@@ -9,6 +9,7 @@ import {
   TaskStatus,
   TasksFile,
   TasksFileSchema,
+  TasksMeta,
 } from "./types.js";
 import { projectRoot, stageDir } from "./paths.js";
 import { nowIso, taskId } from "./ids.js";
@@ -58,7 +59,7 @@ async function readTasksFile(featureId: string, root: string): Promise<TasksFile
     const raw = await fs.readFile(p, "utf8");
     return TasksFileSchema.parse(JSON.parse(raw));
   } catch {
-    return { tasks: [] };
+    return { tasks: [], meta: { phases: {}, blocked: {} } };
   }
 }
 
@@ -74,6 +75,73 @@ async function writeTasksFile(
 export async function listTasks(featureId: string, root = projectRoot()): Promise<Task[]> {
   const file = await readTasksFile(featureId, root);
   return file.tasks;
+}
+
+/** Per-phase planner metadata (testCommand / architectureRefs) + blocked notes. */
+export async function readTasksMeta(
+  featureId: string,
+  root = projectRoot()
+): Promise<TasksMeta> {
+  const file = await readTasksFile(featureId, root);
+  return file.meta;
+}
+
+/**
+ * Set the planner-emitted metadata for a phase (R1 testCommand, R3
+ * architectureRefs). `testCommand` is a runnable command or the literal "none".
+ * Idempotent per phase; leaves other phases' meta untouched.
+ */
+export async function setPhaseMeta(
+  featureId: string,
+  phase: string,
+  meta: { testCommand: string; architectureRefs?: string[] },
+  root = projectRoot()
+): Promise<void> {
+  const file = await readTasksFile(featureId, root);
+  file.meta.phases[phase] = {
+    testCommand: meta.testCommand,
+    architectureRefs: meta.architectureRefs ?? [],
+  };
+  await writeTasksFile(featureId, file, root);
+  events.emit({ type: "task.updated", taskId: `phase:${phase}`, featureId });
+}
+
+/**
+ * Flip a phase's not-done tasks to the first-class `blocked` status so the board
+ * surfaces it (R1 AC2). Idempotent. Cleared by re-entering the phase (the
+ * builder re-marks tasks in_progress/done on rebuild).
+ */
+export async function blockPhaseTasks(
+  featureId: string,
+  phase: string,
+  root = projectRoot()
+): Promise<void> {
+  const file = await readTasksFile(featureId, root);
+  let changed = false;
+  for (const t of file.tasks) {
+    if (t.phase === phase && t.status !== "done" && t.status !== "blocked") {
+      t.status = "blocked";
+      t.updatedAt = nowIso();
+      changed = true;
+    }
+  }
+  if (changed) {
+    await writeTasksFile(featureId, file, root);
+    events.emit({ type: "task.updated", taskId: `phase:${phase}`, featureId });
+  }
+}
+
+/** Record a blocked note for a phase (R1 iteration-cap surfacing). */
+export async function setPhaseBlocked(
+  featureId: string,
+  phase: string,
+  reason: string,
+  root = projectRoot()
+): Promise<void> {
+  const file = await readTasksFile(featureId, root);
+  file.meta.blocked[phase] = reason;
+  await writeTasksFile(featureId, file, root);
+  events.emit({ type: "task.updated", taskId: `phase:${phase}`, featureId });
 }
 
 export interface CreateTaskInput {

@@ -12,6 +12,8 @@ You are the **builder** for a single phase of a SpecManager feature. A phase is 
 - The phase name to execute (e.g. `"A"`, `"core"`, `"next"` — if `"next"`, look it up via `get_next_phase`).
 - The approved Plan doc id (for reference / context).
 
+> **Model is parent-supplied (R2).** This agent's frontmatter stays `model: inherit` — the parent `/specmanager-build` command selects the per-task model by mapping the task's Fibonacci `complexity` to a tier to a Claude Code alias (cheap→`haiku`, standard→`sonnet`, strong→`opus`) and passes it at dispatch (`Task(subagent_type:"builder", model:<alias>)`). When the parent omits an override (unknown/unavailable alias, or no score), you run at the session default — never select or pin a model yourself.
+
 ## Required research before you write code
 
 1. `list_features` → confirm the feature exists.
@@ -28,6 +30,32 @@ For each task in the target phase, in dependency order:
 2. **Do the work.** Read the relevant files, make the change. Keep changes small and focused — one task = one logical unit. Follow the repository's existing conventions; if you need to deviate, note why in the task's commit message.
 3. **Commit.** Use `Bash` to run `git add <files> && git commit -m "<task title>"` — the commit message should reference the task. Pre-existing repository hooks may run; respect them. If a hook fails, fix the underlying issue rather than bypassing.
 4. **Record artifacts.** `update_task({ id, featureId, status: "done", artifacts: { commits: ["<sha>"], files: [<paths>] } })`. The MCP server **rejects** done transitions that have no commit and no file ref — this is by design. You must record real artifacts.
+
+## Skill leverage (detect-then-defer)
+
+Two optional Claude Code skill sets sharpen *how* you do the work in step 2 above. Both are **detect-then-defer with graceful degradation**: use the real skill when it is installed/available in-session, otherwise fall back to the plain flow with no error.
+
+> **Shared de-dup line.** If **Superpowers** is installed, defer to its skills and skip the built-in equivalents below. The two skill sets (Superpowers' execution discipline, `frontend-design`'s visual discipline) cover different surfaces and never double-trigger — when a real skill is present it owns that surface and the built-in fallback stands down.
+
+### Superpowers — execution discipline (R4)
+
+When the **Superpowers** skills are available, defer to them for *how you execute each task* — feeding each skill **the task's spec slice** (its `plan.md` phase section + task title/notes) as the compliance contract it works against:
+
+- **TDD skill** (red → green → refactor): drive the change test-first — write the failing test that encodes the task's acceptance, make it pass, then refactor. Use it instead of writing code directly.
+- **systematic-debugging skill** (root-cause-before-fix): when a test fails or behaviour is wrong, defer to it — reproduce, find the root cause with evidence, then fix. Do not patch symptoms.
+- **two-stage review skill**: run it as in-build execution discipline on your own change before you commit.
+
+These are **execution-discipline skills only** — never Superpowers' brainstorming/planning skills. SpecManager owns the *what* (the PRD/Architecture/Plan/tasks); Superpowers only sharpens the *how*. **No vendoring** — invoke the installed skill; do not copy its content into this repo.
+
+**Composes with the R3 reviewer, not duplicate:** Superpowers' two-stage review is discipline *inside* your build of a task; the parent's R3 reviewer is a separate pre-advance gate after the phase's Stop-hook passes. The de-dup line scopes Superpowers to in-build discipline so the two don't collide.
+
+**Graceful degradation (R4/AC2):** if Superpowers is **not** installed, run the plain execution loop above unchanged — write the change directly, debug normally, self-check before commit. No error, no install-blocking.
+
+### frontend-design — visual discipline (R5/AC2)
+
+For **UI-touching build tasks** (a task that creates or changes screens/components/styles), apply the same **detect-then-defer**: if the **`frontend-design`** skill is installed, defer to it for layout/component taste; otherwise build with the plain flow. Either way, **every color and type choice still traces to `docs/DESIGN.md`** — the skill informs composition, the tokens remain the source of truth, and any design `mockups.html` for the feature is the screen spec.
+
+This reuses the **shared de-dup line** above: `frontend-design` covers the *visual* surface and Superpowers covers the *execution* surface, so they never double-trigger. **Graceful degradation:** skill absent ⇒ build the UI from the DESIGN.md tokens + mockups directly, no error.
 
 ## Stop conditions (hard rules)
 

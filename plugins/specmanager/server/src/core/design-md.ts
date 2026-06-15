@@ -443,6 +443,125 @@ export interface SyncDesignMdResult {
   mode: "init" | "refresh";
 }
 
+// ─── Bootstrap-back: fill placeholder tokens (R5/AC8) ───────────────────────
+
+export interface SynthesizedTokens {
+  colors?: Record<string, string>;
+  typography?: Record<string, Record<string, string | number>>;
+  rounded?: Record<string, string>;
+  spacing?: Record<string, string>;
+  components?: Record<string, Record<string, string | number>>;
+}
+
+// A value is a fillable placeholder if it is absent or carries a `# TODO`
+// comment, or equals one of the known sentinels the auto-scan emits when it
+// finds no real CSS-var colors.
+const PLACEHOLDER_SENTINELS = new Set(['"#1A1C1E"', "#1A1C1E", '"#F7F5F2"', "#F7F5F2"]);
+
+function isPlaceholderLine(line: string): boolean {
+  return /#\s*TODO/i.test(line) || PLACEHOLDER_SENTINELS.has(line.split(":").slice(1).join(":").trim());
+}
+
+/**
+ * Overlay synthesized scalar tokens onto a `colors:` (and other flat) map inside
+ * the managed YAML block — filling ONLY placeholder/absent keys, never clobbering
+ * harvested real values. Returns the rewritten managed block.
+ */
+function overlayTokens(managedBlock: string, synthesized: SynthesizedTokens): string {
+  const lines = managedBlock.split("\n");
+  const out: string[] = [];
+
+  // Flat sections we fill: colors, rounded, spacing. Each is a top-level YAML
+  // key with two-space-indented scalar children.
+  const flatSections: Array<[keyof SynthesizedTokens, Record<string, string> | undefined]> = [
+    ["colors", synthesized.colors],
+    ["rounded", synthesized.rounded],
+    ["spacing", synthesized.spacing],
+  ];
+
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i]!;
+    const sectionMatch = line.match(/^([a-zA-Z][\w-]*):\s*$/);
+    const section = sectionMatch?.[1];
+    const flat = flatSections.find(([name]) => name === section);
+    if (flat && flat[1]) {
+      out.push(line);
+      const synthMap = flat[1];
+      const seen = new Set<string>();
+      i++;
+      // Walk the indented children of this section.
+      while (i < lines.length && /^\s{2}\S/.test(lines[i]!)) {
+        const child = lines[i]!;
+        const keyMatch = child.match(/^\s{2}([\w-]+)\s*:/);
+        const key = keyMatch?.[1];
+        if (key && key in synthMap && isPlaceholderLine(child)) {
+          out.push(`  ${key}: ${quote(synthMap[key]!)}`);
+          seen.add(key);
+        } else {
+          if (key) seen.add(key);
+          out.push(child);
+        }
+        i++;
+      }
+      // Append synthesized keys that were absent entirely.
+      for (const [k, v] of Object.entries(synthMap)) {
+        if (!seen.has(k)) out.push(`  ${safeKey(k)}: ${quote(v)}`);
+      }
+      continue;
+    }
+    out.push(line);
+    i++;
+  }
+  return out.join("\n");
+}
+
+export async function mergeSynthesizedTokens(
+  rootOrTokens: string | SynthesizedTokens,
+  tokensArg?: SynthesizedTokens
+): Promise<SyncDesignMdResult> {
+  let root: string;
+  let synthesized: SynthesizedTokens;
+  if (typeof rootOrTokens === "string") {
+    root = rootOrTokens;
+    synthesized = tokensArg ?? {};
+  } else {
+    root = projectRoot();
+    synthesized = rootOrTokens;
+  }
+
+  const file = designMdPath(root);
+  let existing = "";
+  let created = false;
+  try {
+    existing = await fs.readFile(file, "utf8");
+  } catch {
+    created = true;
+  }
+
+  const startIdx = existing.indexOf(START);
+  const endIdx = existing.indexOf(END);
+  if (startIdx === -1 || endIdx === -1 || endIdx <= startIdx) {
+    // No managed block to merge into — seed one first, then overlay.
+    await syncDesignMd(root, { mode: created ? "init" : "refresh" });
+    existing = await fs.readFile(file, "utf8");
+  }
+
+  const s = existing.indexOf(START);
+  const e = existing.indexOf(END);
+  const before = existing.slice(0, s);
+  const managedBlock = existing.slice(s, e + END.length);
+  const after = existing.slice(e + END.length);
+
+  const mergedBlock = overlayTokens(managedBlock, synthesized);
+  const next = `${before}${mergedBlock}${after}`;
+  const updated = next !== existing;
+  if (updated) await fs.writeFile(file, next, "utf8");
+
+  events.emit({ type: "design.synced", path: file, mode: "refresh" });
+  return { path: file, created, updated, mode: "refresh" };
+}
+
 export async function syncDesignMd(
   rootOrOpts?: string | SyncDesignMdOptions,
   optsArg?: SyncDesignMdOptions

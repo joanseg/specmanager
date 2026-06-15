@@ -2,7 +2,7 @@ import { projectRoot } from "./paths.js";
 import { listTasks } from "./tasks.js";
 import { DEFAULT_PHASE, Task, TaskStatus } from "./types.js";
 
-export type PhaseStatus = "empty" | "todo" | "in_progress" | "done";
+export type PhaseStatus = "empty" | "todo" | "in_progress" | "done" | "blocked";
 
 export interface PhaseDescriptor {
   name: string;
@@ -10,11 +10,15 @@ export interface PhaseDescriptor {
   taskCount: number;
   doneCount: number;
   inProgressCount: number;
+  blockedCount: number;
   status: PhaseStatus;
 }
 
 function statusOf(taskCount: number, counts: Record<TaskStatus, number>): PhaseStatus {
   if (taskCount === 0) return "empty";
+  // A blocked task dominates: the phase needs human attention before it can
+  // advance (Stop-gate iteration cap). Cleared by re-entering + rebuilding.
+  if (counts.blocked > 0) return "blocked";
   if (counts.done === taskCount) return "done";
   if (counts.in_progress > 0 || counts.done > 0) return "in_progress";
   return "todo";
@@ -22,11 +26,14 @@ function statusOf(taskCount: number, counts: Record<TaskStatus, number>): PhaseS
 
 export function rollupPhases(tasks: Task[]): PhaseDescriptor[] {
   const order = new Map<string, number>();
-  const counts = new Map<string, { total: number; done: number; in_progress: number; todo: number }>();
+  const counts = new Map<
+    string,
+    { total: number; done: number; in_progress: number; todo: number; blocked: number }
+  >();
   for (const t of tasks) {
     const name = t.phase || DEFAULT_PHASE;
     if (!order.has(name)) order.set(name, order.size);
-    const c = counts.get(name) ?? { total: 0, done: 0, in_progress: 0, todo: 0 };
+    const c = counts.get(name) ?? { total: 0, done: 0, in_progress: 0, todo: 0, blocked: 0 };
     c.total++;
     c[t.status]++;
     counts.set(name, c);
@@ -41,7 +48,13 @@ export function rollupPhases(tasks: Task[]): PhaseDescriptor[] {
         taskCount: c.total,
         doneCount: c.done,
         inProgressCount: c.in_progress,
-        status: statusOf(c.total, { todo: c.todo, in_progress: c.in_progress, done: c.done }),
+        blockedCount: c.blocked,
+        status: statusOf(c.total, {
+          todo: c.todo,
+          in_progress: c.in_progress,
+          done: c.done,
+          blocked: c.blocked,
+        }),
       };
     });
 }

@@ -6,7 +6,10 @@ export type Stage = z.infer<typeof STAGE>;
 export const DOC_STATUS = z.enum(["draft", "approved"]);
 export type DocStatus = z.infer<typeof DOC_STATUS>;
 
-export const TASK_STATUS = z.enum(["todo", "in_progress", "done"]);
+// `blocked` (R1 AC2 / R3 AC5): the Stop-gate iteration cap flips a phase's open
+// tasks to `blocked` so the board surfaces a first-class state. Remediation:
+// re-enter the phase (counter resets) and rebuild — that clears the block.
+export const TASK_STATUS = z.enum(["todo", "in_progress", "done", "blocked"]);
 export type TaskStatus = z.infer<typeof TASK_STATUS>;
 
 // Fibonacci scale. Anything ≥5 must be split before persisting — the planner
@@ -92,7 +95,28 @@ export const TaskSchema = z.object({
 });
 export type Task = z.infer<typeof TaskSchema>;
 
+// Per-phase metadata the planner emits (R1 testCommand, R3 architectureRefs).
+// `testCommand`: a runnable shell command, or the literal "none" for an
+// intentionally test-less phase. Absent ⇒ the gate's convention-probe fallback.
+// `architectureRefs`: stable Architecture anchors (e.g. "R1", "core-active-card")
+// the phase implements; used to assemble the reviewer's spec slice.
+export const PhaseMetaSchema = z.object({
+  testCommand: z.string(),
+  architectureRefs: z.array(z.string()).default([]),
+});
+export type PhaseMeta = z.infer<typeof PhaseMetaSchema>;
+
+// Optional `blocked` note surfaced by the Stop-gate iteration cap (R1 AC2).
+// Keyed by phase name; cleared when the phase is re-entered and rebuilt.
+export const TasksMetaSchema = z.object({
+  phases: z.record(z.string(), PhaseMetaSchema).default({}),
+  blocked: z.record(z.string(), z.string()).default({}),
+});
+export type TasksMeta = z.infer<typeof TasksMetaSchema>;
+
 export const TasksFileSchema = z.object({
   tasks: z.array(TaskSchema).default([]),
+  // Zod defaults ⇒ zero migration; pre-existing tasks.json keep working.
+  meta: TasksMetaSchema.default({ phases: {}, blocked: {} }),
 });
 export type TasksFile = z.infer<typeof TasksFileSchema>;

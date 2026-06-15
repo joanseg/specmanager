@@ -29,7 +29,7 @@ export interface Manifest {
       phase?: string;
       kind?: string;
     }>;
-    tasks: { todo: number; in_progress: number; done: number; total: number };
+    tasks: { todo: number; in_progress: number; done: number; blocked: number; total: number };
     phases: PhaseManifestEntry[];
   }>;
 }
@@ -40,7 +40,7 @@ export async function buildManifest(root = projectRoot()): Promise<Manifest> {
   for (const f of features) {
     const docs = await listDocuments({ featureId: f.id }, root);
     const tasks = await listTasks(f.id, root);
-    const counts = { todo: 0, in_progress: 0, done: 0, total: tasks.length };
+    const counts = { todo: 0, in_progress: 0, done: 0, blocked: 0, total: tasks.length };
     for (const t of tasks) counts[t.status]++;
     const phaseRollup = rollupPhases(tasks);
     // Map phase-name → walkthrough doc (if one exists for that phase).

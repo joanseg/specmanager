@@ -142,6 +142,14 @@ async function main(): Promise<void> {
     "legacy task surfaces under 'default' phase"
   );
 
+  // 8. Blocked status rolls a phase up to `blocked` (R1 AC2 surfacing).
+  const blk = await createFeature("Blocked rollup", root);
+  const bt = await createTask({ featureId: blk.id, title: "BK1", phase: "core", complexity: 2 }, root);
+  await updateTask({ id: bt.id, featureId: blk.id, status: "blocked" }, root);
+  const blkPhases = await listPhases(blk.id, root);
+  assert(blkPhases[0]!.status === "blocked", "a blocked task rolls the phase up to blocked");
+  assert(blkPhases[0]!.blockedCount === 1, "phase blockedCount reflects the blocked task");
+
   console.log("\nAll Phase 7.A assertions passed.");
   console.log(`Inspect the tmp project at: ${root}`);
 }

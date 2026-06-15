@@ -44,7 +44,7 @@ export interface GateResult {
   reason?: string;
 }
 
-export type TaskStatus = "todo" | "in_progress" | "done";
+export type TaskStatus = "todo" | "in_progress" | "done" | "blocked";
 
 export interface TaskArtifacts {
   commits: string[];
@@ -70,10 +70,11 @@ export interface TaskCounts {
   todo: number;
   in_progress: number;
   done: number;
+  blocked: number;
   total: number;
 }
 
-export type PhaseStatus = "empty" | "todo" | "in_progress" | "done";
+export type PhaseStatus = "empty" | "todo" | "in_progress" | "done" | "blocked";
 
 export interface PhaseRollup {
   name: string;
@@ -81,6 +82,7 @@ export interface PhaseRollup {
   taskCount: number;
   doneCount: number;
   inProgressCount: number;
+  blockedCount: number;
   status: PhaseStatus;
   walkthroughId: string | null;
   walkthroughStatus: DocStatus | null;

@@ -32,8 +32,11 @@ import {
   updateTask,
   listPhases,
   getNextPhase,
+  setPhaseMeta,
+  resolveActiveCard,
   syncClaudeMd,
   syncDesignMd,
+  mergeSynthesizedTokens,
   writeManifest,
 } from "./core/index.js";
 
@@ -380,6 +383,38 @@ server.registerTool(
 );
 
 server.registerTool(
+  "set_phase_meta",
+  {
+    description:
+      "Set a phase's planner metadata in tasks.json: `testCommand` (a runnable shell command, or the literal \"none\" for an intentionally test-less phase — never omit it) and `architectureRefs` (the Architecture anchors that phase implements, e.g. [\"R1\",\"core-active-card\"]). The Stop-gate reads testCommand as its primary verification source; the reviewer slice resolves architectureRefs. Call once per phase after create_task.",
+    inputSchema: z.object({
+      featureId: z.string(),
+      phase: z.string().min(1),
+      testCommand: z.string().min(1),
+      architectureRefs: z.array(z.string()).optional(),
+    }),
+  },
+  async ({ featureId, phase, testCommand, architectureRefs }) => {
+    try {
+      await setPhaseMeta(featureId, phase, { testCommand, architectureRefs }, PROJECT_DIR);
+      return ok({ phase, testCommand, architectureRefs: architectureRefs ?? [] });
+    } catch (err) {
+      return fail((err as Error).message);
+    }
+  }
+);
+
+server.registerTool(
+  "resolve_active_card",
+  {
+    description:
+      "Resolve the active card deterministically: the feature with open plan tasks, its active phase (first phase not all-done), and that phase's verification target (meta.testCommand primary, plan.md **Exit test:** line fallback) + architectureRefs + open task ids. Returns null when nothing is in flight. Used by the Stop-gate hook.",
+    inputSchema: z.object({}),
+  },
+  async () => ok(await resolveActiveCard(PROJECT_DIR))
+);
+
+server.registerTool(
   "sync_claude_md",
   {
     description: "Rewrite the managed SpecManager block in the project CLAUDE.md.",
@@ -396,6 +431,30 @@ server.registerTool(
     inputSchema: z.object({ mode: z.enum(["init", "refresh"]).optional() }),
   },
   async ({ mode }) => ok(await syncDesignMd(PROJECT_DIR, { mode: mode ?? "refresh" }))
+);
+
+server.registerTool(
+  "bootstrap_design_tokens",
+  {
+    description:
+      "Seed synthesized starter design tokens back into ./docs/DESIGN.md's managed block (R5/AC8). Fills ONLY placeholder/TODO or absent fields — never clobbers harvested real values — and rewrites only the region between the design markers. The single AC8 write path: the designer persists synthesized tokens through this tool, never via raw Write. Pass partial maps; e.g. { colors: { primary: \"#FF5733\" }, rounded: { md: \"10px\" } }.",
+    inputSchema: z.object({
+      tokens: z.object({
+        colors: z.record(z.string(), z.string()).optional(),
+        rounded: z.record(z.string(), z.string()).optional(),
+        spacing: z.record(z.string(), z.string()).optional(),
+        typography: z.record(z.string(), z.record(z.string(), z.union([z.string(), z.number()]))).optional(),
+        components: z.record(z.string(), z.record(z.string(), z.union([z.string(), z.number()]))).optional(),
+      }),
+    }),
+  },
+  async ({ tokens }) => {
+    try {
+      return ok(await mergeSynthesizedTokens(PROJECT_DIR, tokens));
+    } catch (err) {
+      return fail((err as Error).message);
+    }
+  }
 );
 
 let board: BoardServer | null = null;
