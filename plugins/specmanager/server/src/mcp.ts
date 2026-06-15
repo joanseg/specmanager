@@ -32,6 +32,7 @@ import {
   updateTask,
   listPhases,
   getNextPhase,
+  resolveActiveCard,
   syncClaudeMd,
   syncDesignMd,
   writeManifest,
@@ -377,6 +378,16 @@ server.registerTool(
     inputSchema: z.object({ featureId: z.string() }),
   },
   async ({ featureId }) => ok(await getNextPhase(featureId, PROJECT_DIR))
+);
+
+server.registerTool(
+  "resolve_active_card",
+  {
+    description:
+      "Resolve the active card deterministically: the feature with open plan tasks, its active phase (first phase not all-done), and that phase's verification target (meta.testCommand primary, plan.md **Exit test:** line fallback) + architectureRefs + open task ids. Returns null when nothing is in flight. Used by the Stop-gate hook.",
+    inputSchema: z.object({}),
+  },
+  async () => ok(await resolveActiveCard(PROJECT_DIR))
 );
 
 server.registerTool(

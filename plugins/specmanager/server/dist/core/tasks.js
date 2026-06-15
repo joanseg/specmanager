@@ -52,6 +52,18 @@ export async function listTasks(featureId, root = projectRoot()) {
     const file = await readTasksFile(featureId, root);
     return file.tasks;
 }
+/** Per-phase planner metadata (testCommand / architectureRefs) + blocked notes. */
+export async function readTasksMeta(featureId, root = projectRoot()) {
+    const file = await readTasksFile(featureId, root);
+    return file.meta;
+}
+/** Record a blocked note for a phase (R1 iteration-cap surfacing). */
+export async function setPhaseBlocked(featureId, phase, reason, root = projectRoot()) {
+    const file = await readTasksFile(featureId, root);
+    file.meta.blocked[phase] = reason;
+    await writeTasksFile(featureId, file, root);
+    events.emit({ type: "task.updated", taskId: `phase:${phase}`, featureId });
+}
 export async function createTask(input, root = projectRoot()) {
     assertSplittable(input.complexity);
     const file = await readTasksFile(input.featureId, root);

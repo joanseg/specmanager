@@ -9,6 +9,7 @@ import {
   TaskStatus,
   TasksFile,
   TasksFileSchema,
+  TasksMeta,
 } from "./types.js";
 import { projectRoot, stageDir } from "./paths.js";
 import { nowIso, taskId } from "./ids.js";
@@ -74,6 +75,28 @@ async function writeTasksFile(
 export async function listTasks(featureId: string, root = projectRoot()): Promise<Task[]> {
   const file = await readTasksFile(featureId, root);
   return file.tasks;
+}
+
+/** Per-phase planner metadata (testCommand / architectureRefs) + blocked notes. */
+export async function readTasksMeta(
+  featureId: string,
+  root = projectRoot()
+): Promise<TasksMeta> {
+  const file = await readTasksFile(featureId, root);
+  return file.meta;
+}
+
+/** Record a blocked note for a phase (R1 iteration-cap surfacing). */
+export async function setPhaseBlocked(
+  featureId: string,
+  phase: string,
+  reason: string,
+  root = projectRoot()
+): Promise<void> {
+  const file = await readTasksFile(featureId, root);
+  file.meta.blocked[phase] = reason;
+  await writeTasksFile(featureId, file, root);
+  events.emit({ type: "task.updated", taskId: `phase:${phase}`, featureId });
 }
 
 export interface CreateTaskInput {
