@@ -14,6 +14,12 @@ set -uo pipefail
 # Drain stdin (the Stop-hook JSON); we don't need its fields for resolution.
 cat >/dev/null 2>&1 || true
 
+# TEMP DISABLE: resolveActiveCard resolves the first project-wide feature with
+# open tasks, with no link to the session's actual work, so this gate hijacks
+# every Stop and points at an unrelated feature. Disabled pending the scoping
+# fix; re-enable once resolveActiveCard is session-scoped.
+exit 0
+
 PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-}"
 PROJECT_DIR="${SPECMANAGER_PROJECT_DIR:-${CLAUDE_PROJECT_DIR:-$PWD}}"
 NODE_BIN="$(command -v node || true)"
