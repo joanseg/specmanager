@@ -276,7 +276,7 @@
       "id": "task-013",
       "featureId": "feat-token-usage-optimisation",
       "title": "claude plugin validate + cross-file invariant sweep; push branch",
-      "status": "in_progress",
+      "status": "done",
       "phase": "economy",
       "complexity": 1,
       "dependsOn": [
@@ -286,12 +286,16 @@
         "task-012"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "a41c0aa"
+        ],
+        "files": [
+          ".claude/specs/features/token-usage-optimisation/plan/tasks.json"
+        ],
         "pr": null
       },
       "createdAt": "2026-06-12T13:10:59.088Z",
-      "updatedAt": "2026-06-12T13:43:39.611Z"
+      "updatedAt": "2026-06-12T13:44:59.159Z"
     },
     {
       "id": "task-014",

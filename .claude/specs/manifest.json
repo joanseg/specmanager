@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-12T13:43:39.616Z",
+  "generatedAt": "2026-06-15T12:17:50.400Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -1001,8 +1001,8 @@
       ],
       "tasks": {
         "todo": 1,
-        "in_progress": 1,
-        "done": 12,
+        "in_progress": 0,
+        "done": 13,
         "total": 14
       },
       "phases": [
@@ -1010,8 +1010,8 @@
           "name": "economy",
           "order": 0,
           "taskCount": 14,
-          "doneCount": 12,
-          "inProgressCount": 1,
+          "doneCount": 13,
+          "inProgressCount": 0,
           "status": "in_progress",
           "walkthroughId": null,
           "walkthroughStatus": null,
@@ -1037,10 +1037,18 @@
         {
           "id": "prd-viral-loop-feature-022",
           "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Viral loop feature PRD"
+        },
+        {
+          "id": "arch-viral-loop-feature-015",
+          "stage": "architecture",
           "status": "draft",
           "stale": false,
           "version": 1,
-          "title": "Viral loop feature PRD"
+          "title": "Viral loop feature architecture"
         }
       ],
       "tasks": {
@@ -1050,6 +1058,92 @@
         "total": 0
       },
       "phases": []
+    },
+    {
+      "id": "feat-feature-demo-recording",
+      "slug": "feature-demo-recording",
+      "title": "Feature demo recording",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-feature-demo-recording-023",
+          "stage": "prd",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Feature demo recording interview",
+          "kind": "interview"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0,
+        "total": 0
+      },
+      "phases": []
+    },
+    {
+      "id": "feat-build-leverage-primitives",
+      "slug": "build-leverage-primitives",
+      "title": "Build leverage primitives",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-build-leverage-primitives-024",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 9,
+          "title": "Build leverage primitives PRD"
+        },
+        {
+          "id": "arch-build-leverage-primitives-016",
+          "stage": "architecture",
+          "status": "approved",
+          "stale": false,
+          "version": 5,
+          "title": "Build leverage primitives architecture"
+        },
+        {
+          "id": "plan-build-leverage-primitives-012",
+          "stage": "plan",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Build leverage primitives plan"
+        }
+      ],
+      "tasks": {
+        "todo": 20,
+        "in_progress": 0,
+        "done": 0,
+        "total": 20
+      },
+      "phases": [
+        {
+          "name": "core",
+          "order": 0,
+          "taskCount": 15,
+          "doneCount": 0,
+          "inProgressCount": 0,
+          "status": "todo",
+          "walkthroughId": null,
+          "walkthroughStatus": null,
+          "walkthroughStale": null
+        },
+        {
+          "name": "wiring",
+          "order": 1,
+          "taskCount": 5,
+          "doneCount": 0,
+          "inProgressCount": 0,
+          "status": "todo",
+          "walkthroughId": null,
+          "walkthroughStatus": null,
+          "walkthroughStale": null
+        }
+      ]
     }
   ]
 }

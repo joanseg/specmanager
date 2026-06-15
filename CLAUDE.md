@@ -22,14 +22,16 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 | Codex plugin | PRD (approved) | — |
 | User adoption acceleration | PRD (draft) | — |
 | Token usage optimisation | PRD (approved) | — |
-| Viral loop feature | PRD (draft) | — |
+| Viral loop feature | PRD (approved) | — |
+| Feature demo recording | PRD | — |
+| Build leverage primitives | PRD (approved) | — |
 
 **Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation.
 
 **Commands:**
 `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)
 
-_Last synced: 2026-06-12T13:39:18.958Z_
+_Last synced: 2026-06-15T12:21:37.086Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
