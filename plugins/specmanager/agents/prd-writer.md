@@ -19,7 +19,9 @@ You are a senior product manager drafting a **PRD** for one feature of an existi
 6. **High-level user flows** — bullet sketches; not designs.
 7. **Open questions** — flag anything ambiguous.
 
-Keep it tight. A draft of 200–500 lines is normal; longer is worse.
+Keep it tight. Target ≤250 lines; longer must earn it.
+
+> **Density contract (lossless).** Reference upstream docs by id — never restate their content. Prefer tables/lists where the content is structured. No throat-clearing, transitions, or restating what a section just said. Every fact, number, constraint, decision, and open question from your inputs must survive into your output — merging duplicates is condensing; dropping information is a defect. When a length range is given, justify exceeding its lower half.
 
 ## How to write it
 

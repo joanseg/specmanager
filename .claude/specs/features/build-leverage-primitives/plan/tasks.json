@@ -1,0 +1,357 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-build-leverage-primitives",
+      "title": "Extend TasksFileSchema with meta.phases[<phase>]: { testCommand, architectureRefs[] }",
+      "status": "todo",
+      "phase": "core",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T12:17:02.205Z",
+      "updatedAt": "2026-06-15T12:17:02.205Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-build-leverage-primitives",
+      "title": "Update planner.md to emit meta.phases[<phase>].testCommand + architectureRefs for every phase",
+      "status": "todo",
+      "phase": "core",
+      "complexity": 3,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T12:17:05.831Z",
+      "updatedAt": "2026-06-15T12:17:05.831Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-build-leverage-primitives",
+      "title": "Add core/active-card.ts resolveActiveCard(root?) + MCP tool resolve_active_card",
+      "status": "todo",
+      "phase": "core",
+      "complexity": 3,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T12:17:07.093Z",
+      "updatedAt": "2026-06-15T12:17:07.093Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-build-leverage-primitives",
+      "title": "Add core/tiers.ts (complexity→tier→alias table + helpers)",
+      "status": "todo",
+      "phase": "core",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T12:17:11.237Z",
+      "updatedAt": "2026-06-15T12:17:11.237Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-build-leverage-primitives",
+      "title": "Write hooks/stop-gate.sh discovery + test-run + criteria-check core",
+      "status": "todo",
+      "phase": "core",
+      "complexity": 3,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T12:17:12.543Z",
+      "updatedAt": "2026-06-15T12:17:12.543Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-build-leverage-primitives",
+      "title": "Add iteration-cap counter + blocked-marker to stop-gate.sh",
+      "status": "todo",
+      "phase": "core",
+      "complexity": 2,
+      "dependsOn": [
+        "task-005"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T12:17:18.107Z",
+      "updatedAt": "2026-06-15T12:17:18.107Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-build-leverage-primitives",
+      "title": "Wire Stop entry into hooks.json + add selftest-stopgate",
+      "status": "todo",
+      "phase": "core",
+      "complexity": 2,
+      "dependsOn": [
+        "task-006"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T12:17:19.172Z",
+      "updatedAt": "2026-06-15T12:17:19.172Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-build-leverage-primitives",
+      "title": "Add selftest-tiers covering the complexity→alias mapping",
+      "status": "todo",
+      "phase": "core",
+      "complexity": 1,
+      "dependsOn": [
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T12:17:22.856Z",
+      "updatedAt": "2026-06-15T12:17:22.856Z"
+    },
+    {
+      "id": "task-009",
+      "featureId": "feat-build-leverage-primitives",
+      "title": "Add a real blocked task status (board column/badge + rollup)",
+      "status": "todo",
+      "phase": "core",
+      "complexity": 3,
+      "dependsOn": [
+        "task-006"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T12:17:23.914Z",
+      "updatedAt": "2026-06-15T12:17:23.914Z"
+    },
+    {
+      "id": "task-010",
+      "featureId": "feat-build-leverage-primitives",
+      "title": "Add mergeSynthesizedTokens to core/design-md.ts",
+      "status": "todo",
+      "phase": "core",
+      "complexity": 3,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T12:17:27.912Z",
+      "updatedAt": "2026-06-15T12:17:27.912Z"
+    },
+    {
+      "id": "task-011",
+      "featureId": "feat-build-leverage-primitives",
+      "title": "Add MCP tool bootstrap_design_tokens (the only AC8 write path)",
+      "status": "todo",
+      "phase": "core",
+      "complexity": 2,
+      "dependsOn": [
+        "task-010"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T12:17:28.619Z",
+      "updatedAt": "2026-06-15T12:17:28.619Z"
+    },
+    {
+      "id": "task-012",
+      "featureId": "feat-build-leverage-primitives",
+      "title": "Wire per-task tier dispatch into commands/specmanager-build.md",
+      "status": "todo",
+      "phase": "core",
+      "complexity": 2,
+      "dependsOn": [
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T12:17:32.540Z",
+      "updatedAt": "2026-06-15T12:17:32.540Z"
+    },
+    {
+      "id": "task-013",
+      "featureId": "feat-build-leverage-primitives",
+      "title": "Note builder model is parent-supplied in agents/builder.md",
+      "status": "todo",
+      "phase": "core",
+      "complexity": 1,
+      "dependsOn": [
+        "task-012"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T12:17:33.536Z",
+      "updatedAt": "2026-06-15T12:17:33.536Z"
+    },
+    {
+      "id": "task-014",
+      "featureId": "feat-build-leverage-primitives",
+      "title": "Add the read-only agents/reviewer.md subagent",
+      "status": "todo",
+      "phase": "core",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T12:17:36.835Z",
+      "updatedAt": "2026-06-15T12:17:36.835Z"
+    },
+    {
+      "id": "task-015",
+      "featureId": "feat-build-leverage-primitives",
+      "title": "Add parent slice-assembly + reviewer invocation to commands/specmanager-build.md",
+      "status": "todo",
+      "phase": "core",
+      "complexity": 3,
+      "dependsOn": [
+        "task-002",
+        "task-012",
+        "task-014"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T12:17:38.147Z",
+      "updatedAt": "2026-06-15T12:17:38.147Z"
+    },
+    {
+      "id": "task-016",
+      "featureId": "feat-build-leverage-primitives",
+      "title": "Wire Superpowers TDD/debug/review into agents/builder.md + shared de-dup line",
+      "status": "todo",
+      "phase": "wiring",
+      "complexity": 3,
+      "dependsOn": [
+        "task-015"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T12:17:43.149Z",
+      "updatedAt": "2026-06-15T12:17:43.149Z"
+    },
+    {
+      "id": "task-017",
+      "featureId": "feat-build-leverage-primitives",
+      "title": "Wire frontend-design 3-tier + grounding ladder into designer.md + commands/specmanager-design.md",
+      "status": "todo",
+      "phase": "wiring",
+      "complexity": 3,
+      "dependsOn": [
+        "task-011"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T12:17:44.311Z",
+      "updatedAt": "2026-06-15T12:17:44.311Z"
+    },
+    {
+      "id": "task-018",
+      "featureId": "feat-build-leverage-primitives",
+      "title": "Wire frontend-design detect-then-defer into UI build tasks in agents/builder.md",
+      "status": "todo",
+      "phase": "wiring",
+      "complexity": 1,
+      "dependsOn": [
+        "task-016",
+        "task-017"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T12:17:47.981Z",
+      "updatedAt": "2026-06-15T12:17:47.981Z"
+    },
+    {
+      "id": "task-019",
+      "featureId": "feat-build-leverage-primitives",
+      "title": "Wire Context7 doc-lookup ladder into agents/architect.md",
+      "status": "todo",
+      "phase": "wiring",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T12:17:49.400Z",
+      "updatedAt": "2026-06-15T12:17:49.400Z"
+    },
+    {
+      "id": "task-020",
+      "featureId": "feat-build-leverage-primitives",
+      "title": "Add the Architecture anchor-scheme convention to agents/architect.md",
+      "status": "todo",
+      "phase": "wiring",
+      "complexity": 1,
+      "dependsOn": [
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T12:17:50.388Z",
+      "updatedAt": "2026-06-15T12:17:50.388Z"
+    }
+  ]
+}

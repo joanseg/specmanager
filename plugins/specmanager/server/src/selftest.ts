@@ -380,6 +380,44 @@ async function main(): Promise<void> {
   const prdEntry = ivRow!.documents.find((d) => d.id === ivPrd.frontmatter.id);
   assert(prdEntry !== undefined && prdEntry.kind === undefined, "prd entry carries no kind");
 
+  // 12. CLAUDE.md growth cap — shipped features (approved final walkthrough)
+  // collapse into one line; in-flight rows survive; reopening self-heals.
+  const shippedFeature = await createFeature("Shipped widget", root);
+  const finalWt = await createDocument(
+    {
+      featureId: shippedFeature.id,
+      stage: "walkthrough",
+      title: "Shipped widget walkthrough",
+      body: "# Walkthrough\n\nDone.",
+      phase: "final",
+    },
+    root
+  );
+  await setStatus(finalWt.frontmatter.id, "approved", root);
+  await syncClaudeMd(root);
+  const claudeMd4 = await fs.readFile(path.join(root, "CLAUDE.md"), "utf8");
+  assert(
+    claudeMd4.includes("_1 feature shipped — full history on the board._"),
+    "CLAUDE.md collapses shipped features into the shipped line"
+  );
+  assert(
+    !claudeMd4.includes("| Shipped widget |"),
+    "shipped feature has no table row"
+  );
+  assert(
+    claudeMd4.includes("| Checkout corridor |") && claudeMd4.includes("| Session timeline |"),
+    "in-flight features keep their table rows"
+  );
+
+  // Reopening the final walkthrough flips the feature back to in-flight on next sync.
+  await setStatus(finalWt.frontmatter.id, "draft", root);
+  await syncClaudeMd(root);
+  const claudeMd5 = await fs.readFile(path.join(root, "CLAUDE.md"), "utf8");
+  assert(
+    claudeMd5.includes("| Shipped widget |") && !claudeMd5.includes("shipped — full history"),
+    "reopening the final walkthrough restores the table row (self-healing)"
+  );
+
   console.log("\nAll Phase 1 assertions passed.");
   console.log(`Inspect the tmp project at: ${root}`);
 }

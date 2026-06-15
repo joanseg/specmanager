@@ -6,6 +6,7 @@ import { startBoardServer, BoardServer } from "./board-server.js";
 import { spawn } from "node:child_process";
 
 import {
+  type DocFrontmatter,
   STAGE,
   DOC_KIND,
   DOC_STATUS,
@@ -43,13 +44,24 @@ const BOARD_PORT = Number(process.env.SPECMANAGER_BOARD_PORT ?? 4317);
 function text(payload: unknown) {
   return {
     content: [
-      { type: "text" as const, text: typeof payload === "string" ? payload : JSON.stringify(payload, null, 2) },
+      { type: "text" as const, text: typeof payload === "string" ? payload : JSON.stringify(payload) },
     ],
   };
 }
 
 function ok<T>(data: T) {
   return text({ ok: true, data });
+}
+
+/** Slim list projection: full metadata stays on read_document. */
+function docSummary(d: { frontmatter: DocFrontmatter; filePath: string }) {
+  const { id, featureId, stage, kind, status, stale, title, version, phase } = d.frontmatter;
+  return { id, featureId, stage, kind, status, stale, title, version, phase, filePath: d.filePath };
+}
+
+/** Slim mutation ack for document writes: the caller already holds the rest. */
+function docAck(d: { frontmatter: DocFrontmatter; filePath: string }) {
+  return { id: d.frontmatter.id, version: d.frontmatter.version, filePath: d.filePath };
 }
 
 function fail(message: string) {
@@ -104,7 +116,7 @@ server.registerTool(
   },
   async (filter) => {
     const docs = await listDocuments(filter, PROJECT_DIR);
-    return ok(docs.map((d) => ({ ...d.frontmatter, filePath: d.filePath })));
+    return ok(docs.map(docSummary));
   }
 );
 
@@ -146,7 +158,7 @@ server.registerTool(
     try {
       const d = await createDocument(input, PROJECT_DIR);
       await writeManifest(PROJECT_DIR);
-      return ok({ ...d.frontmatter, filePath: d.filePath });
+      return ok(docAck(d));
     } catch (err) {
       return fail((err as Error).message);
     }
@@ -187,7 +199,7 @@ server.registerTool(
         PROJECT_DIR
       );
       await writeManifest(PROJECT_DIR);
-      return ok({ ...d.frontmatter, filePath: d.filePath });
+      return ok(docAck(d));
     } catch (err) {
       return fail((err as Error).message);
     }
@@ -213,7 +225,7 @@ server.registerTool(
     try {
       const d = await writeDocument(input, PROJECT_DIR);
       await writeManifest(PROJECT_DIR);
-      return ok({ ...d.frontmatter, filePath: d.filePath });
+      return ok(docAck(d));
     } catch (err) {
       return fail((err as Error).message);
     }
@@ -232,7 +244,7 @@ server.registerTool(
       const d = await setStatus(id, status, PROJECT_DIR);
       await writeManifest(PROJECT_DIR);
       await syncClaudeMd(PROJECT_DIR);
-      return ok({ ...d.frontmatter });
+      return ok({ id: d.frontmatter.id, status: d.frontmatter.status, stale: d.frontmatter.stale });
     } catch (err) {
       return fail((err as Error).message);
     }
@@ -309,7 +321,7 @@ server.registerTool(
     try {
       const t = await createTask(input, PROJECT_DIR);
       await writeManifest(PROJECT_DIR);
-      return ok(t);
+      return ok({ id: t.id, status: t.status, phase: t.phase, complexity: t.complexity });
     } catch (err) {
       return fail((err as Error).message);
     }
@@ -340,7 +352,7 @@ server.registerTool(
     try {
       const t = await updateTask(input, PROJECT_DIR);
       await writeManifest(PROJECT_DIR);
-      return ok(t);
+      return ok({ id: t.id, status: t.status, phase: t.phase, complexity: t.complexity });
     } catch (err) {
       return fail((err as Error).message);
     }

@@ -35,6 +35,8 @@ You are a staff software engineer producing an **Architecture document** for one
 
 Keep it grounded — every "we will add X" should reference a real file or directory that exists today.
 
+> **Density contract (lossless).** Reference upstream docs by id — never restate their content. Prefer tables/lists where the content is structured. No throat-clearing, transitions, or restating what a section just said. Every fact, number, constraint, decision, and open question from your inputs must survive into your output — merging duplicates is condensing; dropping information is a defect. When a length range is given, justify exceeding its lower half.
+
 ## Persist
 
 Call `create_document` with:

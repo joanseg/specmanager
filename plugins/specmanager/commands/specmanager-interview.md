@@ -5,113 +5,66 @@ argument-hint: "<feature title, or existing featureId/slug>"
 
 Interview the user about: **$ARGUMENTS**.
 
-This command runs **in the main session** — no subagent. Subagents are
-single-shot and cannot hold a turn-by-turn conversation, so the full interview
-protocol lives here. You are the interviewer: your job is to pull the context
-out of the user's head and stress-test the idea as you go, so a later
-`/specmanager-prd` run starts from extracted, challenged material instead of a
-one-shot prompt.
+Runs **in the main session** — no subagent (subagents are single-shot and
+cannot hold a conversation). You are the interviewer: pull the context out of
+the user's head and stress-test it as you go, so `/specmanager-prd` later
+starts from extracted, challenged material.
 
 ## Steps
 
-1. **Resolve or create the feature.** Call `list_features`.
-   - If a feature's `id` or `slug` matches the argument, use it.
-   - Otherwise treat the argument as a **new feature title** and call
-     `create_feature({ title })`. Report the new `id`, `slug`, and folder path
-     inline in the opening turn (see the protocol below).
-   - If no argument was given, ask the user for one short title and stop.
-2. **Detect prior material.** Call `list_documents({ featureId, stage: "prd" })`.
-   - If a doc with `kind: "interview"` exists, this is a **re-interview**:
-     `read_document` it and open the session by briefly summarising what's
-     already captured, then interview to extend/revise rather than repeat.
-     Remember its `id` and `version` — the storage step updates it in place.
-   - If a PRD already exists, note it to the user in one sentence ("a PRD
-     already exists; this interview can feed a rewrite") and **proceed anyway**
-     — re-interviewing before a PRD rewrite is legitimate.
-3. **Run the interview.** Follow the **Interview protocol** below, using the
-   **Forcing-question method** to probe and challenge.
-4. **Synthesise.** When the user ends the interview or the plan is exhausted,
-   print the synthesis in the four-section format defined in the protocol.
-5. **Storage.** After printing the synthesis, ask:
+1. **Resolve or create the feature.** `list_features`; match the argument
+   against an `id`/`slug`, else treat it as a new title:
+   `create_feature({ title })`, reporting id/slug/folder in the opening turn.
+   No argument → ask for one short title and stop.
+2. **Detect prior material.** `list_documents({ featureId, stage: "prd" })`.
+   A `kind: "interview"` doc → **re-interview**: `read_document` it, open by
+   summarising what's captured, extend/revise rather than repeat; keep its
+   `id` and `version` for storage. A PRD exists → note it in one sentence
+   ("this can feed a rewrite") and proceed anyway.
+3. **Interview** per the protocol below.
+4. **Synthesise** in the four-section format when the user exits or the plan
+   is exhausted.
+5. **Storage.** Ask:
    > Store this interview as a markdown file for this feature? It will appear
    > in the PRD column on the board. (yes / no)
 
-   The stored body is the synthesis in markdown: a one-line *mode* note at the
-   top (which mode(s) ran, with the method credit), then the four sections —
-   `## Extracted`, `## Critique`, `## Recommended wedge`, `## Unresolved` — so
-   the chat and the artifact match.
-
-   - **Yes, no interview exists yet** (step 2 found none):
-     ```
-     create_document({
-       featureId: "<feat-...>",
-       stage: "prd",
-       kind: "interview",
-       title: "<Feature title> interview",
-       body: <the synthesis markdown>,
-       generatedBy: "agent",
-       dependsOn: [],
-       basedOn: {}
-     })
-     ```
+   Stored body = one-line *mode* note (mode(s) ran + method credit), then the
+   four sections — chat and artifact match. Then:
+   - **No** → stop; nothing is written.
+   - **Yes, none exists:**
+     `create_document({ featureId, stage: "prd", kind: "interview", title: "<Feature title> interview", body, generatedBy: "agent", dependsOn: [], basedOn: {} })`.
      `dependsOn: []` / `basedOn: {}` is a hard contract — the interview sits
-     outside the staleness graph; never link it to anything. The filename
-     defaults to `interview.md` in the feature's `prd/` folder.
-   - **Yes, an interview already exists** (re-interview, step 2 found one):
-     update it in place with optimistic concurrency, where `baseVersion` is
-     the `version` you read in step 2:
-     ```
-     write_document({ id: "<the existing interview id>", body: <the synthesis markdown>, baseVersion: <version> })
-     ```
-     On a `version conflict` error (the user edited it on the board
-     mid-session), `read_document` it again, merge your synthesis with
-     whatever changed, and retry with the fresh version.
-   - **No:** stop. Nothing is written; the synthesis lives only in the chat.
+     outside the staleness graph; never link it. Filename defaults to
+     `prd/interview.md`.
+   - **Yes, re-interview:**
+     `write_document({ id: <existing interview id>, body, baseVersion: <version from step 2> })`.
+     On `version conflict`, `read_document` again, merge, retry with the
+     fresh version.
 
-   On success, call `sync_claude_md`, then report the document id and file
-   path (e.g. `prd-<slug>-NNN → .claude/specs/features/<slug>/prd/interview.md`).
+   On success: `sync_claude_md`, then report the document id and file path.
 
 ## Interview protocol
 
-### Opening turn
+**Opening turn** — one message, three parts in order: (1) the goal in a
+sentence or two, with a parenthetical if the feature was just created or
+prior material was found; (2) the plan — 5–8 numbered one-line areas derived
+from the feature's nature (problem & who hits it, demand evidence, status
+quo, assumed constraints, narrowest wedge, success criteria — adapt, don't
+recite); (3) the exit phrase — **"finish interview now"** or any obvious
+version ends it at any time. Then ask the first question.
 
-One message, three parts, in this order:
+**The loop**
+- **One focused question per turn** — never bundled or multi-part; pick the
+  question that most reduces your uncertainty right now.
+- Concrete over abstract: what actually happened, recently and specifically.
+- Challenge in the moment ("Hold on — …") when an answer hides an assumption,
+  a new user type, a contradiction, or a solution-first smell.
+- Adapt the plan when an answer materially changes what's worth covering.
+- Restate the exit phrase roughly every five turns, one short line.
 
-1. **The goal**, in one or two sentences: you'll pull the context out of the
-   user's head and stress-test the idea as you go. If the feature was just
-   created (or prior material was found in step 2), say so here in a short
-   parenthetical.
-2. **The interview plan**: a numbered list of 5–8 one-line areas you intend to
-   cover, derived from the feature's nature — e.g. the problem and who hits
-   it, demand evidence, status quo & workarounds, constraints taken for
-   granted, narrowest wedge, success criteria. This is *your* plan; adapt the
-   areas to the idea, don't recite a fixed template.
-3. **The exit phrase**: tell the user they can end at any time by saying
-   **"finish interview now"** (or any obvious version of it).
-
-Then ask the first question.
-
-### The loop
-
-- **One focused question per turn.** Never bundle two questions, never ask a
-  multi-part question. Pick the single question whose answer most reduces
-  your uncertainty right now.
-- **Prefer concrete over abstract.** Ask what actually happened, recently and
-  specifically — not what the user believes in general.
-- **Challenge in the moment.** When an answer contains a hidden assumption, a
-  new user type, a contradiction, or a solution-first smell, call it out
-  immediately ("Hold on — …") and probe it before moving on. Use the
-  forcing-question method below.
-- **Adapt the plan as you learn.** When an answer materially changes what's
-  worth covering, revise the plan — add areas the answer exposed, drop areas
-  that are now covered or moot.
-- **Restate the exit phrase roughly every five turns**, in one short line.
-  Don't nag more often than that.
-
-### Plan revisions print as diffs
-
-When the plan changes, print a short diff block — **never re-dump the whole
-plan**:
+**Plan revisions print as diffs** — never re-dump the whole plan; print
+nothing if nothing material changed; each `+`/`−` line names the change and
+reason in a trailing parenthetical:
 
 ```
 Plan update
@@ -119,99 +72,64 @@ Plan update
 − demand evidence (covered: the post-build blindness is concrete)
 ```
 
-Each `+` line names what was added and why in a trailing parenthetical; each
-`−` line names what was dropped with the reason. If nothing material changed,
-print nothing.
+**Exit** — matched conversationally, not literally ("let's stop", "wrap it
+up", "I'm done"…). Exit is **instant and unconditional**: straight to
+synthesis — no "are you sure?", no "one more question", however thin the
+material. If coverage was thin, say so in the synthesis header ("ending
+immediately — 2 of 6 areas covered") and let **Unresolved** carry the gaps.
+Plan exhausted → say so and synthesise.
 
-### Exit handling
-
-- The exit phrase is matched **conversationally, not literally**: "finish
-  interview now", "let's stop", "wrap it up", "that's enough", "I'm done" —
-  any obvious paraphrase ends the interview.
-- Exit is **instant and unconditional**: go straight to synthesis. No "are
-  you sure?", no "just one more question", however thin the material is. If
-  coverage was thin, say so in the synthesis header (e.g. "ending immediately
-  — 2 of 6 areas covered") and let the **Unresolved** section carry the gaps.
-- The interview also ends naturally when the plan is exhausted: say so and
-  move to synthesis.
-
-### Synthesis format
-
-Print exactly four sections, in this order — the same four the stored
-artifact will use, so the chat and the artifact match:
-
-- **Extracted** — the context pulled out: problem, who hits it, constraints
-  surfaced, decisions agreed during the session. Facts, not opinions.
-- **Critique** — the strongest challenges that survived the conversation:
-  thin evidence, solution-first smells, contradictions, risks the user
-  acknowledged. Honest, not polite.
-- **Recommended wedge** — the narrowest version worth building first, in a
-  sentence or two, with what was explicitly cut.
-- **Unresolved** — open questions and unverified claims the PRD will have to
-  carry.
-
-Keep each section tight — bullets or a couple of sentences, not prose pages.
+**Synthesis** — exactly four sections, in this order (chat and stored
+artifact identical), each tight — bullets, not prose:
+- **Extracted** — problem, who hits it, constraints, decisions agreed.
+  Facts, not opinions.
+- **Critique** — the strongest surviving challenges: thin evidence,
+  solution-first smells, contradictions, acknowledged risks. Honest, not
+  polite.
+- **Recommended wedge** — the narrowest version worth building first, with
+  what was explicitly cut.
+- **Unresolved** — open questions and unverified claims the PRD must carry.
 
 ## Forcing-question method
 
-The probing technique is the **office-hours** method from gstack —
-<https://github.com/garrytan/gstack/tree/main/office-hours> — embedded here
-and credited; no skill installation is needed. Six forcing questions drive
-the critique. Don't recite them verbatim like a checklist — deploy the right
-one at the moment an answer makes it bite, phrased in the conversation's own
-terms:
+The **office-hours** method from gstack —
+<https://github.com/garrytan/gstack/tree/main/office-hours> — embedded and
+credited; no skill installation needed. Deploy the right question when an
+answer makes it bite, in the conversation's own terms — never recite as a
+checklist:
 
-1. **Demand reality** — who is desperate for this *today*? What evidence of
-   demand exists beyond the user's own conviction? Claimed pain with no
-   instance attached is a hypothesis, not a fact.
-2. **Status quo** — what do the affected people do *right now* without it?
-   If the workaround is cheap and tolerated, the new thing must beat "just
-   keep doing that" or it dies of friction.
-3. **Desperate specificity** — name one specific person (or one specific
-   recent incident). "Users want…" is banned until at least one concrete
-   case has been named and examined.
-4. **Narrowest wedge** — what is the smallest version that delivers real
-   value to that specific case? What gets cut to reach it? Push until
+1. **Demand reality** — who is desperate for this *today*? Claimed pain with
+   no instance attached is a hypothesis, not a fact.
+2. **Status quo** — what do people do *right now*? A cheap, tolerated
+   workaround kills the new thing by friction.
+3. **Desperate specificity** — name one person or one recent incident;
+   "users want…" is banned until one concrete case is examined.
+4. **Narrowest wedge** — the smallest version with real value; push until
    something the user cares about has actually been cut.
-5. **Observation** — what has the user *observed* happening, versus what
-   they are *imagining* will happen? Separate the two explicitly; move
-   imagined items to Unresolved.
-6. **Future-fit** — why now? Does this still matter where the project (or
-   the world around it) is heading, or is it solving last year's problem?
+5. **Observation** — *observed* vs *imagined*; separate explicitly, imagined
+   items go to Unresolved.
+6. **Future-fit** — why now, or is it last year's problem?
 
-### Modes
+**Modes** — pick one from the feature's nature, name it in the opening turn:
+- **Startup interrogation** — risk is *demand* (product ideas, implied
+  audiences); leans on demand reality, status quo, specificity.
+- **Builder / design-thinking** — demand established (often dogfooding), risk
+  is *shape*; leans on wedge, observation, future-fit; probes constraints,
+  interfaces, failure modes.
 
-Pick an interview mode from the feature's nature, name it in the opening
-turn, and switch mid-interview when the conversation shows the other frame
-fits better:
-
-- **Startup interrogation** — for features whose risk is *demand*: is this
-  worth building at all? Leans hard on demand reality, status quo, and
-  desperate specificity. Default for product ideas, new user-facing
-  capabilities, anything with an implied audience.
-- **Builder / design-thinking** — for features whose demand is established
-  (often the user's own dogfooding) and whose risk is *shape*: what exactly
-  should be built? Leans on narrowest wedge, observation, and future-fit;
-  probes constraints, interfaces, and failure modes rather than whether
-  anyone wants it.
-
-**Switching:** when an answer reveals the frame is wrong — e.g. "demand
-evidence" turns out to be the user's own daily workflow (→ builder), or a
-"simple internal tool" sprouts a second user type (→ startup) — switch,
-announce it in one line ("Switching to builder mode — demand here is your
-own usage; the open question is shape"), and revise the plan diff
-accordingly. Switching is cheap and expected; staying in the wrong mode
-wastes the user's turns.
+Switch when the frame proves wrong ("demand evidence" is the user's own
+workflow → builder; an "internal tool" sprouts a second user type → startup):
+announce in one line and print a plan diff. Switching is cheap; the wrong
+mode wastes turns.
 
 ## Don't
 
-- Don't write anything before the user says yes at the storage prompt, and
-  never write files directly — all persistence goes through the
-  `create_document` / `write_document` MCP tools.
-- Don't give the interview any `dependsOn`/`basedOn` links, and don't approve
-  it — it has no lifecycle; it stays a `draft`-status reference doc forever.
-- Don't delegate to a subagent; the conversation must stay in this session.
-- Don't draft a PRD — that is `/specmanager-prd`'s job, later.
-- Don't ask more than one question per turn, and don't re-print the full plan
+- Don't write anything before the user says yes at the storage prompt;
+  persistence only via `create_document` / `write_document` — never write
+  files directly.
+- Don't give the interview `dependsOn`/`basedOn` links or approve it — no
+  lifecycle; it stays a `draft` reference doc forever.
+- Don't delegate to a subagent; don't draft a PRD (that's `/specmanager-prd`).
+- Don't ask more than one question per turn; don't re-print the full plan
   when a diff will do.
 - Don't second-guess an exit request — synthesis follows immediately.

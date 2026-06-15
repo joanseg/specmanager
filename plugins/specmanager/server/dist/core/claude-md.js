@@ -46,6 +46,10 @@ function currentStageLabel(f) {
         return stageLabel(f.currentStage);
     return `${stageLabel(f.currentStage)} (${doc.status})`;
 }
+/** Shipped = the feature's final walkthrough is approved (same signal as feature.shipped). */
+function isShipped(f) {
+    return f.documents.some((d) => d.stage === "walkthrough" && d.status === "approved" && d.phase === "final");
+}
 export async function renderBlock(root = projectRoot()) {
     const m = await buildManifest(root);
     const lines = [];
@@ -58,10 +62,20 @@ export async function renderBlock(root = projectRoot()) {
         lines.push("_No features yet. Run `/specmanager-prd \"<title>\"` to create one._");
     }
     else {
-        lines.push("| Feature | Current stage | Notes |");
-        lines.push("|---------|---------------|-------|");
-        for (const f of m.features) {
-            lines.push(`| ${f.title} | ${currentStageLabel(f)} | ${notesFor(f)} |`);
+        // Growth cap: shipped features collapse into one line; only in-flight rows render.
+        const inFlight = m.features.filter((f) => !isShipped(f));
+        const shippedCount = m.features.length - inFlight.length;
+        if (inFlight.length > 0) {
+            lines.push("| Feature | Current stage | Notes |");
+            lines.push("|---------|---------------|-------|");
+            for (const f of inFlight) {
+                lines.push(`| ${f.title} | ${currentStageLabel(f)} | ${notesFor(f)} |`);
+            }
+        }
+        if (shippedCount > 0) {
+            if (inFlight.length > 0)
+                lines.push("");
+            lines.push(`_${shippedCount} feature${shippedCount === 1 ? "" : "s"} shipped — full history on the board._`);
         }
     }
     lines.push("");
