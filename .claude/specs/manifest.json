@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-15T13:06:53.562Z",
+  "generatedAt": "2026-06-15T13:16:51.071Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -72,6 +72,7 @@
         "todo": 0,
         "in_progress": 0,
         "done": 28,
+        "blocked": 0,
         "total": 28
       },
       "phases": [
@@ -81,6 +82,7 @@
           "taskCount": 12,
           "doneCount": 12,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "done",
           "walkthroughId": "wt-redesign-001",
           "walkthroughStatus": "approved",
@@ -92,6 +94,7 @@
           "taskCount": 6,
           "doneCount": 6,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "done",
           "walkthroughId": "wt-redesign-002",
           "walkthroughStatus": "approved",
@@ -103,6 +106,7 @@
           "taskCount": 5,
           "doneCount": 5,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "done",
           "walkthroughId": "wt-redesign-003",
           "walkthroughStatus": "approved",
@@ -114,6 +118,7 @@
           "taskCount": 5,
           "doneCount": 5,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "done",
           "walkthroughId": "wt-redesign-004",
           "walkthroughStatus": "approved",
@@ -131,6 +136,7 @@
         "todo": 0,
         "in_progress": 0,
         "done": 0,
+        "blocked": 0,
         "total": 0
       },
       "phases": []
@@ -179,6 +185,7 @@
         "todo": 0,
         "in_progress": 0,
         "done": 7,
+        "blocked": 0,
         "total": 7
       },
       "phases": [
@@ -188,6 +195,7 @@
           "taskCount": 7,
           "doneCount": 7,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "done",
           "walkthroughId": "wt-rename-execute-command-to-build-006",
           "walkthroughStatus": "approved",
@@ -239,6 +247,7 @@
         "todo": 0,
         "in_progress": 0,
         "done": 4,
+        "blocked": 0,
         "total": 4
       },
       "phases": [
@@ -248,6 +257,7 @@
           "taskCount": 4,
           "doneCount": 4,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "done",
           "walkthroughId": "wt-planner-output-matches-phase-tasks-md-style-005",
           "walkthroughStatus": "approved",
@@ -274,6 +284,7 @@
         "todo": 0,
         "in_progress": 0,
         "done": 0,
+        "blocked": 0,
         "total": 0
       },
       "phases": []
@@ -321,6 +332,7 @@
         "todo": 0,
         "in_progress": 0,
         "done": 20,
+        "blocked": 0,
         "total": 20
       },
       "phases": [
@@ -330,6 +342,7 @@
           "taskCount": 6,
           "doneCount": 6,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "done",
           "walkthroughId": null,
           "walkthroughStatus": null,
@@ -341,6 +354,7 @@
           "taskCount": 6,
           "doneCount": 6,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "done",
           "walkthroughId": null,
           "walkthroughStatus": null,
@@ -352,6 +366,7 @@
           "taskCount": 6,
           "doneCount": 6,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "done",
           "walkthroughId": null,
           "walkthroughStatus": null,
@@ -363,6 +378,7 @@
           "taskCount": 2,
           "doneCount": 2,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "done",
           "walkthroughId": null,
           "walkthroughStatus": null,
@@ -405,6 +421,7 @@
         "todo": 0,
         "in_progress": 0,
         "done": 14,
+        "blocked": 0,
         "total": 14
       },
       "phases": [
@@ -414,6 +431,7 @@
           "taskCount": 5,
           "doneCount": 5,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "done",
           "walkthroughId": null,
           "walkthroughStatus": null,
@@ -425,6 +443,7 @@
           "taskCount": 5,
           "doneCount": 5,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "done",
           "walkthroughId": null,
           "walkthroughStatus": null,
@@ -436,6 +455,7 @@
           "taskCount": 4,
           "doneCount": 4,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "done",
           "walkthroughId": null,
           "walkthroughStatus": null,
@@ -487,6 +507,7 @@
         "todo": 0,
         "in_progress": 0,
         "done": 6,
+        "blocked": 0,
         "total": 6
       },
       "phases": [
@@ -496,6 +517,7 @@
           "taskCount": 6,
           "doneCount": 6,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "done",
           "walkthroughId": "wt-plan-and-walkthrough-optimisations-007",
           "walkthroughStatus": "approved",
@@ -555,6 +577,7 @@
         "todo": 0,
         "in_progress": 0,
         "done": 5,
+        "blocked": 0,
         "total": 5
       },
       "phases": [
@@ -564,6 +587,7 @@
           "taskCount": 5,
           "doneCount": 5,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "done",
           "walkthroughId": "wt-html-viewer-scroll-fix-008",
           "walkthroughStatus": "approved",
@@ -615,6 +639,7 @@
         "todo": 0,
         "in_progress": 0,
         "done": 5,
+        "blocked": 0,
         "total": 5
       },
       "phases": [
@@ -624,6 +649,7 @@
           "taskCount": 5,
           "doneCount": 5,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "done",
           "walkthroughId": "wt-post-phase-doc-sync-claude-md-design-md-009",
           "walkthroughStatus": "approved",
@@ -692,6 +718,7 @@
         "todo": 0,
         "in_progress": 0,
         "done": 17,
+        "blocked": 0,
         "total": 17
       },
       "phases": [
@@ -701,6 +728,7 @@
           "taskCount": 5,
           "doneCount": 5,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "done",
           "walkthroughId": "wt-interview-command-010",
           "walkthroughStatus": "approved",
@@ -712,6 +740,7 @@
           "taskCount": 12,
           "doneCount": 12,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "done",
           "walkthroughId": "wt-interview-command-011",
           "walkthroughStatus": "draft",
@@ -771,6 +800,7 @@
         "todo": 25,
         "in_progress": 0,
         "done": 0,
+        "blocked": 0,
         "total": 25
       },
       "phases": [
@@ -780,6 +810,7 @@
           "taskCount": 15,
           "doneCount": 0,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "todo",
           "walkthroughId": null,
           "walkthroughStatus": null,
@@ -791,6 +822,7 @@
           "taskCount": 4,
           "doneCount": 0,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "todo",
           "walkthroughId": null,
           "walkthroughStatus": null,
@@ -802,6 +834,7 @@
           "taskCount": 6,
           "doneCount": 0,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "todo",
           "walkthroughId": null,
           "walkthroughStatus": null,
@@ -853,6 +886,7 @@
         "todo": 0,
         "in_progress": 0,
         "done": 0,
+        "blocked": 0,
         "total": 0
       },
       "phases": []
@@ -892,6 +926,7 @@
         "todo": 0,
         "in_progress": 0,
         "done": 0,
+        "blocked": 0,
         "total": 0
       },
       "phases": []
@@ -923,6 +958,7 @@
         "todo": 0,
         "in_progress": 0,
         "done": 0,
+        "blocked": 0,
         "total": 0
       },
       "phases": []
@@ -955,6 +991,7 @@
         "todo": 0,
         "in_progress": 0,
         "done": 0,
+        "blocked": 0,
         "total": 0
       },
       "phases": []
@@ -1003,6 +1040,7 @@
         "todo": 1,
         "in_progress": 0,
         "done": 13,
+        "blocked": 0,
         "total": 14
       },
       "phases": [
@@ -1012,6 +1050,7 @@
           "taskCount": 14,
           "doneCount": 13,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "in_progress",
           "walkthroughId": null,
           "walkthroughStatus": null,
@@ -1055,6 +1094,7 @@
         "todo": 0,
         "in_progress": 0,
         "done": 0,
+        "blocked": 0,
         "total": 0
       },
       "phases": []
@@ -1079,6 +1119,7 @@
         "todo": 0,
         "in_progress": 0,
         "done": 0,
+        "blocked": 0,
         "total": 0
       },
       "phases": []
@@ -1114,9 +1155,18 @@
           "title": "Build leverage primitives plan"
         },
         {
-          "id": "wt-build-leverage-primitives-013",
+          "id": "wt-build-leverage-primitives-014",
           "stage": "walkthrough",
           "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Build leverage primitives — feature walkthrough",
+          "phase": "final"
+        },
+        {
+          "id": "wt-build-leverage-primitives-013",
+          "stage": "walkthrough",
+          "status": "approved",
           "stale": false,
           "version": 1,
           "title": "Build leverage primitives — Phase core walkthrough",
@@ -1125,7 +1175,7 @@
         {
           "id": "wt-build-leverage-primitives-012",
           "stage": "walkthrough",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
           "version": 1,
           "title": "Build leverage primitives — Phase wiring walkthrough",
@@ -1136,6 +1186,7 @@
         "todo": 0,
         "in_progress": 0,
         "done": 20,
+        "blocked": 0,
         "total": 20
       },
       "phases": [
@@ -1145,9 +1196,10 @@
           "taskCount": 15,
           "doneCount": 15,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "done",
           "walkthroughId": "wt-build-leverage-primitives-013",
-          "walkthroughStatus": "draft",
+          "walkthroughStatus": "approved",
           "walkthroughStale": false
         },
         {
@@ -1156,9 +1208,10 @@
           "taskCount": 5,
           "doneCount": 5,
           "inProgressCount": 0,
+          "blockedCount": 0,
           "status": "done",
           "walkthroughId": "wt-build-leverage-primitives-012",
-          "walkthroughStatus": "draft",
+          "walkthroughStatus": "approved",
           "walkthroughStale": false
         }
       ]
