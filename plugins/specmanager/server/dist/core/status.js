@@ -3,6 +3,8 @@ import { writeDoc } from "./frontmatter.js";
 import { events } from "./events.js";
 import { nowIso } from "./ids.js";
 import { projectRoot } from "./paths.js";
+import { listPhases } from "./phases.js";
+import { isFeatureShipped } from "./shipped.js";
 export async function setStatus(id, next, root = projectRoot()) {
     const doc = await readDocumentById(id, root);
     const prev = doc.frontmatter.status;
@@ -21,13 +23,20 @@ export async function setStatus(id, next, root = projectRoot()) {
     if (next === "approved" && doc.frontmatter.stale) {
         events.emit({ type: "stale.cleared", documentId: id });
     }
-    // feature.shipped — fired exactly once when the final-phase walkthrough is
-    // approved. The MCP server's auto-sync listener uses this to refresh
-    // ./docs/DESIGN.md so the system-level design spec stays current.
-    if (next === "approved" &&
-        doc.frontmatter.stage === "walkthrough" &&
-        doc.frontmatter.phase === "final") {
-        events.emit({ type: "feature.shipped", featureId: doc.frontmatter.featureId });
+    // feature.shipped — fired when the feature's terminal walkthrough is approved:
+    // the "final" roll-up for multi-phase features, OR (single-phase shortcut) the
+    // only phase's walkthrough, so a one-phase feature need not draft a redundant
+    // "final". The MCP server's auto-sync listener uses this to refresh
+    // ./docs/DESIGN.md. Shipped detection in claude-md.ts shares isFeatureShipped.
+    if (next === "approved" && doc.frontmatter.stage === "walkthrough") {
+        const featureId = doc.frontmatter.featureId;
+        const [docs, phases] = await Promise.all([
+            listDocuments({ featureId }, root),
+            listPhases(featureId, root),
+        ]);
+        if (isFeatureShipped(docs.map((d) => d.frontmatter), phases)) {
+            events.emit({ type: "feature.shipped", featureId });
+        }
     }
     if (prev === "approved" && next === "draft") {
         await propagateStale(id, `${id} reopened`, root);

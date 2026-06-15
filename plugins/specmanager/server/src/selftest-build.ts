@@ -20,6 +20,7 @@ import {
   createTask,
   FINAL_PHASE,
   initProject,
+  isFeatureShipped,
   listDocuments,
   listPhases,
   getNextPhase,
@@ -290,6 +291,38 @@ async function main(): Promise<void> {
   // Legacy gate uses synthetic 'default' phase.
   const legacyGate = await checkGate(feature.id, "walkthrough", root);
   assert(legacyGate.ok === false, "default-phase gate on multi-phase feature is closed (no default tasks)");
+
+  // ----- 7.C.8: single-phase auto-ship (isFeatureShipped) -------------------
+  // A one-phase feature ships when its only phase walkthrough is approved — no
+  // separate "final" roll-up needed. Multi-phase still requires "final".
+  assert(
+    isFeatureShipped(
+      [{ stage: "walkthrough", status: "approved", phase: "core" }],
+      [{ name: "core" }]
+    ) === true,
+    "single-phase: approved phase walkthrough ships the feature"
+  );
+  assert(
+    isFeatureShipped(
+      [{ stage: "walkthrough", status: "draft", phase: "core" }],
+      [{ name: "core" }]
+    ) === false,
+    "single-phase: a draft phase walkthrough does not ship"
+  );
+  assert(
+    isFeatureShipped(
+      [{ stage: "walkthrough", status: "approved", phase: "A" }],
+      [{ name: "A" }, { name: "B" }]
+    ) === false,
+    "multi-phase: one approved phase walkthrough does not ship"
+  );
+  assert(
+    isFeatureShipped(
+      [{ stage: "walkthrough", status: "approved", phase: "final" }],
+      [{ name: "A" }, { name: "B" }]
+    ) === true,
+    "multi-phase: approved final roll-up ships"
+  );
 
   console.log("\nAll Phase 7.B assertions passed.");
   console.log(`Inspect the tmp project at: ${root}`);

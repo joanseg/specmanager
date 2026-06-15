@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import { claudeMdPath, projectRoot } from "./paths.js";
 import { buildManifest } from "./manifest.js";
+import { isFeatureShipped } from "./shipped.js";
 
 const START = "<!-- specmanager:start -->";
 const END = "<!-- specmanager:end -->";
@@ -63,13 +64,13 @@ function currentStageLabel(f: {
   return `${stageLabel(f.currentStage)} (${doc.status})`;
 }
 
-/** Shipped = the feature's final walkthrough is approved (same signal as feature.shipped). */
+/** Shipped = the feature's terminal walkthrough is approved (same signal as
+ * feature.shipped): a "final" roll-up, or a single-phase feature's only phase. */
 function isShipped(f: {
   documents: Array<{ stage: string; status: string; phase?: string }>;
+  phases: Array<{ name: string }>;
 }): boolean {
-  return f.documents.some(
-    (d) => d.stage === "walkthrough" && d.status === "approved" && d.phase === "final"
-  );
+  return isFeatureShipped(f.documents, f.phases);
 }
 
 export async function renderBlock(root = projectRoot()): Promise<string> {
