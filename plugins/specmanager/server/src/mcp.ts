@@ -32,6 +32,7 @@ import {
   updateTask,
   listPhases,
   getNextPhase,
+  getPhaseCompletion,
   setPhaseMeta,
   resolveActiveCard,
   setActiveBuild,
@@ -382,6 +383,16 @@ server.registerTool(
     inputSchema: z.object({ featureId: z.string() }),
   },
   async ({ featureId }) => ok(await getNextPhase(featureId, PROJECT_DIR))
+);
+
+server.registerTool(
+  "get_phase_completion",
+  {
+    description:
+      "Deterministic 'is this phase done and does it still need a walkthrough?' predicate, queried by /specmanager-build after the builder returns OR errors so the post-phase pipeline never depends on the builder's exit path. Returns { complete, hasWalkthrough, needsWalkthrough, isSinglePhase, taskCount, doneCount }, or null for an unknown phase.",
+    inputSchema: z.object({ featureId: z.string(), phase: z.string() }),
+  },
+  async ({ featureId, phase }) => ok(await getPhaseCompletion(featureId, phase, PROJECT_DIR))
 );
 
 server.registerTool(

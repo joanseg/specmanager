@@ -24,6 +24,7 @@ import {
   listDocuments,
   listPhases,
   getNextPhase,
+  getPhaseCompletion,
   migrateWalkthroughs,
   setStatus,
   updateTask,
@@ -322,6 +323,98 @@ async function main(): Promise<void> {
       [{ name: "A" }, { name: "B" }]
     ) === true,
     "multi-phase: approved final roll-up ships"
+  );
+
+  // ----- get_phase_completion: deterministic post-phase branch predicate ----
+  // The build command calls this after the builder returns OR errors so the
+  // post-phase pipeline (walkthrough + doc-sync) never depends on the exit path.
+
+  // (a) Multi-phase feature, phase B all-done, no phase-B walkthrough yet
+  //     (wtB above was approved earlier, so it DOES have one — use a fresh
+  //     feature to get a clean all-done-no-walkthrough case).
+  const pcFeat = await createFeature("Phase-completion feat", root);
+  const pcPlan = await createDocument(
+    { featureId: pcFeat.id, stage: "plan", title: "PC plan", body: "# PC" },
+    root
+  );
+  await setStatus(pcPlan.frontmatter.id, "approved", root);
+  // Phase P1: two tasks; Phase P2: one task — multi-phase.
+  const p1a = await createTask(
+    { featureId: pcFeat.id, title: "P1A", phase: "P1", complexity: 1 },
+    root
+  );
+  const p1b = await createTask(
+    { featureId: pcFeat.id, title: "P1B", phase: "P1", complexity: 1 },
+    root
+  );
+  await createTask({ featureId: pcFeat.id, title: "P2A", phase: "P2", complexity: 1 }, root);
+
+  // Only P1A done so far → P1 incomplete (the errored-but-incomplete 18/21 case).
+  await updateTask(
+    { id: p1a.id, featureId: pcFeat.id, status: "done", artifacts: { files: ["p1a.ts"] } },
+    root
+  );
+  const pcIncomplete = await getPhaseCompletion(pcFeat.id, "P1", root);
+  assert(
+    pcIncomplete !== null && pcIncomplete.complete === false && pcIncomplete.needsWalkthrough === false,
+    "get_phase_completion: 1/2 done ⇒ !complete && !needsWalkthrough"
+  );
+  assert(pcIncomplete!.isSinglePhase === false, "get_phase_completion: two phases ⇒ !isSinglePhase");
+
+  // Finish P1 → all-done, no walkthrough ⇒ complete && needsWalkthrough.
+  await updateTask(
+    { id: p1b.id, featureId: pcFeat.id, status: "done", artifacts: { files: ["p1b.ts"] } },
+    root
+  );
+  const pcComplete = await getPhaseCompletion(pcFeat.id, "P1", root);
+  assert(
+    pcComplete !== null && pcComplete.complete === true && pcComplete.needsWalkthrough === true,
+    "get_phase_completion: all-done + no walkthrough ⇒ complete && needsWalkthrough"
+  );
+  assert(pcComplete!.hasWalkthrough === false, "get_phase_completion: no walkthrough ⇒ hasWalkthrough false");
+
+  // Add a draft walkthrough for P1 ⇒ dedupe: complete && !needsWalkthrough.
+  await createDocument(
+    {
+      featureId: pcFeat.id,
+      stage: "walkthrough",
+      title: "PC — P1 walkthrough",
+      body: "# P1",
+      generatedBy: "agent",
+      phase: "P1",
+    },
+    root
+  );
+  const pcDeduped = await getPhaseCompletion(pcFeat.id, "P1", root);
+  assert(
+    pcDeduped !== null && pcDeduped.complete === true && pcDeduped.needsWalkthrough === false,
+    "get_phase_completion: all-done + existing draft walkthrough ⇒ complete && !needsWalkthrough (dedupe)"
+  );
+  assert(pcDeduped!.hasWalkthrough === true, "get_phase_completion: walkthrough present ⇒ hasWalkthrough true");
+
+  // Unknown phase name ⇒ null.
+  const pcUnknown = await getPhaseCompletion(pcFeat.id, "nope", root);
+  assert(pcUnknown === null, "get_phase_completion: unknown phase ⇒ null");
+
+  // (d) Single-phase feature all-done ⇒ isSinglePhase true.
+  const spFeat = await createFeature("Single-phase PC", root);
+  const spPlan = await createDocument(
+    { featureId: spFeat.id, stage: "plan", title: "SP plan", body: "# SP" },
+    root
+  );
+  await setStatus(spPlan.frontmatter.id, "approved", root);
+  const spTask = await createTask(
+    { featureId: spFeat.id, title: "S1", phase: "core", complexity: 2 },
+    root
+  );
+  await updateTask(
+    { id: spTask.id, featureId: spFeat.id, status: "done", artifacts: { files: ["s1.ts"] } },
+    root
+  );
+  const spPc = await getPhaseCompletion(spFeat.id, "core", root);
+  assert(
+    spPc !== null && spPc.isSinglePhase === true && spPc.complete === true && spPc.needsWalkthrough === true,
+    "get_phase_completion: single-phase all-done ⇒ isSinglePhase && complete && needsWalkthrough"
   );
 
   console.log("\nAll Phase 7.B assertions passed.");

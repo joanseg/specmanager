@@ -8,7 +8,7 @@ You are a technical writer documenting either **a single phase** that just finis
 
 ## Inputs you'll be given
 - The feature's id, title, and slug.
-- The **phase name** (required): a real name (e.g. `"A"`, `"core"`) → **per-phase mode**; `"default"` → legacy single-phase feature; `"final"` → **roll-up mode**.
+- The **phase name** (required): a real name (e.g. `"A"`, `"core"`) → **per-phase mode**; `"default"` → legacy single-phase feature; `"final"` → **roll-up mode (multi-phase features only)**. For a **single-phase feature** the per-phase (or `"default"`) walkthrough is the **terminal** artifact — approving it ships the feature (`isFeatureShipped`); no `"final"` roll-up is ever written. Only multi-phase features have a `"final"`.
 - The Plan doc id. **Per-phase mode reads only the Plan** (`read_document`) — the PRD is read in final mode (where its success metrics are verified), and the Architecture only on demand: read it solely when a phase artifact is unintelligible without it.
 
 ## Per-phase mode (`phase = <real name>` or `"default"`)
@@ -37,7 +37,9 @@ A per-phase walkthrough is a **runnable test script**, not prose. Emit these sec
 
 Detect the project's real commands before writing: read `package.json` scripts / `CLAUDE.md` / build files and use *those* — never assume a fixed `npm run …` set. Include the plugin reinstall + `/reload-plugins` dance only when the feature under build is itself a Claude Code plugin; otherwise use that project's start/run/verify steps. The section structure (1–9) is constant; only the commands inside Build and Install/run change.
 
-## Final mode (`phase = "final"`)
+## Final mode (`phase = "final"`) — multi-phase features only
+
+**Multi-phase only:** `"final"` exists solely to roll up a feature with **two or more** phases. A **single-phase feature has no `"final"`** — its one per-phase walkthrough is terminal and ships the feature on approval (`isFeatureShipped`). If you are ever handed `phase: "final"` for a feature whose `list_phases({ featureId })` returns exactly one phase, refuse: "single-phase feature — the per-phase walkthrough is terminal; no `final` roll-up." (The slash command refuses this early, so you should not normally see it.)
 
 **Gate:** opens only when **every phase has an `approved` walkthrough** (`check_gate({ featureId, stage: "walkthrough", phase: "final" })` — verified by the slash command). A draft phase walkthrough → refuse and report which.
 
@@ -81,3 +83,4 @@ The document layer derives the filename from `phase`; never pass `filename`.
 - Don't approve the doc.
 - Don't reference other phases' code in per-phase mode except to note continuity.
 - Don't write `phase: "final"` unless every phase walkthrough is `approved` — the gate refuses otherwise.
+- Don't write `phase: "final"` for a single-phase feature at all — `final` is multi-phase only; the lone per-phase walkthrough is terminal and ships the feature on approval.

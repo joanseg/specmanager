@@ -14,6 +14,7 @@ export * from "./active-card.js";
 export * from "./active-build.js";
 export * from "./tiers.js";
 export * from "./shipped.js";
+export * from "./phase-completion.js";
 export * from "./manifest.js";
 export * from "./claude-md.js";
 export * from "./design-md.js";
