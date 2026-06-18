@@ -21,16 +21,15 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 | Feature demo recording | PRD | — |
 | Spec-stage tier dispatch | PRD (approved) | — |
 | GitHub spec sync (issues/PRs) | PRD | — |
-| Build pipeline resilience | PRD (approved) | — |
 
-_7 features shipped — full history on the board._
+_8 features shipped — full history on the board._
 
 **Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation.
 
 **Commands:**
 `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)
 
-_Last synced: 2026-06-18T11:25:31.954Z_
+_Last synced: 2026-06-18T11:32:07.596Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md

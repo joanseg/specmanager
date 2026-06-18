@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-15T13:16:51.071Z",
+  "generatedAt": "2026-06-18T11:23:54.623Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -1157,7 +1157,7 @@
         {
           "id": "wt-build-leverage-primitives-014",
           "stage": "walkthrough",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
           "version": 1,
           "title": "Build leverage primitives — feature walkthrough",
@@ -1212,6 +1212,177 @@
           "status": "done",
           "walkthroughId": "wt-build-leverage-primitives-012",
           "walkthroughStatus": "approved",
+          "walkthroughStale": false
+        }
+      ]
+    },
+    {
+      "id": "feat-spec-stage-tier-dispatch",
+      "slug": "spec-stage-tier-dispatch",
+      "title": "Spec-stage tier dispatch",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-spec-stage-tier-dispatch-025",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Spec-stage tier dispatch PRD"
+        },
+        {
+          "id": "arch-spec-stage-tier-dispatch-018",
+          "stage": "architecture",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Spec-stage tier dispatch architecture"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0,
+        "blocked": 0,
+        "total": 0
+      },
+      "phases": []
+    },
+    {
+      "id": "feat-stop-gate-active-card-scoping-fix",
+      "slug": "stop-gate-active-card-scoping-fix",
+      "title": "Stop-gate active-card scoping fix",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-stop-gate-active-card-scoping-fix-026",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Stop-gate active-card scoping fix PRD"
+        },
+        {
+          "id": "arch-stop-gate-active-card-scoping-fix-017",
+          "stage": "architecture",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Stop-gate active-card scoping fix architecture"
+        },
+        {
+          "id": "plan-stop-gate-active-card-scoping-fix-013",
+          "stage": "plan",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Stop-gate active-card scoping fix plan"
+        },
+        {
+          "id": "wt-stop-gate-active-card-scoping-fix-015",
+          "stage": "walkthrough",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Stop-gate active-card scoping fix — Phase core walkthrough",
+          "phase": "core"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 10,
+        "blocked": 0,
+        "total": 10
+      },
+      "phases": [
+        {
+          "name": "core",
+          "order": 0,
+          "taskCount": 10,
+          "doneCount": 10,
+          "inProgressCount": 0,
+          "blockedCount": 0,
+          "status": "done",
+          "walkthroughId": "wt-stop-gate-active-card-scoping-fix-015",
+          "walkthroughStatus": "approved",
+          "walkthroughStale": false
+        }
+      ]
+    },
+    {
+      "id": "feat-github-spec-sync-issues-prs",
+      "slug": "github-spec-sync-issues-prs",
+      "title": "GitHub spec sync (issues/PRs)",
+      "currentStage": "prd",
+      "documents": [],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0,
+        "blocked": 0,
+        "total": 0
+      },
+      "phases": []
+    },
+    {
+      "id": "feat-build-pipeline-resilience",
+      "slug": "build-pipeline-resilience",
+      "title": "Build pipeline resilience",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-build-pipeline-resilience-027",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Build pipeline resilience PRD"
+        },
+        {
+          "id": "arch-build-pipeline-resilience-019",
+          "stage": "architecture",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Build pipeline resilience architecture"
+        },
+        {
+          "id": "plan-build-pipeline-resilience-014",
+          "stage": "plan",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Build pipeline resilience plan"
+        },
+        {
+          "id": "wt-build-pipeline-resilience-016",
+          "stage": "walkthrough",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Build pipeline resilience — Phase resilience walkthrough",
+          "phase": "resilience"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 13,
+        "blocked": 0,
+        "total": 13
+      },
+      "phases": [
+        {
+          "name": "resilience",
+          "order": 0,
+          "taskCount": 13,
+          "doneCount": 13,
+          "inProgressCount": 0,
+          "blockedCount": 0,
+          "status": "done",
+          "walkthroughId": "wt-build-pipeline-resilience-016",
+          "walkthroughStatus": "draft",
           "walkthroughStale": false
         }
       ]
