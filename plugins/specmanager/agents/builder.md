@@ -79,5 +79,5 @@ You also stop if `update_task` returns a `missingArtifact` or `splitRequired` er
 After the last task of the phase is `done`:
 
 1. Report the phase name, the task ids you completed, and the commits/files recorded.
-2. Suggest the user run `/specmanager-walkthrough <feature> <phaseName>` to draft the per-phase walkthrough.
+2. Suggest the user run `/specmanager-walkthrough <feature> <phaseName>` to draft the per-phase walkthrough. For a **single-phase feature** (`list_phases` returns exactly one phase), this per-phase walkthrough is the **terminal** artifact — approving it ships the feature (`isFeatureShipped`). Never suggest a `final` walkthrough for a single-phase feature; `final` is multi-phase only.
 3. **Do not** invoke `/specmanager-walkthrough` yourself.
