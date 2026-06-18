@@ -7,14 +7,9 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 |---------|---------------|-------|
 | Redesign | PRD (approved) | — |
 | Dummy feature | PRD | — |
-| Rename execute command to build | PRD (approved) | Walkthroughs ⚠️ stale |
-| Planner output matches phase-tasks.md style | PRD (approved) | — |
 | Post-phase design conformance check | PRD (draft) | — |
 | Markdown viewer | PRD (approved) | — |
 | Reinstall refactor | PRD (approved) | — |
-| Plan and walkthrough optimisations | PRD (approved) | — |
-| HTML viewer scroll fix | PRD (approved) | — |
-| Post-phase doc sync (CLAUDE.md + DESIGN.md) | PRD (approved) | — |
 | Interview command | PRD (approved) | — |
 | Antigravity plugin | PRD (approved) | — |
 | Share docs on public URL | PRD (approved) | — |
@@ -24,15 +19,18 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 | Token usage optimisation | PRD (approved) | — |
 | Viral loop feature | PRD (approved) | — |
 | Feature demo recording | PRD | — |
+| Spec-stage tier dispatch | PRD (approved) | — |
+| GitHub spec sync (issues/PRs) | PRD | — |
+| Build pipeline resilience | PRD (approved) | — |
 
-_1 feature shipped — full history on the board._
+_7 features shipped — full history on the board._
 
 **Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation.
 
 **Commands:**
 `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)
 
-_Last synced: 2026-06-15T13:20:48.257Z_
+_Last synced: 2026-06-18T11:25:31.954Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
@@ -52,8 +50,8 @@ The repo also dogfoods itself: its own features live under `.claude/specs/featur
   - `.claude-plugin/plugin.json` — plugin manifest (`board_port` user config, default 4317).
   - `.mcp.json` — wires the MCP server: `node server/dist/mcp.js`, with `SPECMANAGER_PROJECT_DIR=${CLAUDE_PROJECT_DIR}`, `SPECMANAGER_BOARD_PORT=${user_config.board_port}`, `NODE_PATH=${CLAUDE_PLUGIN_DATA}/node_modules`.
   - `commands/*.md` — the user-facing slash commands (orchestration prompts). `specmanager-interview.md` is the exception to the delegation pattern: a multi-turn conversation can't live in a single-shot subagent, so its full interview protocol runs in the main session.
-  - `agents/*.md` — the subagents the drafting/build commands delegate to (prd-writer, architect, designer, planner, builder, walkthrough-writer).
-  - `hooks/hooks.json` — `SessionStart` installs runtime deps into `${CLAUDE_PLUGIN_DATA}` once and symlinks them back into `server/node_modules`; `FileChanged` on `.claude/specs/**` nudges a re-read.
+  - `agents/*.md` — the subagents the drafting/build commands delegate to (prd-writer, architect, designer, planner, builder, walkthrough-writer, plus `reviewer` — a read-only spec-compliance reviewer the build command runs after a phase's tasks build).
+  - `hooks/hooks.json` — `SessionStart` installs runtime deps into `${CLAUDE_PLUGIN_DATA}` once and symlinks them back into `server/node_modules`; `FileChanged` on `.claude/specs/**` nudges a re-read; `Stop` runs `hooks/stop-gate.sh` (see Build leverage primitives below).
   - `server/` — `@specmanager/server`, TypeScript, ships compiled `dist/`.
   - `ui/` — `@specmanager/ui`, React 18 + Vite, ships compiled `dist/`.
 - **`docs/`** — `docs/DESIGN.md` is the managed design-system spec; the original full spec and phased plan are archived under `docs/temp/original-specs/` (historical snapshots — don't edit).
@@ -62,7 +60,7 @@ The repo also dogfoods itself: its own features live under `.claude/specs/featur
 
 Two server entry points, **one shared `core/` module** under `server/src/core/` (re-exported from `core/index.ts`) imported by both. Every mutation — agent or human — flows through `core`, so validation, state transitions, and events are identical; do not duplicate that logic in either entry point.
 
-- **`server/src/mcp.ts`** — the MCP stdio server (Claude's interface). Registers all the tools (`specmanager_init`, `list/create_feature`, `*_document`, `set_status`, `check_gate`, `list_stale`, `*_task`, `list_phases`, `get_next_phase`, `sync_claude_md`, `sync_design_md`, `open_board`, …). **It also boots the board server in-process** (`startBoardServer`), so one `claude` session brings up everything. It runs `startClaudeMdAutoSync` / `startDesignMdAutoSync` listeners that refresh the managed CLAUDE.md block on doc/status events and `docs/DESIGN.md` on `feature.shipped`.
+- **`server/src/mcp.ts`** — the MCP stdio server (Claude's interface). Registers all the tools (`specmanager_init`, `list/create_feature`, `*_document`, `set_status`, `check_gate`, `list_stale`, `*_task`, `list_phases`, `get_next_phase`, `get_phase_completion`, `sync_claude_md`, `sync_design_md`, `open_board`, …). **It also boots the board server in-process** (`startBoardServer`), so one `claude` session brings up everything. It runs `startClaudeMdAutoSync` / `startDesignMdAutoSync` listeners that refresh the managed CLAUDE.md block on doc/status events and `docs/DESIGN.md` on `feature.shipped`.
 - **`server/src/board-server.ts`** — Fastify + `ws` + `chokidar`. Serves `ui/dist`, exposes the REST API the UI calls, pushes live updates over websockets, and watches `.claude/specs/**`. Its REST writes emit the same `core` events as the MCP tools, so the two views never drift.
 
 Load-bearing invariants (don't drift):
@@ -82,6 +80,15 @@ Load-bearing invariants (don't drift):
 - **Build has no document** — it is execution, "complete" when every task in `tasks.json` is `done`. `/specmanager-build` builds one phase and stops at its boundary.
 - **Walkthroughs gate on tasks `done`, not on an approved doc** — the one stage whose gate is completion, not approval. Approving the `phase: "final"` walkthrough fires `feature.shipped`, which refreshes `docs/DESIGN.md`.
 
+### Build leverage primitives
+
+The build pipeline carries a few primitives beyond plain task execution:
+
+- **Per-task tier dispatch** (`core/tiers.ts`) — maps a task's Fibonacci `complexity` → tier → Claude model *alias* (1→cheap→haiku, 2→standard→sonnet, 3→strong→opus; >3/null→strong). The build command reads each task's complexity and passes the resolved alias as the builder `Task`'s `model`. It routes on **aliases, never pinned dated model ids**, so new model generations need no plugin update; an unknown/unavailable alias ⇒ omit `model:` (inherit the session default), never error.
+- **Stop-gate hook** (`hooks/stop-gate.sh`, pure bash, zero model calls) — on a `Stop` it resolves the **active build** and, if a phase is genuinely in flight, runs that phase's test command + checks all phase tasks are `done`, exiting 2 (keep working) until they pass, with an iteration cap (N=3) that surfaces the phase as `blocked`. Active-build resolution is **marker-first**: `core/active-build.ts` writes `.claude/specs/.cache/active-build.json` (via `set_active_build`/`clear_active_build`, set/cleared by `/specmanager-build`); `resolveActiveCard` (`core/active-card.ts`) returns `null` when no marker exists, so the gate is a strict no-op outside an in-flight build and can never fire on an unrelated feature's open tasks.
+- **Reviewer** (`agents/reviewer.md`) — read-only; given the assembled spec slice + the phase diff, returns a pass/fail spec-compliance verdict. Never writes.
+- **Resilient post-phase finalize** (`core/phase-completion.ts`, `get_phase_completion` tool) — after the builder loop returns *or errors*, `/specmanager-build` calls `getPhaseCompletion(featureId, phase)` (`{ complete, hasWalkthrough, needsWalkthrough, isSinglePhase }`) and runs the post-phase walkthrough + doc-sync whenever the phase's tasks are all `done` — so a builder that 529s mid-phase but whose work landed still triggers the auto-walkthrough/sync. Per-task tier dispatch is the enforced default (`--bulk` opts into one whole-phase Task); a single builder Task retries bounded (R=2) on transient `529`/Overloaded. **Single-phase features never produce a `final` walkthrough** — the per-phase walkthrough is terminal and ships the feature (`isFeatureShipped`, `core/shipped.ts`); `phase: "final"` is multi-phase only.
+
 ## Build / test commands
 
 The plugin ships compiled `server/dist` and `ui/dist`, so end users install with no build step. **Rebuild before committing source changes** — the committed `dist/` is what ships.
@@ -97,6 +104,8 @@ npm run selftest          # core flow against a tmp dir
 npm run selftest-board    # boots board: REST + WS + file watcher
 npm run selftest-phases   # phase rollup + Fibonacci ≤3 validation
 npm run selftest-build    # per-phase gates + walkthrough storage
+npm run selftest-tiers    # complexity → tier → alias mapping
+npm run selftest-stopgate # active-build marker resolution + Stop-gate no-op/in-flight cases
 npm run selftest-roundtrip
 npm run selftest-pidfile
 npm run selftest-shutdown
