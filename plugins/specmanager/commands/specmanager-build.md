@@ -1,18 +1,19 @@
 ---
 description: Build one phase of a SpecManager feature's plan via the builder subagent. Stops at the phase boundary; never advances.
-argument-hint: "<featureId or slug> <phaseName | \"next\"> [--force]"
+argument-hint: "<featureId or slug> <phaseName | \"next\"> [--force] [--bulk]"
 ---
 
 Build one phase of the plan for **$ARGUMENTS**.
 
-`$ARGUMENTS` is `<feature> <phaseName | "next"> [--force]`.
+`$ARGUMENTS` is `<feature> <phaseName | "next"> [--force] [--bulk]`.
 - `next` resolves to the first phase whose tasks aren't all done (`get_next_phase`).
 - Otherwise `<phaseName>` must match a `## Phase <name>` heading from `plan.md` exactly.
 - `--force` allows building out of order. Off by default.
+- `--bulk` dispatches the **whole phase** in one builder Task (max tier of its tasks) instead of the default per-task loop. Off by default — it re-accepts a single 529's blast radius across the phase, so it's an explicit opt-in for tiny, tightly-coupled phases only.
 
 ## Steps
 
-1. **Parse the arguments.** Split into `<feature>`, `<phaseName>`, optional `--force`. If `<phaseName>` is missing, ask the user (offer `list_phases({ featureId })`).
+1. **Parse the arguments.** Split into `<feature>`, `<phaseName>`, optional `--force`, optional `--bulk`. If `<phaseName>` is missing, ask the user (offer `list_phases({ featureId })`). Default dispatch is **per-task** (step 7); `--bulk` switches to one whole-phase builder Task.
 2. **Resolve the feature.** `list_features` → match by `id`/`slug`. Stop if not found.
 3. **Check the Plan is approved.** `check_gate({ featureId, stage: "plan" })` must be `ok: true` AND an approved `plan` doc must exist (`list_documents({ featureId, stage: "plan" })`). If not, report and stop — the builder needs a stable plan.
 4. **Resolve the target phase.** `next` → `get_next_phase({ featureId })`; `null` means "All phases done — nothing to build", stop. Otherwise find `<phaseName>` in `list_phases({ featureId })`; if absent, list available phases and stop.
@@ -20,7 +21,15 @@ Build one phase of the plan for **$ARGUMENTS**.
 5. **Order check (unless `--force`).** If any phase with a lower `order` than the target has `status !== "done"`, refuse: "Phase X has open tasks — build it first, or pass `--force`."
 6. **Idempotency.** If the target phase is already `done`, report and stop — suggest `/specmanager-walkthrough <feature> <phaseName>` instead.
 6b. **Confirm the session tier→model table (R2).** Once per build session, `AskUserQuestion` to confirm or remap which Claude Code model **alias** each complexity tier dispatches at. Pre-fill the defaults from `core/tiers.ts`: **cheap → `haiku`** (complexity 1), **standard → `sonnet`** (complexity 2), **strong → `opus`** (complexity 3, and anything >3 / unscored). Offer the defaults as the recommended option plus an "all `opus`" / custom alternative. Hold the chosen table in session state for the rest of this build. Always use **aliases**, never dated model ids. If the user declines, keep the defaults.
-7. **Invoke the builder per task (R2 per-task tier dispatch).** Work the phase's tasks in `dependsOn` order. For **each** task: read its `complexity` (`list_tasks`), map complexity → tier → alias via the session table (default 1→cheap/`haiku`, 2→standard/`sonnet`, 3→strong/`opus`, >3 or null → strong), and dispatch `Task({ subagent_type: "builder", model: <alias>, prompt: ... })` with: feature id/title/slug, the resolved phase name (not `next`), the **single task** id + title, the Plan doc id, and the phase's exit-test line lifted from `plan.md`. If the resolved alias is unknown/unavailable, **omit `model:`** so the builder runs at the session default (`inherit`) — never error or block (AC4). The builder marks that task `in_progress`→`done` with artifacts; on its return move to the next task. (You may instead dispatch one builder for the whole phase at the *max* tier of its tasks if per-task orchestration is impractical, but per-task is the default — it spends the cheapest adequate model on each card.)
+7. **Invoke the builder (per-task tier dispatch is the enforced default; `--bulk` is the opt-in).** Work the phase's tasks in `dependsOn` order.
+
+   **Default — per task (N=1, no flag).** For **each** task: read its `complexity` (`list_tasks`), map complexity → tier → alias via the session table (default 1→cheap/`haiku`, 2→standard/`sonnet`, 3→strong/`opus`, >3 or null → strong), and dispatch `Task({ subagent_type: "builder", model: <alias>, prompt: ... })` with: feature id/title/slug, the resolved phase name (not `next`), the **single task** id + title, the Plan doc id, and the phase's exit-test line lifted from `plan.md`. If the resolved alias is unknown/unavailable, **omit `model:`** so the builder runs at the session default (`inherit`) — never error or block (AC4). The builder marks that task `in_progress`→`done` with artifacts; on its return move to the next task. Per-task is the default because it isolates a 529 to a single card and spends the cheapest adequate model on each.
+
+   **Opt-in — `--bulk`.** When `--bulk` was passed (step 1), dispatch **all** the phase's tasks in **one** builder Task at the **max tier** of its tasks (resolve each task's alias, pick the strongest). This trades per-task isolation/tier savings for one builder context — use only on tiny, tightly-coupled phases. Then fall through to step 8's re-resolve exactly as the per-task path does.
+
+   **Bounded transient-error retry (R=2, transient overload only).** Wrap **each** builder `Task(...)` dispatch (per-task, or the single `--bulk` Task) in a bounded retry: on a transient overload error (`529` / `Overloaded`) — i.e. the Task never returned a usable result — **immediately re-dispatch the same Task** (no backoff; the agent has no `sleep` primitive and the natural inter-tool latency suffices). Retry up to **2** times (3 attempts total). If all 3 attempts are exhausted on overload, mark that task `blocked` (`update_task`), **stop the phase**, and do **not** `clear_active_build()` (the build is still in flight — re-entering the phase resets the retry budget). A **genuine** task failure (a test won't pass, a missing dependency) is the builder's own stop condition and is **not** retried — re-running it would just re-fail; surface it verbatim and stop.
+
+   **Retry-budget boundary (keep these two caps legible, they don't compose):** R=2 here is a *pre-completion transport retry* — the builder Task never returned. It is distinct from the Stop-gate's **N=3** *post-stop* iteration cap (the builder ran but the phase didn't pass) and from the reviewer's shared N=3 fix budget (step 7b). R=2 absorbs "couldn't even run the task"; N=3 absorbs "ran but didn't pass". They are not nested into a larger loop.
 7b. **Spec-compliance review (R3) — after the Stop-gate exits 0, before advancing.** The deterministic Stop-gate hook (bash, zero model calls) already gated *stopping*; now run the semantic reviewer before the card advances. Only do this when every task in the phase is `done` (a mid-phase stop skips review). Steps:
    - **Assemble the spec slice** (the reviewer is read-only and does NOT read the whole Architecture doc — you assemble it):
      1. the phase's `plan.md` section (locate the `## Phase <name> — …` heading, slice to the next `## Phase`/`---`);
@@ -63,6 +72,9 @@ Build one phase of the plan for **$ARGUMENTS**.
 - Don't drive a phase that is already done.
 - Don't sync docs unconditionally: the sync `AskUserQuestion` fires **only** on the open-gate path; a mid-phase stop stays prompt-free and syncs nothing.
 - Don't run `/init` on **Managed blocks only**, and don't refresh any managed block on **Wait** — all three sync steps defer together. Never leave a half-synced state.
+- Don't make whole-phase dispatch the default — per-task (step 7) is the enforced default; the single whole-phase Task fires **only** behind an explicit `--bulk`, which re-accepts a 529's blast radius by user choice.
+- Don't retry a genuine task failure — R=2 is transient-overload-only (`529`/`Overloaded`). A test that won't pass or a missing dependency is the builder's own stop condition; surface it verbatim and stop.
+- Don't compose R=2 with the Stop-gate N=3 — they cover different failures (transport vs. didn't-pass) and never nest.
 - Don't pin dated model ids in the tier table — always use Claude Code aliases (`haiku`/`sonnet`/`opus`) so a model version bump in a tier is automatic.
 - Don't block or error when a tier's alias is unknown/unavailable — omit `model:` and let the builder inherit the session default.
 - Don't let the reviewer write or change task state — it is read-only; you assemble its slice and you alone advance the card on its verdict.
