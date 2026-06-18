@@ -1,0 +1,257 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-stop-gate-active-card-scoping-fix",
+      "title": "Add build.started and build.cleared event types to SpecEvent union in core/events.ts",
+      "status": "done",
+      "phase": "core",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "2acecab472ba3cc6b06ca22b18fca722756c97ad"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/events.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T15:24:27.232Z",
+      "updatedAt": "2026-06-15T15:28:13.040Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-stop-gate-active-card-scoping-fix",
+      "title": "Create core/active-build.ts: ActiveBuildMarker interface, activeBuildPath, readActiveBuild, setActiveBuild, clearActiveBuild",
+      "status": "done",
+      "phase": "core",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "ab304fbe0d31a2156df618e0ec65889d467444d6"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/active-build.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T15:24:30.621Z",
+      "updatedAt": "2026-06-15T15:28:47.034Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-stop-gate-active-card-scoping-fix",
+      "title": "Export core/active-build.ts from core/index.ts",
+      "status": "done",
+      "phase": "core",
+      "complexity": 1,
+      "dependsOn": [
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [
+          "3f3835a94943d450d4e9f612853bc22ee347ef3d"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/index.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T15:24:33.012Z",
+      "updatedAt": "2026-06-15T15:29:05.678Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-stop-gate-active-card-scoping-fix",
+      "title": "Rewrite resolveActiveCard in core/active-card.ts to be marker-first (R1: no marker → null, false-in-flight guard, pinned phase resolution)",
+      "status": "done",
+      "phase": "core",
+      "complexity": 3,
+      "dependsOn": [
+        "task-002",
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [
+          "c65cdb612a8d57487a1f95e02057e4744e17ee26"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/active-card.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T15:24:36.714Z",
+      "updatedAt": "2026-06-15T15:30:18.475Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-stop-gate-active-card-scoping-fix",
+      "title": "Register set_active_build and clear_active_build MCP tools in mcp.ts",
+      "status": "done",
+      "phase": "core",
+      "complexity": 2,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [
+          "2cdb7143db6c6d889044d6e17dc7ef1a5fff89b0"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/mcp.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T15:24:39.745Z",
+      "updatedAt": "2026-06-15T15:31:03.989Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-stop-gate-active-card-scoping-fix",
+      "title": "Wire specmanager-build.md: call set_active_build at step 4c and clear_active_build on phase-done and blocked-cap terminal paths",
+      "status": "done",
+      "phase": "core",
+      "complexity": 2,
+      "dependsOn": [
+        "task-005"
+      ],
+      "artifacts": {
+        "commits": [
+          "16a0dd5a9dabd3a73d6975ba066bc788029a3e2f"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-build.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T15:24:43.727Z",
+      "updatedAt": "2026-06-15T15:31:53.434Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-stop-gate-active-card-scoping-fix",
+      "title": "Rework selftest-stopgate.ts: update existing in-flight cases to use explicit marker; add no-op regression, stale-marker guard, and clear-on-done cases (R4)",
+      "status": "done",
+      "phase": "core",
+      "complexity": 3,
+      "dependsOn": [
+        "task-002",
+        "task-003",
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [
+          "0fdae6fc51b11ea72b3a71f85b7effa348025936"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest-stopgate.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T15:24:47.366Z",
+      "updatedAt": "2026-06-15T15:33:15.025Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-stop-gate-active-card-scoping-fix",
+      "title": "Rebuild server/dist: run npm run build in plugins/specmanager/server and commit compiled dist",
+      "status": "done",
+      "phase": "core",
+      "complexity": 1,
+      "dependsOn": [
+        "task-001",
+        "task-002",
+        "task-003",
+        "task-004",
+        "task-005",
+        "task-006",
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [
+          "a92040448cc7b0a0ee346a11797906c66d8c9bff"
+        ],
+        "files": [
+          "plugins/specmanager/server/dist/core/active-build.js",
+          "plugins/specmanager/server/dist/core/active-card.js",
+          "plugins/specmanager/server/dist/core/index.js",
+          "plugins/specmanager/server/dist/mcp.js",
+          "plugins/specmanager/server/dist/selftest-stopgate.js"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T15:24:51.824Z",
+      "updatedAt": "2026-06-15T15:33:52.009Z"
+    },
+    {
+      "id": "task-009",
+      "featureId": "feat-stop-gate-active-card-scoping-fix",
+      "title": "Re-enable the Stop hook: remove exit 0 TEMP-DISABLE from stop-gate.sh and restore the Stop entry in hooks/hooks.json from git (commit 448610c)",
+      "status": "done",
+      "phase": "core",
+      "complexity": 2,
+      "dependsOn": [
+        "task-007",
+        "task-008"
+      ],
+      "artifacts": {
+        "commits": [
+          "92f5763ffd9e262f8ac9d414923c126bf51f1c91"
+        ],
+        "files": [
+          "plugins/specmanager/hooks/stop-gate.sh",
+          "plugins/specmanager/hooks/hooks.json"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T15:24:57.683Z",
+      "updatedAt": "2026-06-15T15:35:08.306Z"
+    },
+    {
+      "id": "task-010",
+      "featureId": "feat-stop-gate-active-card-scoping-fix",
+      "title": "Single-phase auto-ship: feature.shipped fires on the only phase's walkthrough (no redundant \"final\"); shared isFeatureShipped predicate across status.ts + claude-md.ts",
+      "status": "done",
+      "phase": "core",
+      "complexity": 2,
+      "dependsOn": [
+        "task-009"
+      ],
+      "artifacts": {
+        "commits": [
+          "1be532f"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/shipped.ts",
+          "plugins/specmanager/server/src/core/status.ts",
+          "plugins/specmanager/server/src/core/claude-md.ts",
+          "plugins/specmanager/server/src/core/index.ts",
+          "plugins/specmanager/server/src/selftest-build.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-15T18:59:05.780Z",
+      "updatedAt": "2026-06-15T18:59:10.248Z"
+    }
+  ],
+  "meta": {
+    "phases": {
+      "core": {
+        "testCommand": "cd plugins/specmanager/server && npm run build && npm run selftest-stopgate && npm run selftest-phases && npm run selftest-build",
+        "architectureRefs": [
+          "R1",
+          "R2",
+          "R3",
+          "R4",
+          "R5",
+          "core-active-build"
+        ]
+      }
+    },
+    "blocked": {}
+  }
+}

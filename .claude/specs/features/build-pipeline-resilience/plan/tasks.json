@@ -1,0 +1,312 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-build-pipeline-resilience",
+      "title": "Create feature branch feat/build-pipeline-resilience from main",
+      "status": "done",
+      "phase": "resilience",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [
+          ".git/HEAD"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-18T11:09:00.423Z",
+      "updatedAt": "2026-06-18T11:13:26.301Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-build-pipeline-resilience",
+      "title": "Implement core/phase-completion.ts with getPhaseCompletion and PhaseCompletion interface",
+      "status": "done",
+      "phase": "resilience",
+      "complexity": 3,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "e3258c0"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/phase-completion.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-18T11:09:03.637Z",
+      "updatedAt": "2026-06-18T11:13:44.395Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-build-pipeline-resilience",
+      "title": "Export phase-completion from core/index.ts",
+      "status": "done",
+      "phase": "resilience",
+      "complexity": 1,
+      "dependsOn": [
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [
+          "29bdd57"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/index.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-18T11:09:06.398Z",
+      "updatedAt": "2026-06-18T11:13:54.261Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-build-pipeline-resilience",
+      "title": "Register get_phase_completion MCP tool in mcp.ts",
+      "status": "done",
+      "phase": "resilience",
+      "complexity": 2,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [
+          "2bad5dc"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/mcp.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-18T11:09:09.145Z",
+      "updatedAt": "2026-06-18T11:14:14.225Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-build-pipeline-resilience",
+      "title": "Add get_phase_completion selftest cases to selftest-build.ts",
+      "status": "done",
+      "phase": "resilience",
+      "complexity": 3,
+      "dependsOn": [
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [
+          "4215f43"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest-build.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-18T11:09:12.424Z",
+      "updatedAt": "2026-06-18T11:14:49.324Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-build-pipeline-resilience",
+      "title": "Rebuild server/dist and verify selftest-build and selftest-phases pass",
+      "status": "done",
+      "phase": "resilience",
+      "complexity": 2,
+      "dependsOn": [
+        "task-004",
+        "task-005"
+      ],
+      "artifacts": {
+        "commits": [
+          "e86e196"
+        ],
+        "files": [
+          "plugins/specmanager/server/dist/core/phase-completion.js",
+          "plugins/specmanager/server/dist/core/index.js",
+          "plugins/specmanager/server/dist/mcp.js",
+          "plugins/specmanager/server/dist/selftest-build.js"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-18T11:09:15.649Z",
+      "updatedAt": "2026-06-18T11:15:33.536Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-build-pipeline-resilience",
+      "title": "Rewrite specmanager-build.md step 7: per-task dispatch as enforced default + --bulk opt-in + R=2 retry",
+      "status": "done",
+      "phase": "resilience",
+      "complexity": 3,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "e6be269"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-build.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-18T11:09:19.686Z",
+      "updatedAt": "2026-06-18T11:17:47.401Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-build-pipeline-resilience",
+      "title": "Rewrite specmanager-build.md step 8: unconditional get_phase_completion re-resolve on return or error",
+      "status": "done",
+      "phase": "resilience",
+      "complexity": 3,
+      "dependsOn": [
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [
+          "2482e54"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-build.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-18T11:09:24.881Z",
+      "updatedAt": "2026-06-18T11:18:37.260Z"
+    },
+    {
+      "id": "task-009",
+      "featureId": "feat-build-pipeline-resilience",
+      "title": "Add isSinglePhase terminal reporting to specmanager-build.md step 8",
+      "status": "done",
+      "phase": "resilience",
+      "complexity": 2,
+      "dependsOn": [
+        "task-008"
+      ],
+      "artifacts": {
+        "commits": [
+          "cd6da32"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-build.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-18T11:09:27.896Z",
+      "updatedAt": "2026-06-18T11:19:04.259Z"
+    },
+    {
+      "id": "task-010",
+      "featureId": "feat-build-pipeline-resilience",
+      "title": "Edit specmanager-walkthrough.md: refuse final early for single-phase features",
+      "status": "done",
+      "phase": "resilience",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "6acfe32"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-walkthrough.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-18T11:09:31.341Z",
+      "updatedAt": "2026-06-18T11:19:39.273Z"
+    },
+    {
+      "id": "task-011",
+      "featureId": "feat-build-pipeline-resilience",
+      "title": "Edit agents/builder.md: clarify single-phase terminality on success",
+      "status": "done",
+      "phase": "resilience",
+      "complexity": 1,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "84d9eb2"
+        ],
+        "files": [
+          "plugins/specmanager/agents/builder.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-18T11:09:39.137Z",
+      "updatedAt": "2026-06-18T11:19:54.402Z"
+    },
+    {
+      "id": "task-012",
+      "featureId": "feat-build-pipeline-resilience",
+      "title": "Edit agents/walkthrough-writer.md: document phase: \"final\" as multi-phase only",
+      "status": "done",
+      "phase": "resilience",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "eeddebc"
+        ],
+        "files": [
+          "plugins/specmanager/agents/walkthrough-writer.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-18T11:09:46.224Z",
+      "updatedAt": "2026-06-18T11:20:25.357Z"
+    },
+    {
+      "id": "task-013",
+      "featureId": "feat-build-pipeline-resilience",
+      "title": "Run claude plugin validate plugins/specmanager and verify all modified files",
+      "status": "done",
+      "phase": "resilience",
+      "complexity": 1,
+      "dependsOn": [
+        "task-006",
+        "task-009",
+        "task-010",
+        "task-011",
+        "task-012"
+      ],
+      "artifacts": {
+        "commits": [
+          "eeddebc"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-build.md",
+          "plugins/specmanager/commands/specmanager-walkthrough.md",
+          "plugins/specmanager/agents/builder.md",
+          "plugins/specmanager/agents/walkthrough-writer.md",
+          "plugins/specmanager/server/dist/mcp.js"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-06-18T11:09:49.557Z",
+      "updatedAt": "2026-06-18T11:20:52.706Z"
+    }
+  ],
+  "meta": {
+    "phases": {
+      "resilience": {
+        "testCommand": "cd plugins/specmanager/server && npm run build && npm run selftest-build && npm run selftest-phases",
+        "architectureRefs": [
+          "R1",
+          "R2",
+          "R3",
+          "R4"
+        ]
+      }
+    },
+    "blocked": {}
+  }
+}
