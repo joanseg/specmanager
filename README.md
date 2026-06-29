@@ -2,7 +2,7 @@
 
 **Your AI product team, as a Claude Code plugin.**
 
-As a solo founder you already have the coder — Claude Code. What you *don't* have is the rest of the team: the product manager who pins down the problem, the architect who fits it to your codebase, the planner who breaks it into shippable pieces, the reviewer who checks the work against the plan.
+As a non technical founder or product vibe coder you already have the builder — Claude Code. What you *don't* have is the rest of the team: the product manager who pins down the problem, the architect who fits it to your codebase, the planner who breaks it into shippable pieces, the reviewer who checks the work against the plan.
 
 SpecManager is that team. It gives you a set of specialised AI agents organised like an agile squad: the agents draft, **you** review, edit, and approve, and you decide what moves forward. It's **spec-driven development** you can actually see — a kanban board running on your own machine, one row per feature, one column per stage: **PRD → Architecture → (Design) → Plan → Build → Walkthroughs.**
 
