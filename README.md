@@ -1,14 +1,44 @@
 # SpecManager
 
-Spec-driven development for Claude Code. A Claude Code plugin that replaces ad-hoc vibe coding with a gated lifecycle — PRD → Architecture → (Design) → Plan + tasks → Build → Walkthroughs — rendered as a localhost kanban board backed by plain markdown in your repo.
+**Your AI product team, as a Claude Code plugin.**
 
-Claude *drafts* each stage from the previous approved one **and your existing codebase**; you *edit and approve* in the board. Every artifact is git-tracked markdown, so it diffs, reviews, and travels with the code. Single-user, fully local, no auth, bound to `127.0.0.1`.
+As a solo founder you already have the coder — Claude Code. What you *don't* have is the rest of the team: the product manager who pins down the problem, the architect who fits it to your codebase, the planner who breaks it into shippable pieces, the reviewer who checks the work against the plan.
+
+SpecManager is that team. It gives you a set of specialised AI agents organised like an agile squad: the agents draft, **you** review, edit, and approve, and you decide what moves forward. It's **spec-driven development** you can actually see — a kanban board running on your own machine, one row per feature, one column per stage: **PRD → Architecture → (Design) → Plan → Build → Walkthroughs.**
+
+Everything the team produces is plain markdown saved inside your project, so it reads like documents, not code, and your version history keeps every draft. It runs entirely on your own machine — single-user, private, no login.
 
 [specmanager.org](https://specmanager.org) · MIT licensed
 
 ---
 
 ![Happy Specmanager](assets/spemanager-image.png)
+
+## Your team
+
+Each role is its own specialised agent — not one mega-prompt wearing different hats:
+
+- **Product manager** — drafts the PRD, and can run an optional pre-PRD interview that pulls the idea out of your head and stress-tests it before you write anything down.
+- **Architect** — reads your actual codebase (its structure, conventions, the pieces already there) before designing, so "we'll add X" always points at something real instead of a guess.
+- **Designer** *(optional)* — produces high-fidelity screen mockups grounded in a shared design system, so the look stays consistent across features.
+- **Tech lead** — breaks the architecture into phases and small, scored tasks, defaulting to the smallest increment that actually ships something.
+- **Builder** — implements one phase at a time, task by task, saving its work as it goes.
+- **Reviewer** — read-only; checks each finished phase against the spec and returns a plain pass/fail verdict. It can't change anything.
+- **Tech writer** — documents what actually shipped, per phase, so you always have a record.
+
+The agents hand off to each other through approved documents, not a hidden shared memory — and **none of them approves its own work. That's your call.** You stay in the loop by design: an agent can't move to the next stage until you've approved the current one. Claude can't start the Architecture until you've approved the PRD, because that rule lives in the software itself, not in instructions the AI could talk its way around.
+
+**"Approved" is a commitment, not a freeze.** Reopen an earlier document and every later one that depended on it gets a gentle "stale — worth a re-read" badge that follows the chain of dependencies. And because edits are tracked carefully, a late agent write can never overwrite a change you made by hand.
+
+## Good habits, built in
+
+The team comes with established product and engineering practice baked in — and when you have the matching Claude Code skills installed, the agents defer to them automatically (and work fine without them):
+
+- **Sharper idea stress-testing** — the optional pre-PRD interview uses the [gstack office-hours](https://github.com/garrytan/gstack/tree/main/office-hours) forcing-question method to interrogate an idea *before* any PRD exists, like the cofounder who asks "who is actually desperate for this today?"
+- **Agile planning discipline** — a phase is defined as a working, testable increment; the planner defaults to a single phase and has to ask before splitting one. Tasks are scored, and anything too big must be broken down.
+- **Up-to-date library docs** — the architect (and only the architect, on demand) can look up real, version-current documentation for unfamiliar tools instead of relying on memory. No setup or key required.
+- **Visual taste** — the designer and builder defer to the official `frontend-design` skill when it's installed, layered on top of your design system, which stays the source of truth.
+- **Execution discipline** — the builder defers to Superpowers, when installed, for *how* it carries out each task.
 
 ## Quick start
 
@@ -25,7 +55,7 @@ Claude *drafts* each stage from the previous approved one **and your existing co
 # 4. Reconnect MCP server
 /mcp       ## If plugin:specmanager:specmanager ✘ failed select and click enter to reconnect
 
-# 4. In your project, scaffold SpecManager and open the board
+# 5. In your project, scaffold SpecManager and open the board
 /specmanager-init
 /specmanager-board
 ```
@@ -139,8 +169,8 @@ Then reinstall in a test repo:
 /plugin install specmanager@specmanager
 /reload-plugins
 ```
-CLose all Claude Code sessions.
-Then open CLaude Code sesion and reconnect mcp:
+Close all Claude Code sessions.
+Then open a Claude Code session and reconnect mcp:
 ```
 /mcp      ## select specmanager:specmanager, click enter and reconnect 
 ```
