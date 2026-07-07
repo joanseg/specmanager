@@ -30,7 +30,7 @@ _8 features shipped — full history on the board._
 **Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation.
 
 **Commands:**
-`/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)
+`/specmanager:specmanager-prd` · `/specmanager:specmanager-architecture` · `/specmanager:specmanager-design` (optional) · `/specmanager:specmanager-plan` · `/specmanager:specmanager-build` · `/specmanager:specmanager-walkthrough` · `/specmanager:specmanager-board` · `/specmanager:specmanager-interview` (optional, pre-PRD)
 
 _Last synced: 2026-07-06T10:40:34.800Z_
 <!-- specmanager:end -->
@@ -43,7 +43,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This repo **is** the SpecManager plugin (implemented, not a spec). SpecManager is a Claude Code **plugin** that turns a project's lifecycle (PRD → Architecture → optional Design → Plan + tasks → Build → Walkthroughs) into a localhost kanban board backed by plain markdown in the *target* project's repo. Single-user, fully local, bound to `127.0.0.1`, no auth. Claude drafts each stage from the previous approved one plus the existing codebase; the human edits and approves in the board; git tracks every artifact.
 
-The repo also dogfoods itself: its own features live under `.claude/specs/features/` and are driven with the same `/specmanager-*` commands.
+The repo also dogfoods itself: its own features live under `.claude/specs/features/` and are driven with the same `/specmanager:specmanager-*` commands.
 
 ## Layout
 
@@ -76,10 +76,10 @@ Load-bearing invariants (don't drift):
 
 ### Lifecycle gate quirks worth memorising
 
-- **The interview is optional and pre-PRD** — `/specmanager-interview` runs an adaptive idea-extraction chat (office-hours forcing questions) in the main session; nothing gates on it and it gates nothing. It stores as a `kind: "interview"` doc inside the prd stage (`interview.md`, `dependsOn: []`, status frozen at `draft`); `checkGate`, `currentStageLabel`, and the UI's `findDoc` all exclude `kind === "interview"` so it can never open a gate, shadow the PRD's stage label, or become the PRD column's primary card. Re-interviews update the doc in place (`write_document` + `baseVersion`).
+- **The interview is optional and pre-PRD** — `/specmanager:specmanager-interview` runs an adaptive idea-extraction chat (office-hours forcing questions) in the main session; nothing gates on it and it gates nothing. It stores as a `kind: "interview"` doc inside the prd stage (`interview.md`, `dependsOn: []`, status frozen at `draft`); `checkGate`, `currentStageLabel`, and the UI's `findDoc` all exclude `kind === "interview"` so it can never open a gate, shadow the PRD's stage label, or become the PRD column's primary card. Re-interviews update the doc in place (`write_document` + `baseVersion`).
 - Stages PRD / Architecture / Plan gate on the *previous stage being `approved`* (Plan also requires an approved Design doc *if one exists*).
 - **Plan emits both `plan.md` and the task records (`tasks.json` + rollup) in one step.** There is no separate "tasks" stage. Plans are organised into **phases**; tasks carry a Fibonacci `complexity` and anything over 3 must be split.
-- **Build has no document** — it is execution, "complete" when every task in `tasks.json` is `done`. `/specmanager-build` builds one phase and stops at its boundary.
+- **Build has no document** — it is execution, "complete" when every task in `tasks.json` is `done`. `/specmanager:specmanager-build` builds one phase and stops at its boundary.
 - **Walkthroughs gate on tasks `done`, not on an approved doc** — the one stage whose gate is completion, not approval. Approving the `phase: "final"` walkthrough fires `feature.shipped`, which refreshes `docs/DESIGN.md`.
 
 ### Build leverage primitives
@@ -87,9 +87,9 @@ Load-bearing invariants (don't drift):
 The build pipeline carries a few primitives beyond plain task execution:
 
 - **Per-task tier dispatch** (`core/tiers.ts`) — maps a task's Fibonacci `complexity` → tier → Claude model *alias* (1→cheap→haiku, 2→standard→sonnet, 3→strong→opus; >3/null→strong). The build command reads each task's complexity and passes the resolved alias as the builder `Task`'s `model`. It routes on **aliases, never pinned dated model ids**, so new model generations need no plugin update; an unknown/unavailable alias ⇒ omit `model:` (inherit the session default), never error.
-- **Stop-gate hook** (`hooks/stop-gate.sh`, pure bash, zero model calls) — on a `Stop` it resolves the **active build** and, if a phase is genuinely in flight, runs that phase's test command + checks all phase tasks are `done`, exiting 2 (keep working) until they pass, with an iteration cap (N=3) that surfaces the phase as `blocked`. Active-build resolution is **marker-first**: `core/active-build.ts` writes `.claude/specs/.cache/active-build.json` (via `set_active_build`/`clear_active_build`, set/cleared by `/specmanager-build`); `resolveActiveCard` (`core/active-card.ts`) returns `null` when no marker exists, so the gate is a strict no-op outside an in-flight build and can never fire on an unrelated feature's open tasks.
+- **Stop-gate hook** (`hooks/stop-gate.sh`, pure bash, zero model calls) — on a `Stop` it resolves the **active build** and, if a phase is genuinely in flight, runs that phase's test command + checks all phase tasks are `done`, exiting 2 (keep working) until they pass, with an iteration cap (N=3) that surfaces the phase as `blocked`. Active-build resolution is **marker-first**: `core/active-build.ts` writes `.claude/specs/.cache/active-build.json` (via `set_active_build`/`clear_active_build`, set/cleared by `/specmanager:specmanager-build`); `resolveActiveCard` (`core/active-card.ts`) returns `null` when no marker exists, so the gate is a strict no-op outside an in-flight build and can never fire on an unrelated feature's open tasks.
 - **Reviewer** (`agents/reviewer.md`) — read-only; given the assembled spec slice + the phase diff, returns a pass/fail spec-compliance verdict. Never writes.
-- **Resilient post-phase finalize** (`core/phase-completion.ts`, `get_phase_completion` tool) — after the builder loop returns *or errors*, `/specmanager-build` calls `getPhaseCompletion(featureId, phase)` (`{ complete, hasWalkthrough, needsWalkthrough, isSinglePhase }`) and runs the post-phase walkthrough + doc-sync whenever the phase's tasks are all `done` — so a builder that 529s mid-phase but whose work landed still triggers the auto-walkthrough/sync. Per-task tier dispatch is the enforced default (`--bulk` opts into one whole-phase Task); a single builder Task retries bounded (R=2) on transient `529`/Overloaded. **Single-phase features never produce a `final` walkthrough** — the per-phase walkthrough is terminal and ships the feature (`isFeatureShipped`, `core/shipped.ts`); `phase: "final"` is multi-phase only.
+- **Resilient post-phase finalize** (`core/phase-completion.ts`, `get_phase_completion` tool) — after the builder loop returns *or errors*, `/specmanager:specmanager-build` calls `getPhaseCompletion(featureId, phase)` (`{ complete, hasWalkthrough, needsWalkthrough, isSinglePhase }`) and runs the post-phase walkthrough + doc-sync whenever the phase's tasks are all `done` — so a builder that 529s mid-phase but whose work landed still triggers the auto-walkthrough/sync. Per-task tier dispatch is the enforced default (`--bulk` opts into one whole-phase Task); a single builder Task retries bounded (R=2) on transient `529`/Overloaded. **Single-phase features never produce a `final` walkthrough** — the per-phase walkthrough is terminal and ships the feature (`isFeatureShipped`, `core/shipped.ts`); `phase: "final"` is multi-phase only.
 
 ## Build / test commands
 

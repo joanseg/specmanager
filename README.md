@@ -63,7 +63,7 @@ The team comes with established product and engineering practice baked in — an
 /specmanager:specmanager-interview about a CRM to manage sales pipeline in my company
 ```
 Example of a Specmanager board:
-![Specmanager board](assets/Specmanager-board.png)
+![Specmanager board](assetsboard.png)
 
 That's it — no build step. The compiled server and UI are committed, and a `SessionStart` hook installs runtime dependencies into the plugin's data dir on first launch.
 
@@ -76,20 +76,20 @@ That's it — no build step. The compiled server and UI are committed, and a `Se
 Each **feature** is a row on the board that flows left to right through the lifecycle. You drive it with slash commands; Claude does the drafting via dedicated subagents, and you approve each stage in the board before the next unlocks.
 
 ```text
-/specmanager-interview "Checkout corridor" # OPTIONAL pre-PRD interview — extracts & stress-tests the idea
-/specmanager-prd "Checkout corridor"       # create the feature + draft its PRD → approve in board
-/specmanager-architecture   <feature>       # draft the Architecture   → approve in board
-/specmanager-design         <feature>       # OPTIONAL high-fi HTML mockups → approve
-/specmanager-plan           <feature>       # plan.md + phased tasks   → approve in board
-/specmanager-build          <feature> next  # build one phase at a time
-/specmanager-walkthrough    <feature> <phase>   # per-phase walkthrough
-/specmanager-walkthrough    <feature> final     # feature-level roll-up
-/specmanager-board                          # open the kanban board anytime
+/specmanager:specmanager-interview "Checkout corridor" # OPTIONAL pre-PRD interview — extracts & stress-tests the idea
+/specmanager:specmanager-prd "Checkout corridor"       # create the feature + draft its PRD → approve in board
+/specmanager:specmanager-architecture   <feature>       # draft the Architecture   → approve in board
+/specmanager:specmanager-design         <feature>       # OPTIONAL high-fi HTML mockups → approve
+/specmanager:specmanager-plan           <feature>       # plan.md + phased tasks   → approve in board
+/specmanager:specmanager-build          <feature> next  # build one phase at a time
+/specmanager:specmanager-walkthrough    <feature> <phase>   # per-phase walkthrough
+/specmanager:specmanager-walkthrough    <feature> final     # feature-level roll-up
+/specmanager:specmanager-board                          # open the kanban board anytime
 ```
 
-`<feature>` is the feature's slug or id (reported by `/specmanager-prd` when it creates the feature).
+`<feature>` is the feature's slug or id (reported by `/specmanager:specmanager-prd` when it creates the feature).
 
-`/specmanager-interview` is optional: a multi-turn interview in your Claude session that pulls the idea out of your head and challenges it (using the [gstack office-hours](https://github.com/garrytan/gstack/tree/main/office-hours) forcing-question method) before any PRD exists. The result can be stored as `interview.md` in the feature's PRD folder — shown as a chip on the board, never gating anything — and the PRD drafter grounds itself in it when present.
+`/specmanager:specmanager-interview` is optional: a multi-turn interview in your Claude session that pulls the idea out of your head and challenges it (using the [gstack office-hours](https://github.com/garrytan/gstack/tree/main/office-hours) forcing-question method) before any PRD exists. The result can be stored as `interview.md` in the feature's PRD folder — shown as a chip on the board, never gating anything — and the PRD drafter grounds itself in it when present.
 
 ### Stages and gates
 
@@ -102,7 +102,7 @@ Each **feature** is a row on the board that flows left to right through the life
 | **Build** | *no doc — it's execution* | Plan approved |
 | **Walkthroughs** | `<slug>.md` per phase + a final roll-up | the phase's tasks are all `done` |
 
-Gates are enforced in shared code, not in prompts — Claude **cannot** draft a stage whose gate is closed. Plans are organised into **phases**, each a testable, runnable increment; tasks carry a Fibonacci `complexity` score and anything over 3 must be split. `/specmanager-build` builds one phase and stops at its boundary.
+Gates are enforced in shared code, not in prompts — Claude **cannot** draft a stage whose gate is closed. Plans are organised into **phases**, each a testable, runnable increment; tasks carry a Fibonacci `complexity` score and anything over 3 must be split. `/specmanager:specmanager-build` builds one phase and stops at its boundary.
 
 ### Living docs
 
@@ -112,7 +112,7 @@ Gates are enforced in shared code, not in prompts — Claude **cannot** draft a 
 
 ## The board
 
-`/specmanager-board` opens a grid: **one row per feature, one column per stage** (PRD · Architecture · Design · Plan · Build · Walkthroughs). It updates live over websockets as Claude writes docs or you edit them.
+`/specmanager:specmanager-board` opens a grid: **one row per feature, one column per stage** (PRD · Architecture · Design · Plan · Build · Walkthroughs). It updates live over websockets as Claude writes docs or you edit them.
 
 - Each cell is a card showing status (`draft`/`approved`), a stale badge, and whether it was generated by agent or human.
 - Clicking a card opens a **doc panel** drawer over the dimmed board to read, edit, and approve. Design docs get a CodeMirror HTML editor with a live sandboxed `<iframe>` preview.
@@ -213,7 +213,7 @@ Then open a Claude Code session and reconnect mcp:
 ## Troubleshooting
 
 - **`/mcp` shows specmanager failed** — select it and reconnect. If it persists, fully restart: quit Claude (`Ctrl-C` twice), `claude daemon stop`, kill stragglers (`ps aux | grep mcp.js`), confirm the port is free (`lsof -nP -iTCP:4317 -sTCP:LISTEN`), then relaunch `claude` from your project.
-- **Board won't open** — the MCP process boots the board server on startup; if it isn't running, restart your Claude session. `/specmanager-board` reports the URL so you can open it manually.
+- **Board won't open** — the MCP process boots the board server on startup; if it isn't running, restart your Claude session. `/specmanager:specmanager-board` reports the URL so you can open it manually.
 - **`/reload-plugins` reports a load error** — do the full restart above rather than retrying the reload.
 
 ---
