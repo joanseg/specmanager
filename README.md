@@ -63,7 +63,7 @@ The team comes with established product and engineering practice baked in — an
 /specmanager:specmanager-interview about a CRM to manage sales pipeline in my company
 ```
 Example of a Specmanager board:
-![Specmanager board](assetsboard.png)
+![Specmanager board](assets/Specmanager-board.png)
 
 That's it — no build step. The compiled server and UI are committed, and a `SessionStart` hook installs runtime dependencies into the plugin's data dir on first launch.
 
