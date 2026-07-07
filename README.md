@@ -95,7 +95,8 @@ Each **feature** is a row on the board that flows left to right through the life
 
 | Stage | Produces | Unlocks when |
 |-------|----------|--------------|
-| **PRD** | `press-release.md`, `prd.md` | always (the entry point) |
+| **Interview** *(optional)* | `interview.md` | recommended starting point, challenges your ideas and extracts context|
+| **PRD** | `prd.md` | always (the entry point after interview if exists) |
 | **Architecture** | `architecture.md` | PRD approved |
 | **Design** *(optional)* | high-fidelity HTML mockups | PRD approved (runs in parallel with Architecture) |
 | **Plan** | `plan.md` + task records (`tasks.json`, rollup) | Architecture approved (and Design, if one exists, approved) |
