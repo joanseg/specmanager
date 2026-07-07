@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-18T11:23:54.623Z",
+  "generatedAt": "2026-07-06T10:22:16.210Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -1358,7 +1358,7 @@
         {
           "id": "wt-build-pipeline-resilience-016",
           "stage": "walkthrough",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
           "version": 1,
           "title": "Build pipeline resilience — Phase resilience walkthrough",
@@ -1382,10 +1382,108 @@
           "blockedCount": 0,
           "status": "done",
           "walkthroughId": "wt-build-pipeline-resilience-016",
-          "walkthroughStatus": "draft",
+          "walkthroughStatus": "approved",
           "walkthroughStale": false
         }
       ]
+    },
+    {
+      "id": "feat-security-review-stage",
+      "slug": "security-review-stage",
+      "title": "Security review stage",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-security-review-stage-028",
+          "stage": "prd",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Security review stage interview",
+          "kind": "interview"
+        },
+        {
+          "id": "prd-security-review-stage-029",
+          "stage": "prd",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Security review stage PRD"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0,
+        "blocked": 0,
+        "total": 0
+      },
+      "phases": []
+    },
+    {
+      "id": "feat-multi-repo-nested-docs-claude-md-design-md",
+      "slug": "multi-repo-nested-docs-claude-md-design-md",
+      "title": "Multi-repo nested docs (CLAUDE.md / DESIGN.md)",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-multi-repo-nested-docs-claude-md-design-md-030",
+          "stage": "prd",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Multi-repo nested docs (CLAUDE.md / DESIGN.md) interview",
+          "kind": "interview"
+        },
+        {
+          "id": "prd-multi-repo-nested-docs-claude-md-design-md-031",
+          "stage": "prd",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Multi-repo nested docs (CLAUDE.md / DESIGN.md) PRD"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0,
+        "blocked": 0,
+        "total": 0
+      },
+      "phases": []
+    },
+    {
+      "id": "feat-multi-session-boards-auto-port",
+      "slug": "multi-session-boards-auto-port",
+      "title": "Multi-session boards (auto-port)",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-multi-session-boards-auto-port-032",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Multi-session boards (auto-port) PRD"
+        },
+        {
+          "id": "arch-multi-session-boards-auto-port-020",
+          "stage": "architecture",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Multi-session boards (auto-port) architecture"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0,
+        "blocked": 0,
+        "total": 0
+      },
+      "phases": []
     }
   ]
 }

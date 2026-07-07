@@ -56,8 +56,11 @@ The team comes with established product and engineering practice baked in — an
 /mcp       ## If plugin:specmanager:specmanager ✘ failed select and click enter to reconnect
 
 # 5. In your project, scaffold SpecManager and open the board
-/specmanager-init
-/specmanager-board
+/specmanager:specmanager-init
+/specmanager:specmanager-board
+
+# 6. Kick off the first feature or MVP
+/specmanager:specmanager-interview about a CRM to manage sales pipeline in my company
 ```
 Example of a Specmanager board:
 ![Specmanager board](assets/Specmanager-board.png)
@@ -122,7 +125,9 @@ Edits you make in the board and writes Claude makes both flow through the same s
 
 ## Where your work lives
 
-Everything is markdown with YAML frontmatter under your project, version-controlled by git:
+Everything is markdown with YAML frontmatter under your project, version-controlled by git.
+
+Option 1: run in inside the repo:
 
 ```text
 <your-project>/
@@ -138,6 +143,29 @@ Everything is markdown with YAML frontmatter under your project, version-control
       plan/       plan.md, tasks.md, tasks.json
       walkthroughs/ <slug>.md
 ```
+
+Option 2: run it as a meta repo
+
+```text
+<meta-repo>/
+  CLAUDE.md                         # carries a managed SpecManager block (between markers) and references <your-project-backend>/ and <your-project-frontend>/
+  docs/DESIGN.md                    # managed design-system spec (inferred from your UI)
+  .claude/specs/
+    manifest.json                   # rebuildable board index (derived from frontmatter)
+    features/<slug>/
+      feature.json
+      prd/        press-release.md, prd.md
+      architecture/ architecture.md
+      design/     <mockups>.html
+      plan/       plan.md, tasks.md, tasks.json
+      walkthroughs/ <slug>.md
+<your-project-backend>/
+...
+<your-project-frontend>/
+...
+
+```
+
 
 Frontmatter is authoritative; `manifest.json` is a cache you can delete and rebuild. The managed regions in `CLAUDE.md` and `DESIGN.md` live strictly between `<!-- specmanager:start -->` / `<!-- specmanager:end -->` markers — nothing outside them is ever touched.
 
@@ -166,6 +194,7 @@ Then reinstall in a test repo:
 
 ```text
 /plugin marketplace update specmanager
+/plugin uninstall specmanager@specmanager
 /plugin install specmanager@specmanager
 /reload-plugins
 ```
