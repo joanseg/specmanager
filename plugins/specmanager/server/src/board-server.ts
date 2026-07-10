@@ -1,6 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { existsSync, readFileSync } from "node:fs";
+import type { AddressInfo } from "node:net";
 import Fastify, { FastifyInstance } from "fastify";
 import fastifyStatic from "@fastify/static";
 import { WebSocketServer, WebSocket } from "ws";
@@ -86,6 +87,40 @@ export interface BoardServer {
   url: string;
   port: number;
   stop: () => Promise<void>;
+}
+
+// Bind the board to `preferred`, falling forward through `preferred+1..+scanBound`
+// and finally an ephemeral `{ port: 0 }` (guaranteed last resort) whenever a
+// candidate is already taken or refused. Re-`listen` on the same Fastify
+// instance after EADDRINUSE is supported (verified against Fastify's own
+// test/listen.5.test.js). Returns the real bound port — read back from the
+// server address so the ephemeral `0` case reports its assigned port too.
+// Throws only if even the ephemeral bind fails, or on any non-bind error.
+async function bindWithFallback(
+  app: FastifyInstance,
+  host: string,
+  preferred: number,
+  scanBound: number,
+): Promise<number> {
+  const candidates: number[] = [];
+  for (let p = preferred; p <= preferred + scanBound; p++) candidates.push(p);
+  candidates.push(0); // ephemeral — guaranteed last resort
+
+  for (let i = 0; i < candidates.length; i++) {
+    const candidate = candidates[i];
+    try {
+      await app.listen({ port: candidate, host });
+      return (app.server.address() as AddressInfo).port;
+    } catch (err) {
+      const code = (err as NodeJS.ErrnoException).code;
+      const isLast = i === candidates.length - 1;
+      if (!isLast && (code === "EADDRINUSE" || code === "EACCES")) continue;
+      throw err;
+    }
+  }
+
+  // Unreachable: the ephemeral candidate either binds or throws above.
+  throw new Error("bindWithFallback: exhausted all candidates");
 }
 
 export async function startBoardServer(opts: {
