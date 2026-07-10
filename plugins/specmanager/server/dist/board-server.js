@@ -43,6 +43,35 @@ function safeSend(ws, payload) {
     if (ws.readyState === ws.OPEN)
         ws.send(JSON.stringify(payload));
 }
+// Bind the board to `preferred`, falling forward through `preferred+1..+scanBound`
+// and finally an ephemeral `{ port: 0 }` (guaranteed last resort) whenever a
+// candidate is already taken or refused. Re-`listen` on the same Fastify
+// instance after EADDRINUSE is supported (verified against Fastify's own
+// test/listen.5.test.js). Returns the real bound port — read back from the
+// server address so the ephemeral `0` case reports its assigned port too.
+// Throws only if even the ephemeral bind fails, or on any non-bind error.
+async function bindWithFallback(app, host, preferred, scanBound) {
+    const candidates = [];
+    for (let p = preferred; p <= preferred + scanBound; p++)
+        candidates.push(p);
+    candidates.push(0); // ephemeral — guaranteed last resort
+    for (let i = 0; i < candidates.length; i++) {
+        const candidate = candidates[i];
+        try {
+            await app.listen({ port: candidate, host });
+            return app.server.address().port;
+        }
+        catch (err) {
+            const code = err.code;
+            const isLast = i === candidates.length - 1;
+            if (!isLast && (code === "EADDRINUSE" || code === "EACCES"))
+                continue;
+            throw err;
+        }
+    }
+    // Unreachable: the ephemeral candidate either binds or throws above.
+    throw new Error("bindWithFallback: exhausted all candidates");
+}
 export async function startBoardServer(opts = {}) {
     const root = opts.root ?? projectRoot();
     const port = opts.port ?? Number(process.env.SPECMANAGER_BOARD_PORT ?? 4317);
@@ -208,17 +237,18 @@ export async function startBoardServer(opts = {}) {
     }
     // Listen ----------------------------------------------------------------
     // Reap a stale predecessor (e.g. a kill -9'd board) so a fresh boot can
-    // reclaim the port. Single bind attempt follows the ~200ms reap wait.
-    await reapStalePid(port);
+    // reclaim the port. Falls forward through preferred+1..+20, then ephemeral.
+    await reapStalePid(port, root);
+    let boundPort;
     try {
-        await app.listen({ port, host: "127.0.0.1" });
+        boundPort = await bindWithFallback(app, "127.0.0.1", port, 20);
     }
     catch (err) {
         // Name the PID still holding the port, if the pid file records one, so the
         // failure is diagnosable. Fall through to the unchanged `return null`.
         let holder = "";
         try {
-            const recorded = readFileSync(pidFilePath(), "utf8").trim();
+            const recorded = readFileSync(pidFilePath(root), "utf8").trim();
             if (recorded)
                 holder = ` (board.pid still holds PID ${recorded})`;
         }
@@ -231,7 +261,7 @@ export async function startBoardServer(opts = {}) {
     }
     // Record this process as the live owner of the port. Written only after a
     // successful bind, so board.pid never names a non-owner.
-    await writePidFile();
+    await writePidFile(root);
     // WS --------------------------------------------------------------------
     const wss = new WebSocketServer({ server: app.server, path: "/ws" });
     const clients = new Set();
@@ -278,10 +308,10 @@ export async function startBoardServer(opts = {}) {
         awaitWriteFinish: { stabilityThreshold: 80, pollInterval: 30 },
     });
     watcher.on("add", schedule).on("change", schedule).on("unlink", schedule);
-    const url = `http://127.0.0.1:${port}`;
+    const url = `http://127.0.0.1:${boundPort}`;
     return {
         url,
-        port,
+        port: boundPort,
         stop: async () => {
             unsubscribe();
             if (flushTimer)
@@ -290,7 +320,7 @@ export async function startBoardServer(opts = {}) {
             await watcher.close();
             await app.close();
             // Last: a clean teardown leaves no stale board.pid behind.
-            await removePidFile();
+            await removePidFile(root);
         },
     };
 }
