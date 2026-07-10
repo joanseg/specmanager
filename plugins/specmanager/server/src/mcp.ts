@@ -516,8 +516,9 @@ server.registerTool(
   },
   async () =>
     ok({
-      url: board?.url ?? `http://127.0.0.1:${BOARD_PORT}`,
+      url: board?.url ?? null,
       available: board !== null,
+      preferredPort: BOARD_PORT,
     })
 );
 
@@ -529,10 +530,10 @@ server.registerTool(
     inputSchema: z.object({}),
   },
   async () => {
-    const url = board?.url ?? `http://127.0.0.1:${BOARD_PORT}`;
     if (!board) {
-      return fail(`board server is not running on ${url} — restart the Claude Code session`);
+      return fail("board server is not running — restart the Claude Code session");
     }
+    const url = board.url;
     const cmd =
       process.platform === "darwin" ? "open" :
       process.platform === "win32" ? "cmd" :
