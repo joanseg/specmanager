@@ -346,16 +346,17 @@ export async function startBoardServer(opts: {
 
   // Listen ----------------------------------------------------------------
   // Reap a stale predecessor (e.g. a kill -9'd board) so a fresh boot can
-  // reclaim the port. Single bind attempt follows the ~200ms reap wait.
-  await reapStalePid(port);
+  // reclaim the port. Falls forward through preferred+1..+20, then ephemeral.
+  await reapStalePid(port, root);
+  let boundPort: number;
   try {
-    await app.listen({ port, host: "127.0.0.1" });
+    boundPort = await bindWithFallback(app, "127.0.0.1", port, 20);
   } catch (err) {
     // Name the PID still holding the port, if the pid file records one, so the
     // failure is diagnosable. Fall through to the unchanged `return null`.
     let holder = "";
     try {
-      const recorded = readFileSync(pidFilePath(), "utf8").trim();
+      const recorded = readFileSync(pidFilePath(root), "utf8").trim();
       if (recorded) holder = ` (board.pid still holds PID ${recorded})`;
     } catch {
       // no readable pid file — nothing extra to report
@@ -367,7 +368,7 @@ export async function startBoardServer(opts: {
 
   // Record this process as the live owner of the port. Written only after a
   // successful bind, so board.pid never names a non-owner.
-  await writePidFile();
+  await writePidFile(root);
 
   // WS --------------------------------------------------------------------
   const wss = new WebSocketServer({ server: app.server, path: "/ws" });
@@ -414,10 +415,10 @@ export async function startBoardServer(opts: {
   });
   watcher.on("add", schedule).on("change", schedule).on("unlink", schedule);
 
-  const url = `http://127.0.0.1:${port}`;
+  const url = `http://127.0.0.1:${boundPort}`;
   return {
     url,
-    port,
+    port: boundPort,
     stop: async () => {
       unsubscribe();
       if (flushTimer) clearTimeout(flushTimer);
@@ -425,7 +426,7 @@ export async function startBoardServer(opts: {
       await watcher.close();
       await app.close();
       // Last: a clean teardown leaves no stale board.pid behind.
-      await removePidFile();
+      await removePidFile(root);
     },
   };
 }
