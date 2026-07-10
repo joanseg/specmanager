@@ -2,7 +2,7 @@
 id: arch-multi-session-boards-auto-port-020
 featureId: feat-multi-session-boards-auto-port
 stage: architecture
-status: draft
+status: approved
 stale: false
 title: Multi-session boards (auto-port) architecture
 dependsOn:
@@ -12,7 +12,7 @@ basedOn:
 generatedBy: agent
 version: 1
 createdAt: '2026-07-06T10:22:16.202Z'
-updatedAt: '2026-07-06T10:22:16.202Z'
+updatedAt: '2026-07-10T11:00:37.655Z'
 ---
 ## Summary
 
@@ -49,7 +49,7 @@ Resolves PRD Open Question 2 (fallback strategy): sequential-then-ephemeral, `N�
 Every URL-surfacing path must report the port the server **actually** bound, never an assumed one.
 
 - `BoardServer.url` / `BoardServer.port` — already derived from the bind; under `R1` they now derive from `app.server.address()` so they stay correct when fallback moved the port. This is the load-bearing fix that makes `open_board` and `board_url` (which read `board.url`) automatically correct.
-- `mcp.ts` `board_url` (line 519): change `url: board?.url ?? \`http://127.0.0.1:${BOARD_PORT}\`` to **not** present a fabricated port when `board === null`. Return `{ url: board?.url ?? null, available: board !== null }`. Optionally include `preferredPort: BOARD_PORT` for diagnostics.
+- `mcp.ts` `board_url` (line 519): change the `board_url` `??` fallback (today it yields `http://127.0.0.1:${BOARD_PORT}`) to **not** present a fabricated port when `board === null`. Return `{ url: board?.url ?? null, available: board !== null }`. Optionally include `preferredPort: BOARD_PORT` for diagnostics.
 - `mcp.ts` `open_board` (line 532–534): when `board === null`, drop the fabricated `http://127.0.0.1:${BOARD_PORT}` from the message; return `fail("board server is not running — restart the Claude Code session")`. When `board` is non-null it already opens `board.url` (the real port) — unchanged.
 
 Confirms PRD constraint "URL surfacing mostly already correct; the one hardcoded reference is the `??` fallback". PRD Open Question 3 (discoverability after the port floats) is answered as designed: `board_url`/`open_board`/`/specmanager-board` always report the current session's real port; no cross-session registry in v1.
