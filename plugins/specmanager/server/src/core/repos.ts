@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { repoDir } from "./paths.js";
+import { repoDir, reposDir } from "./paths.js";
 
 /**
  * core/repos.ts — declare sibling repos by path and mirror their docs into the
@@ -236,6 +236,158 @@ async function writeIfAbsent(file: string, content: string): Promise<boolean> {
 async function isDirectory(p: string): Promise<boolean> {
   try {
     return (await fs.stat(p)).isDirectory();
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * The result of seeding one repo in a declare set: the final name it got, the
+ * portable source path, whether it was freshly added, what was written this run,
+ * and any non-fatal advisories folded in from `validateRepoPath` (e.g. `notAGitRepo`).
+ */
+export interface DeclareOutcome {
+  name: string;
+  sourcePath: string;
+  hasUi: boolean;
+  added: boolean;
+  seeded: { claudeMd: boolean; designMd: boolean };
+  warnings: string[];
+}
+
+/** A repo arg that was not declared: bad path, or a cross-run name conflict. */
+export interface DeclareRejection {
+  arg: string;
+  reason: string;
+}
+
+/** The full outcome of a declare set — partial success is the norm. */
+export interface DeclareResult {
+  outcomes: DeclareOutcome[];
+  rejected: DeclareRejection[];
+}
+
+/**
+ * Declare a set of sibling repos by path and seed each into the meta root.
+ *
+ * All args are validated first so same-set basename collisions can be
+ * disambiguated across the *whole* valid set (`disambiguateNames`). **Partial
+ * success:** a rejected arg (missing / not-a-directory / cross-run conflict) is
+ * recorded in `rejected` and never aborts the others.
+ *
+ * Cross-run collision: an existing `repos/<name>/` whose sidecar `sourcePath`
+ * differs from the incoming repo is reported as a conflict and skipped — never
+ * overwritten. A re-declare from the same source seeds idempotently (seedRepo is
+ * write-if-absent).
+ */
+export async function declareRepos(
+  root: string,
+  repoPaths: string[],
+  cwd: string = process.cwd()
+): Promise<DeclareResult> {
+  const outcomes: DeclareOutcome[] = [];
+  const rejected: DeclareRejection[] = [];
+
+  const valid: { arg: string; repo: ValidRepo }[] = [];
+  for (const arg of repoPaths) {
+    const res = await validateRepoPath(arg, cwd);
+    if (res.ok) valid.push({ arg, repo: res });
+    else rejected.push({ arg, reason: res.reason });
+  }
+
+  const names = disambiguateNames(valid.map((v) => v.repo.abs));
+
+  for (const [i, { arg, repo }] of valid.entries()) {
+    const name = names[i] ?? repo.name;
+    const dir = repoDir(name, root);
+    const sourcePath = path.relative(path.dirname(root), repo.abs);
+
+    const existing = await readSidecar(dir);
+    if (existing && existing.sourcePath !== sourcePath) {
+      rejected.push({ arg, reason: "conflict" });
+      continue;
+    }
+
+    const docs = await readRepoSourceDocs(repo.abs);
+    const seed = await seedRepo(root, name, repo.abs, docs);
+    outcomes.push({
+      name: seed.name,
+      sourcePath: seed.sourcePath,
+      hasUi: seed.hasUi,
+      added: seed.added,
+      seeded: seed.seeded,
+      warnings: repo.warnings,
+    });
+  }
+
+  return { outcomes, rejected };
+}
+
+/** A repo the meta root already knows about, read back from its sidecar. */
+export interface DeclaredRepo {
+  name: string;
+  sourcePath: string;
+  hasUi: boolean;
+  seededAt: string;
+}
+
+/**
+ * Shallow-scan `repos/` and return each declared repo from its provenance
+ * sidecar, sorted by `name`. A missing/unreadable sidecar degrades gracefully to
+ * `{ name: <dir>, hasUi: <DESIGN.md present>, sourcePath: "", seededAt: "" }`.
+ *
+ * **No recursion** into `repos/<name>/` — this fires on the CLAUDE.md render hot
+ * path, so it stays a single shallow `readdir` plus one sidecar read per entry.
+ */
+export async function scanDeclaredRepos(root: string): Promise<DeclaredRepo[]> {
+  const dir = reposDir(root);
+  let entries;
+  try {
+    entries = await fs.readdir(dir, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+
+  const repos: DeclaredRepo[] = [];
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const repoPath = path.join(dir, entry.name);
+    const sidecar = await readSidecar(repoPath);
+    if (sidecar) {
+      repos.push({
+        name: sidecar.name,
+        sourcePath: sidecar.sourcePath,
+        hasUi: sidecar.hasUi,
+        seededAt: sidecar.seededAt,
+      });
+    } else {
+      repos.push({
+        name: entry.name,
+        sourcePath: "",
+        hasUi: await isFilePresent(path.join(repoPath, "DESIGN.md")),
+        seededAt: "",
+      });
+    }
+  }
+
+  repos.sort((a, b) => a.name.localeCompare(b.name));
+  return repos;
+}
+
+/** Read a repo's provenance sidecar; `null` when missing or unparseable. */
+async function readSidecar(dir: string): Promise<RepoSidecar | null> {
+  try {
+    const raw = await fs.readFile(path.join(dir, ".specmanager-repo.json"), "utf8");
+    return JSON.parse(raw) as RepoSidecar;
+  } catch {
+    return null;
+  }
+}
+
+async function isFilePresent(p: string): Promise<boolean> {
+  try {
+    await fs.stat(p);
+    return true;
   } catch {
     return false;
   }
