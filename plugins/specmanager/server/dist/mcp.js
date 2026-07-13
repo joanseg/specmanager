@@ -32,8 +32,8 @@ function fail(message) {
 const server = new McpServer({ name: "specmanager", version: "0.1.0" });
 server.registerTool("specmanager_init", {
     description: "Scaffold .claude/specs/ in the project, write the manifest cache, and write/refresh the managed CLAUDE.md block.",
-    inputSchema: z.object({}),
-}, async () => ok(await initProject(PROJECT_DIR)));
+    inputSchema: z.object({ repoPaths: z.array(z.string()).optional() }),
+}, async ({ repoPaths }) => ok(await initProject(PROJECT_DIR, { repoPaths })));
 server.registerTool("list_features", {
     description: "List all features in the project.",
     inputSchema: z.object({}),

@@ -15,6 +15,12 @@ export function featuresDir(root = projectRoot()) {
 export function featureDir(slug, root = projectRoot()) {
     return path.join(featuresDir(root), slug);
 }
+export function reposDir(root = projectRoot()) {
+    return path.join(root, "repos");
+}
+export function repoDir(name, root = projectRoot()) {
+    return path.join(reposDir(root), name);
+}
 export function manifestPath(root = projectRoot()) {
     return path.join(specsDir(root), "manifest.json");
 }

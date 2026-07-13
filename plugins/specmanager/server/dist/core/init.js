@@ -3,11 +3,13 @@ import { migrateWalkthroughs } from "./documents.js";
 import { writeManifest } from "./manifest.js";
 import { syncClaudeMd } from "./claude-md.js";
 import { syncDesignMd } from "./design-md.js";
+import { declareRepos } from "./repos.js";
 import { projectRoot } from "./paths.js";
-export async function initProject(root = projectRoot()) {
+export async function initProject(root = projectRoot(), opts) {
     await ensureSpecsRoot(root);
     const migratedWalkthroughs = await migrateWalkthroughs(root);
     await writeManifest(root);
+    const { outcomes: declaredRepos, rejected: rejectedRepos } = await declareRepos(root, opts?.repoPaths ?? [], opts?.cwd);
     const cmd = await syncClaudeMd(root);
     const dmd = await syncDesignMd(root, { mode: "init" });
     return {
@@ -17,6 +19,8 @@ export async function initProject(root = projectRoot()) {
         designMd: dmd.path,
         createdDesignMd: dmd.created,
         migratedWalkthroughs,
+        declaredRepos,
+        rejectedRepos,
     };
 }
 //# sourceMappingURL=init.js.map

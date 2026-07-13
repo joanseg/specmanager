@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import { claudeMdPath, projectRoot } from "./paths.js";
 import { buildManifest } from "./manifest.js";
 import { isFeatureShipped } from "./shipped.js";
+import { scanDeclaredRepos } from "./repos.js";
 const START = "<!-- specmanager:start -->";
 const END = "<!-- specmanager:end -->";
 /** Match a marker only when it stands alone on its own line, so markers
@@ -80,6 +81,16 @@ export async function renderBlock(root = projectRoot()) {
             if (inFlight.length > 0)
                 lines.push("");
             lines.push(`_${shippedCount} feature${shippedCount === 1 ? "" : "s"} shipped — full history on the board._`);
+        }
+    }
+    const repos = await scanDeclaredRepos(root);
+    if (repos.length > 0) {
+        lines.push("");
+        lines.push("### Declared repos");
+        lines.push("");
+        for (const r of repos) {
+            const placeholder = r.hasUi ? "" : " _(placeholder)_";
+            lines.push(`- **${r.name}** — [CLAUDE.md](./repos/${r.name}/CLAUDE.md) · [DESIGN.md](./repos/${r.name}/DESIGN.md)${placeholder}`);
         }
     }
     lines.push("");
