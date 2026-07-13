@@ -22,6 +22,14 @@ export function featureDir(slug: string, root = projectRoot()): string {
   return path.join(featuresDir(root), slug);
 }
 
+export function reposDir(root = projectRoot()): string {
+  return path.join(root, "repos");
+}
+
+export function repoDir(name: string, root = projectRoot()): string {
+  return path.join(reposDir(root), name);
+}
+
 export function manifestPath(root = projectRoot()): string {
   return path.join(specsDir(root), "manifest.json");
 }
