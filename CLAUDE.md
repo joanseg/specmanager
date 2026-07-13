@@ -24,15 +24,16 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 | Security review stage | PRD (approved) | — |
 | Multi-repo nested docs (CLAUDE.md / DESIGN.md) | PRD (draft) | — |
 | Multi-session boards (auto-port) | PRD (approved) | — |
+| Website agent readiness | PRD | — |
 
 _8 features shipped — full history on the board._
 
 **Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation.
 
 **Commands:**
-`/specmanager:specmanager-prd` · `/specmanager:specmanager-architecture` · `/specmanager:specmanager-design` (optional) · `/specmanager:specmanager-plan` · `/specmanager:specmanager-build` · `/specmanager:specmanager-walkthrough` · `/specmanager:specmanager-board` · `/specmanager:specmanager-interview` (optional, pre-PRD)
+`/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)
 
-_Last synced: 2026-07-06T10:40:34.800Z_
+_Last synced: 2026-07-10T12:08:11.497Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
@@ -49,7 +50,7 @@ The repo also dogfoods itself: its own features live under `.claude/specs/featur
 
 - **`.claude-plugin/marketplace.json`** — marketplace manifest, at the repo root.
 - **`plugins/specmanager/`** — the plugin itself:
-  - `.claude-plugin/plugin.json` — plugin manifest (`board_port` user config, default 4317).
+  - `.claude-plugin/plugin.json` — plugin manifest (`board_port` user config, default 4317 — a *preferred* port: the board falls forward to the next free port if it's taken, so concurrent sessions each get their own board).
   - `.mcp.json` — wires the MCP server: `node server/dist/mcp.js`, with `SPECMANAGER_PROJECT_DIR=${CLAUDE_PROJECT_DIR}`, `SPECMANAGER_BOARD_PORT=${user_config.board_port}`, `NODE_PATH=${CLAUDE_PLUGIN_DATA}/node_modules`.
   - `commands/*.md` — the user-facing slash commands (orchestration prompts). `specmanager-interview.md` is the exception to the delegation pattern: a multi-turn conversation can't live in a single-shot subagent, so its full interview protocol runs in the main session.
   - `agents/*.md` — the subagents the drafting/build commands delegate to (prd-writer, architect, designer, planner, builder, walkthrough-writer, plus `reviewer` — a read-only spec-compliance reviewer the build command runs after a phase's tasks build).
@@ -63,7 +64,7 @@ The repo also dogfoods itself: its own features live under `.claude/specs/featur
 Two server entry points, **one shared `core/` module** under `server/src/core/` (re-exported from `core/index.ts`) imported by both. Every mutation — agent or human — flows through `core`, so validation, state transitions, and events are identical; do not duplicate that logic in either entry point.
 
 - **`server/src/mcp.ts`** — the MCP stdio server (Claude's interface). Registers all the tools (`specmanager_init`, `list/create_feature`, `*_document`, `set_status`, `check_gate`, `list_stale`, `*_task`, `list_phases`, `get_next_phase`, `get_phase_completion`, `sync_claude_md`, `sync_design_md`, `open_board`, …). **It also boots the board server in-process** (`startBoardServer`), so one `claude` session brings up everything. It runs `startClaudeMdAutoSync` / `startDesignMdAutoSync` listeners that refresh the managed CLAUDE.md block on doc/status events and `docs/DESIGN.md` on `feature.shipped`.
-- **`server/src/board-server.ts`** — Fastify + `ws` + `chokidar`. Serves `ui/dist`, exposes the REST API the UI calls, pushes live updates over websockets, and watches `.claude/specs/**`. Its REST writes emit the same `core` events as the MCP tools, so the two views never drift.
+- **`server/src/board-server.ts`** — Fastify + `ws` + `chokidar`. Serves `ui/dist`, exposes the REST API the UI calls, pushes live updates over websockets, and watches `.claude/specs/**`. Its REST writes emit the same `core` events as the MCP tools, so the two views never drift. **Auto-port bind:** `bindWithFallback` tries the preferred port → sequential scan (`N=20`) → ephemeral `{port:0}`, then surfaces the *actual* bound port (`app.server.address()`) on `BoardServer.url`/`.port` and through `board_url`/`open_board` (which return `available:false`/null rather than fabricating a URL when the board is down). Paired with **per-project pidfiles** (`core/pidfile.ts`: `board-<sha1(root).slice(0,8)>.pid`) so one session's reap backstop never SIGTERMs a peer *project's* live board — two `claude` sessions in different projects run concurrent boards on distinct ports (same-project sessions still share one pidfile → newer takes over).
 
 Load-bearing invariants (don't drift):
 

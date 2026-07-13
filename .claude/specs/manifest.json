@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-06T10:22:16.210Z",
+  "generatedAt": "2026-07-10T11:55:17.374Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -1405,9 +1405,9 @@
         {
           "id": "prd-security-review-stage-029",
           "stage": "prd",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
-          "version": 1,
+          "version": 2,
           "title": "Security review stage PRD"
         }
       ],
@@ -1440,7 +1440,7 @@
           "stage": "prd",
           "status": "draft",
           "stale": false,
-          "version": 1,
+          "version": 2,
           "title": "Multi-repo nested docs (CLAUDE.md / DESIGN.md) PRD"
         }
       ],
@@ -1470,12 +1470,57 @@
         {
           "id": "arch-multi-session-boards-auto-port-020",
           "stage": "architecture",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
           "version": 1,
           "title": "Multi-session boards (auto-port) architecture"
+        },
+        {
+          "id": "plan-multi-session-boards-auto-port-015",
+          "stage": "plan",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Multi-session boards (auto-port) plan"
+        },
+        {
+          "id": "wt-multi-session-boards-auto-port-017",
+          "stage": "walkthrough",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Multi-session boards (auto-port) — Phase autoport walkthrough",
+          "phase": "autoport"
         }
       ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 8,
+        "blocked": 0,
+        "total": 8
+      },
+      "phases": [
+        {
+          "name": "autoport",
+          "order": 0,
+          "taskCount": 8,
+          "doneCount": 8,
+          "inProgressCount": 0,
+          "blockedCount": 0,
+          "status": "done",
+          "walkthroughId": "wt-multi-session-boards-auto-port-017",
+          "walkthroughStatus": "draft",
+          "walkthroughStale": false
+        }
+      ]
+    },
+    {
+      "id": "feat-website-agent-readiness",
+      "slug": "website-agent-readiness",
+      "title": "Website agent readiness",
+      "currentStage": "prd",
+      "documents": [],
       "tasks": {
         "todo": 0,
         "in_progress": 0,

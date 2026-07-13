@@ -1,0 +1,203 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-multi-session-boards-auto-port",
+      "title": "Per-project pidfile scoping in core/pidfile.ts",
+      "status": "done",
+      "phase": "autoport",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "a1d1488cde760a78d316f16b1e91ad38fb56c897"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/pidfile.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-07-10T11:05:33.066Z",
+      "updatedAt": "2026-07-10T11:15:27.006Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-multi-session-boards-auto-port",
+      "title": "bindWithFallback helper in board-server.ts",
+      "status": "done",
+      "phase": "autoport",
+      "complexity": 3,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "774d124"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/board-server.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-07-10T11:05:34.037Z",
+      "updatedAt": "2026-07-10T11:16:55.004Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-multi-session-boards-auto-port",
+      "title": "Wire startBoardServer to bindWithFallback and thread root through pidfile calls",
+      "status": "done",
+      "phase": "autoport",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001",
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [
+          "b4ddea9"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/board-server.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-07-10T11:05:37.771Z",
+      "updatedAt": "2026-07-10T11:18:21.018Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-multi-session-boards-auto-port",
+      "title": "Fix board_url/open_board null handling in mcp.ts",
+      "status": "done",
+      "phase": "autoport",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "46e762e"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/mcp.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-07-10T11:05:38.814Z",
+      "updatedAt": "2026-07-10T11:19:44.810Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-multi-session-boards-auto-port",
+      "title": "Update selftest-pidfile.ts for per-project scoping and cross-project no-reap",
+      "status": "done",
+      "phase": "autoport",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "28158d4"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest-pidfile.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-07-10T11:05:42.295Z",
+      "updatedAt": "2026-07-10T11:21:41.140Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-multi-session-boards-auto-port",
+      "title": "New selftest-autoport.ts (fallback bind + two-session isolation)",
+      "status": "done",
+      "phase": "autoport",
+      "complexity": 3,
+      "dependsOn": [
+        "task-003",
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [
+          "56a9f79"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest-autoport.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-07-10T11:05:43.885Z",
+      "updatedAt": "2026-07-10T11:25:10.787Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-multi-session-boards-auto-port",
+      "title": "Register selftest-autoport npm script in server/package.json",
+      "status": "done",
+      "phase": "autoport",
+      "complexity": 1,
+      "dependsOn": [
+        "task-006"
+      ],
+      "artifacts": {
+        "commits": [
+          "facba02"
+        ],
+        "files": [
+          "plugins/specmanager/server/package.json"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-07-10T11:05:47.486Z",
+      "updatedAt": "2026-07-10T11:40:30.220Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-multi-session-boards-auto-port",
+      "title": "Rebuild dist/ and run full selftest regression sweep",
+      "status": "done",
+      "phase": "autoport",
+      "complexity": 2,
+      "dependsOn": [
+        "task-003",
+        "task-004",
+        "task-005",
+        "task-006",
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [
+          "4e43ecd"
+        ],
+        "files": [
+          "plugins/specmanager/server/dist/board-server.js",
+          "plugins/specmanager/server/dist/board-server.js.map",
+          "plugins/specmanager/server/dist/core/pidfile.js",
+          "plugins/specmanager/server/dist/core/pidfile.js.map",
+          "plugins/specmanager/server/dist/mcp.js",
+          "plugins/specmanager/server/dist/mcp.js.map",
+          "plugins/specmanager/server/dist/selftest-pidfile.js",
+          "plugins/specmanager/server/dist/selftest-pidfile.js.map",
+          "plugins/specmanager/server/dist/selftest-autoport.js",
+          "plugins/specmanager/server/dist/selftest-autoport.js.map"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-07-10T11:05:48.711Z",
+      "updatedAt": "2026-07-10T11:51:06.663Z"
+    }
+  ],
+  "meta": {
+    "phases": {
+      "autoport": {
+        "testCommand": "cd plugins/specmanager/server && npm run build && npm run selftest-autoport && npm run selftest-pidfile && npm run selftest-shutdown && npm run selftest-roundtrip",
+        "architectureRefs": [
+          "R1",
+          "R2",
+          "R3",
+          "R4"
+        ]
+      }
+    },
+    "blocked": {}
+  }
+}
