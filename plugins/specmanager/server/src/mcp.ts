@@ -81,9 +81,9 @@ server.registerTool(
   {
     description:
       "Scaffold .claude/specs/ in the project, write the manifest cache, and write/refresh the managed CLAUDE.md block.",
-    inputSchema: z.object({}),
+    inputSchema: z.object({ repoPaths: z.array(z.string()).optional() }),
   },
-  async () => ok(await initProject(PROJECT_DIR))
+  async ({ repoPaths }) => ok(await initProject(PROJECT_DIR, { repoPaths }))
 );
 
 server.registerTool(
