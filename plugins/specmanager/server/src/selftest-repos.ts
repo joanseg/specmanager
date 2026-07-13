@@ -12,7 +12,14 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
-import { initProject, scanDeclaredRepos } from "./core/index.js";
+import {
+  assertInsideRoot,
+  initProject,
+  repoDir,
+  reposDir,
+  scanDeclaredRepos,
+  seedRepo,
+} from "./core/index.js";
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) {
@@ -36,6 +43,26 @@ async function makeRepo(
     await fs.writeFile(path.join(dir, "DESIGN.md"), files.designMd, "utf8");
   }
   return dir;
+}
+
+/** Recursively list every file (not directory) under `dir`, sorted. */
+async function listFiles(dir: string): Promise<string[]> {
+  const out: string[] = [];
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...(await listFiles(full)));
+    else out.push(full);
+  }
+  return out;
+}
+
+/** Every file under `base` that does NOT live inside `reposAbs` — the containment witness set. */
+async function listFilesOutsideRepos(base: string, reposAbs: string): Promise<string[]> {
+  const all = await listFiles(base);
+  return all
+    .filter((f) => f !== reposAbs && !f.startsWith(reposAbs + path.sep))
+    .sort();
 }
 
 async function main(): Promise<void> {
@@ -170,7 +197,78 @@ async function main(): Promise<void> {
     "CLAUDE.md renders the newly-added repo-third row after re-run"
   );
 
-  console.log("\nAll multi-repo declare/seed/render/reconcile assertions passed.");
+  // 6. Write-containment / traversal — the load-bearing safety invariant:
+  //    read may leave the meta root; write structurally cannot.
+
+  // 6a. assertInsideRoot directly: an in-root path passes, a traversal escapes.
+  const legit = repoDir("legit", root);
+  assertInsideRoot(legit, root); // must NOT throw
+  console.log("ok — assertInsideRoot accepts an in-root repos/<name>/ path");
+
+  const escaping = repoDir(path.join("..", "..", "escape"), root);
+  let guardThrew = false;
+  try {
+    assertInsideRoot(escaping, root);
+  } catch {
+    guardThrew = true;
+  }
+  assert(guardThrew, "assertInsideRoot rejects a traversal path that escapes the meta root");
+
+  // 6b. A traversal-laden name cannot cause a write outside repos/. seedRepo
+  //     builds its dir from (root, name) and gates every write on
+  //     assertInsideRoot, so the crafted name throws before any bytes land.
+  const before = await listFilesOutsideRepos(workspace, reposDir(root));
+  const craftedDocs = { claudeMd: "# crafted\n", designMd: "# crafted\n" };
+  let seedThrew = false;
+  try {
+    await seedRepo(root, path.join("..", "..", "escape"), uiRepo, craftedDocs);
+  } catch {
+    seedThrew = true;
+  }
+  assert(seedThrew, "seedRepo throws on a traversal-laden name (write-containment guard)");
+
+  // Scan the meta root's parent: nothing was written anywhere outside repos/.
+  const after = await listFilesOutsideRepos(workspace, reposDir(root));
+  assert(
+    before.length === after.length && before.every((f, i) => f === after[i]),
+    "no file was written outside repos/ after the crafted traversal attempt"
+  );
+
+  // 6c. Partial success — a missing arg is rejected without aborting the valid
+  //     repos in the same declare call.
+  const missing = path.join(workspace, "does-not-exist");
+  const partialMissing = await initProject(root, {
+    repoPaths: [uiRepo, missing, noUiRepo],
+    cwd: workspace,
+  });
+  assert(
+    partialMissing.rejectedRepos.some((r) => r.arg === missing && r.reason === "notFound"),
+    "a missing arg is reported in rejectedRepos with reason notFound"
+  );
+  assert(
+    partialMissing.declaredRepos.length === 2 &&
+      partialMissing.declaredRepos.some((r) => r.name === "repo-with-ui") &&
+      partialMissing.declaredRepos.some((r) => r.name === "repo-no-ui"),
+    "both valid repos are still declared despite the bad arg (partial success)"
+  );
+
+  // 6d. A not-a-directory arg is likewise rejected, valid repo unharmed.
+  const filePath = path.join(workspace, "a-file.txt");
+  await fs.writeFile(filePath, "not a directory\n", "utf8");
+  const partialFile = await initProject(root, {
+    repoPaths: [uiRepo, filePath],
+    cwd: workspace,
+  });
+  assert(
+    partialFile.rejectedRepos.some((r) => r.arg === filePath && r.reason === "notADirectory"),
+    "a not-a-directory arg is reported in rejectedRepos with reason notADirectory"
+  );
+  assert(
+    partialFile.declaredRepos.some((r) => r.name === "repo-with-ui"),
+    "the valid repo is still declared alongside the not-a-directory rejection"
+  );
+
+  console.log("\nAll multi-repo declare/seed/render/reconcile + containment assertions passed.");
   console.log(`Inspect the tmp workspace at: ${workspace}`);
 }
 
