@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-11T08:57:26.144Z",
+  "generatedAt": "2026-08-11T11:13:40.705Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -1660,7 +1660,7 @@
           "stage": "architecture",
           "status": "draft",
           "stale": false,
-          "version": 1,
+          "version": 3,
           "title": "Opus 5 readiness architecture"
         }
       ],

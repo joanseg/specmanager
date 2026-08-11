@@ -37,7 +37,7 @@ _8 features shipped — full history on the board._
 **Commands:**
 `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)
 
-_Last synced: 2026-08-11T08:58:18.676Z_
+_Last synced: 2026-08-11T11:13:40.856Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
