@@ -10,9 +10,9 @@ dependsOn:
 basedOn:
   prd-opus-5-readiness-036: 2
 generatedBy: agent
-version: 3
+version: 5
 createdAt: '2026-08-04T14:54:09.606Z'
-updatedAt: '2026-08-11T11:13:40.697Z'
+updatedAt: '2026-08-11T14:26:40.517Z'
 ---
 ## Summary
 
@@ -36,7 +36,7 @@ Trim SpecManager's own prompt surface (7 agents, 9 commands) onto the current Cl
 | `plugins/specmanager/server/src/smoke-mcp.ts` | Add `get_spec_slice` to the `expected` list (L69). |
 | `plugins/specmanager/server/package.json` | Register `selftest-specslice`, `selftest-prompts` (scripts block, L11–24). |
 | `plugins/specmanager/hooks/stop-gate.sh` | Delete `probe_test_command` (L75–87) + its call site (L103) (Q5). |
-| `plugins/specmanager/commands/specmanager-build.md` | Largest edit: R5 de-dup, R6 → tool call, step 6b deleted, step 7 alias prose shrunk. |
+| `plugins/specmanager/commands/specmanager-build.md` | Largest edit: R5 de-dup, R6 → tool call, step 6b's pre-filled defaults re-pointed at the new table, step 7 alias prose shrunk. |
 | `plugins/specmanager/commands/{-prd,-architecture,-design,-plan,-walkthrough,-interview}.md` | Delete the `sync_claude_md` step (R1). |
 | `plugins/specmanager/agents/{architect,planner,prd-writer,walkthrough-writer}.md` | Density contract → one clause (R3). |
 | `plugins/specmanager/agents/{builder,designer,architect}.md` | Skill-integration blocks → one line each (Q2). |
@@ -56,17 +56,17 @@ Re-measured today with `wc -w` and an `awk`-scoped `Don't`-bullet count:
 |---|---|---|---|
 | `agents/` words | 7,178 | **7,402** | ≤ 6,100 (−17.6%) |
 | `commands/` words | 5,838 | **6,407** | ≤ 5,450 (−15%) |
-| `specmanager-build.md` words | 2,338 | **2,411** | ≤ 1,550 (−36%) |
+| `specmanager-build.md` words | 2,338 | **2,411** | ≤ 1,700 (−29%) |
 | `Don't` bullets, 16 files | 80 | **81** | ≤ 50; build.md 19 → ≤ 10 |
 | Selftests | 11 named | **12 registered** (`selftest-repos` shipped after the audit) | 14 (adding `selftest-specslice`, `selftest-prompts`) |
 
-Targets are derived, not aspirational: R1 ≈ −100 (commands); R3 ≈ −270; Q2 ≈ −825; R4 ≈ −150; R5+R6+Q1 in build.md ≈ −900. Plan must re-measure before and after rather than trusting these.
+Targets are derived, not aspirational: R1 ≈ −100 (commands); R3 ≈ −270; Q2 ≈ −825; R4 ≈ −150; R5+R6+Q1 in build.md ≈ −750 (step 6b's ~150 words stay, per the user's 2026-08-11 decision — the earlier −900 assumed its deletion). Plan must re-measure before and after rather than trusting these.
 
 ---
 
-## Q1 — Tier dispatch: re-map the table (option b), and delete the per-session prompt
+## Q1 — Tier dispatch: re-map the table (option b), keep the per-phase prompt
 
-**Decision: (b), not the audit's (c).** Keep tier dispatch. Change `DEFAULT_TIER_TO_ALIAS` to `cheap: "sonnet"`, `standard: "sonnet"`, `strong: "opus"`. Separately delete build step 6b's per-session `AskUserQuestion` (part of (d)'s motivation, none of its config surface).
+**Decision: (b), not the audit's (c).** Keep tier dispatch. Change `DEFAULT_TIER_TO_ALIAS` to `cheap: "sonnet"`, `standard: "sonnet"`, `strong: "opus"`. **Keep** build step 6b's per-phase `AskUserQuestion`, updating only its pre-filled defaults to match. Reject option (d): the table does not move into `plugin.json` `userConfig`.
 
 **The audit's premise is contradicted by the data.** The PRD's Problem section asserts "most tasks already land on opus regardless." Measured across all 207 tasks in `.claude/specs/features/*/plan/tasks.json`:
 
@@ -87,7 +87,9 @@ Re-mapping `cheap → sonnet` removes both while preserving the 45.4% + 27.1% = 
 
 **Why the "machinery is tier-scaffolding" argument does not hold.** The audit justifies (c) by claiming R=2, N=3, and reviewer-fail escalation exist to absorb cheap-tier failures. Each is independently motivated: R=2 is a **transport** retry on `529`/Overloaded (model-agnostic — `commands/specmanager-build.md` L30 says so explicitly); N=3 is the Stop-gate's own cap and lives in `hooks/stop-gate.sh` L62, which never sees a model; the reviewer is spec compliance against an assembled slice, valuable at any tier. Only the "one R2 tier higher" clause (build L41) is tier-coupled, and under (b) it survives, simplified: `sonnet → opus`, capped at opus.
 
-**Why step 6b goes anyway.** The per-session `AskUserQuestion` (build L23, ~150 words) interrupts **every single build** to confirm a table that only needed confirming because one rung was wrong. Fix the rung in code and the confirmation loses its purpose. `aliasForTier`'s existing `sessionTable` parameter stays in the signature at zero cost as the seam for a future override; nothing calls it. Do **not** move the table into `plugin.json` `userConfig` (option d): it would need three string fields next to `board_port`, exposing per-tier model pinning as first-class user config for a value that should almost never change.
+**Why step 6b stays (user decision, 2026-08-11).** An earlier draft of this section proposed deleting the `AskUserQuestion` at build L23 (~150 words), arguing it only existed to compensate for a wrong rung and that fixing the rung in code would retire it. The user rejected that: the confirmation is wanted as standing per-phase control over dispatch, independent of whether the defaults happen to be right. Cadence needs no change — `/specmanager-build` builds exactly one phase and stops at its boundary, so 6b's existing "once per build session" already means **once per phase**. Only its pre-filled defaults move, to `cheap → sonnet`, `standard → sonnet`, `strong → opus`.
+
+This makes `aliasForTier`'s `sessionTable` parameter a **live code path rather than a dormant seam**: the table 6b returns is what gets passed at dispatch, so the Plan must keep that wiring rather than treating `sessionTable` as unused. Do **not** move the table into `plugin.json` `userConfig` (option d): it would need three string fields next to `board_port`, exposing per-tier model pinning as first-class user config for a value that should almost never change — and 6b already provides the per-run override surface (d) was reaching for.
 
 **Consequences.** `core/tiers.ts` keeps three tiers with two distinct aliases — deliberate: it preserves the escalation ladder and makes a future Haiku 5 a one-line table edit. `selftest-tiers` is **updated, not deleted** — the PRD's success-metric row "files/lines deleted if Q1 resolves to (c)" does not apply. `builder.md`'s R2 note (L15) shrinks to one sentence; it does not disappear, because "model is parent-supplied, never self-selected" remains a real contract.
 
@@ -522,7 +524,7 @@ Removed: `probe_test_command()` (bash, `hooks/stop-gate.sh`).
 `/specmanager-build <feature> next` after the trim:
 
 1. Parse args → resolve feature → `check_gate({stage:"plan"})` → resolve phase → `set_active_build`.
-2. Order check; idempotency check. **(step 6b is gone — no `AskUserQuestion`, no session tier table.)**
+2. Order check; idempotency check. **(step 6b stays — the per-phase `AskUserQuestion` runs, and the table it returns is passed to `aliasForTier` as `sessionTable`.)**
 3. Per task, in `dependsOn` order: `list_tasks` → `aliasForComplexity(complexity)` → `Agent({ subagent_type: "builder", model: <alias>, … })`, wrapped in the R=2 transport retry. Complexity 1 and 2 now both resolve to `sonnet`; 3/null to `opus`.
 4. Builder marks `done` with artifacts → Stop hook fires → `resolve-active-card.js` → `resolveActiveCard` (marker-first) → `testCommand` present ⇒ run it; `"none"` ⇒ criteria only; **absent ⇒ `**Exit test:**` line if runnable, else criteria only** (rung 3 deleted).
 5. Gate passes (exit 0). Parent calls **`get_spec_slice({ featureId, phase })`** — one tool call replacing seven prose-derived steps.
@@ -530,7 +532,7 @@ Removed: `probe_test_command()` (bash, `hooks/stop-gate.sh`).
 7. `pass` → step 8. `fail` → re-dispatch the fix one tier higher (`sonnet → opus`, capped), sharing the N=3 budget; persistent fail ⇒ `clear_active_build()`, phase `blocked`, stop.
 8. `get_phase_completion` (unconditional, return or error) → `complete === true` ⇒ `clear_active_build()` → auto-walkthrough if `needsWalkthrough` (terminal when `isSinglePhase`) → the three-option sync `AskUserQuestion`. `complete === false` ⇒ marker stays set, report partial state.
 
-Unchanged from today: every gate, every marker transition, every walkthrough semantic. The only flow deltas are the removed `AskUserQuestion` at step 2 and the tool call at step 5.
+Unchanged from today: every gate, every marker transition, every walkthrough semantic. The only flow delta is the tool call at step 5. Step 2's `AskUserQuestion` is retained (Q1, user decision 2026-08-11); only the defaults it pre-fills change.
 
 **Build/ship flow for the code change:** edit `core/` + `mcp.ts` → `cd plugins/specmanager/server && npm run build` (tsc → `dist/`) → run the selftest set → **commit `dist/` with the source**. The plugin ships compiled output; a source-only commit ships nothing. Any phase touching `core/` or `mcp.ts` must therefore set `meta.phases[*].testCommand` to a string beginning `cd plugins/specmanager/server && npm run build && …`, matching the shape used by `feat-multi-repo-nested-docs` and `feat-multi-session-boards`.
 
@@ -574,7 +576,7 @@ Unchanged from today: every gate, every marker transition, every walkthrough sem
 
 ## Open questions / risks
 
-1. **Q1 dissent — resolved 2026-08-11: the user accepted (b).** The audit recommended dropping tier dispatch (c); this design dissented and kept it, re-mapping the table (b), because measured task complexity shows **72.5% of tasks route away from opus** — contradicting the PRD's "most tasks already land on opus regardless." The user made the call on **2026-08-11: accept (b)**. Binding on the Plan: re-map `DEFAULT_TIER_TO_ALIAS` to `cheap: "sonnet"`, `standard: "sonnet"`, `strong: "opus"`, and delete build step 6b's per-session `AskUserQuestion`. `core/tiers.ts` and `selftest-tiers` are **kept and updated**, not deleted — the PRD's "tier machinery removed" success-metric row (scoped to Q1(c)) does not apply, and (c)'s deletion list is moot. See `Q1` for the full argument; nothing further is outstanding on this question.
+1. **Q1 dissent — resolved 2026-08-11: the user accepted (b).** The audit recommended dropping tier dispatch (c); this design dissented and kept it, re-mapping the table (b), because measured task complexity shows **72.5% of tasks route away from opus** — contradicting the PRD's "most tasks already land on opus regardless." The user made the call on **2026-08-11: accept (b)**. Binding on the Plan: re-map `DEFAULT_TIER_TO_ALIAS` to `cheap: "sonnet"`, `standard: "sonnet"`, `strong: "opus"`, and **keep** build step 6b's per-phase `AskUserQuestion`, re-pointing only its pre-filled defaults (a second user decision on the same date — an earlier draft of this design proposed deleting 6b and was overruled; see `Q1`). `core/tiers.ts` and `selftest-tiers` are **kept and updated**, not deleted — the PRD's "tier machinery removed" success-metric row (scoped to Q1(c)) does not apply, and (c)'s deletion list is moot. See `Q1` for the full argument; nothing further is outstanding on this question.
 2. **Q5 partial dissent.** The PRD framed the choice as delete-vs-keep-for-back-compat. Evidence shows back-compat is real (12/16 plans have no `meta.phases`) but is served by rung 2, not rung 3. Deleting rung 3 is therefore both the clean *and* the compatible option. If the user disagrees, keeping it costs 12 lines of untested bash — but the invented-failure mode (whole-suite `npm test` as a phase gate in a project with a pre-existing red test) is a real user-facing hazard.
 3. **`selftest-prompts` is a regression gate, not a proof.** It cannot catch an invariant nobody enumerated in Phase 0. The 15 entries above are the ones evidence supports; the Plan's Phase 0 should re-derive the list independently and reconcile rather than copying this table.
 4. **Word-count targets are derived, not measured post-hoc.** ≤6,100 agents / ≤5,450 commands / ≤1,550 build.md come from summing per-finding estimates. If Phase 0's re-measurement lands materially off, adjust the targets rather than over-cutting to hit them — the no-regression selftest set is the binding metric, per the PRD.
