@@ -22,9 +22,13 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 | Spec-stage tier dispatch | PRD (approved) | — |
 | GitHub spec sync (issues/PRs) | PRD | — |
 | Security review stage | PRD (approved) | — |
-| Multi-repo nested docs (CLAUDE.md / DESIGN.md) | PRD (draft) | — |
+| Multi-repo nested docs (CLAUDE.md / DESIGN.md) | PRD (approved) | — |
 | Multi-session boards (auto-port) | PRD (approved) | — |
 | Website agent readiness | PRD | — |
+| Landing page redesign (ethskills style) | PRD (approved) | — |
+| Marketing phase | PRD (draft) | — |
+| Opus 5 readiness | PRD (approved) | — |
+| Fly.io deployment | PRD (approved) | — |
 
 _8 features shipped — full history on the board._
 
@@ -33,7 +37,7 @@ _8 features shipped — full history on the board._
 **Commands:**
 `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)
 
-_Last synced: 2026-07-10T12:08:11.497Z_
+_Last synced: 2026-08-11T08:58:18.676Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
@@ -65,6 +69,7 @@ Two server entry points, **one shared `core/` module** under `server/src/core/` 
 
 - **`server/src/mcp.ts`** — the MCP stdio server (Claude's interface). Registers all the tools (`specmanager_init`, `list/create_feature`, `*_document`, `set_status`, `check_gate`, `list_stale`, `*_task`, `list_phases`, `get_next_phase`, `get_phase_completion`, `sync_claude_md`, `sync_design_md`, `open_board`, …). **It also boots the board server in-process** (`startBoardServer`), so one `claude` session brings up everything. It runs `startClaudeMdAutoSync` / `startDesignMdAutoSync` listeners that refresh the managed CLAUDE.md block on doc/status events and `docs/DESIGN.md` on `feature.shipped`.
 - **`server/src/board-server.ts`** — Fastify + `ws` + `chokidar`. Serves `ui/dist`, exposes the REST API the UI calls, pushes live updates over websockets, and watches `.claude/specs/**`. Its REST writes emit the same `core` events as the MCP tools, so the two views never drift. **Auto-port bind:** `bindWithFallback` tries the preferred port → sequential scan (`N=20`) → ephemeral `{port:0}`, then surfaces the *actual* bound port (`app.server.address()`) on `BoardServer.url`/`.port` and through `board_url`/`open_board` (which return `available:false`/null rather than fabricating a URL when the board is down). Paired with **per-project pidfiles** (`core/pidfile.ts`: `board-<sha1(root).slice(0,8)>.pid`) so one session's reap backstop never SIGTERMs a peer *project's* live board — two `claude` sessions in different projects run concurrent boards on distinct ports (same-project sessions still share one pidfile → newer takes over).
+- **`server/src/core/repos.ts`** — **multi-repo nested docs.** `specmanager_init` accepts optional `repoPaths: string[]` (`/specmanager:specmanager-init /path/repo-1 /path/repo-2`): the caller-supplied sibling paths *are* the read grant. `declareRepos` validates each (`validateRepoPath` — must exist + be a directory; missing `.git` is a warning, not a gate), reads *only* that sibling's `CLAUDE.md`/`DESIGN.md` (no tree walk), and seeds a mirror under the meta root at `repos/<name>/{CLAUDE.md,DESIGN.md,.specmanager-repo.json}` (seed-if-present / placeholder `DESIGN.md` when the repo has no UI; write-if-absent so re-runs never clobber annotated mirrors). `renderBlock` (`core/claude-md.ts`) adds a links-only "Declared repos" subsection inside the existing markers when `scanDeclaredRepos` is non-empty. **Read may leave the meta root; write structurally cannot** — every write routes through `assertInsideRoot`, and the sidecar's `sourcePath` is stored relative to the meta root's parent (portable, not machine-local). The `repos/` tree is authoritative (nothing in `manifest.json`). Self-test: `selftest-repos`.
 
 Load-bearing invariants (don't drift):
 
