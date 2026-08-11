@@ -1,0 +1,652 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Re-derive the invariant inventory independently from agents/, commands/, and core/",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 3,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:41:25.948Z",
+      "updatedAt": "2026-08-11T14:41:25.948Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Reconcile the re-derived inventory against the Architecture's INV-1…INV-15 table",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:41:45.267Z",
+      "updatedAt": "2026-08-11T14:41:45.267Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Record the pre-trim baseline measurement (word counts + scoped Don't-bullet counts)",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:41:46.606Z",
+      "updatedAt": "2026-08-11T14:41:46.606Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-opus-5-readiness",
+      "title": "R8: correct docs/agent-snippets/design-grounding.md to the Read-on-filePath form",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:41:48.001Z",
+      "updatedAt": "2026-08-11T14:41:48.001Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Write the selftest-prompts.ts harness (PromptInvariant shape, match loop, min/max failures)",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:41:49.435Z",
+      "updatedAt": "2026-08-11T14:41:49.435Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Create core/spec-slice.ts; move matchPhaseHeading out of active-card.ts and import it back",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 3,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:41:51.212Z",
+      "updatedAt": "2026-08-11T14:41:51.212Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Q1: re-map DEFAULT_TIER_TO_ALIAS.cheap to \"sonnet\" and update selftest-tiers assertions",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:41:52.275Z",
+      "updatedAt": "2026-08-11T14:41:52.275Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Q5: delete probe_test_command + call site; add the two absent-testCommand selftest-stopgate cases",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 3,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:41:53.097Z",
+      "updatedAt": "2026-08-11T14:41:53.097Z"
+    },
+    {
+      "id": "task-009",
+      "featureId": "feat-opus-5-readiness",
+      "title": "R8: propagate the corrected design-grounding fragment into agents/architect.md (leave planner/builder untouched)",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 2,
+      "dependsOn": [
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:41:58.979Z",
+      "updatedAt": "2026-08-11T14:41:58.979Z"
+    },
+    {
+      "id": "task-010",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Give R3's surviving lossless-carryover clause a canonical docs/agent-snippets/ home",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 2,
+      "dependsOn": [
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:00.413Z",
+      "updatedAt": "2026-08-11T14:42:00.413Z"
+    },
+    {
+      "id": "task-011",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Encode the reconciled invariant table in selftest-prompts.ts with max at today's measured counts",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 3,
+      "dependsOn": [
+        "task-002",
+        "task-003",
+        "task-005"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:01.809Z",
+      "updatedAt": "2026-08-11T14:42:01.809Z"
+    },
+    {
+      "id": "task-012",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Implement getSpecSlice anchor resolution (id-token / kebab-slug keys, level-aware slicing, unresolvedRefs)",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 3,
+      "dependsOn": [
+        "task-006"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:03.039Z",
+      "updatedAt": "2026-08-11T14:42:03.039Z"
+    },
+    {
+      "id": "task-013",
+      "featureId": "feat-opus-5-readiness",
+      "title": "INV-15: add the snippet-parity pattern pair (positive min, negative max:0) to selftest-prompts",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 2,
+      "dependsOn": [
+        "task-005",
+        "task-009",
+        "task-010"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:07.803Z",
+      "updatedAt": "2026-08-11T14:42:07.803Z"
+    },
+    {
+      "id": "task-014",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Implement getSpecSlice plan-section slicing, task assembly, and the unknown-phase null",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 2,
+      "dependsOn": [
+        "task-012"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:09.371Z",
+      "updatedAt": "2026-08-11T14:42:09.371Z"
+    },
+    {
+      "id": "task-015",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Register selftest-prompts in server/package.json; rebuild and verify green against unmodified prompts",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 2,
+      "dependsOn": [
+        "task-011",
+        "task-013"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:13.349Z",
+      "updatedAt": "2026-08-11T14:42:13.349Z"
+    },
+    {
+      "id": "task-016",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Implement the getSpecSlice fallback path (empty/unresolved refs, name-match, fallbackUsed)",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 2,
+      "dependsOn": [
+        "task-014"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:14.204Z",
+      "updatedAt": "2026-08-11T14:42:14.204Z"
+    },
+    {
+      "id": "task-017",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Export spec-slice from core/index.ts, register get_spec_slice in mcp.ts, add it to smoke-mcp's expected",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 2,
+      "dependsOn": [
+        "task-016"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:21.545Z",
+      "updatedAt": "2026-08-11T14:42:21.545Z"
+    },
+    {
+      "id": "task-018",
+      "featureId": "feat-opus-5-readiness",
+      "title": "R1: delete the sync_claude_md step from the six drafting commands and renumber",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 2,
+      "dependsOn": [
+        "task-015"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:22.955Z",
+      "updatedAt": "2026-08-11T14:42:22.955Z"
+    },
+    {
+      "id": "task-019",
+      "featureId": "feat-opus-5-readiness",
+      "title": "R2: delete build.md's reviewer model:\"opus\" dispatch override and its justifying sentence",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 1,
+      "dependsOn": [
+        "task-015"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:24.361Z",
+      "updatedAt": "2026-08-11T14:42:24.361Z"
+    },
+    {
+      "id": "task-020",
+      "featureId": "feat-opus-5-readiness",
+      "title": "R3: reduce the density contract to the one-sentence lossless clause in four agents",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 2,
+      "dependsOn": [
+        "task-015",
+        "task-010"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:25.777Z",
+      "updatedAt": "2026-08-11T14:42:25.777Z"
+    },
+    {
+      "id": "task-021",
+      "featureId": "feat-opus-5-readiness",
+      "title": "R4: delete core-enforced restatements in builder/planner; collapse reviewer.md's four Don'ts to one contract line",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 3,
+      "dependsOn": [
+        "task-015"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:27.892Z",
+      "updatedAt": "2026-08-11T14:42:27.892Z"
+    },
+    {
+      "id": "task-022",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Q2: compress builder.md's Superpowers + frontend-design blocks, preserving the INV-3 de-dup boundary",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 2,
+      "dependsOn": [
+        "task-015"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:29.305Z",
+      "updatedAt": "2026-08-11T14:42:29.305Z"
+    },
+    {
+      "id": "task-023",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Q2: compress designer.md's frontend-design 3-tier block, keeping the distilled fallback bullets (INV-14)",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 2,
+      "dependsOn": [
+        "task-015"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:30.711Z",
+      "updatedAt": "2026-08-11T14:42:30.711Z"
+    },
+    {
+      "id": "task-024",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Q2: compress architect.md's Context7 ladder to one line; keep the no-Context7-in-.mcp.json policy",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 2,
+      "dependsOn": [
+        "task-015",
+        "task-009"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:32.835Z",
+      "updatedAt": "2026-08-11T14:42:32.835Z"
+    },
+    {
+      "id": "task-025",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Q3: compress steps 1-3 of the five drafting commands and trim their Don't lists",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 3,
+      "dependsOn": [
+        "task-015"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:34.280Z",
+      "updatedAt": "2026-08-11T14:42:34.280Z"
+    },
+    {
+      "id": "task-026",
+      "featureId": "feat-opus-5-readiness",
+      "title": "R5: de-duplicate build.md's six rule families; delete the Retry-budget-boundary paragraph",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 3,
+      "dependsOn": [
+        "task-015"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:35.031Z",
+      "updatedAt": "2026-08-11T14:42:35.031Z"
+    },
+    {
+      "id": "task-027",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Write selftest-specslice.ts (11 required cases) and register npm run selftest-specslice",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 3,
+      "dependsOn": [
+        "task-017"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:40.909Z",
+      "updatedAt": "2026-08-11T14:42:40.909Z"
+    },
+    {
+      "id": "task-028",
+      "featureId": "feat-opus-5-readiness",
+      "title": "R5: cut build.md's Don't list from 19 bullets to 10 or fewer",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 2,
+      "dependsOn": [
+        "task-026"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:42.365Z",
+      "updatedAt": "2026-08-11T14:42:42.365Z"
+    },
+    {
+      "id": "task-029",
+      "featureId": "feat-opus-5-readiness",
+      "title": "R9: correct CLAUDE.md's staleness line and update its build/test block to all 14 selftests",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 1,
+      "dependsOn": [
+        "task-015"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:43.305Z",
+      "updatedAt": "2026-08-11T14:42:43.305Z"
+    },
+    {
+      "id": "task-030",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Rebuild server/dist after the core changes and commit compiled output with the source",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 1,
+      "dependsOn": [
+        "task-027",
+        "task-007",
+        "task-008"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:46.766Z",
+      "updatedAt": "2026-08-11T14:42:46.766Z"
+    },
+    {
+      "id": "task-031",
+      "featureId": "feat-opus-5-readiness",
+      "title": "R5/R6/Q1: rewrite build.md steps 6b/7/7b (get_spec_slice call, re-pointed tier defaults); rename its four Task( to Agent(",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 3,
+      "dependsOn": [
+        "task-026",
+        "task-030"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:50.868Z",
+      "updatedAt": "2026-08-11T14:42:50.868Z"
+    },
+    {
+      "id": "task-032",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Lower each selftest-prompts max to its post-trim count (never a min) and verify green",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 2,
+      "dependsOn": [
+        "task-018",
+        "task-019",
+        "task-020",
+        "task-021",
+        "task-022",
+        "task-023",
+        "task-024",
+        "task-025",
+        "task-028",
+        "task-031"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:55.314Z",
+      "updatedAt": "2026-08-11T14:42:55.314Z"
+    },
+    {
+      "id": "task-033",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Re-measure word counts and Don't bullets against the targets; adjust targets rather than over-cutting",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 2,
+      "dependsOn": [
+        "task-032"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:42:58.671Z",
+      "updatedAt": "2026-08-11T14:42:58.671Z"
+    },
+    {
+      "id": "task-034",
+      "featureId": "feat-opus-5-readiness",
+      "title": "Final rebuild of dist/; run the full 14-selftest no-regression suite + claude plugin validate",
+      "status": "todo",
+      "phase": "readiness",
+      "complexity": 1,
+      "dependsOn": [
+        "task-029",
+        "task-032",
+        "task-033"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-11T14:43:01.885Z",
+      "updatedAt": "2026-08-11T14:43:01.885Z"
+    }
+  ],
+  "meta": {
+    "phases": {
+      "readiness": {
+        "testCommand": "cd plugins/specmanager/server && npm run build && npm run selftest && npm run selftest-board && npm run selftest-phases && npm run selftest-build && npm run selftest-tiers && npm run selftest-stopgate && npm run selftest-roundtrip && npm run selftest-pidfile && npm run selftest-shutdown && npm run selftest-autoport && npm run selftest-repos && npm run smoke-mcp && npm run selftest-specslice && npm run selftest-prompts && cd ../../.. && claude plugin validate plugins/specmanager",
+        "architectureRefs": [
+          "invariant-inventory",
+          "core-spec-slice",
+          "R1",
+          "R2",
+          "R3",
+          "R4",
+          "R5",
+          "R6",
+          "R8",
+          "R9",
+          "Q1",
+          "Q2",
+          "Q3",
+          "Q5",
+          "Baseline",
+          "Naming",
+          "interfaces",
+          "sequence-flow",
+          "failure-edge-cases"
+        ]
+      }
+    },
+    "blocked": {}
+  }
+}

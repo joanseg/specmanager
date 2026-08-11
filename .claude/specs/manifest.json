@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-11T14:26:40.521Z",
+  "generatedAt": "2026-08-11T14:43:01.899Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -1658,20 +1658,41 @@
         {
           "id": "arch-opus-5-readiness-023",
           "stage": "architecture",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
           "version": 5,
           "title": "Opus 5 readiness architecture"
+        },
+        {
+          "id": "plan-opus-5-readiness-017",
+          "stage": "plan",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Opus 5 readiness plan"
         }
       ],
       "tasks": {
-        "todo": 0,
+        "todo": 34,
         "in_progress": 0,
         "done": 0,
         "blocked": 0,
-        "total": 0
+        "total": 34
       },
-      "phases": []
+      "phases": [
+        {
+          "name": "readiness",
+          "order": 0,
+          "taskCount": 34,
+          "doneCount": 0,
+          "inProgressCount": 0,
+          "blockedCount": 0,
+          "status": "todo",
+          "walkthroughId": null,
+          "walkthroughStatus": null,
+          "walkthroughStale": null
+        }
+      ]
     },
     {
       "id": "feat-fly-io-deployment",

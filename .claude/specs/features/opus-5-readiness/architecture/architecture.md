@@ -2,7 +2,7 @@
 id: arch-opus-5-readiness-023
 featureId: feat-opus-5-readiness
 stage: architecture
-status: draft
+status: approved
 stale: false
 title: Opus 5 readiness architecture
 dependsOn:
@@ -12,7 +12,7 @@ basedOn:
 generatedBy: agent
 version: 5
 createdAt: '2026-08-04T14:54:09.606Z'
-updatedAt: '2026-08-11T14:26:40.517Z'
+updatedAt: '2026-08-11T14:31:42.722Z'
 ---
 ## Summary
 
