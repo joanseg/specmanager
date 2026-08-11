@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-10T11:55:17.374Z",
+  "generatedAt": "2026-08-11T08:57:26.144Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -1438,20 +1438,58 @@
         {
           "id": "prd-multi-repo-nested-docs-claude-md-design-md-031",
           "stage": "prd",
-          "status": "draft",
+          "status": "approved",
+          "stale": false,
+          "version": 4,
+          "title": "Multi-repo nested docs (CLAUDE.md / DESIGN.md) PRD"
+        },
+        {
+          "id": "arch-multi-repo-nested-docs-claude-md-design-md-021",
+          "stage": "architecture",
+          "status": "approved",
           "stale": false,
           "version": 2,
-          "title": "Multi-repo nested docs (CLAUDE.md / DESIGN.md) PRD"
+          "title": "Multi-repo nested docs (CLAUDE.md / DESIGN.md) architecture"
+        },
+        {
+          "id": "plan-multi-repo-nested-docs-claude-md-design-md-016",
+          "stage": "plan",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Multi-repo nested docs (CLAUDE.md / DESIGN.md) plan"
+        },
+        {
+          "id": "wt-multi-repo-nested-docs-claude-md-design-md-018",
+          "stage": "walkthrough",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Multi-repo nested docs (CLAUDE.md / DESIGN.md) — Phase core walkthrough",
+          "phase": "core"
         }
       ],
       "tasks": {
         "todo": 0,
         "in_progress": 0,
-        "done": 0,
+        "done": 11,
         "blocked": 0,
-        "total": 0
+        "total": 11
       },
-      "phases": []
+      "phases": [
+        {
+          "name": "core",
+          "order": 0,
+          "taskCount": 11,
+          "doneCount": 11,
+          "inProgressCount": 0,
+          "blockedCount": 0,
+          "status": "done",
+          "walkthroughId": "wt-multi-repo-nested-docs-claude-md-design-md-018",
+          "walkthroughStatus": "draft",
+          "walkthroughStale": false
+        }
+      ]
     },
     {
       "id": "feat-multi-session-boards-auto-port",
@@ -1521,6 +1559,144 @@
       "title": "Website agent readiness",
       "currentStage": "prd",
       "documents": [],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0,
+        "blocked": 0,
+        "total": 0
+      },
+      "phases": []
+    },
+    {
+      "id": "feat-landing-page-redesign-ethskills-style",
+      "slug": "landing-page-redesign-ethskills-style",
+      "title": "Landing page redesign (ethskills style)",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-landing-page-redesign-ethskills-style-033",
+          "stage": "prd",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Landing page redesign (ethskills style) interview",
+          "kind": "interview"
+        },
+        {
+          "id": "prd-landing-page-redesign-ethskills-style-034",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 5,
+          "title": "Landing page redesign (ethskills style) PRD"
+        },
+        {
+          "id": "arch-landing-page-redesign-ethskills-style-022",
+          "stage": "architecture",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Landing page redesign (ethskills style) Architecture"
+        },
+        {
+          "id": "design-landing-page-redesign-ethskills-style-007",
+          "stage": "design",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Landing page redesign (ethskills style) mockups"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0,
+        "blocked": 0,
+        "total": 0
+      },
+      "phases": []
+    },
+    {
+      "id": "feat-marketing-phase",
+      "slug": "marketing-phase",
+      "title": "Marketing phase",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-marketing-phase-035",
+          "stage": "prd",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Marketing phase PRD"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0,
+        "blocked": 0,
+        "total": 0
+      },
+      "phases": []
+    },
+    {
+      "id": "feat-opus-5-readiness",
+      "slug": "opus-5-readiness",
+      "title": "Opus 5 readiness",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-opus-5-readiness-036",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Opus 5 readiness PRD"
+        },
+        {
+          "id": "arch-opus-5-readiness-023",
+          "stage": "architecture",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Opus 5 readiness architecture"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0,
+        "blocked": 0,
+        "total": 0
+      },
+      "phases": []
+    },
+    {
+      "id": "feat-fly-io-deployment",
+      "slug": "fly-io-deployment",
+      "title": "Fly.io deployment",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-fly-io-deployment-037",
+          "stage": "prd",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Fly.io deployment interview",
+          "kind": "interview"
+        },
+        {
+          "id": "prd-fly-io-deployment-038",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 3,
+          "title": "Fly.io deployment PRD"
+        }
+      ],
       "tasks": {
         "todo": 0,
         "in_progress": 0,

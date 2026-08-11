@@ -1,0 +1,271 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-multi-repo-nested-docs-claude-md-design-md",
+      "title": "Add reposDir(root) + repoDir(name, root) to core/paths.ts",
+      "status": "done",
+      "phase": "core",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "fbc511d"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/paths.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-07-13T15:26:29.711Z",
+      "updatedAt": "2026-07-13T15:42:24.123Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-multi-repo-nested-docs-claude-md-design-md",
+      "title": "core/repos.ts — guards + read seam (validateRepoPath, assertInsideRoot, two-file read)",
+      "status": "done",
+      "phase": "core",
+      "complexity": 3,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "99bf0ab"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/repos.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-07-13T15:26:33.791Z",
+      "updatedAt": "2026-07-13T15:44:46.692Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-multi-repo-nested-docs-claude-md-design-md",
+      "title": "core/repos.ts — nested seeding + provenance sidecar + collision disambiguation",
+      "status": "done",
+      "phase": "core",
+      "complexity": 3,
+      "dependsOn": [
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [
+          "1f4636e"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/repos.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-07-13T15:26:40.278Z",
+      "updatedAt": "2026-07-13T15:48:04.830Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-multi-repo-nested-docs-claude-md-design-md",
+      "title": "core/repos.ts — declareRepos + scanDeclaredRepos orchestration + core/index re-export",
+      "status": "done",
+      "phase": "core",
+      "complexity": 3,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [
+          "e12bb05"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/repos.ts",
+          "plugins/specmanager/server/src/core/index.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-07-13T15:26:45.009Z",
+      "updatedAt": "2026-07-13T15:51:00.431Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-multi-repo-nested-docs-claude-md-design-md",
+      "title": "core/claude-md.ts renderBlock — \"Declared repos\" linked subsection",
+      "status": "done",
+      "phase": "core",
+      "complexity": 2,
+      "dependsOn": [
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [
+          "000ef85"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/claude-md.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-07-13T15:26:49.249Z",
+      "updatedAt": "2026-07-13T15:52:53.252Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-multi-repo-nested-docs-claude-md-design-md",
+      "title": "core/init.ts — initProject(root, opts?) threads repoPaths/cwd, calls declareRepos, folds into InitResult",
+      "status": "done",
+      "phase": "core",
+      "complexity": 2,
+      "dependsOn": [
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [
+          "8ca9a34"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/init.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-07-13T15:26:53.063Z",
+      "updatedAt": "2026-07-13T15:54:20.413Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-multi-repo-nested-docs-claude-md-design-md",
+      "title": "mcp.ts — specmanager_init inputSchema repoPaths + pass-through to initProject",
+      "status": "done",
+      "phase": "core",
+      "complexity": 1,
+      "dependsOn": [
+        "task-006"
+      ],
+      "artifacts": {
+        "commits": [
+          "f2a289d"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/mcp.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-07-13T15:26:57.301Z",
+      "updatedAt": "2026-07-13T15:55:39.345Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-multi-repo-nested-docs-claude-md-design-md",
+      "title": "commands/specmanager-init.md — positional-args form, read-grant semantics, reconcile-on-re-run",
+      "status": "done",
+      "phase": "core",
+      "complexity": 1,
+      "dependsOn": [
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [
+          "41019f0"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-init.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-07-13T15:27:01.613Z",
+      "updatedAt": "2026-07-13T15:58:05.008Z"
+    },
+    {
+      "id": "task-009",
+      "featureId": "feat-multi-repo-nested-docs-claude-md-design-md",
+      "title": "selftest-repos.ts — declare → seed → render → re-run reconcile (idempotent)",
+      "status": "done",
+      "phase": "core",
+      "complexity": 3,
+      "dependsOn": [
+        "task-005",
+        "task-006"
+      ],
+      "artifacts": {
+        "commits": [
+          "bb7b5d1"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest-repos.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-07-13T15:27:06.022Z",
+      "updatedAt": "2026-07-13T16:00:43.069Z"
+    },
+    {
+      "id": "task-010",
+      "featureId": "feat-multi-repo-nested-docs-claude-md-design-md",
+      "title": "selftest-repos.ts — write-containment / traversal case (required)",
+      "status": "done",
+      "phase": "core",
+      "complexity": 2,
+      "dependsOn": [
+        "task-009"
+      ],
+      "artifacts": {
+        "commits": [
+          "7ef976e"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest-repos.ts"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-07-13T15:27:14.857Z",
+      "updatedAt": "2026-07-13T16:03:55.692Z"
+    },
+    {
+      "id": "task-011",
+      "featureId": "feat-multi-repo-nested-docs-claude-md-design-md",
+      "title": "Register selftest-repos npm script + rebuild dist/",
+      "status": "done",
+      "phase": "core",
+      "complexity": 1,
+      "dependsOn": [
+        "task-009",
+        "task-010"
+      ],
+      "artifacts": {
+        "commits": [
+          "cbd33d3"
+        ],
+        "files": [
+          "plugins/specmanager/server/package.json",
+          "plugins/specmanager/server/dist/core/repos.js",
+          "plugins/specmanager/server/dist/core/claude-md.js",
+          "plugins/specmanager/server/dist/core/init.js",
+          "plugins/specmanager/server/dist/core/paths.js",
+          "plugins/specmanager/server/dist/core/index.js",
+          "plugins/specmanager/server/dist/mcp.js",
+          "plugins/specmanager/server/dist/selftest-repos.js"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-07-13T15:27:22.454Z",
+      "updatedAt": "2026-07-13T16:05:33.316Z"
+    }
+  ],
+  "meta": {
+    "phases": {
+      "core": {
+        "testCommand": "cd plugins/specmanager/server && npm run build && npm run selftest-repos",
+        "architectureRefs": [
+          "R1",
+          "R2",
+          "R3",
+          "R4",
+          "R5",
+          "R6",
+          "core-repos-module"
+        ]
+      }
+    },
+    "blocked": {}
+  }
+}

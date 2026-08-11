@@ -1,0 +1,853 @@
+---
+id: design-landing-page-redesign-ethskills-style-007
+featureId: feat-landing-page-redesign-ethskills-style
+stage: design
+status: draft
+stale: false
+title: Landing page redesign (ethskills style) mockups
+dependsOn:
+  - prd-landing-page-redesign-ethskills-style-034
+  - arch-landing-page-redesign-ethskills-style-022
+basedOn:
+  prd-landing-page-redesign-ethskills-style-034: 5
+  arch-landing-page-redesign-ethskills-style-022: 2
+generatedBy: agent
+version: 1
+createdAt: '2026-07-13T16:05:20.329Z'
+updatedAt: '2026-07-13T16:05:20.329Z'
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Landing page redesign (ethskills style) mockups</title>
+<style>
+  :root{
+    /* surfaces */
+    --bg:#0a0b0f; --surface:#12141b; --surface-2:#181b24; --line:#232733;
+    /* ink */
+    --ink:#f3f4f8; --ink-dim:#9aa0b0; --ink-mute:#5f6678;
+    /* accent teal */
+    --accent:#34d6b5; --accent-ink:#04241e; --accent-soft:rgba(52,214,181,.14); --accent-line:rgba(52,214,181,.34);
+    /* warn amber */
+    --warn:#e0793f; --warn-soft:rgba(224,121,63,.12); --warn-line:rgba(224,121,63,.3);
+    /* violet */
+    --violet:#9b8cff; --violet-soft:rgba(155,140,255,.1); --violet-line:rgba(155,140,255,.34);
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#050609;color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+  img{max-width:100%}
+  a{color:inherit}
+
+  /* ---- page scaffold: alternating screen / note ---- */
+  .sm-wrap{max-width:1160px;margin:0 auto;padding:48px 24px 120px}
+  .sm-lede{max-width:820px;margin:0 auto 40px;padding:22px 26px;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:12px;background:var(--surface)}
+  .sm-lede h1{margin:0 0 8px;font-size:20px;letter-spacing:-.01em}
+  .sm-lede p{margin:6px 0 0;color:var(--ink-dim);font-size:14px}
+  .sm-kbd{font-family:var(--mono);color:var(--accent);font-size:12.5px}
+
+  .sm-screen{margin:0 auto 8px;max-width:1080px}
+  .sm-note{max-width:820px;margin:14px auto 56px;padding:20px 24px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(180deg,var(--surface),#0f1117)}
+  .sm-note h2{margin:0 0 4px;font-size:15px;color:var(--accent);letter-spacing:.02em;text-transform:uppercase;font-weight:600}
+  .sm-note h2 .n{color:var(--ink-mute);font-weight:600;margin-right:8px}
+  .sm-note p{margin:10px 0;color:var(--ink-dim);font-size:14px}
+  .sm-note ul{margin:10px 0;padding-left:18px;color:var(--ink-dim);font-size:14px}
+  .sm-note li{margin:5px 0}
+  .sm-note code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--ink)}
+  .sm-note strong{color:var(--ink)}
+  .sm-tokline{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .tok{font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:6px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink-dim)}
+  .tok b{color:var(--ink);font-weight:600}
+
+  /* ---- browser chrome frame ---- */
+  .browser{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--bg);box-shadow:0 30px 80px -40px rgba(0,0,0,.9)}
+  .chrome{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border-bottom:1px solid var(--line)}
+  .dots{display:flex;gap:7px}
+  .dots i{width:11px;height:11px;border-radius:50%;display:block}
+  .dots i:nth-child(1){background:#ff5f57}.dots i:nth-child(2){background:#febc2e}.dots i:nth-child(3){background:#28c840}
+  .url{flex:1;font-family:var(--mono);font-size:12px;color:var(--ink-dim);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:6px 12px}
+  .url b{color:var(--ink)}
+  .viewport{max-height:none}
+
+  /* ---- shared site atoms ---- */
+  .navbar{display:flex;align-items:center;justify-content:space-between;padding:18px 34px;border-bottom:1px solid var(--line);position:relative;z-index:2}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.01em;font-size:15px}
+  .glyph{width:24px;height:24px;border-radius:7px;background:var(--accent-soft);border:1px solid var(--accent-line);display:grid;place-items:center;color:var(--accent);font-family:var(--mono);font-size:13px;font-weight:700}
+  .navlinks{display:flex;gap:26px;font-size:13.5px;color:var(--ink-dim)}
+  .navlinks a{text-decoration:none}
+  .nav-cta{font-family:var(--mono);font-size:12.5px;color:var(--accent);border:1px solid var(--accent-line);background:var(--accent-soft);padding:7px 14px;border-radius:8px;text-decoration:none}
+
+  .hero{position:relative;padding:60px 34px 46px;overflow:hidden}
+  .blueprint{position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:46px 46px;
+    -webkit-mask-image:radial-gradient(120% 90% at 78% 18%,#000 0%,transparent 62%);
+    mask-image:radial-gradient(120% 90% at 78% 18%,#000 0%,transparent 62%)}
+  .hero-inner{position:relative;z-index:1}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid var(--accent-line);background:var(--accent-soft);padding:5px 11px;border-radius:100px;margin-bottom:22px}
+  .eyebrow i{width:6px;height:6px;border-radius:50%;background:var(--accent);display:block}
+  h1.tagline{margin:0;max-width:760px;font-size:40px;line-height:1.12;letter-spacing:-.025em;font-weight:750}
+  h1.tagline .fade{color:var(--ink-dim);font-weight:600}
+  h1.tagline .hl{color:var(--accent)}
+  .hero-sub{margin:18px 0 0;max-width:560px;color:var(--ink-dim);font-size:15.5px}
+
+  .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:30px;margin-top:34px;align-items:start}
+  @media(max-width:900px){.hero-grid{grid-template-columns:1fr}}
+
+  /* terminal / command boxes */
+  .termbox{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .termhead{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+  .termhead .lbl{font-family:var(--mono);font-size:11.5px;color:var(--ink-mute);letter-spacing:.04em;text-transform:uppercase}
+  .copybtn{font-family:var(--mono);font-size:11px;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:6px;padding:4px 10px;display:inline-flex;align-items:center;gap:6px}
+  .termbody{padding:15px 16px;font-family:var(--mono);font-size:12.5px;line-height:1.75;color:var(--ink);white-space:pre-wrap}
+  .termbody .c{color:var(--ink-mute)}
+  .termbody .slash{color:var(--accent)}
+  .termbody .ok{color:var(--accent)}
+  .termbody .warn{color:var(--warn)}
+  .termbody .dim{color:var(--ink-dim)}
+
+  .toggle{display:inline-flex;padding:3px;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;margin-bottom:12px}
+  .toggle button{font-family:var(--sans);font-size:12.5px;color:var(--ink-dim);background:transparent;border:0;padding:6px 13px;border-radius:6px;cursor:default}
+  .toggle button.on{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-line)}
+
+  .metaline{margin:12px 2px 0;font-size:12.5px;color:var(--ink-mute)}
+  .metaline code{font-family:var(--mono);color:var(--accent);font-size:12px}
+
+  /* disclosure / install box */
+  .disc{margin-top:16px;border:1px solid var(--line);border-radius:11px;background:var(--surface);overflow:hidden}
+  .disc-head{display:flex;align-items:center;justify-content:space-between;padding:12px 15px;cursor:default}
+  .disc-head .t{font-size:13.5px;font-weight:600}
+  .disc-head .t small{display:block;font-weight:400;color:var(--ink-mute);font-size:11.5px;margin-top:2px}
+  .chev{color:var(--ink-mute);font-family:var(--mono);font-size:12px}
+  .badge-reliable{font-family:var(--mono);font-size:10.5px;color:var(--accent);border:1px solid var(--accent-line);background:var(--accent-soft);border-radius:100px;padding:2px 9px;margin-left:10px}
+  .disc-body{border-top:1px solid var(--line);padding:6px 0}
+  .step{display:grid;grid-template-columns:26px 1fr auto;align-items:center;gap:10px;padding:9px 15px;border-bottom:1px solid rgba(35,39,51,.5)}
+  .step:last-child{border-bottom:0}
+  .step .num{font-family:var(--mono);font-size:11px;color:var(--ink-mute);width:22px;height:22px;border:1px solid var(--line);border-radius:6px;display:grid;place-items:center}
+  .step code{font-family:var(--mono);font-size:12px;color:var(--ink)}
+  .step code .slash{color:var(--accent)}
+  .step .cp{font-family:var(--mono);font-size:10.5px;color:var(--ink-mute);border:1px solid var(--line);border-radius:5px;padding:3px 7px}
+
+  .escape{margin-top:16px;font-size:13px;color:var(--ink-dim)}
+  .escape a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent-line)}
+
+  /* ---- board (rendered kanban) ---- */
+  .board{border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
+  .board-top{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+  .board-top .a{font-family:var(--mono);font-size:11.5px;color:var(--ink-dim)}
+  .board-top .a b{color:var(--accent)}
+  .board-top .live{font-family:var(--mono);font-size:10.5px;color:var(--accent);display:inline-flex;align-items:center;gap:6px}
+  .board-top .live i{width:6px;height:6px;border-radius:50%;background:var(--accent);display:block;box-shadow:0 0 0 3px var(--accent-soft)}
+  .grid{overflow-x:auto}
+  .grid-inner{display:grid;grid-template-columns:150px repeat(6,minmax(112px,1fr));min-width:820px}
+  .gh{padding:9px 10px;font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-mute);border-bottom:1px solid var(--line)}
+  .gh.feat{color:var(--ink-dim)}
+  .grow-label{padding:12px 10px;font-size:12.5px;font-weight:600;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:3px;background:linear-gradient(90deg,var(--surface-2),transparent)}
+  .grow-label small{font-family:var(--mono);font-weight:400;font-size:10px;color:var(--ink-mute)}
+  .cell{padding:9px;border-bottom:1px solid var(--line);border-left:1px solid rgba(35,39,51,.55);min-height:62px}
+  .card{border-radius:8px;padding:8px 9px;font-size:11px;height:100%;display:flex;flex-direction:column;gap:5px;justify-content:center}
+  .card .lab{font-weight:600;font-size:11.5px}
+  .chip{font-family:var(--mono);font-size:9.5px;padding:2px 7px;border-radius:100px;width:max-content}
+  .card.approved{background:var(--accent-soft);border:1px solid var(--accent-line)}
+  .card.approved .chip{background:rgba(52,214,181,.18);color:var(--accent)}
+  .card.approved .ver{font-family:var(--mono);font-size:9.5px;color:var(--ink-mute)}
+  .card.optional{background:var(--violet-soft);border:1px solid var(--violet-line)}
+  .card.optional .chip{background:rgba(155,140,255,.16);color:var(--violet)}
+  .card.optional .cmd{font-family:var(--mono);font-size:9.5px;color:var(--violet)}
+  .card.locked{background:var(--surface-2);border:1px dashed var(--line);color:var(--ink-mute)}
+  .card.locked .lab{color:var(--ink-dim)}
+  .card.locked .rz{font-size:9.5px;color:var(--ink-mute)}
+  .card.build{background:var(--surface-2);border:1px solid var(--line)}
+  .card.build .bar{height:6px;border-radius:100px;background:var(--bg);border:1px solid var(--line);overflow:hidden}
+  .card.build .bar span{display:block;height:100%;background:var(--accent)}
+  .card.build .meta{font-family:var(--mono);font-size:9px;color:var(--ink-dim)}
+  .card.build.half .bar span{background:var(--warn)}
+  .card.wt{background:var(--surface-2);border:1px solid var(--line);gap:4px}
+  .wtchip{font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:5px;background:var(--accent-soft);border:1px solid var(--accent-line);color:var(--accent);display:flex;align-items:center;gap:5px}
+  .cell.empty{color:var(--ink-mute);display:grid;place-items:center;font-family:var(--mono);font-size:12px}
+
+  /* ---- section shells ---- */
+  .section{padding:56px 34px;border-top:1px solid var(--line)}
+  .sec-head{max-width:640px;margin-bottom:34px}
+  .sec-kicker{font-family:var(--mono);font-size:11.5px;color:var(--accent);letter-spacing:.06em;text-transform:uppercase}
+  .sec-head h2{margin:10px 0 8px;font-size:27px;letter-spacing:-.02em;font-weight:720}
+  .sec-head p{margin:0;color:var(--ink-dim);font-size:15px}
+
+  /* stage cards */
+  .stages{display:flex;flex-direction:column;gap:12px}
+  .stage{display:grid;grid-template-columns:44px 1fr minmax(230px,320px);gap:18px;align-items:center;padding:18px 20px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+  @media(max-width:820px){.stage{grid-template-columns:44px 1fr}.stage .stage-cmd{grid-column:1/-1}}
+  .stage-idx{width:44px;height:44px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);display:grid;place-items:center;font-family:var(--mono);font-size:15px;font-weight:700;color:var(--ink-dim)}
+  .stage-main h3{margin:0 0 4px;font-size:16.5px;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+  .stage-main h3 .opt{font-family:var(--mono);font-size:9.5px;color:var(--ink-mute);border:1px solid var(--line);border-radius:100px;padding:2px 8px;text-transform:uppercase;letter-spacing:.04em}
+  .stage-main p{margin:0;color:var(--ink-dim);font-size:13.5px}
+  .approve{margin-top:8px;font-size:12.5px;color:var(--ink-mute)}
+  .approve b{color:var(--accent);font-weight:600}
+  .approve code{font-family:var(--mono);color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:11.5px}
+  .stage-cmd{background:var(--bg);border:1px solid var(--line);border-radius:9px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px}
+  .stage-cmd code{font-family:var(--mono);font-size:12px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .stage-cmd code .slash{color:var(--accent)}
+  .stage-cmd .cp{flex:none}
+
+  .loop-note{margin-top:22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--ink-dim);padding:14px 18px;border:1px dashed var(--accent-line);border-radius:10px;background:var(--accent-soft)}
+  .loop-note b{color:var(--accent)}
+  .loop-note .arrow{color:var(--ink-mute)}
+
+  /* shipping split */
+  .ship-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:24px;align-items:stretch}
+  @media(max-width:900px){.ship-grid{grid-template-columns:1fr}}
+
+  /* credibility */
+  .cred{display:grid;grid-template-columns:1.4fr 1fr;gap:26px;align-items:center;padding:26px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(120deg,var(--surface),#0f1117)}
+  @media(max-width:820px){.cred{grid-template-columns:1fr}}
+  .cred blockquote{margin:0;font-size:18px;line-height:1.5;letter-spacing:-.01em}
+  .cred blockquote .mk{color:var(--accent)}
+  .cred .who{margin-top:16px;display:flex;align-items:center;gap:12px}
+  .avatar{width:40px;height:40px;border-radius:10px;background:var(--accent-soft);border:1px solid var(--accent-line);display:grid;place-items:center;font-weight:700;color:var(--accent)}
+  .who .n{font-size:13.5px;font-weight:600}
+  .who .r{font-size:12px;color:var(--ink-mute)}
+  .direction{border-left:1px solid var(--line);padding-left:24px}
+  @media(max-width:820px){.direction{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:20px}}
+  .direction .k{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.05em;text-transform:uppercase}
+  .direction p{margin:8px 0 0;font-size:13.5px;color:var(--ink-dim)}
+  .direction .plats{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+  .plat{font-family:var(--mono);font-size:11px;color:var(--ink-dim);border:1px solid var(--line);background:var(--surface-2);border-radius:7px;padding:4px 10px}
+
+  /* setup strip */
+  .setup-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:26px;align-items:start}
+  @media(max-width:820px){.setup-grid{grid-template-columns:1fr}}
+  .reqs{display:flex;flex-direction:column;gap:12px}
+  .req{display:flex;gap:12px;align-items:flex-start;padding:13px 15px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+  .req .ck{color:var(--accent);font-family:var(--mono);margin-top:1px}
+  .req .l{font-size:13.5px;font-weight:600}
+  .req .n{font-size:12px;color:var(--ink-mute)}
+
+  /* github cta */
+  .cta{text-align:center;padding:64px 34px}
+  .cta h2{font-size:26px;letter-spacing:-.02em;margin:0 0 10px}
+  .cta p{color:var(--ink-dim);margin:0 auto 24px;max-width:460px;font-size:14.5px}
+  .btn-gh{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:14px;color:var(--accent-ink);background:var(--accent);border:1px solid var(--accent);border-radius:10px;padding:13px 22px;text-decoration:none;font-weight:600}
+  .foot{padding:22px 34px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-mute)}
+  .foot .fl{display:flex;gap:18px}
+
+  /* ---- README render card ---- */
+  .readme{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#0d1117}
+  .readme-tab{display:flex;align-items:center;gap:10px;padding:11px 16px;background:#161b22;border-bottom:1px solid #30363d;font-size:12.5px;color:#c9d1d9;font-family:var(--mono)}
+  .readme-tab .file{color:#e6edf3}
+  .readme-body{padding:34px 40px;color:#c9d1d9;font-size:14.5px;line-height:1.65;max-width:900px}
+  @media(max-width:720px){.readme-body{padding:22px 20px}}
+  .readme-body h1{font-size:28px;margin:0 0 4px;color:#e6edf3;letter-spacing:-.01em}
+  .readme-body h2{font-size:20px;margin:30px 0 6px;padding-bottom:7px;border-bottom:1px solid #21262d;color:#e6edf3}
+  .readme-body h3{font-size:16px;margin:22px 0 6px;color:#e6edf3}
+  .readme-body p{margin:11px 0}
+  .readme-body strong{color:#e6edf3}
+  .readme-body ul{margin:11px 0;padding-left:22px}
+  .readme-body li{margin:5px 0}
+  .readme-body a{color:#4493f8;text-decoration:none}
+  .readme-body code{font-family:var(--mono);font-size:12.5px;background:rgba(110,118,129,.25);border-radius:6px;padding:.15em .4em}
+  .readme-body pre{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:15px 16px;overflow-x:auto;margin:14px 0}
+  .readme-body pre code{background:transparent;padding:0;font-size:12.5px;color:#c9d1d9;line-height:1.7;display:block;white-space:pre}
+  .readme-body pre code .cm{color:#8b949e}
+  .readme-body pre code .sl{color:#34d6b5}
+  .readme-body blockquote{margin:14px 0;padding:2px 16px;border-left:3px solid #30363d;color:#8b949e}
+  .readme-body table{border-collapse:collapse;width:100%;margin:14px 0;font-size:13px;display:block;overflow-x:auto}
+  .readme-body th,.readme-body td{border:1px solid #30363d;padding:7px 12px;text-align:left}
+  .readme-body th{background:#161b22;color:#e6edf3}
+  .readme-body hr{border:0;border-top:1px solid #21262d;margin:26px 0}
+  .readme-body .tagbig{font-size:17px;color:#e6edf3;font-weight:600}
+  .readme-img{border:1px solid #30363d;border-radius:8px;background:#0a0b0f;padding:0;margin:14px 0;overflow:hidden}
+
+  .oq{border-left:3px solid var(--warn)!important;background:linear-gradient(180deg,rgba(224,121,63,.06),#0f1117)!important}
+  .oq h2{color:var(--warn)!important}
+</style>
+</head>
+<body>
+<div class="sm-wrap">
+
+  <div class="sm-lede">
+    <h1>specmanager.org — landing redesign + README rewrite</h1>
+    <p>Genre shift: <b style="color:var(--ink)">pitch → zero-to-hero guide</b>, ethskills structure/tone, SpecManager's own dark engineering-console skin. Screens are stacked top-to-bottom as one scrolling page, then the rewritten README. Skin tokens are the real ones from <span class="sm-kbd">specmanager-site/app/globals.css</span>: <span class="sm-kbd">--bg #0a0b0f</span> · <span class="sm-kbd">--accent #34d6b5</span> · blueprint grid behind the hero.</p>
+  </div>
+
+  <!-- ============ SCREEN 1 — HERO ============ -->
+  <section class="sm-screen">
+    <div class="browser">
+      <div class="chrome"><div class="dots"><i></i><i></i><i></i></div><div class="url">https://<b>specmanager.org</b></div></div>
+      <div class="viewport">
+
+        <nav class="navbar">
+          <div class="brand"><span class="glyph">S</span> SpecManager</div>
+          <div class="navlinks">
+            <a href="#stages">The 7 stages</a>
+            <a href="#board">The board</a>
+            <a href="#setup">Setup</a>
+          </div>
+          <a class="nav-cta" href="#">GitHub ↗</a>
+        </nav>
+
+        <div class="hero">
+          <div class="blueprint"></div>
+          <div class="hero-inner">
+            <span class="eyebrow"><i></i> A Claude Code plugin · runs local, on your machine</span>
+            <h1 class="tagline">Your AI <span class="hl">agile team</span>, as a Claude Code plugin. <span class="fade">From vibe coding to spec'ing and shipping production-ready features.</span></h1>
+            <p class="hero-sub">You already have the builder. This gives you the rest of the squad — PM, architect, planner, reviewer, writer — that draft, while <b style="color:var(--ink)">you</b> approve. Paste one prompt to install and start.</p>
+
+            <div class="hero-grid">
+              <!-- LEFT: install actions -->
+              <div>
+                <div class="toggle">
+                  <button class="on">New repo</button>
+                  <button>Existing · multi-repo</button>
+                </div>
+
+                <div class="termbox">
+                  <div class="termhead"><span class="lbl">Paste into Claude Code</span><span class="copybtn">⧉ Copy</span></div>
+                  <div class="termbody">Install the SpecManager plugin if it isn't already,
+then initialise it in this repo.
+
+<span class="dim">If /specmanager:specmanager-init isn't available yet:</span>
+add the marketplace <span class="slash">joanseg/specmanager</span>, install it,
+run <span class="slash">/reload-plugins</span>, reconnect <span class="slash">/mcp</span>, then run
+<span class="slash">/specmanager:specmanager-init</span> and open the board.</div>
+                </div>
+                <p class="metaline">Fast path. If the <code>/mcp</code> reconnect + restart interrupts it, use the reliable steps below.</p>
+
+                <div class="disc">
+                  <div class="disc-head">
+                    <div class="t">Install manually — the reliable path <span class="badge-reliable">guaranteed</span><small>6 steps · always works, even across the /mcp restart</small></div>
+                    <span class="chev">▸ show steps</span>
+                  </div>
+                </div>
+
+                <p class="escape">Don't have Claude Code? <a href="https://code.claude.com/docs/en/quickstart">Get it in 2 minutes →</a></p>
+              </div>
+
+              <!-- RIGHT: rendered board (hero visual) -->
+              <div>
+                <div class="board" id="board">
+                  <div class="board-top"><span class="a">board · <b>127.0.0.1:4317</b> · 3 features</span><span class="live"><i></i> live</span></div>
+                  <div class="grid"><div class="grid-inner">
+                    <div class="gh feat">Feature</div>
+                    <div class="gh">PRD</div><div class="gh">Arch</div><div class="gh">Design</div><div class="gh">Plan</div><div class="gh">Build</div><div class="gh">Walk</div>
+
+                    <div class="grow-label">Checkout corridor<small>shipping</small></div>
+                    <div class="cell"><div class="card approved"><span class="lab">PRD</span><span class="chip">approved</span></div></div>
+                    <div class="cell"><div class="card approved"><span class="lab">Arch</span><span class="chip">approved</span></div></div>
+                    <div class="cell"><div class="card approved"><span class="lab">Mockups</span><span class="chip">approved</span></div></div>
+                    <div class="cell"><div class="card approved"><span class="lab">Plan</span><span class="chip">approved</span></div></div>
+                    <div class="cell"><div class="card build"><span class="meta">28 / 28 · 6 phases</span><span class="bar"><span style="width:100%"></span></span></div></div>
+                    <div class="cell"><div class="card wt"><span class="wtchip">✓ Phase A</span><span class="wtchip">✓ Phase B</span></div></div>
+
+                    <div class="grow-label">Search ranking<small>building</small></div>
+                    <div class="cell"><div class="card approved"><span class="lab">PRD</span><span class="chip">approved</span></div></div>
+                    <div class="cell"><div class="card approved"><span class="lab">Arch</span><span class="chip">approved</span></div></div>
+                    <div class="cell"><div class="card optional"><span class="lab">Design</span><span class="cmd">optional</span></div></div>
+                    <div class="cell"><div class="card approved"><span class="lab">Plan</span><span class="chip">approved</span></div></div>
+                    <div class="cell"><div class="card build half"><span class="meta">4 / 8 · phase 1/2</span><span class="bar"><span style="width:50%"></span></span></div></div>
+                    <div class="cell empty">—</div>
+
+                    <div class="grow-label">Billing webhooks<small>drafting</small></div>
+                    <div class="cell"><div class="card optional"><span class="lab">Generate</span><span class="cmd">/…-prd</span></div></div>
+                    <div class="cell"><div class="card locked"><span class="lab">Arch</span><span class="rz">🔒 gate closed</span></div></div>
+                    <div class="cell"><div class="card locked"><span class="lab">Design</span><span class="rz">optional</span></div></div>
+                    <div class="cell"><div class="card locked"><span class="lab">Plan</span><span class="rz">🔒 gate closed</span></div></div>
+                    <div class="cell"><div class="card locked"><span class="lab">Build</span><span class="rz">plan not approved</span></div></div>
+                    <div class="cell empty">—</div>
+                  </div></div>
+                </div>
+                <p class="metaline" style="text-align:center">The real board, rendered from live data — not a screenshot. <b style="color:var(--ink)">Checkout corridor</b> is mid-ship: Build 28/28, Walkthrough approved.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="sm-note">
+    <h2><span class="n">Screen 1</span>Hero — tagline, two install paths, board visual</h2>
+    <p>The fold does the whole job ethskills' hero does: a verb-led promise plus <strong>the first actionable thing is a paste box</strong>, not a wall. The fixed tagline is set verbatim, with "agile team" as the teal accent phrase and the second sentence dimmed to <code>--ink-dim</code> so the eye lands on the promise first.</p>
+    <ul>
+      <li><strong>Self-installing prompt</strong> (left, terminal register) is the <em>fast</em> path — one paste tells Claude to install-if-missing then run <code>specmanager-init</code>. Copy affordance top-right.</li>
+      <li><strong>Compact install box</strong> sits directly under it, <em>collapsed</em>, tagged <span style="color:var(--accent)">guaranteed</span> — the reliable path so the hero never bets solely on the pasted prompt surviving the <code>/mcp</code> reconnect + restart. Expanded state is Screen 2.</li>
+      <li><strong>New repo / Existing · multi-repo toggle</strong> swaps the init placeholder (Screen 3 note covers the meta-repo one-liner).</li>
+      <li><strong>Escape hatch</strong>: one line to <code>code.claude.com/docs/en/quickstart</code> for visitors without Claude Code.</li>
+      <li><strong>Board as hero visual</strong> — the real CSS-grid board rendered from <code>content/pipeline.ts</code>, deliberately showing a feature mid-ship (Build 100%, Walkthrough approved) so "shipping" is visible state, not a claim. Stage cards render <strong>flat</strong>; the board keeps its own status colors (teal approved, violet optional, dashed locked, amber for the half-built row).</li>
+    </ul>
+    <div class="sm-tokline">
+      <span class="tok"><b>bg</b> #0a0b0f</span><span class="tok"><b>accent</b> #34d6b5</span><span class="tok"><b>blueprint</b> grid 46px</span><span class="tok"><b>mono</b> command register</span><span class="tok"><b>violet</b> optional cell</span><span class="tok"><b>warn</b> half-built bar</span>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 2 — INSTALL BOX EXPANDED ============ -->
+  <section class="sm-screen">
+    <div class="browser">
+      <div class="chrome"><div class="dots"><i></i><i></i><i></i></div><div class="url">https://<b>specmanager.org</b> · install box expanded</div></div>
+      <div class="viewport" style="padding:34px;background:radial-gradient(120% 80% at 80% 0,rgba(52,214,181,.05),transparent 60%)">
+        <div style="max-width:520px">
+          <div class="disc">
+            <div class="disc-head" style="background:var(--surface-2);border-bottom:1px solid var(--line)">
+              <div class="t">Install manually — the reliable path <span class="badge-reliable">guaranteed</span><small>runs clean even across the /mcp reconnect + session restart</small></div>
+              <span class="chev">▾ hide</span>
+            </div>
+            <div class="disc-body">
+              <div class="step"><span class="num">1</span><code><span class="slash">/plugin</span> marketplace add joanseg/specmanager</code><span class="cp">⧉</span></div>
+              <div class="step"><span class="num">2</span><code><span class="slash">/plugin</span> install specmanager@specmanager</code><span class="cp">⧉</span></div>
+              <div class="step"><span class="num">3</span><code><span class="slash">/reload-plugins</span></code><span class="cp">⧉</span></div>
+              <div class="step"><span class="num">4</span><code><span class="slash">/mcp</span>  <span style="color:var(--ink-mute)">— reconnect, then restart Claude Code</span></code><span class="cp">⧉</span></div>
+              <div class="step"><span class="num">5</span><code><span class="slash">/specmanager:specmanager-init</span></code><span class="cp">⧉</span></div>
+              <div class="step"><span class="num">6</span><code><span class="slash">/specmanager:specmanager-board</span></code><span class="cp">⧉</span></div>
+            </div>
+          </div>
+          <p class="metaline" style="margin-top:14px">Step 4 is the one that trips the pasted prompt — the reconnect restarts the session. Doing it by hand is the guaranteed route. No build step: the compiled server + UI ship in the plugin.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sm-note">
+    <h2><span class="n">Screen 2</span>Install box — expanded disclosure</h2>
+    <p>The same box from the hero, opened. A native-<code>&lt;details&gt;</code>-style "show steps" disclosure (Arch residual Q3) — small footprint collapsed, full six-step sequence expanded. Each row is a <code>CommandBlock</code>: accent-colored leading slash-token + per-row copy button, reusing the site's real <code>CopyButton</code>.</p>
+    <ul>
+      <li>Steps mirror <code>content/install.ts</code> <strong>verbatim</strong> (honesty constraint) — the same six commands the README carries, so the two surfaces can't drift.</li>
+      <li>Step 4 <code>/mcp</code> explicitly names the reconnect + restart, the exact moment the fast path can break — which is <em>why</em> this reliable path exists.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SCREEN 3 — META-REPO TOGGLE ============ -->
+  <section class="sm-screen">
+    <div class="browser">
+      <div class="chrome"><div class="dots"><i></i><i></i><i></i></div><div class="url">https://<b>specmanager.org</b> · hero toggle → "Existing · multi-repo"</div></div>
+      <div class="viewport" style="padding:34px">
+        <div style="max-width:560px">
+          <div class="toggle">
+            <button>New repo</button>
+            <button class="on">Existing · multi-repo</button>
+          </div>
+          <div class="termbox">
+            <div class="termhead"><span class="lbl">Paste into Claude Code · meta-repo</span><span class="copybtn">⧉ Copy</span></div>
+            <div class="termbody">Install SpecManager if needed, then point it at my
+sibling repos and orchestrate from this meta repo:
+
+<span class="slash">/specmanager:specmanager-init</span> <span class="dim">/path-to/repo-1 /path-to/repo-2</span></div>
+          </div>
+          <p class="metaline">A workspace folder holds your sibling git repos; one <b style="color:var(--ink)">meta repo</b> runs SpecManager and orchestrates changes across them. Siblings you pass to <code>init</code> are read-only — SpecManager never writes outside the meta root.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sm-note">
+    <h2><span class="n">Screen 3</span>Hero toggle — meta-repo mode</h2>
+    <p>The toggle's second state. Per PRD this is carried by <strong>one one-liner prompt + one line of prose</strong> — deliberately <em>no</em> workspace-layout diagram (resolves Q5). The init command gains sibling-path placeholders <code>/path-to/repo-1 /path-to/repo-2</code>, rendered dimmed so it reads as "replace me".</p>
+    <ul>
+      <li>Same box, same copy affordance — only the command line and the prose swap, keeping the fold uncluttered.</li>
+      <li>The prose states the read-only guarantee plainly so multi-repo visitors recognise this as their entry point (a success metric).</li>
+    </ul>
+  </section>
+
+  <!-- ============ SCREEN 4 — 7-STAGE SPINE ============ -->
+  <section class="sm-screen">
+    <div class="browser">
+      <div class="chrome"><div class="dots"><i></i><i></i><i></i></div><div class="url">https://<b>specmanager.org</b>/#stages</div></div>
+      <div class="viewport">
+        <div class="section" id="stages" style="border-top:0">
+          <div class="sec-head">
+            <span class="sec-kicker">The loop</span>
+            <h2>Seven stages. Claude drafts each one — you approve before the next unlocks.</h2>
+            <p>Copy a command, review what Claude wrote in the board, approve. That approval is the gate that opens the next stage. Interview and Design are optional; the other five are the spine.</p>
+          </div>
+
+          <div class="stages">
+
+            <div class="stage">
+              <div class="stage-idx">1</div>
+              <div class="stage-main">
+                <h3>Interview <span class="opt">optional</span></h3>
+                <p>Talk the idea out first. A forcing-question interview pulls the feature out of your head and stress-tests it before any spec exists.</p>
+                <p class="approve"><b>you approve:</b> nothing — it just leaves an <code>interview.md</code> the PRD reads. Gates nothing.</p>
+              </div>
+              <div class="stage-cmd"><code><span class="slash">/specmanager:specmanager-interview</span></code><span class="copybtn cp">⧉ Copy</span></div>
+            </div>
+
+            <div class="stage">
+              <div class="stage-idx">2</div>
+              <div class="stage-main">
+                <h3>PRD</h3>
+                <p>Pin down the problem. The product manager drafts users, jobs-to-be-done, goals and success metrics — the thing worth building.</p>
+                <p class="approve"><b>you approve:</b> <code>prd.md</code> → unlocks Architecture &amp; Design.</p>
+              </div>
+              <div class="stage-cmd"><code><span class="slash">/specmanager:specmanager-prd</span> "<span style="color:var(--ink-dim)">Checkout corridor</span>"</code><span class="copybtn cp">⧉ Copy</span></div>
+            </div>
+
+            <div class="stage">
+              <div class="stage-idx">3</div>
+              <div class="stage-main">
+                <h3>Architecture</h3>
+                <p>Fit it to your codebase. The architect reads your real repo — structure, conventions, what's already there — then specs how the feature lands.</p>
+                <p class="approve"><b>you approve:</b> <code>architecture.md</code> → unlocks Plan.</p>
+              </div>
+              <div class="stage-cmd"><code><span class="slash">/specmanager:specmanager-architecture</span> &lt;feature&gt;</code><span class="copybtn cp">⧉ Copy</span></div>
+            </div>
+
+            <div class="stage">
+              <div class="stage-idx">4</div>
+              <div class="stage-main">
+                <h3>Design <span class="opt">optional</span></h3>
+                <p>See it before you build it. The designer produces high-fidelity HTML mockups grounded in your design system, with a live preview in the board.</p>
+                <p class="approve"><b>you approve:</b> the mockups → if one exists, Plan waits on it too.</p>
+              </div>
+              <div class="stage-cmd"><code><span class="slash">/specmanager:specmanager-design</span> &lt;feature&gt;</code><span class="copybtn cp">⧉ Copy</span></div>
+            </div>
+
+            <div class="stage">
+              <div class="stage-idx">5</div>
+              <div class="stage-main">
+                <h3>Plan</h3>
+                <p>Break it into shippable pieces. The tech lead splits the work into phases and small, Fibonacci-scored tasks — defaulting to the smallest increment that ships.</p>
+                <p class="approve"><b>you approve:</b> <code>plan.md</code> + tasks → unlocks Build.</p>
+              </div>
+              <div class="stage-cmd"><code><span class="slash">/specmanager:specmanager-plan</span> &lt;feature&gt;</code><span class="copybtn cp">⧉ Copy</span></div>
+            </div>
+
+            <div class="stage">
+              <div class="stage-idx">6</div>
+              <div class="stage-main">
+                <h3>Build</h3>
+                <p>Ship it, one phase at a time. The builder works each task in order and stops at the phase boundary; a read-only reviewer checks the phase against the spec.</p>
+                <p class="approve"><b>you approve:</b> nothing to sign — the phase is <b style="color:var(--ink)">done</b> when every task is done.</p>
+              </div>
+              <div class="stage-cmd"><code><span class="slash">/specmanager:specmanager-build</span> &lt;feature&gt; next</code><span class="copybtn cp">⧉ Copy</span></div>
+            </div>
+
+            <div class="stage">
+              <div class="stage-idx">7</div>
+              <div class="stage-main">
+                <h3>Walkthrough</h3>
+                <p>Write down what shipped. The tech writer documents each finished phase, then a final roll-up once every phase walkthrough is approved.</p>
+                <p class="approve"><b>you approve:</b> the walkthrough doc → approving the final one <b style="color:var(--accent)">ships the feature</b>.</p>
+              </div>
+              <div class="stage-cmd"><code><span class="slash">/specmanager:specmanager-walkthrough</span> &lt;feature&gt; &lt;phase&gt;</code><span class="copybtn cp">⧉ Copy</span></div>
+            </div>
+
+          </div>
+
+          <div class="loop-note">
+            <b>Claude drafts</b> <span class="arrow">→</span> <b>you review &amp; approve in the board</b> <span class="arrow">→</span> <b>next stage unlocks</b> <span class="arrow">·</span> the gate is enforced in code, not a prompt Claude can talk its way around.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sm-note">
+    <h2><span class="n">Screen 4</span>The 7-stage spine — the heart of the guide</h2>
+    <p>This is the ethskills borrow, done in SpecManager's skin: a <strong>flat, verb-led card list</strong> in stage order (Interview → PRD → Architecture → Design → Plan → Build → Walkthrough). Every card has the same three-part anatomy so the loop is learnable at a glance:</p>
+    <ul>
+      <li><strong>Name + 1–2 lines</strong> of what the role does. Interview and Design carry a small muted <code>optional</code> tag — the only concession to their status; per PRD all seven get equal card weight so "flat" doesn't read as "all seven are mandatory".</li>
+      <li><strong>Copyable command chip</strong> (right rail) — the exact <code>/specmanager:specmanager-*</code> string with the accent slash-token, reusing <code>CommandBlock</code>/<code>CopyButton</code>.</li>
+      <li><strong>"you approve:" line</strong> naming the concrete artifact — <code>prd.md</code>, <code>architecture.md</code>, <code>plan.md</code> + tasks, tasks done, the walkthrough doc — and what it unlocks. This is what teaches the drafts→approve→next loop.</li>
+    </ul>
+    <p>The dashed teal <strong>loop banner</strong> closes the section by naming the invariant explicitly: gates live in code, not prompts. Same copy is mirrored byte-for-byte into <code>content/stages.ts</code> and the README (consistency constraint).</p>
+    <div class="sm-tokline">
+      <span class="tok"><b>flat</b> cards · no per-stage color</span><span class="tok"><b>accent</b> command + approve line</span><span class="tok"><b>optional</b> tag = muted only</span>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN 5 — SHIPPING HALF ============ -->
+  <section class="sm-screen">
+    <div class="browser">
+      <div class="chrome"><div class="dots"><i></i><i></i><i></i></div><div class="url">https://<b>specmanager.org</b>/#board</div></div>
+      <div class="viewport">
+        <div class="section" id="board" style="border-top:0">
+          <div class="sec-head">
+            <span class="sec-kicker">The shipping half</span>
+            <h2>"Shipped" isn't a claim — it's a state on the board.</h2>
+            <p>Build runs phase by phase; the last approved Walkthrough is what ships the feature. Here's Checkout corridor at the finish line, and the terminal output that got it there.</p>
+          </div>
+
+          <div class="ship-grid">
+            <div class="board">
+              <div class="board-top"><span class="a">board · <b>127.0.0.1:4317</b></span><span class="live"><i></i> live</span></div>
+              <div class="grid"><div class="grid-inner">
+                <div class="gh feat">Feature</div>
+                <div class="gh">PRD</div><div class="gh">Arch</div><div class="gh">Design</div><div class="gh">Plan</div><div class="gh">Build</div><div class="gh">Walk</div>
+
+                <div class="grow-label">Checkout corridor<small>shipping</small></div>
+                <div class="cell"><div class="card approved"><span class="lab">PRD</span><span class="ver">v3 · approved</span></div></div>
+                <div class="cell"><div class="card approved"><span class="lab">Arch</span><span class="ver">v2 · approved</span></div></div>
+                <div class="cell"><div class="card approved"><span class="lab">Mockups</span><span class="ver">v1 · approved</span></div></div>
+                <div class="cell"><div class="card approved"><span class="lab">Plan</span><span class="ver">v4 · approved</span></div></div>
+                <div class="cell"><div class="card build"><span class="meta">28 / 28 · 6 phases</span><span class="bar"><span style="width:100%"></span></span><span class="meta" style="color:var(--accent)">complete</span></div></div>
+                <div class="cell"><div class="card wt"><span class="wtchip">✓ Phase A · approved</span><span class="wtchip">✓ Phase B · approved</span></div></div>
+              </div></div>
+            </div>
+
+            <div class="termbox" style="align-self:stretch">
+              <div class="termhead"><span class="lbl">build · phase output</span></div>
+              <div class="termbody"><span class="c">$</span> <span class="slash">/specmanager:specmanager-build</span> checkout-corridor next
+<span class="dim">▸ Phase 6 · Receipt emails — 5 tasks</span>
+  <span class="ok">✓</span> core: idempotent send key      <span class="dim">done</span>
+  <span class="ok">✓</span> worker: retry w/ backoff       <span class="dim">done</span>
+  <span class="ok">✓</span> ui: receipt preview            <span class="dim">done</span>
+  <span class="ok">✓</span> tests: send selftest           <span class="dim">done</span>
+  <span class="ok">✓</span> reviewer: spec-compliance      <span class="ok">pass</span>
+<span class="dim">─────────────────────────────</span>
+  Phase 6 complete · <span class="ok">28 / 28 done</span>
+  <span class="ok">→</span> Walkthrough drafted. Approve it
+    in the board to ship the feature.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sm-note">
+    <h2><span class="n">Screen 5</span>Shipping half — board state + build terminal</h2>
+    <p>Resolves the PRD's "convey the shipping half with two concrete artifacts, not prose" (Q3):</p>
+    <ul>
+      <li><strong>The rendered board row</strong> at the finish line — every stage approved, Build <code>28/28 · complete</code>, and two <strong>approved Walkthrough chips</strong>. This is the site's real board (from <code>content/pipeline.ts</code>), so no screenshot asset is needed here.</li>
+      <li><strong>Build terminal snippet</strong> in the page's mono register — a phase's tasks going <code>done</code>, the reviewer returning <code>pass</code>, and the final line telling you the one human action left: approve the walkthrough to ship. Amber/teal reserved as elsewhere; teal for passing state.</li>
+    </ul>
+    <p>Note for build: on GitHub the README can't render this board, so its shipping evidence is a <strong>static screenshot</strong> (<code>assets/</code>) plus the same terminal snippet as text — see the README section.</p>
+  </section>
+
+  <!-- ============ SCREEN 6 — CREDIBILITY STRIP ============ -->
+  <section class="sm-screen">
+    <div class="browser">
+      <div class="chrome"><div class="dots"><i></i><i></i><i></i></div><div class="url">https://<b>specmanager.org</b> · credibility strip</div></div>
+      <div class="viewport" style="padding:40px 34px">
+        <div class="cred">
+          <div>
+            <blockquote><span class="mk">"</span>I've run agile teams for a decade. This is the first tool that makes an AI actually <em>work like the team</em> — draft, hand off, wait for my approval — instead of one prompt pretending to be everyone.<span class="mk">"</span></blockquote>
+            <div class="who">
+              <div class="avatar">JS</div>
+              <div><div class="n">Joan Senent</div><div class="r">Product Manager · 10+ yrs Agile</div></div>
+            </div>
+          </div>
+          <div class="direction">
+            <span class="k">Where this is heading</span>
+            <p>Built on Claude Code today — the same spec-driven loop is where agentic coding goes next. The plugin model means new hosts plug in without changing how the team works.</p>
+            <div class="plats">
+              <span class="plat">Claude Code · now</span>
+              <span class="plat">more hosts · direction</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sm-note">
+    <h2><span class="n">Screen 6</span>Slim credibility strip</h2>
+    <p>The PRD's "demote, don't delete": today's Platforms-roadmap section and the testimonial <strong>collapse into one compact band</strong> — no email capture anywhere. The testimonial carries the person + credential; the right cell keeps a single <strong>platforms-as-direction</strong> line (Claude Code now, more hosts as direction) as low-key chips, not a roadmap with a signup.</p>
+    <ul>
+      <li>Merges the old <code>PlatformRoadmap.tsx</code> + <code>About.tsx</code> into one <code>Credibility.tsx</code>; drops both <code>EmailCaptureForm</code> walls and <code>platformsSection.notify</code>.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SCREEN 7 — SETUP + GITHUB CTA ============ -->
+  <section class="sm-screen">
+    <div class="browser">
+      <div class="chrome"><div class="dots"><i></i><i></i><i></i></div><div class="url">https://<b>specmanager.org</b>/#setup</div></div>
+      <div class="viewport">
+        <div class="section" id="setup" style="border-top:0">
+          <div class="sec-head">
+            <span class="sec-kicker">Setup</span>
+            <h2>What you need, and the full install sequence.</h2>
+            <p>Three requirements, six commands. No build step — the compiled server and UI ship inside the plugin.</p>
+          </div>
+          <div class="setup-grid">
+            <div class="reqs">
+              <div class="req"><span class="ck">✓</span><div><div class="l">Node.js 20 or newer</div><div class="n">required for the local board</div></div></div>
+              <div class="req"><span class="ck">✓</span><div><div class="l">Claude Code</div><div class="n">the host SpecManager plugs into</div></div></div>
+              <div class="req"><span class="ck">✓</span><div><div class="l">A git repo</div><div class="n">artifacts are committed alongside your code</div></div></div>
+              <p class="escape" style="margin-top:4px">Don't have Claude Code? <a href="https://code.claude.com/docs/en/quickstart">Get it in 2 minutes →</a></p>
+            </div>
+            <div class="termbox">
+              <div class="termhead"><span class="lbl">the reliable install sequence</span><span class="copybtn">⧉ Copy all</span></div>
+              <div class="termbody"><span class="c"># 1 · add the marketplace</span>
+<span class="slash">/plugin</span> marketplace add joanseg/specmanager
+<span class="c"># 2 · install</span>
+<span class="slash">/plugin</span> install specmanager@specmanager
+<span class="c"># 3 · reload</span>
+<span class="slash">/reload-plugins</span>
+<span class="c"># 4 · reconnect, then restart Claude Code</span>
+<span class="slash">/mcp</span>
+<span class="c"># 5 · scaffold + open the board</span>
+<span class="slash">/specmanager:specmanager-init</span>
+<span class="slash">/specmanager:specmanager-board</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cta">
+          <h2>Read the source. Star it. Open an issue.</h2>
+          <p>SpecManager is MIT-licensed and runs entirely on your machine — single user, local, no login.</p>
+          <a class="btn-gh" href="https://github.com/joanseg/specmanager">★ github.com/joanseg/specmanager</a>
+        </div>
+
+        <div class="foot">
+          <div class="brand" style="font-size:13px"><span class="glyph" style="width:20px;height:20px;font-size:11px">S</span> SpecManager</div>
+          <div class="fl"><span>MIT © 2026 Joanseg</span><span>specmanager.org</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sm-note">
+    <h2><span class="n">Screen 7</span>Setup / requirements strip + the single GitHub CTA</h2>
+    <p>The deferred install <em>detail</em> lives here, lower down — three requirement cards (Node 20+, Claude Code, a git repo) beside the full copy-all sequence — so the hero stays uncluttered but the guaranteed path is never buried at "section 8". The escape-hatch link repeats here for late scrollers.</p>
+    <ul>
+      <li><strong>One CTA only</strong>: the GitHub button, styled as the sole solid accent button on the page (everywhere else the accent is outline/soft), so the single action reads unmistakably. No standalone final-CTA band, no email fields — both cut per PRD.</li>
+    </ul>
+  </section>
+
+  <!-- ============ SECTION 8 — README REWRITE ============ -->
+  <section class="sm-screen">
+    <div class="readme">
+      <div class="readme-tab">📄 <span class="file">README.md</span> <span style="margin-left:auto;color:#8b949e">Preview · rendered markdown</span></div>
+      <div class="readme-body">
+
+        <h1>SpecManager</h1>
+        <p class="tagbig">Your AI <strong>agile team</strong>, as a Claude Code plugin. From vibe coding to spec'ing and shipping production-ready features.</p>
+        <p>You already have the builder — Claude Code. What you <em>don't</em> have is the rest of the squad: the PM who pins down the problem, the architect who fits it to your codebase, the planner who cuts it into shippable pieces, the reviewer who checks the work against the plan. SpecManager is that team — a set of specialised agents that <strong>draft</strong>, while <strong>you</strong> review, edit and approve. Spec-driven development you can actually see: a local kanban board, one row per feature, one column per stage.</p>
+        <blockquote>Don't have Claude Code? Get it in 2 minutes → <a href="https://code.claude.com/docs/en/quickstart">code.claude.com/docs/en/quickstart</a></blockquote>
+        <p><a href="https://specmanager.org">specmanager.org</a> · MIT licensed · runs entirely on your machine — single-user, local, no login.</p>
+
+        <hr/>
+
+        <h2>Install</h2>
+        <p><strong>Fast path — paste into Claude Code:</strong></p>
+        <pre><code>Install the SpecManager plugin if it isn't already, then
+initialise it in this repo. If <span class="sl">/specmanager:specmanager-init</span>
+isn't available, add the marketplace joanseg/specmanager,
+install it, run <span class="sl">/reload-plugins</span>, reconnect <span class="sl">/mcp</span>,
+then run <span class="sl">/specmanager:specmanager-init</span> and open the board.</code></pre>
+        <p><strong>Reliable path — the explicit sequence</strong> (works even across the <code>/mcp</code> reconnect + restart):</p>
+        <pre><code><span class="cm"># 1 · add the marketplace</span>
+<span class="sl">/plugin</span> marketplace add joanseg/specmanager
+<span class="cm"># 2 · install</span>
+<span class="sl">/plugin</span> install specmanager@specmanager
+<span class="cm"># 3 · reload plugins</span>
+<span class="sl">/reload-plugins</span>
+<span class="cm"># 4 · reconnect MCP, then restart Claude Code</span>
+<span class="sl">/mcp</span>
+<span class="cm"># 5 · scaffold SpecManager + open the board</span>
+<span class="sl">/specmanager:specmanager-init</span>
+<span class="sl">/specmanager:specmanager-board</span></code></pre>
+        <p><strong>Existing / multi-repo workspace (meta-repo mode):</strong> point <code>init</code> at your sibling repos —</p>
+        <pre><code><span class="sl">/specmanager:specmanager-init</span> /path-to/repo-1 /path-to/repo-2</code></pre>
+        <p>A workspace folder holds your sibling git repos; one <strong>meta repo</strong> runs SpecManager and orchestrates changes across them. Siblings passed to <code>init</code> are read-only — SpecManager never writes outside the meta root.</p>
+        <p><strong>Requirements:</strong> Node 20+, Claude Code, a git repo. No build step — the compiled server and UI ship in the plugin; a <code>SessionStart</code> hook installs runtime deps on first launch. The board runs at <code>http://127.0.0.1:4317</code>.</p>
+
+        <hr/>
+
+        <h2>The workflow — seven stages, zero to shipped</h2>
+        <p>Each <strong>feature</strong> is a row that flows left to right. You drive it with slash commands; Claude drafts via dedicated subagents; <strong>you approve each stage in the board before the next unlocks</strong> — the gate is enforced in code, not in a prompt Claude can talk around. Interview and Design are optional; the other five are the spine.</p>
+
+        <table>
+          <thead><tr><th>Stage</th><th>Command</th><th>You approve</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Interview</strong> <em>(optional)</em></td><td><code>/specmanager:specmanager-interview</code></td><td>nothing — leaves <code>interview.md</code> for the PRD</td></tr>
+            <tr><td><strong>PRD</strong></td><td><code>/specmanager:specmanager-prd "&lt;feature&gt;"</code></td><td><code>prd.md</code> → unlocks Architecture &amp; Design</td></tr>
+            <tr><td><strong>Architecture</strong></td><td><code>/specmanager:specmanager-architecture &lt;feature&gt;</code></td><td><code>architecture.md</code> → unlocks Plan</td></tr>
+            <tr><td><strong>Design</strong> <em>(optional)</em></td><td><code>/specmanager:specmanager-design &lt;feature&gt;</code></td><td>the HTML mockups → Plan waits on it if present</td></tr>
+            <tr><td><strong>Plan</strong></td><td><code>/specmanager:specmanager-plan &lt;feature&gt;</code></td><td><code>plan.md</code> + tasks → unlocks Build</td></tr>
+            <tr><td><strong>Build</strong></td><td><code>/specmanager:specmanager-build &lt;feature&gt; next</code></td><td>nothing — the phase is done when every task is done</td></tr>
+            <tr><td><strong>Walkthrough</strong></td><td><code>/specmanager:specmanager-walkthrough &lt;feature&gt; &lt;phase&gt;</code></td><td>the walkthrough doc → the final one ships the feature</td></tr>
+          </tbody>
+        </table>
+
+        <p>Build one phase at a time; it stops at the phase boundary. Here's a phase finishing:</p>
+        <pre><code><span class="cm">$</span> <span class="sl">/specmanager:specmanager-build</span> checkout-corridor next
+▸ Phase 6 · Receipt emails — 5 tasks
+  ✓ core: idempotent send key      done
+  ✓ worker: retry w/ backoff       done
+  ✓ ui: receipt preview            done
+  ✓ tests: send selftest           done
+  ✓ reviewer: spec-compliance      pass
+  Phase 6 complete · 28 / 28 done
+  → Walkthrough drafted. Approve it to ship.</code></pre>
+
+        <div class="readme-img"><div style="padding:10px;color:#8b949e;font-family:var(--mono);font-size:12px">assets/board-shipping.png — the board with Build 28/28 and an approved Walkthrough</div></div>
+
+        <p><strong>"Approved" is a commitment, not a freeze.</strong> Reopen an earlier doc and every doc that depended on it gets a non-blocking <strong>stale</strong> badge that follows the dependency chain. And because edits are tracked with optimistic concurrency, a late agent write can never clobber a change you made by hand.</p>
+
+        <hr/>
+
+        <h2>Where your work lives</h2>
+        <p>Everything is markdown with YAML frontmatter, under your project, version-controlled by git.</p>
+        <pre><code><span class="cm"># single repo</span>
+&lt;your-project&gt;/
+  CLAUDE.md                  <span class="cm"># managed SpecManager block (between markers)</span>
+  docs/DESIGN.md             <span class="cm"># managed design-system spec</span>
+  .claude/specs/
+    manifest.json            <span class="cm"># rebuildable board index (from frontmatter)</span>
+    features/&lt;slug&gt;/
+      feature.json
+      prd/ architecture/ design/ plan/ walkthroughs/
+
+<span class="cm"># meta-repo (orchestrates read-only siblings)</span>
+&lt;meta-repo&gt;/  .claude/specs/ …   &lt;sibling-backend&gt;/   &lt;sibling-frontend&gt;/</code></pre>
+        <p>Frontmatter is authoritative; <code>manifest.json</code> is a cache you can delete and rebuild. Managed regions in <code>CLAUDE.md</code>/<code>DESIGN.md</code> live strictly between <code>&lt;!-- specmanager:start --&gt;</code> / <code>&lt;!-- specmanager:end --&gt;</code> — nothing outside them is touched.</p>
+
+        <hr/>
+
+        <h2>Contributing / building from source</h2>
+        <p>The plugin ships compiled <code>server/dist</code> and <code>ui/dist</code>, so users install with no build step. Rebuild before committing source changes:</p>
+        <pre><code>cd plugins/specmanager/server
+npm install &amp;&amp; npm run build
+npm run selftest          <span class="cm"># core flow</span>
+npm run selftest-board    <span class="cm"># REST + WS + watcher</span>
+cd ../ui &amp;&amp; npm install &amp;&amp; npm run build</code></pre>
+        <p><strong>Tech stack:</strong> Node 20+, TypeScript, MCP stdio, Fastify + <code>ws</code>, <code>chokidar</code>, <code>gray-matter</code>, <code>zod</code>, React 18 + Vite, CodeMirror 6. One shared <code>@specmanager/core</code> backs both the MCP server and the board server; one MCP process boots the board.</p>
+
+        <h2>Troubleshooting</h2>
+        <ul>
+          <li><strong><code>/mcp</code> shows specmanager failed</strong> — select it and reconnect; if it persists, fully quit Claude and relaunch from your project.</li>
+          <li><strong>Board won't open</strong> — the MCP process boots it on startup; restart your session. <code>/specmanager:specmanager-board</code> reports the URL.</li>
+        </ul>
+
+        <h2>Links / License</h2>
+        <p>Website: <a href="https://specmanager.org">specmanager.org</a> · <a href="#">MIT</a> © 2026-present <a href="#">Joanseg</a>.</p>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="sm-note">
+    <h2><span class="n">Section 8</span>README rewrite — the copy to approve</h2>
+    <p>Rendered as a GitHub readme card so you approve the <strong>README copy</strong> alongside the page. Per PRD v5 the README is <strong>self-sufficient</strong> — a GitHub-only visitor goes zero→hero without leaving. Overlap with the site is intentional; the binding constraint is <em>consistency</em>.</p>
+    <ul>
+      <li><strong>First fix applied:</strong> L3 "AI product team" → "AI <strong>agile</strong> team", and the intro now leads with the exact PRD tagline (same as the hero).</li>
+      <li><strong>Shared, byte-consistent with the site:</strong> tagline · escape-hatch link · install sequence (same six commands) · meta-repo one-liner · the flat 7-stage walkthrough (same commands + "you approve" lines) · the build terminal snippet.</li>
+      <li><strong>README-only depth kept:</strong> where-your-work-lives file layout (single + meta-repo), contributing / build-from-source, troubleshooting, links, license.</li>
+      <li><strong>Shipping evidence for GitHub:</strong> since markdown can't render the CSS board, the README uses a static <code>assets/board-shipping.png</code> (placeholder shown) plus the same terminal snippet as text.</li>
+    </ul>
+    <p>Managed-marker discipline: the README has no <code>&lt;!-- specmanager:start/end --&gt;</code> markers today; this rewrite is hand-authored prose only and re-greps before editing.</p>
+  </section>
+
+  <!-- ============ OPEN QUESTIONS ============ -->
+  <section class="sm-note oq sm-open-questions">
+    <h2>Open questions for the planner</h2>
+    <ul>
+      <li><strong>Board-row copy for shipping legibility.</strong> The mockup keeps the real <code>content/pipeline.ts</code> rows. Do we retune the "Checkout corridor" row copy (e.g. add a "shipping" sub-label as drawn) so Build-progress + approved-Walkthrough reads unmistakably as a feature shipping, or leave the data exactly as-is? (Arch residual; a one-line <code>pipeline.ts</code> edit.)</li>
+      <li><strong>Build terminal snippet source.</strong> Mockup uses a trimmed representative "Phase 6 · Receipt emails" transcript. Use a real captured <code>build … next</code> transcript instead, or keep the clean representative one? Must not misrepresent actual output. (Arch residual 2.)</li>
+      <li><strong>Install-box affordance.</strong> Drawn as a "show steps / hide" disclosure (native <code>&lt;details&gt;</code>). Confirm this over an accordion — small-footprint constraint only. (Arch residual 1.)</li>
+      <li><strong>HeroTerminal fate.</strong> The existing mini <code>hero.terminal</code> is dropped in favour of the install box + rendered board. Confirm it's removed, not kept as flavour. (Arch OQ2.)</li>
+      <li><strong>InstallCta anchor.</strong> Install now lives in the hero + a Setup strip. Keep a slim <code>#install</code> deep-link anchor for the hero's "reliable path" link target, or drop it entirely? (Arch OQ1.)</li>
+      <li><strong>Escape-hatch link label.</strong> Mockup writes "Get it in 2 minutes →". PRD specifies "Don't have Claude Code? →" as the pattern — confirm the exact final wording for both surfaces (kept byte-consistent).</li>
+      <li><strong>Missing token flagged:</strong> the design uses a <em>solid</em> accent fill only for the single GitHub CTA button (<code>--accent</code> bg, <code>--accent-ink</code> text). DESIGN.md defines <code>--accent-ink #04241e</code> but no named "solid primary button" component — add one to the token/component map, or keep it as a one-off? (Everywhere else the accent is outline/soft.)</li>
+      <li><strong>Cross-repo consistency mechanism.</strong> Arch R6 recommends honesty-constraint comments + a sync checklist (default) over the optional <code>scripts/check-copy.mts</code>. Confirm the lighter default before Plan enumerates the shared strings.</li>
+    </ul>
+  </section>
+
+</div>
+</body>
+</html>
