@@ -8,11 +8,11 @@ title: Opus 5 readiness architecture
 dependsOn:
   - prd-opus-5-readiness-036
 basedOn:
-  prd-opus-5-readiness-036: 1
+  prd-opus-5-readiness-036: 2
 generatedBy: agent
-version: 1
+version: 3
 createdAt: '2026-08-04T14:54:09.606Z'
-updatedAt: '2026-08-04T14:54:09.606Z'
+updatedAt: '2026-08-11T11:13:40.697Z'
 ---
 ## Summary
 
@@ -41,6 +41,8 @@ Trim SpecManager's own prompt surface (7 agents, 9 commands) onto the current Cl
 | `plugins/specmanager/agents/{architect,planner,prd-writer,walkthrough-writer}.md` | Density contract → one clause (R3). |
 | `plugins/specmanager/agents/{builder,designer,architect}.md` | Skill-integration blocks → one line each (Q2). |
 | `plugins/specmanager/agents/{builder,reviewer,planner}.md` | Delete prompt restatements of `core`-enforced rules (R4). |
+| `docs/agent-snippets/design-grounding.md` | Correct the canonical fragment to the `Read`-on-`filePath` form; propagate to `agents/architect.md` L16 (R8). |
+| `CLAUDE.md` | Delete the "or write to an approved doc" clause at L77 (R9); update the selftest count in the build/test block (open question 6). |
 
 Untouched: `ui/`, `board-server.ts`, `core/{claude-md,design-md,documents,status,dependencies,repos,pidfile}.ts`, `.mcp.json`, `hooks/hooks.json`.
 
@@ -254,6 +256,60 @@ Resolved in `Q5`. No separate work item.
 
 ---
 
+## R8 — design-grounding snippet drift
+
+Not a redundancy — a live **contradiction** across the four files that carry one fragment. Verified against the working tree:
+
+| File | Line | Method it instructs |
+|---|---|---|
+| `docs/agent-snippets/design-grounding.md` | 7 | **canonical** — `read_document` the design doc |
+| `agents/architect.md` | 16 | `read_document` the design doc |
+| `agents/planner.md` | 29 | `Read` on the `filePath` the listing returns — *"not `read_document`, which JSON-escapes the whole body"* |
+| `agents/builder.md` | 23 | `Read` on the `filePath` the listing returns — the same warning, verbatim |
+
+The snippet file's own convention (L3: *"If you change the fragment here, also update the three agent prompts"*) is the mechanism that should have prevented this, and it has not held — there is no preprocessor at install time, so the copy-paste is the shipping mechanism and a human promise is the only thing keeping it consistent. Net effect: the architect is instructed to use the exact method the other two agents explicitly warn against, and the canonical source enshrines the stale version.
+
+**Fix: correct the canonical snippet, propagate to one file.** `design-grounding.md:7` moves to the `Read`-on-`filePath` form; `architect.md:16` takes the corrected text, keeping its stage-specific framing (visual spec, approved-vs-`draft` handling, contradictions into **Open questions**, design-is-optional). **`planner.md:29` and `builder.md:23` are already correct — do not touch them.** Their divergence is the fix that never propagated backwards, not drift to be reconciled away; reconciling *toward* the canonical text would spread the defect rather than remove it.
+
+**The check that makes the convention enforceable.** Convention alone is not a mechanism — this defect is the proof. Extend `selftest-prompts` (see `invariant-inventory`) with a **snippet-parity assertion**: for each file in `docs/agent-snippets/`, resolve which agents carry that fragment and assert every carrier matches the canonical text. Registered as **INV-15**.
+
+Parity is asserted on the fragment's **method**, not on byte equality — each agent legitimately adapts the framing sentence (the architect's copy routes contradictions to **Open questions**; the builder's references `./docs/DESIGN.md` tokens and the Plan gate; the planner's speaks to phases and shippable screens). What must match is the instruction itself. That encodes cleanly in the existing `PromptInvariant` shape as a pair — a positive pattern (`Read` on the listing's `filePath`) with `min` equal to the carrier count, and a negative pattern (`read_document` inside the design-grounding paragraph) with `max: 0` — which is why it belongs in the inventory table rather than needing a second script.
+
+**Sequencing constraint: R8's snippet correction lands with or before R3.** R3 reduces the density contract to a one-sentence clause but leaves it **replicated across four agent files**, because no include mechanism exists for agent prompts — a second shared fragment, and therefore a second drift surface of exactly the kind that produced this defect. If that surviving clause is given a canonical home under `docs/agent-snippets/`, INV-15 covers it at no extra cost; if it is not, the drift surface doubles with nothing watching it. Either way the parity check must exist before R3's edits land, not after. Concretely: R8's correction and INV-15 are Phase 0 work alongside the rest of the invariant enumeration, and R3 is sequenced after them.
+
+---
+
+## R9 — CLAUDE.md misdescribes staleness computation
+
+**The claim.** `CLAUDE.md:77`:
+
+> **Staleness is computed in `core`** by walking the `dependsOn` graph on any `approved→draft` transition **or write to an approved doc** — a non-blocking badge cleared on reconciliation.
+
+**The code**, verified against the working tree:
+
+| Fact | Site |
+|---|---|
+| `stale: true` is assigned in exactly one place | `core/status.ts:70`, inside `propagateStale` |
+| `propagateStale` has exactly one caller | `core/status.ts:49` |
+| that call site is guarded by `prev === "approved" && next === "draft"` | `core/status.ts:48` |
+| `writeDocument` spreads `...current.frontmatter` and never touches `status` or `stale` | `core/documents.ts:233` (the spread is L247) |
+
+(`core/dependencies.ts:151`'s `stale: true` is a *query filter* passed to `listDocuments`, not an assignment — it is the only other occurrence in the tree.)
+
+So writing an approved document bumps `version`, emits `document.updated`, and leaves the doc `approved` with `stale` untouched and no cascade to its dependents. The second half of the documented invariant — *"or write to an approved doc"* — describes behaviour that does not exist.
+
+**Decision: fix the documentation, not the behaviour.** Changing `writeDocument` so that replacing an approved doc's body demotes it, or cascades staleness to dependents, is a **lifecycle behaviour change** — which this feature's PRD names as an explicit non-goal: *"No lifecycle behaviour change. Gates, staleness computation, phases, walkthrough semantics … all stay exactly as they are."* Staleness computation is called out there by name. R9's in-scope fix is therefore one line of prose: correct `CLAUDE.md:77` to describe what the code does —
+
+> **Staleness is computed in `core`** by walking the `dependsOn` graph on an `approved→draft` transition — a non-blocking badge cleared on reconciliation.
+
+— deleting the "or write to an approved doc" clause and changing nothing else. No `core` edit, no test change, no `dist/` rebuild. `selftest-prompts` does not cover this: it asserts against `agents/` and `commands/`, not `CLAUDE.md`, and extending it to police narrative prose in the repo's own guide would be scope the invariant inventory cannot carry.
+
+**Out of scope, and warranting its own feature: the behaviour question the doc was describing.** An approved doc can currently have its content replaced without anyone re-approving it, and its downstream docs are not flagged. Whether that is a hole (an approved artifact silently diverging from what the human signed off on, with dependents none the wiser) or the intended affordance (the human edits their own approved doc in the board; demoting it on every save would be hostile) is a product decision, not a cleanup — the options span "demote on any agent write to an approved doc", "propagate staleness without demoting", and "leave as-is and rely on `version`", and they differ in how the board behaves, not just in `core`. It needs a PRD of its own. Do not fold it into this feature.
+
+**A live instance, for the record.** This architecture document sat at `basedOn: { prd-opus-5-readiness-036: 1 }` while `prd-opus-5-readiness-036` advanced to **v2**, with `stale: false` throughout — the PRD's amendment was a write to an approved doc, precisely the case the documented invariant claims to cover and the code does not. The divergence was caught by hand, on this amendment, and re-based manually. That is the failure mode, observed once, inside this feature's own paper trail.
+
+---
+
 ## core-spec-slice
 
 New module `plugins/specmanager/server/src/core/spec-slice.ts`, exported from `core/index.ts`, surfaced as the `get_spec_slice` MCP tool.
@@ -402,6 +458,7 @@ For each entry it counts matches across `files` and fails when the total is `< m
 | INV-12 | The **Wait**-branch sync block is printed verbatim, unparaphrased | 2 in `specmanager-build.md` | 2 |
 | INV-13 | Lossless carryover: dropping an input fact is a defect (R3 remnant) | 4 agents | 4 |
 | INV-14 | The designer's distilled fallback method survives when `frontend-design` is absent | 1 block, `designer.md` L34–38 | 1 |
+| INV-15 | **Snippet parity** — every agent carrying a `docs/agent-snippets/` fragment matches the canonical method; design grounding reads the HTML via `Read` on the listing's `filePath`, never `read_document` (R8) | 3 carriers; 2 correct (`planner.md` L29, `builder.md` L23), canonical L7 + `architect.md` L16 wrong | pair: `min: 3` on the `Read`-on-`filePath` pattern, `max: 0` on `read_document` in the design-grounding paragraph |
 
 INV-6, INV-7, INV-10, INV-11, and INV-13 have `min == max`: they are already stated once per legitimate site and the trim must not change their count.
 
@@ -517,9 +574,9 @@ Unchanged from today: every gate, every marker transition, every walkthrough sem
 
 ## Open questions / risks
 
-1. **Q1 dissent, needs the user's call.** The audit recommended dropping tier dispatch (c); this design keeps it and re-maps the table (b), because measured task complexity shows **72.5% of tasks route away from opus** — contradicting the PRD's "most tasks already land on opus regardless." If the user prefers (c) for maintenance simplicity over cost, the change is mechanical (delete `core/tiers.ts`, `selftest-tiers`, its npm script, build steps 6b/7 alias resolution, `builder.md` L15) but should be an explicit accept-the-cost decision, not an inherited assumption.
+1. **Q1 dissent — resolved 2026-08-11: the user accepted (b).** The audit recommended dropping tier dispatch (c); this design dissented and kept it, re-mapping the table (b), because measured task complexity shows **72.5% of tasks route away from opus** — contradicting the PRD's "most tasks already land on opus regardless." The user made the call on **2026-08-11: accept (b)**. Binding on the Plan: re-map `DEFAULT_TIER_TO_ALIAS` to `cheap: "sonnet"`, `standard: "sonnet"`, `strong: "opus"`, and delete build step 6b's per-session `AskUserQuestion`. `core/tiers.ts` and `selftest-tiers` are **kept and updated**, not deleted — the PRD's "tier machinery removed" success-metric row (scoped to Q1(c)) does not apply, and (c)'s deletion list is moot. See `Q1` for the full argument; nothing further is outstanding on this question.
 2. **Q5 partial dissent.** The PRD framed the choice as delete-vs-keep-for-back-compat. Evidence shows back-compat is real (12/16 plans have no `meta.phases`) but is served by rung 2, not rung 3. Deleting rung 3 is therefore both the clean *and* the compatible option. If the user disagrees, keeping it costs 12 lines of untested bash — but the invented-failure mode (whole-suite `npm test` as a phase gate in a project with a pre-existing red test) is a real user-facing hazard.
-3. **`selftest-prompts` is a regression gate, not a proof.** It cannot catch an invariant nobody enumerated in Phase 0. The 14 entries above are the ones evidence supports; the Plan's Phase 0 should re-derive the list independently and reconcile rather than copying this table.
+3. **`selftest-prompts` is a regression gate, not a proof.** It cannot catch an invariant nobody enumerated in Phase 0. The 15 entries above are the ones evidence supports; the Plan's Phase 0 should re-derive the list independently and reconcile rather than copying this table.
 4. **Word-count targets are derived, not measured post-hoc.** ≤6,100 agents / ≤5,450 commands / ≤1,550 build.md come from summing per-finding estimates. If Phase 0's re-measurement lands materially off, adjust the targets rather than over-cutting to hit them — the no-regression selftest set is the binding metric, per the PRD.
 5. **`selftest-tiers` is updated, not deleted.** Calling this out explicitly because the PRD's metrics table lists its deletion as a success signal under Q1(c). Under (b) its presence is correct and its absence would be the regression.
 6. **The PRD lists 11 selftests; 12 are registered.** `selftest-repos` shipped with `feat-multi-repo-nested-docs` after the audit. The no-regression gate is 12 today and **14** after this feature. Update `CLAUDE.md`'s build/test block accordingly.
