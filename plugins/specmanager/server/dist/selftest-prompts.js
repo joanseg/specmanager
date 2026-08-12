@@ -8,9 +8,10 @@
 // would pass by never trimming anything, and one with no `min` would pass
 // by deleting the statement outright.
 //
-// The INVARIANTS table itself is populated by later tasks (the reconciled
-// inventory + the INV-15 snippet-parity pair) — this harness runs green
-// against an empty table so those tasks have something to build on.
+// The INVARIANTS table is populated incrementally by inventory tasks. The
+// reconciled INV-1…INV-14 entries land separately (task-011); this file
+// currently carries only the INV-15 snippet-parity pair, added additively
+// so a concurrent edit to the array merges cleanly.
 //
 // Usage: node dist/selftest-prompts.js
 import fs from "node:fs/promises";
@@ -25,10 +26,44 @@ function assert(cond, msg) {
 const here = path.dirname(fileURLToPath(import.meta.url)); // .../server/dist
 const PLUGIN_ROOT = path.resolve(here, "..", ".."); // .../plugins/specmanager
 // Populated by later inventory tasks (the reconciled INV-1…INV-15 table and
-// the INV-15 snippet-parity pair). Empty for now — the loop below is a
-// no-op against an empty table, which is the point: the harness must be
-// provably green before anything relies on it.
-const INVARIANTS = [];
+// the INV-15 snippet-parity pair). Mostly empty for now — the loop below is
+// close to a no-op against a near-empty table, which is the point: the
+// harness must be provably green before anything relies on it.
+//
+// INV-15 — snippet parity (R8). `docs/agent-snippets/design-grounding.md`
+// is the canonical source for a fragment copy-pasted into three agents
+// (no include mechanism exists for agent prompts). The R8 defect was the
+// canonical text and `architect.md` saying `read_document` for the design
+// doc while `planner.md`/`builder.md` correctly said "read the HTML file
+// directly with `Read` on the `filePath`". This is a pattern *pair*, not
+// byte equality of the whole fragment — the agents legitimately adapt
+// their framing sentences around the shared method clause.
+const INVARIANTS = [
+    {
+        id: "INV-15a",
+        what: "design grounding reads the HTML via `Read` on the listing's `filePath`, never `read_document` (R8) — positive half, 3 carriers",
+        pattern: "read the HTML file directly with `Read` on the `filePath` the listing returns (chunked with offset/limit for large files) — not `read_document`, which JSON-escapes the whole body.",
+        files: ["agents/architect.md", "agents/planner.md", "agents/builder.md"],
+        min: 3,
+        max: 3,
+    },
+    {
+        id: "INV-15b",
+        what: "design grounding never reverts to the superseded `read_document`-for-the-design-doc wording (R8) — negative half",
+        // Anchored on the design-doc context specifically (`design doc exists,
+        // \`read_document\` it`), not a bare `read_document` — architect.md
+        // legitimately uses `read_document` for the PRD elsewhere.
+        pattern: /design doc exists,\s*`read_document`\s*it\b/gi,
+        files: [
+            "../../docs/agent-snippets/design-grounding.md",
+            "agents/architect.md",
+            "agents/planner.md",
+            "agents/builder.md",
+        ],
+        min: 0,
+        max: 0,
+    },
+];
 const fileCache = new Map();
 async function readPromptFile(relPath) {
     const cached = fileCache.get(relPath);
