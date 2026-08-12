@@ -60,6 +60,11 @@ export interface PromptInvariant {
   min: number;
   /** Maximum total occurrences summed across all `files`. */
   max: number;
+  /** Only for negative entries (`max: 0`) whose `pattern` is a RegExp: a
+   * literal instance of the forbidden text, injected into an in-memory copy
+   * by the mutation pass to prove the check goes red when the wording
+   * reappears. String patterns are their own sample. */
+  negativeSample?: string;
 }
 
 const INVARIANTS: PromptInvariant[] = [
@@ -268,6 +273,8 @@ const INVARIANTS: PromptInvariant[] = [
     ],
     min: 0,
     max: 0,
+    negativeSample:
+      "Call `list_documents({ featureId, stage: \"design\" })`. If a design doc exists, `read_document` it and build to what it specifies.",
   },
   // ---- Part B — INV-16…INV-37: must-survive rules with no INV coverage ----
   {
@@ -536,33 +543,153 @@ function countMatches(content: string, pattern: string | RegExp): number {
   return content.match(global)?.length ?? 0;
 }
 
-async function checkInvariant(inv: PromptInvariant): Promise<void> {
-  const perFile: Record<string, number> = {};
-  let total = 0;
+/** In-memory snapshot of an invariant's files: relPath → content. Every
+ * mutation below operates on a copy of one of these; nothing is written. */
+type Contents = Map<string, string>;
+
+async function loadContents(inv: PromptInvariant): Promise<Contents> {
+  const contents: Contents = new Map();
   for (const relPath of inv.files) {
-    const content = await readPromptFile(relPath);
-    const count = countMatches(content, inv.pattern);
-    perFile[relPath] = count;
-    total += count;
+    contents.set(relPath, await readPromptFile(relPath));
   }
-  const breakdown = Object.entries(perFile)
-    .map(([f, c]) => `${f}:${c}`)
-    .join(", ");
+  return contents;
+}
+
+function evaluate(
+  inv: PromptInvariant,
+  contents: Contents
+): { total: number; breakdown: string } {
+  const perFile: [string, number][] = inv.files.map((relPath) => [
+    relPath,
+    countMatches(contents.get(relPath) ?? "", inv.pattern),
+  ]);
+  return {
+    total: perFile.reduce((sum, [, c]) => sum + c, 0),
+    breakdown: perFile.map(([f, c]) => `${f}:${c}`).join(", "),
+  };
+}
+
+function passes(inv: PromptInvariant, total: number): boolean {
+  return total >= inv.min && total <= inv.max;
+}
+
+async function checkInvariant(inv: PromptInvariant): Promise<void> {
+  const { total, breakdown } = evaluate(inv, await loadContents(inv));
   assert(
-    total >= inv.min && total <= inv.max,
+    passes(inv, total),
     `${inv.id} — ${inv.what} (want ${inv.min}..${inv.max}, got ${total}) [${breakdown}]`
   );
 }
 
+// ---- Mutation pass -------------------------------------------------------
+//
+// The match pass above proves the patterns match TODAY. It cannot distinguish
+// a pattern that guards its statement from one loose enough to also match
+// neighbouring prose that survives the trim regardless — the latter reports
+// green while guarding nothing, and its `min` never fires.
+//
+// The mutation pass closes that: for each positive entry it strips the matched
+// text from an in-memory copy and asserts the check now FAILS; for each
+// negative entry (`max: 0`) it injects the forbidden text and asserts the same.
+// A mutation that leaves the check green is a real finding — the pattern is
+// satisfied by text other than the statement it is supposed to guard.
+
+/** All occurrences of `pattern` deleted from `content`. */
+function removeMatches(content: string, pattern: string | RegExp): string {
+  if (typeof pattern === "string") return content.split(pattern).join("");
+  const flags = pattern.flags.includes("g") ? pattern.flags : `${pattern.flags}g`;
+  return content.replace(new RegExp(pattern.source, flags), "");
+}
+
+function mutate(
+  contents: Contents,
+  relPaths: string[],
+  fn: (content: string) => string
+): Contents {
+  const copy: Contents = new Map(contents);
+  for (const relPath of relPaths) copy.set(relPath, fn(copy.get(relPath) ?? ""));
+  return copy;
+}
+
+/** Removing every match, everywhere, must turn the check red. */
+async function mutatePositive(inv: PromptInvariant): Promise<void> {
+  const contents = await loadContents(inv);
+  const stripped = mutate(contents, inv.files, (c) => removeMatches(c, inv.pattern));
+  const { total, breakdown } = evaluate(inv, stripped);
+  assert(
+    !passes(inv, total),
+    `${inv.id} mutation — stripping the matched text turns the check red ` +
+      `(want ${inv.min}..${inv.max}, got ${total} after removal) [${breakdown}]`
+  );
+}
+
+/** Injecting the forbidden text must turn the check red. */
+async function mutateNegative(inv: PromptInvariant): Promise<void> {
+  const sample =
+    inv.negativeSample ?? (typeof inv.pattern === "string" ? inv.pattern : undefined);
+  const target = inv.files[0];
+  assert(
+    sample !== undefined && target !== undefined,
+    `${inv.id} mutation — negative entry supplies a sample and a target file`
+  );
+  const contents = await loadContents(inv);
+  const injected = mutate(contents, [target], (c) => `${c}\n\n${sample}\n`);
+  const { total, breakdown } = evaluate(inv, injected);
+  assert(
+    !passes(inv, total),
+    `${inv.id} mutation — injecting the forbidden text into ${target} turns the ` +
+      `check red (want ${inv.min}..${inv.max}, got ${total} after injection) [${breakdown}]`
+  );
+}
+
+/** Carrier sensitivity: for a multi-file invariant whose `min` is a sum across
+ * actors, losing ONE carrier entirely can still leave the total above `min` —
+ * the rule goes silent at that actor while the gate stays green. Not an
+ * assertion (several entries are deliberately budgeted that way); reported so
+ * the reconciliation can revisit the floors. */
+async function carrierSensitivity(inv: PromptInvariant): Promise<string[]> {
+  if (inv.files.length < 2 || inv.min < 1) return [];
+  const contents = await loadContents(inv);
+  const blind: string[] = [];
+  for (const relPath of inv.files) {
+    if (countMatches(contents.get(relPath) ?? "", inv.pattern) === 0) continue;
+    const stripped = mutate(contents, [relPath], (c) => removeMatches(c, inv.pattern));
+    const { total } = evaluate(inv, stripped);
+    if (passes(inv, total)) blind.push(`${relPath} (total would be ${total})`);
+  }
+  return blind;
+}
+
 async function main(): Promise<void> {
   assert(Array.isArray(INVARIANTS), "INVARIANTS is an array");
+
+  console.log("— match pass —");
   for (const inv of INVARIANTS) {
     await checkInvariant(inv);
   }
+
+  console.log("\n— mutation pass —");
+  const blindSpots: string[] = [];
+  for (const inv of INVARIANTS) {
+    if (inv.max === 0) await mutateNegative(inv);
+    else await mutatePositive(inv);
+    for (const carrier of await carrierSensitivity(inv)) {
+      blindSpots.push(`${inv.id}: losing ${carrier} keeps the check green`);
+    }
+  }
+
+  if (blindSpots.length > 0) {
+    console.log(
+      `\nCarrier blind spots (${blindSpots.length}) — reported, not failed; the ` +
+        `rule can go silent at one actor while the summed floor holds:`
+    );
+    for (const line of blindSpots) console.log(`  ! ${line}`);
+  }
+
   console.log(
     `\nAll prompt invariant assertions passed (${INVARIANTS.length} invariant${
       INVARIANTS.length === 1 ? "" : "s"
-    } checked).`
+    } checked: match + mutation).`
   );
 }
 
