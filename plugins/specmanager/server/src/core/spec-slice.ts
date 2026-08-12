@@ -5,8 +5,15 @@
 // from here rather than keeping a second copy — one parser, one place, so a fix
 // to the heading grammar can never apply to only half the callers.
 //
-// `getSpecSlice` itself lands in follow-up tasks; this file currently ships the
-// shared matcher and Architecture anchor resolution.
+// The name-match fallback (empty/unresolved refs) lands in a follow-up task;
+// this file ships the shared matcher, Architecture anchor resolution, and the
+// plan-section/task/envelope assembly around it.
+
+import fs from "node:fs/promises";
+import { projectRoot } from "./paths.js";
+import { listPhases } from "./phases.js";
+import { listTasks, readTasksMeta } from "./tasks.js";
+import { listDocuments } from "./documents.js";
 
 /**
  * Match a plan.md phase heading and return the phase name it declares.
@@ -119,4 +126,119 @@ export function resolveArchitectureRefs(
   }
 
   return { sections, unresolvedRefs };
+}
+
+/**
+ * Slice plan.md down to one `## Phase <name>` section: from the matched
+ * heading line through to the next `^##\s` heading, or a line that is exactly
+ * `---`, whichever comes first (or EOF). Phase name matched via
+ * `matchPhaseHeading` — the shared parser, not a second copy — and compared
+ * case-insensitively, so it tolerates the `— <theme>` suffix. No match ⇒ null.
+ */
+function planSectionFor(planBody: string, phase: string): string | null {
+  const lines = planBody.split("\n");
+  const key = phase.toLowerCase();
+  let start = -1;
+  let end = lines.length;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]!;
+    if (start === -1) {
+      const heading = matchPhaseHeading(line);
+      if (heading !== null && heading.toLowerCase() === key) start = i;
+      continue;
+    }
+    if (/^##\s/.test(line) || line.trim() === "---") {
+      end = i;
+      break;
+    }
+  }
+
+  if (start === -1) return null;
+  return lines.slice(start, end).join("\n").trimEnd();
+}
+
+/** One task as it belongs in the reviewer's slice. */
+export interface SpecSliceTask {
+  id: string;
+  title: string;
+  // `Task` (core/types.ts) carries no notes field today — always null until
+  // one is added upstream. Kept as its own field rather than dropped so the
+  // envelope's shape doesn't have to change when that lands.
+  notes: string | null;
+  complexity: number | null;
+}
+
+/** The spec-compliance reviewer's assembled hand-off for one phase. */
+export interface SpecSlice {
+  featureId: string;
+  phase: string;
+  /** plan.md's `## Phase <name>` section, or null when the plan doc or heading is missing. */
+  planSection: string | null;
+  tasks: SpecSliceTask[];
+  architecture: SpecSliceSection[];
+  /** Refs named in meta.architectureRefs that matched no heading. Never throws. */
+  unresolvedRefs: string[];
+  /** True when architecture[] was assembled by name-matching rather than explicit refs. */
+  fallbackUsed: boolean;
+}
+
+/**
+ * Assemble the reviewer's spec slice for one phase: its plan.md section, its
+ * task titles/notes, and the Architecture sections its `meta.architectureRefs`
+ * resolve to. Returns null for an unknown phase — mirroring
+ * `getPhaseCompletion`, so the build command's existing phase-not-found branch
+ * is reused unchanged. Never throws: a missing Architecture doc or plan doc
+ * degrades the corresponding field rather than erroring.
+ */
+export async function getSpecSlice(
+  featureId: string,
+  phase: string,
+  root = projectRoot()
+): Promise<SpecSlice | null> {
+  const phases = await listPhases(featureId, root);
+  if (!phases.some((p) => p.name === phase)) return null;
+
+  const allTasks = await listTasks(featureId, root);
+  const tasks: SpecSliceTask[] = allTasks
+    .filter((t) => t.phase === phase)
+    .map((t) => ({ id: t.id, title: t.title, notes: null, complexity: t.complexity }));
+
+  const meta = await readTasksMeta(featureId, root);
+  const refs = meta.phases[phase]?.architectureRefs ?? [];
+
+  let architecture: SpecSliceSection[] = [];
+  let unresolvedRefs: string[] = [...refs];
+  const [archDoc] = await listDocuments({ featureId, stage: "architecture" }, root);
+  if (archDoc) {
+    try {
+      const archMarkdown = await fs.readFile(archDoc.filePath, "utf8");
+      const resolved = resolveArchitectureRefs(archMarkdown, refs);
+      architecture = resolved.sections;
+      unresolvedRefs = resolved.unresolvedRefs;
+    } catch {
+      // Architecture doc unreadable ⇒ treat as absent: no sections, refs unresolved.
+    }
+  }
+
+  let planSection: string | null = null;
+  const [planDoc] = await listDocuments({ featureId, stage: "plan" }, root);
+  if (planDoc) {
+    try {
+      const planMarkdown = await fs.readFile(planDoc.filePath, "utf8");
+      planSection = planSectionFor(planMarkdown, phase);
+    } catch {
+      // Plan doc unreadable ⇒ no plan section.
+    }
+  }
+
+  return {
+    featureId,
+    phase,
+    planSection,
+    tasks,
+    architecture,
+    unresolvedRefs,
+    fallbackUsed: false,
+  };
 }
