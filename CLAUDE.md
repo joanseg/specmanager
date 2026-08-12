@@ -37,7 +37,7 @@ _8 features shipped — full history on the board._
 **Commands:**
 `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)
 
-_Last synced: 2026-08-12T14:11:24.866Z_
+_Last synced: 2026-08-12T14:45:35.944Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
@@ -75,7 +75,7 @@ Two server entry points, **one shared `core/` module** under `server/src/core/` 
 Load-bearing invariants (don't drift):
 
 - **Gate enforcement lives in `core`, not in prompts** (`checkGate`). The model cannot bypass a closed gate by being told to.
-- **Staleness is computed in `core`** by walking the `dependsOn` graph on any `approved→draft` transition or write to an approved doc — a non-blocking badge cleared on reconciliation.
+- **Staleness is computed in `core`** by walking the `dependsOn` graph on any `approved→draft` transition (`propagateStale`, `core/status.ts`) — a non-blocking badge cleared on reconciliation. A write to an already-`approved` doc does **not** cascade staleness; it only bumps `version` and leaves dependents unflagged.
 - **Frontmatter is authoritative; `manifest.json` is a rebuildable cache.** Deleting the manifest must not lose data.
 - **The plugin writes into the *project's* `CLAUDE.md`**, never its own. The managed region is strictly between `<!-- specmanager:start -->` / `<!-- specmanager:end -->`. The marker-merge in `core/claude-md.ts` is **line-anchored**, so native `/init` content (which lives *outside* the markers) and the managed block never clobber each other. `docs/DESIGN.md` works the same way with `<!-- specmanager:design:start/end -->`.
 - **Resolve the project root from the env** (`SPECMANAGER_PROJECT_DIR` ?? `CLAUDE_PROJECT_DIR` ?? cwd), never assume cwd.
@@ -109,17 +109,21 @@ cd plugins/specmanager/server
 npm install
 npm run build            # tsc -p tsconfig.json → dist/
 
-# Self-tests (hand-rolled scripts in dist/, not a test runner — run one by name)
-npm run selftest          # core flow against a tmp dir
-npm run selftest-board    # boots board: REST + WS + file watcher
-npm run selftest-phases   # phase rollup + Fibonacci ≤3 validation
-npm run selftest-build    # per-phase gates + walkthrough storage
-npm run selftest-tiers    # complexity → tier → alias mapping
-npm run selftest-stopgate # active-build marker resolution + Stop-gate no-op/in-flight cases
+# Self-tests (hand-rolled scripts in dist/, not a test runner — run one by name; 14 total)
+npm run selftest           # core flow against a tmp dir
+npm run selftest-board     # boots board: REST + WS + file watcher
+npm run selftest-phases    # phase rollup + Fibonacci ≤3 validation
+npm run selftest-build     # per-phase gates + walkthrough storage
+npm run selftest-tiers     # complexity → tier → alias mapping
+npm run selftest-stopgate  # active-build marker resolution + Stop-gate no-op/in-flight cases
 npm run selftest-roundtrip
 npm run selftest-pidfile
 npm run selftest-shutdown
-npm run smoke-mcp         # MCP wire protocol + tools registered
+npm run selftest-autoport  # bindWithFallback: preferred → sequential scan → ephemeral port
+npm run selftest-repos     # multi-repo declare/seed/render, write-containment
+npm run selftest-specslice # get_spec_slice anchor resolution + fallback path
+npm run selftest-prompts   # prompt-invariant regression net over agents/ + commands/
+npm run smoke-mcp          # MCP wire protocol + tools registered
 # (equivalently: node dist/<name>.js)
 
 # UI (@specmanager/ui)
