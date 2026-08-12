@@ -13,6 +13,7 @@ import { findFeatureById } from "./features.js";
 import { listTasks, readTasksMeta } from "./tasks.js";
 import { listDocuments } from "./documents.js";
 import { readActiveBuild, clearActiveBuild } from "./active-build.js";
+import { matchPhaseHeading } from "./spec-slice.js";
 
 export interface ActiveCard {
   featureId: string;
@@ -32,9 +33,9 @@ function exitTestForPhase(planBody: string, phase: string): string | null {
   const lines = planBody.split("\n");
   let inPhase = false;
   for (const line of lines) {
-    const heading = line.match(/^##\s+Phase\s+([^\s—-]+)/i);
-    if (heading) {
-      inPhase = heading[1]!.toLowerCase() === phase.toLowerCase();
+    const heading = matchPhaseHeading(line);
+    if (heading !== null) {
+      inPhase = heading.toLowerCase() === phase.toLowerCase();
       continue;
     }
     if (inPhase) {
