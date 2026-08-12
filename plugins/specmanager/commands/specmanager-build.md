@@ -72,8 +72,6 @@ Build one phase of the plan for **$ARGUMENTS**.
 - Don't run two phases back-to-back; the user reviews each one.
 - Don't approve any documents.
 - Don't mark tasks `done` from this command — the builder owns task state.
-- Don't drive a phase that is already done.
-- Don't sync docs unconditionally: the sync `AskUserQuestion` fires **only** on the `complete === true` path; a `complete === false` (mid-phase) stop stays prompt-free and syncs nothing.
 - Don't `clear_active_build()` on a mid-phase stop — the build is in flight; clear only on the terminal done (step 8) and blocked (step 7b) paths.
 - Don't suggest or attempt a `final` walkthrough for a single-phase feature (`isSinglePhase === true`) — the per-phase walkthrough is terminal and its approval ships the feature. `final` is multi-phase only.
 - Don't run `/init` on **Managed blocks only**, and don't refresh any managed block on **Wait** — all three sync steps defer together. Never leave a half-synced state.
