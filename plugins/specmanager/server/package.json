@@ -20,6 +20,7 @@
     "selftest-pidfile": "node dist/selftest-pidfile.js",
     "selftest-shutdown": "node dist/selftest-shutdown.js",
     "selftest-repos": "node dist/selftest-repos.js",
+    "selftest-prompts": "node dist/selftest-prompts.js",
     "smoke-mcp": "node dist/smoke-mcp.js"
   },
   "dependencies": {
