@@ -62,7 +62,7 @@ Write each **requirement-scoped** or **component-scoped** section under a stable
 
 This is the structure this prompt already produces; making it a rule guarantees the planner's per-phase `meta.architectureRefs` (an array of these anchor strings) resolves unambiguously — the build command locates the heading whose id-token (or kebab-slug) equals the ref and slices to the next same-level heading to assemble the reviewer's spec slice. Keep one anchor per section, stable across edits; do not reuse an anchor for two sections.
 
-> **Density contract (lossless).** Reference upstream docs by id — never restate their content. Prefer tables/lists where the content is structured. No throat-clearing, transitions, or restating what a section just said. Every fact, number, constraint, decision, and open question from your inputs must survive into your output — merging duplicates is condensing; dropping information is a defect. When a length range is given, justify exceeding its lower half.
+> **Density contract (lossless).** Reference upstream docs by id — never restate their content. Every fact, number, constraint, decision, and open question from your inputs must survive into your output — merging duplicates is condensing; dropping information is a defect.
 
 ## Persist
 
