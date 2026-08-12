@@ -18,7 +18,21 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const mcp = path.join(here, "mcp.js");
-const TEST_PORT = Number(process.env.SPECMANAGER_BOARD_PORT ?? 4319);
+// Resolved in main() before any assertion runs. A hard-coded default (this
+// used to be 4319) is unsafe: the shipped auto-port feature lets concurrent
+// sessions fan out across 4317+, so on a machine running several boards the
+// "port is free before the test" assertion fails for reasons that have
+// nothing to do with shutdown behaviour. An explicit SPECMANAGER_BOARD_PORT
+// still wins, so a caller can pin one deliberately.
+let TEST_PORT = Number(process.env.SPECMANAGER_BOARD_PORT ?? 0);
+/** First port in [start, start+span) that nobody is listening on. */
+async function findFreePort(start = 4400, span = 400) {
+    for (let p = start; p < start + span; p++) {
+        if (await portIsFree(p))
+            return p;
+    }
+    throw new Error(`FAIL: no free port in ${start}..${start + span - 1}`);
+}
 function assert(condition, message) {
     if (!condition)
         throw new Error(`FAIL: ${message}`);
@@ -104,6 +118,8 @@ function waitForExit(child, ms = 3000) {
 async function main() {
     const children = [];
     try {
+        if (!TEST_PORT)
+            TEST_PORT = await findFreePort();
         assert(await portIsFree(TEST_PORT), `port ${TEST_PORT} is free before the test`);
         // 1. stdin-EOF teardown: no signal, just close stdin.
         {

@@ -20,6 +20,7 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
@@ -74,8 +75,35 @@ function assert(condition: unknown, message: string): asserts condition {
   console.log(`ok — ${message}`);
 }
 
+/**
+ * Locate the repo whose `.claude/specs/features` this suite reads.
+ *
+ * `process.cwd()` is wrong under `npm run`, which runs from `server/` — that
+ * resolves to `server/.claude/specs/features`, which does not exist, so the
+ * suite failed with "found 0 docs" unless the caller happened to export
+ * CLAUDE_PROJECT_DIR. Walk up from this file instead so the suite is
+ * self-sufficient; the env vars still win when set.
+ */
+async function findSpecsRoot(): Promise<string> {
+  const explicit =
+    process.env.SPECMANAGER_PROJECT_DIR ?? process.env.CLAUDE_PROJECT_DIR;
+  if (explicit) return explicit;
+  let dir = path.dirname(fileURLToPath(import.meta.url));
+  for (let i = 0; i < 8; i++) {
+    try {
+      await fs.access(path.join(dir, ".claude", "specs", "features"));
+      return dir;
+    } catch {
+      const parent = path.dirname(dir);
+      if (parent === dir) break;
+      dir = parent;
+    }
+  }
+  return process.cwd();
+}
+
 async function main(): Promise<void> {
-  const projectRoot = process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
+  const projectRoot = await findSpecsRoot();
   const specsDir = path.join(projectRoot, ".claude", "specs", "features");
   const files = await walkMarkdown(specsDir);
 

@@ -27,7 +27,21 @@ import { fileURLToPath } from "node:url";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const mcp = path.join(here, "mcp.js");
 
-const PREFERRED = Number(process.env.SPECMANAGER_BOARD_PORT ?? 4321);
+// Resolved in main() before any assertion runs. A hard-coded default (this
+// used to be 4321) is unsafe here for the same reason as selftest-shutdown,
+// and doubly so: this suite asserts fall-forward to PREFERRED+1, so it needs
+// a free *pair*. On a machine running several boards — which the auto-port
+// feature under test exists to support — a fixed pair is routinely taken.
+// An explicit SPECMANAGER_BOARD_PORT still wins.
+let PREFERRED = Number(process.env.SPECMANAGER_BOARD_PORT ?? 0);
+
+/** First p in [start, start+span) where both p and p+1 are unbound. */
+async function findFreePair(start = 4500, span = 400): Promise<number> {
+  for (let p = start; p < start + span; p++) {
+    if ((await portIsFree(p)) && (await portIsFree(p + 1))) return p;
+  }
+  throw new Error(`FAIL: no free port pair in ${start}..${start + span - 1}`);
+}
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(`FAIL: ${message}`);
@@ -164,7 +178,12 @@ async function main(): Promise<void> {
   };
 
   try {
+    if (!PREFERRED) PREFERRED = await findFreePair();
     assert(await portIsFree(PREFERRED), `preferred port ${PREFERRED} is free before the test`);
+    assert(
+      await portIsFree(PREFERRED + 1),
+      `fall-forward target ${PREFERRED + 1} is free before the test`
+    );
 
     // 1. Fallback bind — preferred port occupied, board must land on preferred+1.
     {
