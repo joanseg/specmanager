@@ -4,18 +4,6 @@
 // `core/active-card.ts` (and through it the Stop-gate) imports `matchPhaseHeading`
 // from here rather than keeping a second copy — one parser, one place, so a fix
 // to the heading grammar can never apply to only half the callers.
-//
-// Fallback trigger note (deviation from the Architecture's literal wording):
-// the Architecture's `## core-spec-slice` → Fallback behaviour section says
-// the fallback fires when `architectureRefs` is "empty/absent, or when every
-// listed ref is unresolved". That second clause would make a single
-// mistyped ref indistinguishable from "no refs were named at all" — exactly
-// the silent-wrong slice this module exists to prevent (a caller sees a
-// plausible-looking name-matched section instead of the signal that an
-// anchor drifted). This implementation therefore triggers the fallback only
-// on empty/absent `architectureRefs`; any ref that fails to resolve, alone
-// or alongside others, is always surfaced in `unresolvedRefs` and never
-// silently promoted into a fallback match.
 
 import fs from "node:fs/promises";
 import { projectRoot } from "./paths.js";
@@ -137,10 +125,9 @@ export function resolveArchitectureRefs(
 }
 
 /**
- * Fallback anchor resolution, used only when `architectureRefs` is
- * empty/absent (see the header note above for why an unresolved-but-named
- * ref does not also take this path). Matches headings against the phase
- * name itself rather than an explicit anchor:
+ * Fallback anchor resolution, used when `architectureRefs` is empty/absent
+ * **or** when every listed ref failed to resolve. Matches headings against the
+ * phase name itself rather than an explicit anchor:
  *
  * - Tier 1: heading id-token or kebab-slug equals the phase name exactly,
  *   case-insensitively.
@@ -252,24 +239,33 @@ export async function getSpecSlice(
 
   const meta = await readTasksMeta(featureId, root);
   const refs = meta.phases[phase]?.architectureRefs ?? [];
-  const fallbackUsed = refs.length === 0;
 
   let architecture: SpecSliceSection[] = [];
-  let unresolvedRefs: string[] = fallbackUsed ? [] : [...refs];
+  let unresolvedRefs: string[] = [...refs];
+  let fallbackUsed = refs.length === 0;
   const [archDoc] = await listDocuments({ featureId, stage: "architecture" }, root);
   if (archDoc) {
     try {
       const archMarkdown = await fs.readFile(archDoc.filePath, "utf8");
-      if (fallbackUsed) {
+      if (refs.length === 0) {
         architecture = matchHeadingsByPhaseName(archMarkdown, phase);
       } else {
+        // Resolve first, then fall back when *every* named ref missed. The
+        // unresolved list stays populated either way, so a caller can tell an
+        // all-drifted ref list (fallbackUsed + unresolvedRefs) from a phase that
+        // named no refs at all (fallbackUsed, unresolvedRefs empty).
         const resolved = resolveArchitectureRefs(archMarkdown, refs);
-        architecture = resolved.sections;
         unresolvedRefs = resolved.unresolvedRefs;
+        fallbackUsed = unresolvedRefs.length === refs.length;
+        architecture = fallbackUsed
+          ? matchHeadingsByPhaseName(archMarkdown, phase)
+          : resolved.sections;
       }
     } catch {
-      // Architecture doc unreadable ⇒ treat as absent: no sections, refs unresolved
-      // (empty when the fallback already triggered on empty refs).
+      // Architecture doc unreadable ⇒ treat as absent: no sections, and the full
+      // ref list stays unresolved (empty when the phase named no refs). There is
+      // no markdown to name-match against, so this branch never sets
+      // fallbackUsed on its own — Architecture step 1 specifies exactly this.
     }
   }
 

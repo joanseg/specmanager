@@ -215,19 +215,42 @@ async function main(): Promise<void> {
   );
   assert(slice.tasks[0]!.notes === null, "notes is null until core/types.ts Task grows a notes field");
 
-  // KNOWN DEVIATION from the Architecture's `### Fallback behaviour`, which says
-  // the fallback also fires "when every listed ref is unresolved". It does not:
-  // task-016 implemented only the empty/absent half deliberately, so a mistyped
-  // ref surfaces in unresolvedRefs instead of being silently replaced by a
-  // plausible-looking name match. This case pins the IMPLEMENTED behaviour; the
-  // spec text and the code disagree, and the header comment in spec-slice.ts
-  // records why. Do not "fix" one side without reconciling the other.
+  // The Architecture's `### Fallback behaviour` fires the fallback when
+  // `architectureRefs` is empty/absent **or** when every listed ref is
+  // unresolved. Both signals survive that second clause: the drifted ref still
+  // lands in `unresolvedRefs` (edge-case row "heading renamed since planning"),
+  // and `fallbackUsed: true` marks the returned sections as name-matched rather
+  // than explicitly named — so the caller can tell all three states apart.
+  // Phase `typo` name-matches nothing in ARCH, so the fallback degrades to [].
   await createTask({ featureId: refs.id, title: "Mistyped ref", phase: "typo", complexity: 1 }, root);
   await setPhaseMeta(refs.id, "typo", { testCommand: "none", architectureRefs: ["core-spec-slyce"] }, root);
   const typo = (await getSpecSlice(refs.id, "typo", root))!;
-  assert(typo.fallbackUsed === false, "DEVIATION (spec says fallback): all-refs-unresolved does NOT trigger the fallback");
-  assert(typo.architecture.length === 0, "DEVIATION: a mistyped ref yields no section rather than a name-matched guess");
-  assert(typo.unresolvedRefs.join(",") === "core-spec-slyce", "DEVIATION: the mistyped ref is surfaced, not silently swallowed");
+  assert(typo.fallbackUsed === true, "all-refs-unresolved triggers the fallback (spec: `### Fallback behaviour`)");
+  assert(typo.architecture.length === 0, "an all-unresolved fallback with no name match degrades to architecture: []");
+  assert(typo.unresolvedRefs.join(",") === "core-spec-slyce", "the mistyped ref is still surfaced when the fallback fires");
+
+  // Same trigger, but the phase name *does* name-match: every ref unresolved ⇒
+  // fallbackUsed, sections assembled by name-match, AND every failed ref still
+  // listed. Losing `unresolvedRefs` here would hide the anchor drift the
+  // fallback is standing in for.
+  await createTask({ featureId: refs.id, title: "All drifted", phase: "core-active-card-resolver", complexity: 1 }, root);
+  await setPhaseMeta(
+    refs.id,
+    "core-active-card-resolver",
+    { testCommand: "none", architectureRefs: ["R98", "R99"] },
+    root
+  );
+  const drifted = (await getSpecSlice(refs.id, "core-active-card-resolver", root))!;
+  assert(drifted.fallbackUsed === true, "every named ref unresolved ⇒ fallbackUsed, even with a live Architecture doc");
+  assert(
+    drifted.architecture.length === 1 && drifted.architecture[0]!.heading === "Core active-card resolver",
+    "the all-unresolved fallback reaches matchHeadingsByPhaseName and returns its match"
+  );
+  assert(drifted.unresolvedRefs.join(",") === "R98,R99", "the fallback keeps every failed ref in unresolvedRefs");
+
+  // Partial-unresolved is unchanged: one ref resolving means no fallback, and
+  // the ref that missed still surfaces (already asserted on `slice` above).
+  assert(slice.fallbackUsed === false && slice.unresolvedRefs.join(",") === "R99", "a partially-resolved ref list never falls back");
 
   // Feature 2 — no explicit refs anywhere: the fallback + plan-slicing feature.
   const fb = await createFeature("Fallback feature", root);
@@ -283,6 +306,10 @@ async function main(): Promise<void> {
   const bareSlice = (await getSpecSlice(bare.id, "core", root))!;
   assert(bareSlice.architecture.length === 0, "a missing Architecture doc yields architecture: [] rather than throwing");
   assert(bareSlice.unresolvedRefs.join(",") === "R6,core-spec-slice", "a missing Architecture doc leaves the full ref list unresolved");
+  // Architecture step 1 specifies this branch as `architecture: []` + full ref
+  // list, with no name-matching pass — there is no markdown to match against, so
+  // the all-unresolved fallback trigger does not reach here.
+  assert(bareSlice.fallbackUsed === false, "a missing Architecture doc does not set fallbackUsed (nothing to name-match)");
   assert(bareSlice.planSection === null, "a missing plan doc yields planSection: null");
   assert(bareSlice.tasks.length === 1, "tasks[] survives a missing Architecture doc");
 
