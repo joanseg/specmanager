@@ -108,49 +108,68 @@
       "id": "task-006",
       "featureId": "feat-opus-5-readiness",
       "title": "Create core/spec-slice.ts; move matchPhaseHeading out of active-card.ts and import it back",
-      "status": "todo",
+      "status": "done",
       "phase": "core",
       "complexity": 3,
       "dependsOn": [],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "2bdf05beb94d75c998c2ebccf3b4ea75288765c6"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/spec-slice.ts",
+          "plugins/specmanager/server/src/core/active-card.ts"
+        ],
         "pr": null
       },
       "createdAt": "2026-08-11T14:41:51.212Z",
-      "updatedAt": "2026-08-11T14:51:03.482Z"
+      "updatedAt": "2026-08-12T10:08:11.684Z"
     },
     {
       "id": "task-007",
       "featureId": "feat-opus-5-readiness",
       "title": "Q1: re-map DEFAULT_TIER_TO_ALIAS.cheap to \"sonnet\" and update selftest-tiers assertions",
-      "status": "todo",
+      "status": "done",
       "phase": "core",
       "complexity": 2,
       "dependsOn": [],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "a875c14"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/tiers.ts",
+          "plugins/specmanager/server/src/selftest-tiers.ts",
+          "plugins/specmanager/server/dist/core/tiers.js",
+          "plugins/specmanager/server/dist/core/tiers.js.map",
+          "plugins/specmanager/server/dist/selftest-tiers.js",
+          "plugins/specmanager/server/dist/selftest-tiers.js.map"
+        ],
         "pr": null
       },
       "createdAt": "2026-08-11T14:41:52.275Z",
-      "updatedAt": "2026-08-11T14:51:08.411Z"
+      "updatedAt": "2026-08-12T10:07:39.635Z"
     },
     {
       "id": "task-008",
       "featureId": "feat-opus-5-readiness",
       "title": "Q5: delete probe_test_command + call site; add the two absent-testCommand selftest-stopgate cases",
-      "status": "todo",
+      "status": "done",
       "phase": "core",
       "complexity": 3,
       "dependsOn": [],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "663214f361e6f991b5d95c87a2beadc4d3815e78"
+        ],
+        "files": [
+          "plugins/specmanager/hooks/stop-gate.sh",
+          "plugins/specmanager/server/src/selftest-stopgate.ts"
+        ],
         "pr": null
       },
       "createdAt": "2026-08-11T14:41:53.097Z",
-      "updatedAt": "2026-08-11T14:51:09.117Z"
+      "updatedAt": "2026-08-12T10:09:18.557Z"
     },
     {
       "id": "task-009",
@@ -226,19 +245,23 @@
       "id": "task-012",
       "featureId": "feat-opus-5-readiness",
       "title": "Implement getSpecSlice anchor resolution (id-token / kebab-slug keys, level-aware slicing, unresolvedRefs)",
-      "status": "todo",
+      "status": "done",
       "phase": "core",
       "complexity": 3,
       "dependsOn": [
         "task-006"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "626700a0f476ef8769cf934cbaa311965fafa412"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/spec-slice.ts"
+        ],
         "pr": null
       },
       "createdAt": "2026-08-11T14:42:03.039Z",
-      "updatedAt": "2026-08-11T14:51:04.188Z"
+      "updatedAt": "2026-08-12T10:12:34.934Z"
     },
     {
       "id": "task-013",
@@ -270,19 +293,23 @@
       "id": "task-014",
       "featureId": "feat-opus-5-readiness",
       "title": "Implement getSpecSlice plan-section slicing, task assembly, and the unknown-phase null",
-      "status": "todo",
+      "status": "done",
       "phase": "core",
       "complexity": 2,
       "dependsOn": [
         "task-012"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "7ba21cd"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/spec-slice.ts"
+        ],
         "pr": null
       },
       "createdAt": "2026-08-11T14:42:09.371Z",
-      "updatedAt": "2026-08-11T14:51:04.882Z"
+      "updatedAt": "2026-08-12T10:15:55.536Z"
     },
     {
       "id": "task-015",
@@ -311,37 +338,47 @@
       "id": "task-016",
       "featureId": "feat-opus-5-readiness",
       "title": "Implement the getSpecSlice fallback path (empty/unresolved refs, name-match, fallbackUsed)",
-      "status": "todo",
+      "status": "done",
       "phase": "core",
       "complexity": 2,
       "dependsOn": [
         "task-014"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "94c904b"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/spec-slice.ts"
+        ],
         "pr": null
       },
       "createdAt": "2026-08-11T14:42:14.204Z",
-      "updatedAt": "2026-08-11T14:51:05.845Z"
+      "updatedAt": "2026-08-12T10:21:31.851Z"
     },
     {
       "id": "task-017",
       "featureId": "feat-opus-5-readiness",
       "title": "Export spec-slice from core/index.ts, register get_spec_slice in mcp.ts, add it to smoke-mcp's expected",
-      "status": "todo",
+      "status": "done",
       "phase": "core",
       "complexity": 2,
       "dependsOn": [
         "task-016"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "2f66851aea652ce9693281b25117c9bf4653f574"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/index.ts",
+          "plugins/specmanager/server/src/mcp.ts",
+          "plugins/specmanager/server/src/smoke-mcp.ts"
+        ],
         "pr": null
       },
       "createdAt": "2026-08-11T14:42:21.545Z",
-      "updatedAt": "2026-08-11T14:51:07.055Z"
+      "updatedAt": "2026-08-12T10:24:03.784Z"
     },
     {
       "id": "task-018",
@@ -511,19 +548,24 @@
       "id": "task-027",
       "featureId": "feat-opus-5-readiness",
       "title": "Write selftest-specslice.ts (11 required cases) and register npm run selftest-specslice",
-      "status": "todo",
+      "status": "done",
       "phase": "core",
       "complexity": 3,
       "dependsOn": [
         "task-017"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "27af887af2cf4e38ce9ce0ab67430b91b21de1a1"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest-specslice.ts",
+          "plugins/specmanager/server/package.json"
+        ],
         "pr": null
       },
       "createdAt": "2026-08-11T14:42:40.909Z",
-      "updatedAt": "2026-08-11T14:51:07.792Z"
+      "updatedAt": "2026-08-12T13:14:24.810Z"
     },
     {
       "id": "task-028",
@@ -565,7 +607,7 @@
       "id": "task-030",
       "featureId": "feat-opus-5-readiness",
       "title": "Rebuild server/dist after the core changes and commit compiled output with the source",
-      "status": "todo",
+      "status": "done",
       "phase": "core",
       "complexity": 1,
       "dependsOn": [
@@ -574,12 +616,29 @@
         "task-008"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "3e78c9f"
+        ],
+        "files": [
+          "plugins/specmanager/server/dist/core/active-card.js",
+          "plugins/specmanager/server/dist/core/active-card.js.map",
+          "plugins/specmanager/server/dist/core/index.js",
+          "plugins/specmanager/server/dist/core/index.js.map",
+          "plugins/specmanager/server/dist/core/spec-slice.js",
+          "plugins/specmanager/server/dist/core/spec-slice.js.map",
+          "plugins/specmanager/server/dist/mcp.js",
+          "plugins/specmanager/server/dist/mcp.js.map",
+          "plugins/specmanager/server/dist/selftest-specslice.js",
+          "plugins/specmanager/server/dist/selftest-specslice.js.map",
+          "plugins/specmanager/server/dist/selftest-stopgate.js",
+          "plugins/specmanager/server/dist/selftest-stopgate.js.map",
+          "plugins/specmanager/server/dist/smoke-mcp.js",
+          "plugins/specmanager/server/dist/smoke-mcp.js.map"
+        ],
         "pr": null
       },
       "createdAt": "2026-08-11T14:42:46.766Z",
-      "updatedAt": "2026-08-11T14:51:09.703Z"
+      "updatedAt": "2026-08-12T13:16:00.511Z"
     },
     {
       "id": "task-031",

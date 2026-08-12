@@ -2,7 +2,7 @@
 id: wt-opus-5-readiness-019
 featureId: feat-opus-5-readiness
 stage: walkthrough
-status: draft
+status: approved
 stale: false
 title: Opus 5 readiness — Phase inventory walkthrough
 dependsOn:
@@ -13,7 +13,7 @@ generatedBy: agent
 version: 1
 phase: inventory
 createdAt: '2026-08-12T09:47:18.015Z'
-updatedAt: '2026-08-12T09:47:18.015Z'
+updatedAt: '2026-08-12T10:04:32.268Z'
 ---
 # Opus 5 readiness — Phase inventory walkthrough
 

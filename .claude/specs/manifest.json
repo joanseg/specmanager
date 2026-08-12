@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-12T09:47:18.019Z",
+  "generatedAt": "2026-08-12T13:32:08.930Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -1672,9 +1672,18 @@
           "title": "Opus 5 readiness plan"
         },
         {
-          "id": "wt-opus-5-readiness-019",
+          "id": "wt-opus-5-readiness-020",
           "stage": "walkthrough",
           "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Opus 5 readiness — Phase core walkthrough",
+          "phase": "core"
+        },
+        {
+          "id": "wt-opus-5-readiness-019",
+          "stage": "walkthrough",
+          "status": "approved",
           "stale": false,
           "version": 1,
           "title": "Opus 5 readiness — Phase inventory walkthrough",
@@ -1682,9 +1691,9 @@
         }
       ],
       "tasks": {
-        "todo": 24,
+        "todo": 15,
         "in_progress": 0,
-        "done": 11,
+        "done": 20,
         "blocked": 0,
         "total": 35
       },
@@ -1698,20 +1707,20 @@
           "blockedCount": 0,
           "status": "done",
           "walkthroughId": "wt-opus-5-readiness-019",
-          "walkthroughStatus": "draft",
+          "walkthroughStatus": "approved",
           "walkthroughStale": false
         },
         {
           "name": "core",
           "order": 1,
           "taskCount": 9,
-          "doneCount": 0,
+          "doneCount": 9,
           "inProgressCount": 0,
           "blockedCount": 0,
-          "status": "todo",
-          "walkthroughId": null,
-          "walkthroughStatus": null,
-          "walkthroughStale": null
+          "status": "done",
+          "walkthroughId": "wt-opus-5-readiness-020",
+          "walkthroughStatus": "draft",
+          "walkthroughStale": false
         },
         {
           "name": "trim",
