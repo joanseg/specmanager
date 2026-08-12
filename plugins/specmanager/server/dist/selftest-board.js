@@ -38,18 +38,25 @@ async function reapRebindCheck() {
         const stalePid = child.pid;
         child.kill("SIGKILL");
         await sleep(50);
-        await fs.writeFile(pidFilePath(), String(stalePid), "utf8");
+        // pidFilePath() is keyed on sha1(root), so it MUST be passed this test's
+        // tmp `root` — the same one startBoardServer gets below. Calling it bare
+        // resolves to projectRoot(), i.e. the real repo, so the test would write
+        // and read the *live session's* pidfile while the board under test wrote
+        // a different one, and the owner assertion could never pass. That bug was
+        // masked until now: bare pidFilePath() threw on an unset
+        // SPECMANAGER_PROJECT_DIR/CLAUDE_PROJECT_DIR before reaching the assert.
+        await fs.writeFile(pidFilePath(root), String(stalePid), "utf8");
         const port = await pickPort();
         const board = await startBoardServer({ root, port });
         assert(board, `board reaped stale board.pid and bound on port ${port}`);
         if (!board)
             return;
-        const owner = (await fs.readFile(pidFilePath(), "utf8")).trim();
+        const owner = (await fs.readFile(pidFilePath(root), "utf8")).trim();
         assert(Number.parseInt(owner, 10) === process.pid, "board.pid now holds the new live owner (this process)");
         await board.stop();
         let stillThere = true;
         try {
-            await fs.access(pidFilePath());
+            await fs.access(pidFilePath(root));
         }
         catch {
             stillThere = false;
