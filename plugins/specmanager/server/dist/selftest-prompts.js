@@ -58,7 +58,7 @@ const INVARIANTS = [
             "commands/specmanager-walkthrough.md",
         ],
         min: 4,
-        max: 10,
+        max: 8,
     },
     {
         id: "INV-2",
@@ -66,7 +66,7 @@ const INVARIANTS = [
         pattern: /^.*clear_active_build.*$/gm,
         files: ["commands/specmanager-build.md"],
         min: 2,
-        max: 9,
+        max: 4,
     },
     {
         id: "INV-3",
@@ -82,7 +82,7 @@ const INVARIANTS = [
         pattern: /^.*--bulk.*$/gm,
         files: ["commands/specmanager-build.md"],
         min: 2,
-        max: 8,
+        max: 7,
     },
     {
         id: "INV-5",
@@ -90,7 +90,7 @@ const INVARIANTS = [
         pattern: /^.*infer "phase done".*$/gm,
         files: ["commands/specmanager-build.md"],
         min: 1,
-        max: 2,
+        max: 1,
     },
     {
         id: "INV-6",
@@ -98,7 +98,7 @@ const INVARIANTS = [
         pattern: /^.*(dated model ids?|Claude Code (model )?\*{0,2}alias).*$/gim,
         files: ["agents/builder.md", "commands/specmanager-build.md"],
         min: 2,
-        max: 3,
+        max: 2,
     },
     {
         id: "INV-7",
@@ -122,7 +122,7 @@ const INVARIANTS = [
         pattern: /^.*(not nested|never nest|do not nest|don't compose).*$/gim,
         files: ["commands/specmanager-build.md"],
         min: 1,
-        max: 2,
+        max: 1,
     },
     {
         id: "INV-10",
@@ -260,7 +260,7 @@ const INVARIANTS = [
             "commands/specmanager-walkthrough.md",
         ],
         min: 4,
-        max: 7,
+        max: 5,
     },
     {
         id: "INV-17",
@@ -292,7 +292,7 @@ const INVARIANTS = [
         pattern: /^.*(re-sizing inside the builder|escalate instead|planning bug).*$/gm,
         files: ["agents/builder.md"],
         min: 1,
-        max: 2,
+        max: 1,
     },
     {
         id: "INV-21",
@@ -322,7 +322,7 @@ const INVARIANTS = [
         pattern: /^.*(Treat this slice as the contract|not in the slice|the slice is your scope|whole Architecture doc|full Architecture doc).*$/gim,
         files: ["agents/reviewer.md", "commands/specmanager-build.md"],
         min: 2,
-        max: 6,
+        max: 4,
     },
     {
         id: "INV-24",
@@ -330,7 +330,7 @@ const INVARIANTS = [
         pattern: /^.*(style|taste).*$/gim,
         files: ["agents/reviewer.md"],
         min: 1,
-        max: 2,
+        max: 1,
     },
     {
         id: "INV-25",
@@ -472,7 +472,7 @@ const INVARIANTS = [
         pattern: /graceful degradation/gi,
         files: ["agents/builder.md", "agents/designer.md"],
         min: 2,
-        max: 4,
+        max: 2,
     },
     {
         id: "INV-37",
