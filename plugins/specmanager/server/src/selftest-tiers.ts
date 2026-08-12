@@ -28,7 +28,7 @@ async function main(): Promise<void> {
   assert(tierForComplexity(undefined) === "strong", "undefined complexity → strong");
 
   // 3. Default tier → alias (aliases, never dated ids).
-  assert(aliasForTier("cheap") === "haiku", "cheap → haiku");
+  assert(aliasForTier("cheap") === "sonnet", "cheap → sonnet (Q1: Haiku 4.5's 200K context cap)");
   assert(aliasForTier("standard") === "sonnet", "standard → sonnet");
   assert(aliasForTier("strong") === "opus", "strong → opus");
   assert(
@@ -42,7 +42,7 @@ async function main(): Promise<void> {
   assert(aliasForTier("standard", session) === "sonnet", "unset session tier falls back to default");
 
   // 5. One-hop complexity → alias.
-  assert(aliasForComplexity(1) === "haiku", "complexity 1 → haiku (one hop)");
+  assert(aliasForComplexity(1) === "sonnet", "complexity 1 → sonnet (one hop)");
   assert(aliasForComplexity(3) === "opus", "complexity 3 → opus (one hop)");
   assert(aliasForComplexity(2, session) === "sonnet", "complexity 2 with session table → sonnet");
 

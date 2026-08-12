@@ -18,7 +18,7 @@ async function main() {
     assert(tierForComplexity(null) === "strong", "null complexity → strong");
     assert(tierForComplexity(undefined) === "strong", "undefined complexity → strong");
     // 3. Default tier → alias (aliases, never dated ids).
-    assert(aliasForTier("cheap") === "haiku", "cheap → haiku");
+    assert(aliasForTier("cheap") === "sonnet", "cheap → sonnet (Q1: Haiku 4.5's 200K context cap)");
     assert(aliasForTier("standard") === "sonnet", "standard → sonnet");
     assert(aliasForTier("strong") === "opus", "strong → opus");
     assert(Object.values(DEFAULT_TIER_TO_ALIAS).every((a) => !/\d{4}-\d{2}-\d{2}/.test(a)), "default aliases carry no dated ids");
@@ -27,7 +27,7 @@ async function main() {
     assert(aliasForTier("cheap", session) === "sonnet", "session override remaps cheap → sonnet");
     assert(aliasForTier("standard", session) === "sonnet", "unset session tier falls back to default");
     // 5. One-hop complexity → alias.
-    assert(aliasForComplexity(1) === "haiku", "complexity 1 → haiku (one hop)");
+    assert(aliasForComplexity(1) === "sonnet", "complexity 1 → sonnet (one hop)");
     assert(aliasForComplexity(3) === "opus", "complexity 3 → opus (one hop)");
     assert(aliasForComplexity(2, session) === "sonnet", "complexity 2 with session table → sonnet");
     // 6. Unknown tier → INHERIT (graceful default, never throws).

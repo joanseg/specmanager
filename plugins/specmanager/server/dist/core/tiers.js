@@ -9,9 +9,16 @@ export const DEFAULT_COMPLEXITY_TO_TIER = {
     2: "standard",
     3: "strong",
 };
-/** Default tier → Claude Code alias (R2/AC2). */
+/**
+ * Default tier → Claude Code alias (R2/AC2).
+ * Q1 (2026-08-11, option b): `cheap` maps to `sonnet`, not `haiku` — Haiku 4.5
+ * caps at 200K context while Sonnet 5 / Opus 5 carry 1M, a correctness cliff
+ * rather than a cost preference. Kept as three distinct tiers / two aliases
+ * so the reviewer-fail escalation ladder (sonnet → opus) still holds and a
+ * future Haiku 5 is a one-line edit.
+ */
 export const DEFAULT_TIER_TO_ALIAS = {
-    cheap: "haiku",
+    cheap: "sonnet",
     standard: "sonnet",
     strong: "opus",
 };
