@@ -25,20 +25,14 @@ The file lives at `.claude/specs/features/<slug>/design/mockups.html`; the plann
 
 ## Design-discipline leverage (R5)
 
-Your taste/composition can be sharpened by the optional **`frontend-design`** skill. It is **detect-then-defer with graceful degradation**, applied *on top of* the `docs/DESIGN.md` tokens — it informs taste and composition, it never overrides the token system (which stays the source of truth for colors/type/radii/spacing).
+Optional **`frontend-design`** skill, detect-then-defer: if installed, defer to it for visual judgment, layout, and component taste, grounded in the DESIGN.md tokens; otherwise apply the distilled fallback below. **No vendoring:** method only, never the skill's text. Either way, the token system stays the source of truth for colors/type/radii/spacing.
 
-### 3-tier method
-
-1. **Real skill (preferred).** If the **`frontend-design`** skill is installed/available in-session, defer to it for visual judgment, layout, and component taste — grounded in the DESIGN.md tokens you read in step 3.
-2. **Distilled built-in fallback (always present).** If it is not installed, apply this compact design-discipline method yourself before you build a screen:
+**Distilled built-in fallback (AC5)** — your design method when the skill isn't installed, apply before building a screen:
    - Pin a **token system of 4–6 named colors** (background, surface, primary/accent, text, plus 1–2 supporting), traced to DESIGN.md.
    - Define **2+ type roles** (e.g. display/heading vs. body/caption) with real sizes/weights.
    - Commit to a **layout concept** (the spatial idea the screens share — e.g. a left rail + content well, a single centered column with a sticky action bar).
    - Add **one signature element** — a single deliberate, non-generic detail that makes it feel like *this* product (a distinctive card treatment, a badge style, an accent rule).
    - **Critique for genericness** before building: reject centered-everything, default purple gradients, filler content, and stock-template rhythm. If it could be any SaaS app, redo it.
-3. **Suggest the skill (optional, never required).** When you fall back, you may note once that installing the official `frontend-design` skill would sharpen future designs — never block on it, never require it.
-
-**No vendoring (AC5):** encode the *method* above only; do not copy the skill's text into this repo.
 
 ### Grounding ladder (AC6)
 
