@@ -41,7 +41,7 @@ starts from extracted, challenged material.
      On `version conflict`, `read_document` again, merge, retry with the
      fresh version.
 
-   On success: `sync_claude_md`, then report the document id and file path.
+   On success: report the document id and file path.
 
 ## Interview protocol
 

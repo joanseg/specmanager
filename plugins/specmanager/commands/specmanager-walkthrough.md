@@ -24,8 +24,7 @@ Generate a Walkthrough for **$ARGUMENTS**.
    - The Plan doc id.
    - **Per-phase mode**: the phase's exit-test line lifted from `plan.md`; hint that task artifacts for that phase are available via `list_tasks` filtered by `phase`.
    - **Final mode**: the list of phase walkthrough doc ids (look up via `list_documents({ featureId, stage: "walkthrough" })`) — pass them explicitly so the agent doesn't waste tokens searching.
-7. **Sync CLAUDE.md.** Call `sync_claude_md`.
-8. **Report.** Document id + file path (e.g. `walkthroughs/<slug>/phase-<phaseName>.md`, or `walkthroughs/<slug>/feature.md` for `final`). Suggest a user review pass before approving.
+7. **Report.** Document id + file path (e.g. `walkthroughs/<slug>/phase-<phaseName>.md`, or `walkthroughs/<slug>/feature.md` for `final`). Suggest a user review pass before approving.
 
 ## Don't
 - Don't fabricate code tours. The subagent must read real files in per-phase mode; in final mode it must read the existing phase walkthroughs and link, not re-explain.

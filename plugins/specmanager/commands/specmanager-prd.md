@@ -29,9 +29,7 @@ existing feature, the PRD is drafted for that feature instead.
    and a prompt that includes:
    - The feature id and title.
    - Any extra context the user gave alongside the slash command.
-4. **Sync CLAUDE.md.** When the subagent reports success, call `sync_claude_md`
-   so the managed block reflects the new feature and draft.
-5. **Report.** Tell the user the new document id and file path. Suggest opening
+4. **Report.** Tell the user the new document id and file path. Suggest opening
    it in the board (`/specmanager-board`) to review, then approve.
 
 ## Don't

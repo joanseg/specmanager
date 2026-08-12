@@ -16,8 +16,7 @@ Generate an Architecture draft for the feature: **$ARGUMENTS**.
    - Any context the user gave alongside the slash command.
 
    The architect will read the PRD, scan repo conventions, and call `create_document` itself.
-5. **Sync CLAUDE.md.** After the subagent returns, call `sync_claude_md`.
-6. **Report.** Document id + file path. Suggest reviewing in the board.
+5. **Report.** Document id + file path. Suggest reviewing in the board.
 
 ## Don't
 - Don't bypass `check_gate`. The gate is the contract.

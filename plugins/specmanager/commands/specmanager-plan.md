@@ -19,8 +19,7 @@ Generate a Plan + phased tasks for the feature: **$ARGUMENTS**.
    - Any extra context the user gave.
 
    The planner writes `plan.md` (organised into `## Phase <name> — <theme>` sections with `**Exit test:**` lines) AND emits a `create_task` call per Build-order item with `phase` and Fibonacci `complexity` (≤3). Most features come back as a **single named phase** — that is the expected common output, not a degenerate case. The planner only splits into multiple phases for a genuinely large project with a real mid-build test boundary, and confirms any such split with you via `AskUserQuestion` before persisting tasks. When a design doc was passed in, the planner references the brief's screens/components/tokens by name in the plan body.
-6. **Sync CLAUDE.md.** Call `sync_claude_md`.
-7. **Report.** Plan doc id + file path + per-phase task counts (e.g. `Phase A: 5 tasks, Phase B: 7 tasks`) and whether the plan was grounded in a design brief. Suggest opening the board to see the Build column populated.
+6. **Report.** Plan doc id + file path + per-phase task counts (e.g. `Phase A: 5 tasks, Phase B: 7 tasks`) and whether the plan was grounded in a design brief. Suggest opening the board to see the Build column populated.
 
 ## Don't
 - Don't generate the plan inline — go through the subagent.

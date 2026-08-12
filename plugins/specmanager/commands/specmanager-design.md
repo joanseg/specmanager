@@ -20,8 +20,7 @@ Design the screens for the feature: **$ARGUMENTS**.
    - Any extra context the user gave after the feature id.
 
    The designer reads the upstream docs and `./docs/DESIGN.md`, designs the actual screens as one self-contained HTML file (high-fi mockups stacked with explanatory notes between them), and calls `create_design_brief` itself.
-7. **Sync CLAUDE.md.** After the subagent returns, call `sync_claude_md`.
-8. **Report.** Document id + file path (`design/mockups.html`). Suggest opening it in the board — the doc panel renders the stacked mockups in a sandboxed iframe preview.
+7. **Report.** Document id + file path (`design/mockups.html`). Suggest opening it in the board — the doc panel renders the stacked mockups in a sandboxed iframe preview.
 
 ## Don't
 - Don't bypass `check_gate`. The gate is the contract.
