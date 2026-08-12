@@ -33,6 +33,7 @@ import {
   listPhases,
   getNextPhase,
   getPhaseCompletion,
+  getSpecSlice,
   setPhaseMeta,
   resolveActiveCard,
   setActiveBuild,
@@ -393,6 +394,16 @@ server.registerTool(
     inputSchema: z.object({ featureId: z.string(), phase: z.string() }),
   },
   async ({ featureId, phase }) => ok(await getPhaseCompletion(featureId, phase, PROJECT_DIR))
+);
+
+server.registerTool(
+  "get_spec_slice",
+  {
+    description:
+      "Assemble the spec-compliance reviewer's slice for one phase: the phase's plan.md section, its task titles/notes, and the Architecture sections named in meta.architectureRefs (resolved by leading id-token or kebab-slug; name-matching fallback when refs are absent). Returns { planSection, tasks, architecture, unresolvedRefs, fallbackUsed }, or null for an unknown phase. Called by /specmanager-build before dispatching the reviewer.",
+    inputSchema: z.object({ featureId: z.string(), phase: z.string() }),
+  },
+  async ({ featureId, phase }) => ok(await getSpecSlice(featureId, phase, PROJECT_DIR))
 );
 
 server.registerTool(

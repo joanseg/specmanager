@@ -72,6 +72,7 @@ async function main(): Promise<void> {
     "create_document",
     "create_feature",
     "create_task",
+    "get_spec_slice",
     "link_documents",
     "list_documents",
     "list_features",

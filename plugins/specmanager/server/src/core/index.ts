@@ -10,6 +10,7 @@ export * from "./status.js";
 export * from "./dependencies.js";
 export * from "./tasks.js";
 export * from "./phases.js";
+export * from "./spec-slice.js";
 export * from "./active-card.js";
 export * from "./active-build.js";
 export * from "./tiers.js";
