@@ -4,83 +4,105 @@
       "id": "task-001",
       "featureId": "feat-opus-5-readiness",
       "title": "Re-derive the invariant inventory independently from agents/, commands/, and core/",
-      "status": "todo",
+      "status": "done",
       "phase": "inventory",
       "complexity": 3,
       "dependsOn": [],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "5973e776461d7d6211f57e31a6c11acf3e51dd89"
+        ],
+        "files": [
+          "docs/prompt-invariants-derived.md"
+        ],
         "pr": null
       },
       "createdAt": "2026-08-11T14:41:25.948Z",
-      "updatedAt": "2026-08-11T14:50:52.576Z"
+      "updatedAt": "2026-08-12T09:06:13.966Z"
     },
     {
       "id": "task-002",
       "featureId": "feat-opus-5-readiness",
       "title": "Reconcile the re-derived inventory against the Architecture's INV-1…INV-15 table",
-      "status": "todo",
+      "status": "done",
       "phase": "inventory",
       "complexity": 2,
       "dependsOn": [
         "task-001"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "23b7946"
+        ],
+        "files": [
+          "docs/prompt-invariants-reconciled.md"
+        ],
         "pr": null
       },
       "createdAt": "2026-08-11T14:41:45.267Z",
-      "updatedAt": "2026-08-11T14:50:53.199Z"
+      "updatedAt": "2026-08-12T09:17:01.869Z"
     },
     {
       "id": "task-003",
       "featureId": "feat-opus-5-readiness",
       "title": "Record the pre-trim baseline measurement (word counts + scoped Don't-bullet counts)",
-      "status": "todo",
+      "status": "done",
       "phase": "inventory",
       "complexity": 1,
       "dependsOn": [],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "d95542d"
+        ],
+        "files": [
+          "docs/baseline-measurement.md"
+        ],
         "pr": null
       },
       "createdAt": "2026-08-11T14:41:46.606Z",
-      "updatedAt": "2026-08-11T14:50:54.678Z"
+      "updatedAt": "2026-08-12T09:08:51.043Z"
     },
     {
       "id": "task-004",
       "featureId": "feat-opus-5-readiness",
       "title": "R8: correct docs/agent-snippets/design-grounding.md to the Read-on-filePath form",
-      "status": "todo",
+      "status": "done",
       "phase": "inventory",
       "complexity": 1,
       "dependsOn": [],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "63c1c56"
+        ],
+        "files": [
+          "docs/agent-snippets/design-grounding.md"
+        ],
         "pr": null
       },
       "createdAt": "2026-08-11T14:41:48.001Z",
-      "updatedAt": "2026-08-11T14:50:55.322Z"
+      "updatedAt": "2026-08-12T09:05:14.297Z"
     },
     {
       "id": "task-005",
       "featureId": "feat-opus-5-readiness",
       "title": "Write the selftest-prompts.ts harness (PromptInvariant shape, match loop, min/max failures)",
-      "status": "todo",
+      "status": "done",
       "phase": "inventory",
       "complexity": 2,
       "dependsOn": [],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "75561ca"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest-prompts.ts",
+          "plugins/specmanager/server/dist/selftest-prompts.js",
+          "plugins/specmanager/server/dist/selftest-prompts.js.map"
+        ],
         "pr": null
       },
       "createdAt": "2026-08-11T14:41:49.435Z",
-      "updatedAt": "2026-08-11T14:50:56.107Z"
+      "updatedAt": "2026-08-12T09:04:01.382Z"
     },
     {
       "id": "task-006",
@@ -134,43 +156,51 @@
       "id": "task-009",
       "featureId": "feat-opus-5-readiness",
       "title": "R8: propagate the corrected design-grounding fragment into agents/architect.md (leave planner/builder untouched)",
-      "status": "todo",
+      "status": "done",
       "phase": "inventory",
       "complexity": 2,
       "dependsOn": [
         "task-004"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "c9c21f4"
+        ],
+        "files": [
+          "plugins/specmanager/agents/architect.md"
+        ],
         "pr": null
       },
       "createdAt": "2026-08-11T14:41:58.979Z",
-      "updatedAt": "2026-08-11T14:50:56.808Z"
+      "updatedAt": "2026-08-12T09:06:37.690Z"
     },
     {
       "id": "task-010",
       "featureId": "feat-opus-5-readiness",
       "title": "Give R3's surviving lossless-carryover clause a canonical docs/agent-snippets/ home",
-      "status": "todo",
+      "status": "done",
       "phase": "inventory",
       "complexity": 2,
       "dependsOn": [
         "task-004"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "cd0ea72"
+        ],
+        "files": [
+          "docs/agent-snippets/lossless-carryover.md"
+        ],
         "pr": null
       },
       "createdAt": "2026-08-11T14:42:00.413Z",
-      "updatedAt": "2026-08-11T14:50:58.138Z"
+      "updatedAt": "2026-08-12T09:06:45.958Z"
     },
     {
       "id": "task-011",
       "featureId": "feat-opus-5-readiness",
       "title": "Encode the reconciled invariant table in selftest-prompts.ts with max at today's measured counts",
-      "status": "todo",
+      "status": "done",
       "phase": "inventory",
       "complexity": 3,
       "dependsOn": [
@@ -179,12 +209,18 @@
         "task-005"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "ed4af8c0276693a0426dadcc66d82739a8d0ed61"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest-prompts.ts",
+          "plugins/specmanager/server/dist/selftest-prompts.js",
+          "plugins/specmanager/server/dist/selftest-prompts.js.map"
+        ],
         "pr": null
       },
       "createdAt": "2026-08-11T14:42:01.809Z",
-      "updatedAt": "2026-08-11T14:50:59.031Z"
+      "updatedAt": "2026-08-12T09:26:36.895Z"
     },
     {
       "id": "task-012",
@@ -208,7 +244,7 @@
       "id": "task-013",
       "featureId": "feat-opus-5-readiness",
       "title": "INV-15: add the snippet-parity pattern pair (positive min, negative max:0) to selftest-prompts",
-      "status": "todo",
+      "status": "done",
       "phase": "inventory",
       "complexity": 2,
       "dependsOn": [
@@ -217,12 +253,18 @@
         "task-010"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "82000b1"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest-prompts.ts",
+          "plugins/specmanager/server/dist/selftest-prompts.js",
+          "plugins/specmanager/server/dist/selftest-prompts.js.map"
+        ],
         "pr": null
       },
       "createdAt": "2026-08-11T14:42:07.803Z",
-      "updatedAt": "2026-08-11T14:50:59.676Z"
+      "updatedAt": "2026-08-12T09:13:32.717Z"
     },
     {
       "id": "task-014",
@@ -246,7 +288,7 @@
       "id": "task-015",
       "featureId": "feat-opus-5-readiness",
       "title": "Register selftest-prompts in server/package.json; rebuild and verify green against unmodified prompts",
-      "status": "todo",
+      "status": "done",
       "phase": "inventory",
       "complexity": 2,
       "dependsOn": [
@@ -254,12 +296,16 @@
         "task-013"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "71ab078"
+        ],
+        "files": [
+          "plugins/specmanager/server/package.json"
+        ],
         "pr": null
       },
       "createdAt": "2026-08-11T14:42:13.349Z",
-      "updatedAt": "2026-08-11T14:50:59.987Z"
+      "updatedAt": "2026-08-12T09:29:59.610Z"
     },
     {
       "id": "task-016",
@@ -623,19 +669,25 @@
       "id": "task-035",
       "featureId": "feat-opus-5-readiness",
       "title": "Extend selftest-prompts with a mutation pass proving each invariant goes red when its statement is removed",
-      "status": "todo",
+      "status": "done",
       "phase": "inventory",
       "complexity": 3,
       "dependsOn": [
         "task-015"
       ],
       "artifacts": {
-        "commits": [],
-        "files": [],
+        "commits": [
+          "fb6626cd2514101b35820cdd0ce4eadc360ee810"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest-prompts.ts",
+          "plugins/specmanager/server/dist/selftest-prompts.js",
+          "plugins/specmanager/server/dist/selftest-prompts.js.map"
+        ],
         "pr": null
       },
       "createdAt": "2026-08-11T14:50:45.010Z",
-      "updatedAt": "2026-08-11T14:50:45.010Z"
+      "updatedAt": "2026-08-12T09:33:25.478Z"
     }
   ],
   "meta": {

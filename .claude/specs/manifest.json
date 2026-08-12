@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-11T14:53:32.068Z",
+  "generatedAt": "2026-08-12T09:47:18.019Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -1666,16 +1666,25 @@
         {
           "id": "plan-opus-5-readiness-017",
           "stage": "plan",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
           "version": 2,
           "title": "Opus 5 readiness plan"
+        },
+        {
+          "id": "wt-opus-5-readiness-019",
+          "stage": "walkthrough",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Opus 5 readiness — Phase inventory walkthrough",
+          "phase": "inventory"
         }
       ],
       "tasks": {
-        "todo": 35,
+        "todo": 24,
         "in_progress": 0,
-        "done": 0,
+        "done": 11,
         "blocked": 0,
         "total": 35
       },
@@ -1684,13 +1693,13 @@
           "name": "inventory",
           "order": 0,
           "taskCount": 11,
-          "doneCount": 0,
+          "doneCount": 11,
           "inProgressCount": 0,
           "blockedCount": 0,
-          "status": "todo",
-          "walkthroughId": null,
-          "walkthroughStatus": null,
-          "walkthroughStale": null
+          "status": "done",
+          "walkthroughId": "wt-opus-5-readiness-019",
+          "walkthroughStatus": "draft",
+          "walkthroughStale": false
         },
         {
           "name": "core",

@@ -37,7 +37,7 @@ _8 features shipped — full history on the board._
 **Commands:**
 `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)
 
-_Last synced: 2026-08-11T14:55:49.862Z_
+_Last synced: 2026-08-12T09:53:51.599Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
@@ -62,6 +62,7 @@ The repo also dogfoods itself: its own features live under `.claude/specs/featur
   - `server/` — `@specmanager/server`, TypeScript, ships compiled `dist/`.
   - `ui/` — `@specmanager/ui`, React 18 + Vite, ships compiled `dist/`.
 - **`docs/`** — `docs/DESIGN.md` is the managed design-system spec; the original full spec and phased plan are archived under `docs/temp/original-specs/` (historical snapshots — don't edit).
+- **`docs/agent-snippets/`** — canonical text for prompt fragments that appear in **more than one** agent. There is no install-time preprocessor, so each fragment is physically copy-pasted into the agents that need it; the snippet file is the source of truth and names its carriers. **Change the fragment here and update every carrier in the same commit** — a copy that silently diverges is a real defect class, not a style nit (`design-grounding.md` once told the architect to `read_document` a design doc while `planner.md`/`builder.md` warned against exactly that). `selftest-prompts` guards this: snippet parity is asserted as a positive/negative pattern pair, so a drifted copy fails the suite.
 
 ## Architecture (the big picture)
 

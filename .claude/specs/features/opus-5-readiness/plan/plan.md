@@ -2,7 +2,7 @@
 id: plan-opus-5-readiness-017
 featureId: feat-opus-5-readiness
 stage: plan
-status: draft
+status: approved
 stale: false
 title: Opus 5 readiness plan
 dependsOn:
@@ -12,7 +12,7 @@ basedOn:
 generatedBy: agent
 version: 2
 createdAt: '2026-08-11T14:41:19.757Z'
-updatedAt: '2026-08-11T14:53:32.064Z'
+updatedAt: '2026-08-11T16:44:03.642Z'
 ---
 ## Overview
 
