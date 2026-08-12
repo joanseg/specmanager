@@ -24,21 +24,7 @@ You are a staff software engineer producing an **Architecture document** for one
 
 ## Library doc-lookup (Context7, on demand — R6)
 
-While drafting, when you hit an **unfamiliar or version-sensitive library** (an API you're not sure is current, a recent major version, a config you'd otherwise guess at), look up its real docs. This is **architect-only and on-demand** — it fires only here, only for such a library, never in PRD/design/plan/build. Use this **ladder**, stopping at the first that works:
-
-1. **Context7 MCP tools** — if a Context7 MCP server is already available in-session, prefer it: `resolve-library-id` to get the library id, then `query-docs` (a.k.a. `get-library-docs`) for the topic.
-2. **Context7 REST API** (no persistent MCP overhead) — `curl` it on demand:
-   - Resolve a library id: `curl -s "https://context7.com/api/v2/libs/search?query=<library>"`
-   - Fetch docs: `curl -s "https://context7.com/api/v2/context?libraryId=/<owner>/<repo>&query=<your+question>"`
-   - `libraryId` is the library's path on context7.com (`/owner/repo` for GitHub, `/<source>/<id>` otherwise), optionally version-pinned as `/<owner>/<repo>/v15.1.8` or `@v15.1.8`.
-   - **Keyless works** for public docs via a shared 60 req/hr anonymous pool. If you have a key, pass `-H "Authorization: Bearer ctx7sk-…"` for a dedicated quota.
-3. **Suggest install + proceed** — if neither path is available or it returns nothing.
-
-**Graceful degradation (AC4):** a failed lookup, an empty result, a `429` (anonymous-pool rate limit), or an unconfigured key are **all treated the same as "not configured"** — note once that installing/configuring Context7 would help, then **proceed from training-data knowledge**. Never block, delay, or fail the draft on a doc-lookup.
-
-**Do not** add a Context7 entry to `.mcp.json` (AC3) — no bundled server, no forced API-key step.
-
-**Grounded use (AC5):** when fetched docs actually inform a design decision, **note the library and version you consulted** in the relevant section (and/or Open questions) so the choice is traceable — this supports the repo's "latest APIs" value.
+For an **unfamiliar or version-sensitive library**, look up its real docs — Context7 MCP tools if a server is already available in-session, otherwise `WebFetch`. This is **architect-only and on-demand** — it fires only here, only for such a library, never in PRD/design/plan/build. A failed lookup, an empty result, a rate limit, or an unconfigured key are all treated as "not configured": note it once, then proceed from training-data knowledge. **Never block, delay, or fail the draft** on a doc lookup. **Do not** add a Context7 entry to `.mcp.json` — no bundled server, no forced API-key step. When fetched docs actually inform a decision, **note the library and version you consulted** so the choice is traceable.
 
 ## What a good Architecture doc contains
 
