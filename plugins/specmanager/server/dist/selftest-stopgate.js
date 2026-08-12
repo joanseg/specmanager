@@ -113,6 +113,51 @@ async function main() {
     // The cap phase still has its open task and the marker is still pinned.
     const a4 = runHook(root);
     assert(a4.code === 2, "counter reset after cap → next fail is exit 2 again");
+    // ── Absent-testCommand path (Q5) ────────────────────────────────────────────
+    // Every case above pins an explicit meta.testCommand. These two cover the
+    // opposite: a plan with no meta.phases entry at all (12 of 16 plans in this
+    // repo), where testCommand resolves to null. Rung 2 (the plan's **Exit test:**
+    // line) is the only fallback — the project-root probe ladder is deleted.
+    // 6. No meta.phases + an exit test containing `npm ` → rung 2 runs it.
+    //    The command fails deterministically without shelling out to npm; the
+    //    `npm ` token is what makes rung 2 select the line, and the failure text
+    //    proves the selected line was actually executed.
+    const rung2 = await createFeature("Rung two feature", root);
+    const rung2Plan = await createDocument({
+        featureId: rung2.id,
+        stage: "plan",
+        title: "Rung two plan",
+        body: "# Plan\n\n## Phase core — x\n**Exit test:** false # npm run build\n",
+    }, root);
+    await setStatus(rung2Plan.frontmatter.id, "approved", root);
+    await createTask({ featureId: rung2.id, title: "R1", phase: "core", complexity: 2 }, root);
+    await setActiveBuild({ featureId: rung2.id, phase: "core" }, root);
+    const rung2Meta = await readTasksMeta(rung2.id, root);
+    assert(rung2Meta.phases["core"] === undefined, "rung-2 feature has no meta.phases entry (testCommand absent)");
+    const rung2Run = runHook(root);
+    assert(rung2Run.code === 2, "absent testCommand + runnable exit test → rung 2 runs it and its failure gates");
+    assert(rung2Run.stderr.includes("npm run build"), "stderr names the exit-test line rung 2 resolved");
+    // 7. No meta.phases + a prose-only exit test → nothing runs, even with a
+    //    failing project-root `npm test` present (what the deleted probe would
+    //    have found). Criteria-only: open tasks gate, all-done exits 0.
+    await fs.writeFile(path.join(root, "package.json"), JSON.stringify({ name: "probe-bait", scripts: { test: "exit 1" } }, null, 2), "utf8");
+    const prose = await createFeature("Prose exit test feature", root);
+    const prosePlan = await createDocument({
+        featureId: prose.id,
+        stage: "plan",
+        title: "Prose plan",
+        body: "# Plan\n\n## Phase core — x\n**Exit test:** manual review of the rendered board\n",
+    }, root);
+    await setStatus(prosePlan.frontmatter.id, "approved", root);
+    const p1 = await createTask({ featureId: prose.id, title: "P1", phase: "core", complexity: 2 }, root);
+    await setActiveBuild({ featureId: prose.id, phase: "core" }, root);
+    const proseOpen = runHook(root);
+    assert(proseOpen.code === 2, "absent testCommand + prose exit test → open tasks still gate");
+    assert(!proseOpen.stderr.includes("tests failing"), "no command is inferred from a project-root package.json (probe ladder deleted)");
+    await updateTask({ id: p1.id, featureId: prose.id, status: "done", artifacts: { files: ["p.ts"] } }, root);
+    const proseDone = runHook(root);
+    assert(proseDone.code === 0, "absent testCommand + prose exit test + all tasks done → exit 0");
+    assert(proseDone.stderr.trim() === "", "criteria-only pass writes no stderr");
     console.log("\nAll R1 Stop-gate assertions passed.");
     console.log(`Inspect the tmp project at: ${root}`);
 }

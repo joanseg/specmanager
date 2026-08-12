@@ -1,0 +1,228 @@
+// R6 — spec-slice assembly for the build pipeline's reviewer hand-off.
+//
+// This module owns the one parser for plan.md `## Phase <name>` headings.
+// `core/active-card.ts` (and through it the Stop-gate) imports `matchPhaseHeading`
+// from here rather than keeping a second copy — one parser, one place, so a fix
+// to the heading grammar can never apply to only half the callers.
+//
+// Fallback trigger note (deviation from the Architecture's literal wording):
+// the Architecture's `## core-spec-slice` → Fallback behaviour section says
+// the fallback fires when `architectureRefs` is "empty/absent, or when every
+// listed ref is unresolved". That second clause would make a single
+// mistyped ref indistinguishable from "no refs were named at all" — exactly
+// the silent-wrong slice this module exists to prevent (a caller sees a
+// plausible-looking name-matched section instead of the signal that an
+// anchor drifted). This implementation therefore triggers the fallback only
+// on empty/absent `architectureRefs`; any ref that fails to resolve, alone
+// or alongside others, is always surfaced in `unresolvedRefs` and never
+// silently promoted into a fallback match.
+import fs from "node:fs/promises";
+import { projectRoot } from "./paths.js";
+import { listPhases } from "./phases.js";
+import { listTasks, readTasksMeta } from "./tasks.js";
+import { listDocuments } from "./documents.js";
+/**
+ * Match a plan.md phase heading and return the phase name it declares.
+ *
+ * Recognises `## Phase <name>`, case-insensitively, where `<name>` is the first
+ * run of characters up to whitespace or a dash — so `## Phase core — theme` and
+ * `## Phase core` both yield `core`. Returns the name **as written**; callers
+ * compare case-insensitively. Any other line ⇒ `null`.
+ */
+export function matchPhaseHeading(line) {
+    const m = line.match(/^##\s+Phase\s+([^\s—-]+)/i);
+    return m ? m[1] : null;
+}
+const HEADING_RE = /^(#{2,6})[ \t]+(.+)$/gm;
+/** First whitespace-delimited token of a heading, trailing punctuation stripped. */
+export function idToken(headingText) {
+    const first = headingText.trim().split(/\s+/)[0] ?? "";
+    return first.replace(/[—:.-]+$/, "");
+}
+/** Heading text lowercased with every non-alphanumeric run collapsed to a single `-`. */
+export function kebabSlug(headingText) {
+    return headingText
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+}
+/** Index every `##`…`######` heading, in document order. */
+export function indexHeadings(markdown) {
+    const out = [];
+    for (const m of markdown.matchAll(HEADING_RE)) {
+        const text = m[2].trim();
+        out.push({
+            level: m[1].length,
+            text,
+            id: idToken(text),
+            slug: kebabSlug(text),
+            start: m.index,
+        });
+    }
+    return out;
+}
+/**
+ * Slice from `headings[i]` through to the next heading of level ≤ its own,
+ * exclusive — so a `##` section swallows its `###` children and stops at the
+ * next `##`. Runs to EOF when no such heading follows.
+ */
+function sliceAt(markdown, headings, i) {
+    const here = headings[i];
+    const next = headings.slice(i + 1).find((h) => h.level <= here.level);
+    return markdown.slice(here.start, next ? next.start : markdown.length).trimEnd();
+}
+/**
+ * Resolve `meta.architectureRefs` anchors against an Architecture document.
+ *
+ * A ref matches a heading when it equals that heading's id-token or kebab-slug,
+ * compared case-insensitively; id-token is tried first, then kebab-slug, and the
+ * first matching heading wins silently (two headings sharing an anchor is an
+ * authoring defect `core` does not arbitrate).
+ *
+ * A ref that matches nothing is returned in `unresolvedRefs` and produces no
+ * section — so an anchor that resolved to nothing is always distinguishable
+ * from one that resolved to a short section. Never throws, never guesses.
+ */
+export function resolveArchitectureRefs(markdown, refs) {
+    const headings = indexHeadings(markdown);
+    const sections = [];
+    const unresolvedRefs = [];
+    for (const ref of refs) {
+        const key = ref.trim().toLowerCase();
+        let i = headings.findIndex((h) => h.id.toLowerCase() === key);
+        if (i === -1)
+            i = headings.findIndex((h) => h.slug === key);
+        if (i === -1) {
+            unresolvedRefs.push(ref);
+            continue;
+        }
+        sections.push({ ref, heading: headings[i].text, body: sliceAt(markdown, headings, i) });
+    }
+    return { sections, unresolvedRefs };
+}
+/**
+ * Fallback anchor resolution, used only when `architectureRefs` is
+ * empty/absent (see the header note above for why an unresolved-but-named
+ * ref does not also take this path). Matches headings against the phase
+ * name itself rather than an explicit anchor:
+ *
+ * - Tier 1: heading id-token or kebab-slug equals the phase name exactly,
+ *   case-insensitively.
+ * - Tier 2 (only when tier 1 finds nothing): heading kebab-slug contains the
+ *   phase name as a whole hyphen-delimited segment — so phase `core` matches
+ *   `## core-spec-slice` (slug `core-spec-slice`, segment `core`).
+ *
+ * Every heading at the winning tier is kept, in document order. Zero matches
+ * ⇒ `[]`. Never throws.
+ */
+export function matchHeadingsByPhaseName(markdown, phase) {
+    const headings = indexHeadings(markdown);
+    const phaseKey = phase.trim().toLowerCase();
+    const phaseSlug = kebabSlug(phase);
+    const tier1 = [];
+    const tier2 = [];
+    headings.forEach((h, i) => {
+        if (h.id.toLowerCase() === phaseKey || h.slug === phaseSlug) {
+            tier1.push(i);
+        }
+        else if (h.slug.split("-").includes(phaseSlug)) {
+            tier2.push(i);
+        }
+    });
+    const indices = tier1.length > 0 ? tier1 : tier2;
+    return indices.map((i) => ({
+        ref: headings[i].id,
+        heading: headings[i].text,
+        body: sliceAt(markdown, headings, i),
+    }));
+}
+/**
+ * Slice plan.md down to one `## Phase <name>` section: from the matched
+ * heading line through to the next `^##\s` heading, or a line that is exactly
+ * `---`, whichever comes first (or EOF). Phase name matched via
+ * `matchPhaseHeading` — the shared parser, not a second copy — and compared
+ * case-insensitively, so it tolerates the `— <theme>` suffix. No match ⇒ null.
+ */
+function planSectionFor(planBody, phase) {
+    const lines = planBody.split("\n");
+    const key = phase.toLowerCase();
+    let start = -1;
+    let end = lines.length;
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (start === -1) {
+            const heading = matchPhaseHeading(line);
+            if (heading !== null && heading.toLowerCase() === key)
+                start = i;
+            continue;
+        }
+        if (/^##\s/.test(line) || line.trim() === "---") {
+            end = i;
+            break;
+        }
+    }
+    if (start === -1)
+        return null;
+    return lines.slice(start, end).join("\n").trimEnd();
+}
+/**
+ * Assemble the reviewer's spec slice for one phase: its plan.md section, its
+ * task titles/notes, and the Architecture sections its `meta.architectureRefs`
+ * resolve to. Returns null for an unknown phase — mirroring
+ * `getPhaseCompletion`, so the build command's existing phase-not-found branch
+ * is reused unchanged. Never throws: a missing Architecture doc or plan doc
+ * degrades the corresponding field rather than erroring.
+ */
+export async function getSpecSlice(featureId, phase, root = projectRoot()) {
+    const phases = await listPhases(featureId, root);
+    if (!phases.some((p) => p.name === phase))
+        return null;
+    const allTasks = await listTasks(featureId, root);
+    const tasks = allTasks
+        .filter((t) => t.phase === phase)
+        .map((t) => ({ id: t.id, title: t.title, notes: null, complexity: t.complexity }));
+    const meta = await readTasksMeta(featureId, root);
+    const refs = meta.phases[phase]?.architectureRefs ?? [];
+    const fallbackUsed = refs.length === 0;
+    let architecture = [];
+    let unresolvedRefs = fallbackUsed ? [] : [...refs];
+    const [archDoc] = await listDocuments({ featureId, stage: "architecture" }, root);
+    if (archDoc) {
+        try {
+            const archMarkdown = await fs.readFile(archDoc.filePath, "utf8");
+            if (fallbackUsed) {
+                architecture = matchHeadingsByPhaseName(archMarkdown, phase);
+            }
+            else {
+                const resolved = resolveArchitectureRefs(archMarkdown, refs);
+                architecture = resolved.sections;
+                unresolvedRefs = resolved.unresolvedRefs;
+            }
+        }
+        catch {
+            // Architecture doc unreadable ⇒ treat as absent: no sections, refs unresolved
+            // (empty when the fallback already triggered on empty refs).
+        }
+    }
+    let planSection = null;
+    const [planDoc] = await listDocuments({ featureId, stage: "plan" }, root);
+    if (planDoc) {
+        try {
+            const planMarkdown = await fs.readFile(planDoc.filePath, "utf8");
+            planSection = planSectionFor(planMarkdown, phase);
+        }
+        catch {
+            // Plan doc unreadable ⇒ no plan section.
+        }
+    }
+    return {
+        featureId,
+        phase,
+        planSection,
+        tasks,
+        architecture,
+        unresolvedRefs,
+        fallbackUsed,
+    };
+}
+//# sourceMappingURL=spec-slice.js.map
