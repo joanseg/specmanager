@@ -72,20 +72,6 @@ clear_counter() {
   rm -f "$COUNTER_FILE" 2>/dev/null || true
 }
 
-# ── Probe ladder: only used when testCommand is absent (back-compat) ──────────
-probe_test_command() {
-  if [[ -f "$PROJECT_DIR/package.json" ]] && grep -q '"test"' "$PROJECT_DIR/package.json" 2>/dev/null; then
-    echo "npm test"; return
-  fi
-  if [[ -f "$PROJECT_DIR/pyproject.toml" ]]; then
-    echo "uv run pytest"; return
-  fi
-  if [[ -f "$PROJECT_DIR/Cargo.toml" ]]; then
-    echo "cargo test"; return
-  fi
-  echo ""
-}
-
 # ── Resolve the command to run ────────────────────────────────────────────────
 RUN_CMD=""
 SKIP_RUN=0
@@ -95,12 +81,13 @@ if [[ "$TEST_COMMAND" == "none" ]]; then
 elif [[ -n "$TEST_COMMAND" ]]; then
   RUN_CMD="$TEST_COMMAND"
 else
-  # Field absent ⇒ fall back to the exit-test line if it looks runnable, else a
-  # convention probe. Unresolved ⇒ pass (never invent a failure).
+  # Field absent (plans with no meta.phases) ⇒ fall back to the phase's
+  # **Exit test:** line if it looks runnable. Nothing else is probed: a
+  # project-root `npm test`/`pytest`/`cargo test` has no relationship to the
+  # active phase, so inferring one would invent a failure. Unresolved ⇒ the test
+  # leg is skipped and the open-tasks leg still gates.
   if [[ -n "$EXIT_TEST" ]] && [[ "$EXIT_TEST" == *"npm "* || "$EXIT_TEST" == *"uv "* || "$EXIT_TEST" == *"cargo "* ]]; then
     RUN_CMD="$EXIT_TEST"
-  else
-    RUN_CMD="$(probe_test_command)"
   fi
 fi
 
