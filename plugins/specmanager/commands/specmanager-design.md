@@ -7,22 +7,12 @@ Design the screens for the feature: **$ARGUMENTS**.
 
 ## Steps
 
-1. **Resolve the feature.** Call `list_features`. Find the feature whose `id` or `slug` matches the first whitespace-separated token of the argument. If none match, ask the user to clarify and stop. (Anything after the first token is treated as extra context to forward to the subagent.)
-2. **Check the gate.** Call `check_gate({ featureId, stage: "design" })`. The design gate is open once the PRD is approved (Architecture is NOT required — design can run in parallel with Architecture). If closed, report `reason` and stop.
-3. **Confirm no draft already exists.** `list_documents({ featureId, stage: "design" })`. If a doc exists, point the user at the panel to edit, or delete the file before regenerating. Don't duplicate.
-4. **Look up PRD and Architecture ids** to pass into the subagent prompt. `list_documents({ featureId, stage: "prd" })` and `list_documents({ featureId, stage: "architecture" })`. Architecture may be absent or in draft — pass `null` if so.
-5. **Collect attachments.** If the user pasted screenshot paths in the conversation before invoking the command, list them — the designer uses them as visual reference and may inline them as data URIs. If no attachments, the designer works from the PRD + DESIGN.md alone. **Optional design reference (R5/AC7):** when `docs/DESIGN.md` holds only placeholder/`# TODO` tokens, the designer may invite an optional design reference (a screenshot/example through this same attachment path) to ground a synthesized token system — always optional, never required; the designer proceeds and synthesizes if none is given.
-6. **Invoke the subagent.** Use the `Task` tool with `subagent_type: "designer"` and a prompt that includes:
-   - The feature id, title, and slug.
-   - The PRD id + version.
-   - The Architecture id + version (if any).
-   - The screenshot paths the user attached (if any).
-   - Any extra context the user gave after the feature id.
-
-   The designer reads the upstream docs and `./docs/DESIGN.md`, designs the actual screens as one self-contained HTML file (high-fi mockups stacked with explanatory notes between them), and calls `create_design_brief` itself.
-7. **Report.** Document id + file path (`design/mockups.html`). Suggest opening it in the board — the doc panel renders the stacked mockups in a sandboxed iframe preview.
+1. **Resolve → gate → no duplicate.** `list_features`, matching `id`/`slug` against the **first whitespace-separated token** of the argument (anything after it is extra context to forward to the subagent); if none match, ask the user to clarify and stop. Then `check_gate({ featureId, stage: "design" })` — open once the PRD is approved; Architecture is **not** required, design can run in parallel with it. If closed, report `reason` and stop. Then `list_documents({ featureId, stage: "design" })` — if a doc exists, point the user at the panel to edit, or delete the file before regenerating. Don't duplicate.
+2. **Look up PRD and Architecture ids** to pass into the subagent prompt (`list_documents` per stage). Architecture may be absent or in draft — pass `null` if so.
+3. **Collect attachments.** If the user pasted screenshot paths in the conversation before invoking the command, list them — the designer uses them as visual reference and may inline them as data URIs. If no attachments, the designer works from the PRD + DESIGN.md alone. **Optional design reference (R5/AC7):** when `docs/DESIGN.md` holds only placeholder/`# TODO` tokens, the designer may invite an optional design reference (a screenshot/example through this same attachment path) to ground a synthesized token system — always optional, never required; the designer proceeds and synthesizes if none is given.
+4. **Invoke the subagent.** Use the `Task` tool with `subagent_type: "designer"` and a prompt carrying: the feature id/title/slug, the PRD id + version, the Architecture id + version (if any), the screenshot paths the user attached (if any), and any extra context given after the feature id. The designer reads the upstream docs and `./docs/DESIGN.md`, designs the actual screens as one self-contained HTML file (high-fi mockups stacked with explanatory notes), and calls `create_design_brief` itself.
+5. **Report.** Document id + file path (`design/mockups.html`). Suggest opening it in the board — the doc panel renders the stacked mockups in a sandboxed iframe preview.
 
 ## Don't
-- Don't bypass `check_gate`. The gate is the contract.
 - Don't design the screens inline in chat — the subagent has the system prompt that enforces self-contained, DESIGN.md-grounded, high-fi HTML.
 - Don't call `create_document` directly with `stage: "design"` — always go through `create_design_brief` so the `---` escape and the 5MB cap apply.
