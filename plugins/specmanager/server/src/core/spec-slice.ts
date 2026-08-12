@@ -5,9 +5,17 @@
 // from here rather than keeping a second copy — one parser, one place, so a fix
 // to the heading grammar can never apply to only half the callers.
 //
-// The name-match fallback (empty/unresolved refs) lands in a follow-up task;
-// this file ships the shared matcher, Architecture anchor resolution, and the
-// plan-section/task/envelope assembly around it.
+// Fallback trigger note (deviation from the Architecture's literal wording):
+// the Architecture's `## core-spec-slice` → Fallback behaviour section says
+// the fallback fires when `architectureRefs` is "empty/absent, or when every
+// listed ref is unresolved". That second clause would make a single
+// mistyped ref indistinguishable from "no refs were named at all" — exactly
+// the silent-wrong slice this module exists to prevent (a caller sees a
+// plausible-looking name-matched section instead of the signal that an
+// anchor drifted). This implementation therefore triggers the fallback only
+// on empty/absent `architectureRefs`; any ref that fails to resolve, alone
+// or alongside others, is always surfaced in `unresolvedRefs` and never
+// silently promoted into a fallback match.
 
 import fs from "node:fs/promises";
 import { projectRoot } from "./paths.js";
@@ -129,6 +137,44 @@ export function resolveArchitectureRefs(
 }
 
 /**
+ * Fallback anchor resolution, used only when `architectureRefs` is
+ * empty/absent (see the header note above for why an unresolved-but-named
+ * ref does not also take this path). Matches headings against the phase
+ * name itself rather than an explicit anchor:
+ *
+ * - Tier 1: heading id-token or kebab-slug equals the phase name exactly,
+ *   case-insensitively.
+ * - Tier 2 (only when tier 1 finds nothing): heading kebab-slug contains the
+ *   phase name as a whole hyphen-delimited segment — so phase `core` matches
+ *   `## core-spec-slice` (slug `core-spec-slice`, segment `core`).
+ *
+ * Every heading at the winning tier is kept, in document order. Zero matches
+ * ⇒ `[]`. Never throws.
+ */
+export function matchHeadingsByPhaseName(markdown: string, phase: string): SpecSliceSection[] {
+  const headings = indexHeadings(markdown);
+  const phaseKey = phase.trim().toLowerCase();
+  const phaseSlug = kebabSlug(phase);
+
+  const tier1: number[] = [];
+  const tier2: number[] = [];
+  headings.forEach((h, i) => {
+    if (h.id.toLowerCase() === phaseKey || h.slug === phaseSlug) {
+      tier1.push(i);
+    } else if (h.slug.split("-").includes(phaseSlug)) {
+      tier2.push(i);
+    }
+  });
+
+  const indices = tier1.length > 0 ? tier1 : tier2;
+  return indices.map((i) => ({
+    ref: headings[i]!.id,
+    heading: headings[i]!.text,
+    body: sliceAt(markdown, headings, i),
+  }));
+}
+
+/**
  * Slice plan.md down to one `## Phase <name>` section: from the matched
  * heading line through to the next `^##\s` heading, or a line that is exactly
  * `---`, whichever comes first (or EOF). Phase name matched via
@@ -206,18 +252,24 @@ export async function getSpecSlice(
 
   const meta = await readTasksMeta(featureId, root);
   const refs = meta.phases[phase]?.architectureRefs ?? [];
+  const fallbackUsed = refs.length === 0;
 
   let architecture: SpecSliceSection[] = [];
-  let unresolvedRefs: string[] = [...refs];
+  let unresolvedRefs: string[] = fallbackUsed ? [] : [...refs];
   const [archDoc] = await listDocuments({ featureId, stage: "architecture" }, root);
   if (archDoc) {
     try {
       const archMarkdown = await fs.readFile(archDoc.filePath, "utf8");
-      const resolved = resolveArchitectureRefs(archMarkdown, refs);
-      architecture = resolved.sections;
-      unresolvedRefs = resolved.unresolvedRefs;
+      if (fallbackUsed) {
+        architecture = matchHeadingsByPhaseName(archMarkdown, phase);
+      } else {
+        const resolved = resolveArchitectureRefs(archMarkdown, refs);
+        architecture = resolved.sections;
+        unresolvedRefs = resolved.unresolvedRefs;
+      }
     } catch {
-      // Architecture doc unreadable ⇒ treat as absent: no sections, refs unresolved.
+      // Architecture doc unreadable ⇒ treat as absent: no sections, refs unresolved
+      // (empty when the fallback already triggered on empty refs).
     }
   }
 
@@ -239,6 +291,6 @@ export async function getSpecSlice(
     tasks,
     architecture,
     unresolvedRefs,
-    fallbackUsed: false,
+    fallbackUsed,
   };
 }
