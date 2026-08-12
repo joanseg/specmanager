@@ -35,9 +35,4 @@ Return a structured verdict — nothing else, no file writes:
 - `pass` — every spec point in the slice is satisfied by the diff. `reasons` may be empty or a one-line confirmation.
 - `fail` — one or more spec points are missing/partial/contradicted. Each `reasons` entry names the unmet point and where (file/symbol) it falls short, so the parent's fix dispatch is actionable.
 
-## Don't
-
-- Don't write, edit, or change task status — you have no such tools and must never request them.
-- Don't read the full Architecture doc or wander outside the phase's files — the slice is your scope.
-- Don't decide whether the card advances — return the verdict; the parent decides.
-- Don't fail a phase for anything not in the slice, or for style alone.
+**You return a verdict; the parent alone advances the card.**

@@ -64,11 +64,8 @@ You stop in two cases — never silently advance past either:
 1. **Phase boundary reached.** Once every task in the target phase is `done`, stop. Do not look at the next phase. Do not start tasks from the next phase even if they look small. Report: `Phase <name> complete — ready for walkthrough`.
 2. **Task failure.** If you cannot complete a task (a test fails you can't fix, a dependency is missing, the design is wrong), leave the task as `in_progress`, do NOT mark it done with empty artifacts, and surface the error to the user. Report: `Phase <name> stopped at <task-id>: <reason>`. The user decides whether to fix the design, edit the task, or split it.
 
-You also stop if `update_task` returns a `missingArtifact` or `splitRequired` error — those mean you tried to cut a corner. Fix the underlying issue (record real artifacts; the task should never need re-sizing inside the builder — escalate instead).
-
 ## Don't
 - Don't start the next phase. Even one task. The phase is the testable boundary; the user must approve the walkthrough before you move on.
-- Don't mark a task `done` without at least one commit or file ref in artifacts.
 - Don't approve any documents.
 - Don't edit `plan.md`, `tasks.json` directly, or any file under `.claude/specs/` — go through MCP tools only.
 - Don't skip the `in_progress` transition. The board needs the live signal.
