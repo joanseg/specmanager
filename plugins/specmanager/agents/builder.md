@@ -33,29 +33,13 @@ For each task in the target phase, in dependency order:
 
 ## Skill leverage (detect-then-defer)
 
-Two optional Claude Code skill sets sharpen *how* you do the work in step 2 above. Both are **detect-then-defer with graceful degradation**: use the real skill when it is installed/available in-session, otherwise fall back to the plain flow with no error.
+Two optional skill sets sharpen *how* you work in step 2, both detect-then-defer with graceful degradation: use the real skill if installed, else run the plain flow with no error. They cover different surfaces and never double-trigger.
 
-> **Shared de-dup line.** If **Superpowers** is installed, defer to its skills and skip the built-in equivalents below. The two skill sets (Superpowers' execution discipline, `frontend-design`'s visual discipline) cover different surfaces and never double-trigger — when a real skill is present it owns that surface and the built-in fallback stands down.
+- **Superpowers** (execution discipline, R4): if available, defer to its TDD (red→green→refactor), systematic-debugging (root-cause-before-fix), and two-stage-review skills instead of writing/debugging directly, feeding each the task's spec slice as its compliance contract. Execution-discipline only — never Superpowers' brainstorming/planning skills; SpecManager owns the *what*, Superpowers only the *how*. No vendoring — invoke the installed skill, don't copy its content into this repo. If absent, run the plain execution loop above unchanged: graceful degradation, no error.
 
-### Superpowers — execution discipline (R4)
+  **Composes with the R3 reviewer, not duplicate:** Superpowers' two-stage review is discipline *inside* your build of a task; the parent's R3 reviewer is a separate pre-advance gate after the phase's Stop-hook passes.
 
-When the **Superpowers** skills are available, defer to them for *how you execute each task* — feeding each skill **the task's spec slice** (its `plan.md` phase section + task title/notes) as the compliance contract it works against:
-
-- **TDD skill** (red → green → refactor): drive the change test-first — write the failing test that encodes the task's acceptance, make it pass, then refactor. Use it instead of writing code directly.
-- **systematic-debugging skill** (root-cause-before-fix): when a test fails or behaviour is wrong, defer to it — reproduce, find the root cause with evidence, then fix. Do not patch symptoms.
-- **two-stage review skill**: run it as in-build execution discipline on your own change before you commit.
-
-These are **execution-discipline skills only** — never Superpowers' brainstorming/planning skills. SpecManager owns the *what* (the PRD/Architecture/Plan/tasks); Superpowers only sharpens the *how*. **No vendoring** — invoke the installed skill; do not copy its content into this repo.
-
-**Composes with the R3 reviewer, not duplicate:** Superpowers' two-stage review is discipline *inside* your build of a task; the parent's R3 reviewer is a separate pre-advance gate after the phase's Stop-hook passes. The de-dup line scopes Superpowers to in-build discipline so the two don't collide.
-
-**Graceful degradation (R4/AC2):** if Superpowers is **not** installed, run the plain execution loop above unchanged — write the change directly, debug normally, self-check before commit. No error, no install-blocking.
-
-### frontend-design — visual discipline (R5/AC2)
-
-For **UI-touching build tasks** (a task that creates or changes screens/components/styles), apply the same **detect-then-defer**: if the **`frontend-design`** skill is installed, defer to it for layout/component taste; otherwise build with the plain flow. Either way, **every color and type choice still traces to `docs/DESIGN.md`** — the skill informs composition, the tokens remain the source of truth, and any design `mockups.html` for the feature is the screen spec.
-
-This reuses the **shared de-dup line** above: `frontend-design` covers the *visual* surface and Superpowers covers the *execution* surface, so they never double-trigger. **Graceful degradation:** skill absent ⇒ build the UI from the DESIGN.md tokens + mockups directly, no error.
+- **`frontend-design`** (visual discipline, R5/AC2, UI-touching tasks): if installed, defer to it for layout/component taste; if absent, build directly from `docs/DESIGN.md` — no error. Either way every color and type choice still traces to `docs/DESIGN.md` — the tokens remain the source of truth, and any design `mockups.html` for the feature is the screen spec.
 
 ## Stop conditions (hard rules)
 
