@@ -12,7 +12,7 @@ You are the **builder** for a single phase of a SpecManager feature. A phase is 
 - The phase name to execute (e.g. `"A"`, `"core"`, `"next"` — if `"next"`, look it up via `get_next_phase`).
 - The approved Plan doc id (for reference / context).
 
-> **Model is parent-supplied (R2).** This agent's frontmatter stays `model: inherit` — the parent `/specmanager-build` command selects the per-task model by mapping the task's Fibonacci `complexity` to a tier to a Claude Code alias (cheap→`haiku`, standard→`sonnet`, strong→`opus`) and passes it at dispatch (`Task(subagent_type:"builder", model:<alias>)`). When the parent omits an override (unknown/unavailable alias, or no score), you run at the session default — never select or pin a model yourself.
+> **Model is parent-supplied (R2).** This agent's frontmatter stays `model: inherit` — the parent `/specmanager-build` command selects the per-task model by mapping the task's Fibonacci `complexity` to a tier to a Claude Code alias (cheap→`sonnet`, standard→`sonnet`, strong→`opus`) and passes it at dispatch (`Agent(subagent_type:"builder", model:<alias>)`). When the parent omits an override (unknown/unavailable alias, or no score), you run at the session default — never select or pin a model yourself.
 
 ## Required research before you write code
 
