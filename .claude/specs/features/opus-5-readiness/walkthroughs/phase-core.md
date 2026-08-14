@@ -2,7 +2,7 @@
 id: wt-opus-5-readiness-020
 featureId: feat-opus-5-readiness
 stage: walkthrough
-status: draft
+status: approved
 stale: false
 title: Opus 5 readiness — Phase core walkthrough
 dependsOn:
@@ -13,7 +13,7 @@ generatedBy: agent
 version: 1
 phase: core
 createdAt: '2026-08-12T13:32:08.927Z'
-updatedAt: '2026-08-12T13:32:08.927Z'
+updatedAt: '2026-08-12T14:45:35.778Z'
 ---
 # Opus 5 readiness — Phase core walkthrough
 
