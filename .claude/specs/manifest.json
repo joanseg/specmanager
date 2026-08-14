@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-12T16:22:58.616Z",
+  "generatedAt": "2026-08-14T07:20:01.669Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -1672,6 +1672,15 @@
           "title": "Opus 5 readiness plan"
         },
         {
+          "id": "wt-opus-5-readiness-022",
+          "stage": "walkthrough",
+          "status": "draft",
+          "stale": false,
+          "version": 2,
+          "title": "Opus 5 readiness — feature walkthrough",
+          "phase": "final"
+        },
+        {
           "id": "wt-opus-5-readiness-020",
           "stage": "walkthrough",
           "status": "approved",
@@ -1692,7 +1701,7 @@
         {
           "id": "wt-opus-5-readiness-021",
           "stage": "walkthrough",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
           "version": 1,
           "title": "Opus 5 readiness — Phase trim walkthrough",
@@ -1740,7 +1749,7 @@
           "blockedCount": 0,
           "status": "done",
           "walkthroughId": "wt-opus-5-readiness-021",
-          "walkthroughStatus": "draft",
+          "walkthroughStatus": "approved",
           "walkthroughStale": false
         }
       ]

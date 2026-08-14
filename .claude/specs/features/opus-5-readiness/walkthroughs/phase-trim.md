@@ -2,7 +2,7 @@
 id: wt-opus-5-readiness-021
 featureId: feat-opus-5-readiness
 stage: walkthrough
-status: draft
+status: approved
 stale: false
 title: Opus 5 readiness — Phase trim walkthrough
 dependsOn:
@@ -13,7 +13,7 @@ generatedBy: agent
 version: 1
 phase: trim
 createdAt: '2026-08-12T16:22:58.607Z'
-updatedAt: '2026-08-12T16:22:58.607Z'
+updatedAt: '2026-08-14T07:11:15.906Z'
 ---
 # Opus 5 readiness — Phase trim walkthrough
 

@@ -27,17 +27,16 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 | Website agent readiness | PRD | — |
 | Landing page redesign (ethskills style) | PRD (approved) | — |
 | Marketing phase | PRD (draft) | — |
-| Opus 5 readiness | PRD (approved) | — |
 | Fly.io deployment | PRD (approved) | — |
 
-_8 features shipped — full history on the board._
+_9 features shipped — full history on the board._
 
 **Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation.
 
 **Commands:**
 `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)
 
-_Last synced: 2026-08-14T06:46:07.314Z_
+_Last synced: 2026-08-14T07:20:33.587Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
