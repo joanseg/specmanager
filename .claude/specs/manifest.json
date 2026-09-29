@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-14T07:20:01.669Z",
+  "generatedAt": "2026-08-31T14:49:25.741Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -1674,7 +1674,7 @@
         {
           "id": "wt-opus-5-readiness-022",
           "stage": "walkthrough",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
           "version": 2,
           "title": "Opus 5 readiness — feature walkthrough",
@@ -1778,6 +1778,74 @@
           "title": "Fly.io deployment PRD"
         }
       ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0,
+        "blocked": 0,
+        "total": 0
+      },
+      "phases": []
+    },
+    {
+      "id": "feat-specmanager-simplification-cleanup",
+      "slug": "specmanager-simplification-cleanup",
+      "title": "SpecManager simplification cleanup",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-specmanager-simplification-cleanup-039",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "SpecManager simplification cleanup — PRD"
+        },
+        {
+          "id": "arch-specmanager-simplification-cleanup-024",
+          "stage": "architecture",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "SpecManager simplification cleanup — Architecture"
+        },
+        {
+          "id": "plan-specmanager-simplification-cleanup-018",
+          "stage": "plan",
+          "status": "draft",
+          "stale": false,
+          "version": 2,
+          "title": "SpecManager simplification cleanup — Plan"
+        }
+      ],
+      "tasks": {
+        "todo": 11,
+        "in_progress": 0,
+        "done": 0,
+        "blocked": 0,
+        "total": 11
+      },
+      "phases": [
+        {
+          "name": "cleanup",
+          "order": 0,
+          "taskCount": 11,
+          "doneCount": 0,
+          "inProgressCount": 0,
+          "blockedCount": 0,
+          "status": "todo",
+          "walkthroughId": null,
+          "walkthroughStatus": null,
+          "walkthroughStale": null
+        }
+      ]
+    },
+    {
+      "id": "feat-company-brain-grounding",
+      "slug": "company-brain-grounding",
+      "title": "Company-brain grounding",
+      "currentStage": "prd",
+      "documents": [],
       "tasks": {
         "todo": 0,
         "in_progress": 0,

@@ -1,0 +1,228 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-specmanager-simplification-cleanup",
+      "title": "Delete core/tiers.ts, its core/index.ts barrel export, selftest-tiers.ts, and the selftest-tiers package script",
+      "status": "todo",
+      "stageRef": "R1",
+      "phase": "cleanup",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-31T14:16:05.591Z",
+      "updatedAt": "2026-08-31T14:16:05.591Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-specmanager-simplification-cleanup",
+      "title": "Strip tier prose from commands/specmanager-build.md: delete step 6b, remove alias resolution from step 7, replace step 7b's tier ladder with a same-model fix re-dispatch",
+      "status": "todo",
+      "stageRef": "R1",
+      "phase": "cleanup",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-31T14:16:10.091Z",
+      "updatedAt": "2026-08-31T14:16:10.091Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-specmanager-simplification-cleanup",
+      "title": "Remove the \"Model is parent-supplied (R2)\" blockquote from agents/builder.md",
+      "status": "todo",
+      "stageRef": "R1",
+      "phase": "cleanup",
+      "complexity": 1,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-31T14:16:13.304Z",
+      "updatedAt": "2026-08-31T14:16:13.304Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-specmanager-simplification-cleanup",
+      "title": "Delete the now-subjectless tier invariants INV-6, INV-7, INV-21 from selftest-prompts.ts",
+      "status": "todo",
+      "stageRef": "R1",
+      "phase": "cleanup",
+      "complexity": 1,
+      "dependsOn": [
+        "task-002",
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-31T14:16:16.541Z",
+      "updatedAt": "2026-08-31T14:16:16.541Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-specmanager-simplification-cleanup",
+      "title": "git rm the four abandoned docs/ measurement files AND docs/temp/original-specs/; repair the two live references at README.md:210 and CLAUDE.md:64",
+      "status": "todo",
+      "stageRef": "R2",
+      "phase": "cleanup",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-31T14:16:23.656Z",
+      "updatedAt": "2026-08-31T14:34:02.828Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-specmanager-simplification-cleanup",
+      "title": "Make `max` optional in PromptInvariant (absent ⇒ unbounded in passes()); delete the carrier-sensitivity pass and its reporting",
+      "status": "todo",
+      "stageRef": "R3",
+      "phase": "cleanup",
+      "complexity": 2,
+      "dependsOn": [
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-31T14:16:28.988Z",
+      "updatedAt": "2026-08-31T14:16:28.988Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-specmanager-simplification-cleanup",
+      "title": "Apply R3's retention rule — cut the invariant table from 42 rows to ~14 (snippet parity, negative checks, multi-carrier prose-only), keeping the mutation pass",
+      "status": "todo",
+      "stageRef": "R3",
+      "phase": "cleanup",
+      "complexity": 3,
+      "dependsOn": [
+        "task-006"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-31T14:16:32.801Z",
+      "updatedAt": "2026-08-31T14:16:32.801Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-specmanager-simplification-cleanup",
+      "title": "Rewrite the selftest-prompts.ts header comment to state the retention rule, replacing the citation of the deleted reconciliation doc",
+      "status": "todo",
+      "stageRef": "R3",
+      "phase": "cleanup",
+      "complexity": 1,
+      "dependsOn": [
+        "task-005",
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-31T14:16:35.992Z",
+      "updatedAt": "2026-08-31T14:16:35.992Z"
+    },
+    {
+      "id": "task-009",
+      "featureId": "feat-specmanager-simplification-cleanup",
+      "title": "De-duplicate exactly three core-enforced rules to one carrier each: artifact-on-done → builder.md, version conflict → drafting agents' write step, complexity ≤3 split → planner.md",
+      "status": "todo",
+      "stageRef": "R4",
+      "phase": "cleanup",
+      "complexity": 3,
+      "dependsOn": [
+        "task-008"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-31T14:16:39.564Z",
+      "updatedAt": "2026-08-31T14:16:39.564Z"
+    },
+    {
+      "id": "task-010",
+      "featureId": "feat-specmanager-simplification-cleanup",
+      "title": "Delete exactly two feature dirs under .claude/specs/features/ — opus-5-readiness and dummy-feature — then sync_claude_md",
+      "status": "todo",
+      "stageRef": "R5",
+      "phase": "cleanup",
+      "complexity": 2,
+      "dependsOn": [
+        "task-009"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-31T14:16:43.001Z",
+      "updatedAt": "2026-08-31T14:34:05.991Z"
+    },
+    {
+      "id": "task-011",
+      "featureId": "feat-specmanager-simplification-cleanup",
+      "title": "Rebuild server/dist and ui/dist, run the full 13-test exit command, and claude plugin validate",
+      "status": "todo",
+      "stageRef": "verification-strategy",
+      "phase": "cleanup",
+      "complexity": 2,
+      "dependsOn": [
+        "task-010"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-08-31T14:16:46.333Z",
+      "updatedAt": "2026-08-31T14:16:46.333Z"
+    }
+  ],
+  "meta": {
+    "phases": {
+      "cleanup": {
+        "testCommand": "cd plugins/specmanager/server && npm run build && npm run selftest && npm run selftest-board && npm run selftest-phases && npm run selftest-build && npm run selftest-stopgate && npm run selftest-roundtrip && npm run selftest-pidfile && npm run selftest-shutdown && npm run selftest-autoport && npm run selftest-repos && npm run selftest-specslice && npm run selftest-prompts && npm run smoke-mcp",
+        "architectureRefs": [
+          "R1",
+          "R2",
+          "R3",
+          "R4",
+          "R5",
+          "core-enforcement-audit",
+          "verification-strategy"
+        ]
+      }
+    },
+    "blocked": {}
+  }
+}
