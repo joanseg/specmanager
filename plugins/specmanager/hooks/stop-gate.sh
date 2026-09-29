@@ -11,8 +11,8 @@
 
 set -uo pipefail
 
-# Drain stdin (the Stop-hook JSON); we don't need its fields for resolution.
-cat >/dev/null 2>&1 || true
+# Read the Stop-hook JSON; only session_id is used (scopes the gate to its build).
+HOOK_INPUT="$(cat 2>/dev/null || true)"
 
 PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-}"
 PROJECT_DIR="${SPECMANAGER_PROJECT_DIR:-${CLAUDE_PROJECT_DIR:-$PWD}}"
@@ -28,7 +28,12 @@ if [[ ! -f "$RESOLVER" ]]; then
   exit 0
 fi
 
-CARD_JSON="$(SPECMANAGER_PROJECT_DIR="$PROJECT_DIR" "$NODE_BIN" "$RESOLVER" 2>/dev/null || echo null)"
+SESSION_ID="$(printf '%s' "$HOOK_INPUT" | "$NODE_BIN" -e '
+  let s=""; process.stdin.on("data",d=>s+=d).on("end",()=>{
+    try { process.stdout.write(String(JSON.parse(s).session_id ?? "")); } catch {}
+  });' 2>/dev/null)"
+
+CARD_JSON="$(SPECMANAGER_PROJECT_DIR="$PROJECT_DIR" "$NODE_BIN" "$RESOLVER" "$SESSION_ID" 2>/dev/null || echo null)"
 
 # Nothing in flight ⇒ no-op pass.
 if [[ -z "$CARD_JSON" || "$CARD_JSON" == "null" ]]; then

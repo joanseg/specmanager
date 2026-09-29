@@ -442,12 +442,12 @@ server.registerTool(
   "set_active_build",
   {
     description:
-      "Write the active-build marker (.cache/active-build.json) pinning the Stop-gate to one {featureId, phase}. Called by /specmanager-build when a phase starts. sessionId is filled from the env for diagnostics only; it is never matched on.",
+      "Write the active-build marker (.cache/active-build.json) pinning the Stop-gate to one {featureId, phase}. Called by /specmanager-build when a phase starts. sessionId is filled from the env (CLAUDE_CODE_SESSION_ID) so the gate only fires for this session.",
     inputSchema: z.object({ featureId: z.string(), phase: z.string() }),
   },
   async ({ featureId, phase }) => {
     try {
-      const sessionId = process.env.CLAUDE_SESSION_ID ?? null;
+      const sessionId = process.env.CLAUDE_CODE_SESSION_ID ?? null;
       await setActiveBuild({ featureId, phase, sessionId }, PROJECT_DIR);
       return ok({ featureId, phase, sessionId });
     } catch (err) {

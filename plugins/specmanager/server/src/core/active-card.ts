@@ -52,10 +52,18 @@ function exitTestForPhase(planBody: string, phase: string): string | null {
  * phase}; a stale/finished marker (pinned phase with no open tasks) or a marker
  * for a deleted feature is cleared and resolves to null. Never enumerates other
  * features, so an unrelated feature with open tasks can never trigger the gate.
+ * A marker owned by a different session than `sessionId` resolves to null, so a
+ * concurrent session in the same project never gates on (or spends the retry
+ * budget of) another session's build.
  */
-export async function resolveActiveCard(root = projectRoot()): Promise<ActiveCard | null> {
+export async function resolveActiveCard(
+  root = projectRoot(),
+  sessionId: string | null = null
+): Promise<ActiveCard | null> {
   const marker = await readActiveBuild(root);
   if (!marker) return null; // no build in flight ⇒ the gate is a no-op pass
+  // Another session's build ⇒ not ours to gate (legacy null-owner markers still gate).
+  if (marker.sessionId && sessionId && marker.sessionId !== sessionId) return null;
 
   const feature = await findFeatureById(marker.featureId, root);
   if (!feature) {

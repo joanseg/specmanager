@@ -21,9 +21,9 @@ function assert(cond, msg) {
 const here = path.dirname(fileURLToPath(import.meta.url)); // .../server/dist
 const PLUGIN_ROOT = path.resolve(here, "..", ".."); // .../plugins/specmanager
 const HOOK = path.join(PLUGIN_ROOT, "hooks", "stop-gate.sh");
-function runHook(root) {
+function runHook(root, sessionId) {
     const r = spawnSync("bash", [HOOK], {
-        input: "{}",
+        input: JSON.stringify(sessionId ? { session_id: sessionId } : {}),
         env: { ...process.env, CLAUDE_PLUGIN_ROOT: PLUGIN_ROOT, SPECMANAGER_PROJECT_DIR: root },
         encoding: "utf8",
     });
@@ -67,6 +67,19 @@ async function main() {
     const openFail = runHook(root);
     assert(openFail.code === 2, "exit 2 when the pinned phase has open tasks");
     assert(openFail.stderr.includes("not done"), "stderr names the open task");
+    // 2b. Session scoping: a marker owned by session A never gates session B's
+    //     stop (no stderr, no counter bump); the owning session still gates.
+    await setActiveBuild({ featureId: feature.id, phase: "core", sessionId: "sess-A" }, root);
+    const other = runHook(root, "sess-B");
+    assert(other.code === 0, "another session's stop is a no-op pass");
+    assert(other.stderr.trim() === "", "another session's stop writes no stderr");
+    assert((await readActiveBuild(root))?.sessionId === "sess-A", "another session's stop leaves the marker intact");
+    const owner = runHook(root, "sess-A");
+    assert(owner.code === 2, "the owning session's stop still gates");
+    assert(owner.stderr.includes("attempt 2/3"), "only the owning session consumed the retry budget");
+    await setActiveBuild({ featureId: feature.id, phase: "core" }, root);
+    // Restore the one-attempt budget the later cases expect.
+    await fs.writeFile(path.join(root, ".claude/specs/.cache/stop-gate", `${feature.slug}__core`), "1", "utf8");
     // 3. Passing command + task done → false-in-flight guard clears the marker, exit 0.
     await updateTask({ id: t1.id, featureId: feature.id, status: "done", artifacts: { files: ["x.ts"] } }, root);
     const pass = runHook(root);

@@ -1,9 +1,10 @@
 // Explicit active-build marker (Architecture Option B). The Stop-gate's
 // resolveActiveCard reads this marker first: no marker ⇒ no build in flight ⇒
 // the gate is a no-op. /specmanager-build writes the marker when a phase starts
-// and clears it when the phase completes or is blocked. Single-user means at
-// most one build is ever in flight, so a single JSON file under the gitignored
-// .cache/ surface (sibling of .cache/stop-gate/) is sufficient.
+// and clears it when the phase completes or is blocked. At most one build is in
+// flight per project, so a single JSON file under the gitignored .cache/ surface
+// (sibling of .cache/stop-gate/) is sufficient; its sessionId scopes the gate to
+// the session running the build.
 import fs from "node:fs/promises";
 import path from "node:path";
 import { projectRoot, specsDir } from "./paths.js";
