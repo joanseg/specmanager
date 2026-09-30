@@ -1,6 +1,7 @@
 {
   "name": "specmanager",
   "displayName": "SpecManager",
+  "version": "1.0.0",
   "description": "Lifecycle kanban for Claude Code projects (PRD → architecture → plan → tasks → walkthroughs).",
   "license": "MIT",
   "homepage": "https://specmanager.org",
@@ -9,7 +10,7 @@
     "board_port": {
       "type": "number",
       "title": "Board port",
-      "description": "Localhost port for the kanban UI (Phase 2+).",
+      "description": "Preferred localhost port for the kanban board. If it is taken, the board uses the next free port.",
       "default": 4317
     }
   }
