@@ -1,0 +1,1708 @@
+/* Token layer + self-hosted fonts must be imported before any other rule. */
+/* Obsidian Flux — token layer.
+ *
+ * This is the ONLY place raw color hex lives. Every component style consumes
+ * these custom properties; the legacy-hex grep gate (task 12) asserts no raw
+ * #0d0e10 / #7ad0ff (or any one-off hex) survives outside this file.
+ *
+ * Values map 1:1 to docs/temp/redesign/DESIGN.md frontmatter so the mapping is
+ * auditable. The single derived token not present in DESIGN.md is --success
+ * (emerald), pinned by the approved Architecture (Q1) to exactly #10b981.
+ */
+:root {
+  /* --- Surfaces / tonal elevation (DESIGN.md colors.*) ----------------- */
+  --surface: #131315; /* True Dark canvas / background */
+  --surface-dim: #131315;
+  --surface-bright: #39393b;
+  --surface-container-lowest: #0e0e10;
+  --surface-container-low: #1b1b1d;
+  --surface-container: #201f21;
+  --surface-container-high: #2a2a2c;
+  --surface-container-highest: #353437;
+  --surface-variant: #353437;
+  --background: #131315;
+
+  /* --- On-surface text ------------------------------------------------- */
+  --on-surface: #e5e1e4;
+  --on-surface-variant: #c7c4d7;
+  --on-background: #e5e1e4;
+  --inverse-surface: #e5e1e4;
+  --inverse-on-surface: #303032;
+
+  /* --- Outline / borders ----------------------------------------------- */
+  --outline: #908fa0;
+  --outline-variant: #464554;
+
+  /* --- Primary (violet-indigo) ----------------------------------------- */
+  --surface-tint: #c0c1ff;
+  --primary: #c0c1ff;
+  --on-primary: #1000a9;
+  --primary-container: #8083ff;
+  --on-primary-container: #0d0096;
+  --inverse-primary: #494bd6;
+
+  /* --- Secondary (violet) — used for the DESIGN stage accent ----------- */
+  --secondary: #ddb7ff;
+  --on-secondary: #490080;
+  --secondary-container: #6f00be;
+  --on-secondary-container: #d6a9ff;
+
+  /* --- Tertiary (amber) — draft / in-progress / warning ---------------- */
+  --tertiary: #ffb783;
+  --on-tertiary: #4f2500;
+  --tertiary-container: #d97721;
+  --on-tertiary-container: #452000;
+
+  /* --- Error (rose) — error / stale ------------------------------------ */
+  --error: #ffb4ab;
+  --on-error: #690005;
+  --error-container: #93000a;
+  --on-error-container: #ffdad6;
+
+  /* --- Success (emerald) ----------------------------------------------- *
+   * Not in DESIGN.md frontmatter; pinned by Architecture Q1 to this exact
+   * hex. Load-bearing: the approved badge and BuildPanel done segments/pills
+   * MUST consume --success, never a one-off hex. */
+  --success: #10b981;
+
+  /* --- Radii (DESIGN.md rounded.*) ------------------------------------- */
+  --radius-sm: 0.25rem; /* 4px  — tags, badges, checkboxes */
+  --radius-md: 0.5rem; /* 8px  — buttons, inputs, cards */
+  --radius-lg: 1rem; /* 16px — modals, panels */
+
+  /* --- Spacing (DESIGN.md spacing.* — strict 8px grid) ----------------- */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --gutter: 20px;
+  --margin: 24px;
+  --container-max: 1440px;
+
+  /* --- Type roles (DESIGN.md typography.*) ----------------------------- */
+  --font-display: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* --- Elevation / glass (DESIGN.md Elevation & Depth) ----------------- */
+  --shadow-overlay: 0px 20px 50px rgba(0, 0, 0, 0.5);
+  --glass-bg: rgba(24, 24, 27, 0.8);
+  --glass-bg-opaque: #18181b; /* @supports fallback when no backdrop-filter */
+  --glass-blur: blur(12px);
+
+  /* --- Card depth / micro-interaction (DESIGN.md "Depth through Layering",
+   * "Micro-interactions", Cards) ---------------------------------------- *
+   * Phase B fidelity pass: surfaces gain depth via a subtle 135° tonal
+   * gradient (container → container-low) plus a hairline border that
+   * brightens / violet-tints toward --primary on hover, a soft tonal glow on
+   * hover (distinct from the large modal --shadow-overlay), and a glass
+   * leading-edge tint for the doc-panel drawer. All derived from the palette
+   * via color-mix; the only literal rgba lives here, never in a component. */
+  --card-gradient: linear-gradient(135deg, var(--surface-container), var(--surface-container-low));
+  --card-gradient-hover: linear-gradient(135deg, var(--surface-container-high), var(--surface-container));
+  --card-border: color-mix(in srgb, var(--outline-variant) 80%, transparent);
+  --card-border-hover: color-mix(in srgb, var(--primary) 55%, var(--outline-variant));
+  --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.35), 0 0 0 1px color-mix(in srgb, var(--primary) 12%, transparent);
+  --glass-edge: color-mix(in srgb, var(--primary) 8%, var(--glass-bg));
+
+  /* Backdrop dim behind the doc-panel drawer — keeps the board visible but
+   * de-emphasised (matching panel.png "board behind"). */
+  --backdrop-dim: rgba(0, 0, 0, 0.55);
+
+  /* --- Primary gradient CTA (DESIGN.md Buttons §Primary — indigo→purple) - *
+   * 135° fill for the high-intent primary button; hover brightens. The 1px
+   * top-border highlight and on-primary text are applied in styles.css. */
+  --gradient-primary: linear-gradient(135deg, var(--primary-container), var(--secondary-container));
+  --gradient-primary-hover: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--primary-container) 80%, white),
+    color-mix(in srgb, var(--secondary-container) 80%, white)
+  );
+
+  /* The design-brief preview is verbatim HTML in a sandboxed iframe and keeps
+   * a white canvas by design; named here so no component carries raw hex. */
+  --design-preview-bg: #ffffff;
+
+  /* --- Status-role mapping (Architecture §4) --------------------------- *
+   * Legacy roles re-expressed on the Obsidian Flux palette. Components refer
+   * to these so the intent (draft / approved / stale) stays readable, while
+   * the underlying color tracks the design system. */
+  --status-draft: var(--tertiary); /* amber */
+  --status-approved: var(--success); /* emerald */
+  --status-stale: var(--error); /* rose */
+  --status-in-progress: var(--tertiary); /* amber */
+  --status-done: var(--success); /* emerald */
+
+  /* --- Markdown viewer derived values (design "new tokens introduced") --- *
+   * The four style decisions the markdown surface needs, named here so the
+   * toolbar active-state and table styling can't drift. All derived from the
+   * palette via color-mix / existing surfaces — no new color enters the scale.
+   * styles.css consumes these with the literal color-mix as the fallback. */
+  --tb-active-bg: color-mix(in srgb, var(--primary) 14%, transparent);
+  --table-header-bg: var(--surface-container-high);
+  --table-zebra-bg: color-mix(in srgb, var(--surface-container) 55%, transparent);
+  --table-cell-border: var(--outline-variant);
+
+  /* --- Custom scrollbar (HTML viewer scroll-fix — design Screen 2/3) ----- *
+   * Shared thumb width + colour so the design-brief iframe and the markdown
+   * surface scroll identically. Colours reuse existing outline tokens — no new
+   * colour enters the scale; --scrollbar-size is the one new dimension value
+   * (10px, the agreed on-brand thin bar). */
+  --scrollbar-size: 10px;
+  --scrollbar-thumb: var(--outline-variant);
+  --scrollbar-thumb-hover: var(--outline);
+  --scrollbar-track: transparent;
+}
+/* Obsidian Flux tri-font stack — self-hosted via @fontsource (offline-friendly).
+ * Only the weights named in the approved Architecture (Q8) are bundled, latin
+ * subset only, to keep the build lean. Each @fontsource file already declares
+ * font-display: swap, so first paint never blocks on the font download.
+ *
+ *   Hanken Grotesk — 500 / 600  (display + headlines)
+ *   Inter          — 400 / 500  (body + UI controls)
+ *   Geist Mono     — 400 / 500  (labels, metadata, code)
+ */
+/* Hanken Grotesk — display / headlines */
+/* hanken-grotesk-latin-500-normal */
+@font-face {
+  font-family: 'Hanken Grotesk';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url(/assets/hanken-grotesk-latin-500-normal-DrDcrrxK.woff2) format('woff2'), url(/assets/hanken-grotesk-latin-500-normal-Bo-NxEKf.woff) format('woff');
+}
+/* hanken-grotesk-latin-600-normal */
+@font-face {
+  font-family: 'Hanken Grotesk';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url(/assets/hanken-grotesk-latin-600-normal-CIXX6EOa.woff2) format('woff2'), url(/assets/hanken-grotesk-latin-600-normal-NEn2C4Q3.woff) format('woff');
+}
+/* Inter — body / UI controls */
+/* inter-latin-400-normal */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(/assets/inter-latin-400-normal-C38fXH4l.woff2) format('woff2'), url(/assets/inter-latin-400-normal-CyCys3Eg.woff) format('woff');
+}
+/* inter-latin-500-normal */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url(/assets/inter-latin-500-normal-Cerq10X2.woff2) format('woff2'), url(/assets/inter-latin-500-normal-BL9OpVg8.woff) format('woff');
+}
+/* Geist Mono — labels / metadata / code */
+/* geist-mono-latin-400-normal */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(/assets/geist-mono-latin-400-normal-DKaoCDn5.woff2) format('woff2'), url(/assets/geist-mono-latin-400-normal-BXAprPdR.woff) format('woff');
+}
+/* geist-mono-latin-500-normal */
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url(/assets/geist-mono-latin-500-normal-C3sF8Y1B.woff2) format('woff2'), url(/assets/geist-mono-latin-500-normal-YfPbDI_o.woff) format('woff');
+}
+/* Legacy → Obsidian Flux aliases.
+ * Component blocks below still reference the old role names; these map them
+ * onto the token layer so nothing in this file carries raw legacy hex. As
+ * each component is re-skinned (tasks 4–10) it moves to the real token names
+ * and these aliases shrink; the responsive/verification pass keeps them
+ * honest. NOTE: these are deliberately NOT in tokens.css :root — tokens.css
+ * is the sole owner of raw hex. */
+:root {
+  --bg: var(--surface);
+  --surface-2: var(--surface-container-high);
+  --border: var(--outline-variant);
+  --text: var(--on-surface);
+  --text-dim: var(--on-surface-variant);
+  --accent: var(--primary);
+  --draft: var(--status-draft);
+  --approved: var(--status-approved);
+  --stale: var(--status-stale);
+  --build-prog: var(--status-in-progress);
+  --build-done: var(--status-done);
+
+  font-family: var(--font-body);
+  font-size: 14px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body, #root {
+  margin: 0;
+  background: var(--surface);
+  color: var(--on-surface);
+  min-height: 100vh;
+}
+.state {
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--on-surface-variant);
+}
+.state h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+.state--error { color: var(--error); }
+.board {
+  padding: 0 var(--margin) var(--space-xl);
+  max-width: var(--container-max);
+  margin: 0 auto;
+}
+/* Glassmorphic sticky top bar (DESIGN.md — top nav uses backdrop blur). */
+.board__header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin: 0 calc(var(--margin) * -1) var(--space-lg);
+  padding: var(--space-md) var(--margin);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--outline-variant);
+}
+/* Display-lg (DESIGN.md typography.display-lg): Hanken Grotesk, 48px/56px,
+ * 600, -0.02em tracking. The large display face the mockup header uses. */
+.board__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 3rem;
+  line-height: 3.5rem;
+  letter-spacing: -0.02em;
+  color: var(--on-surface);
+}
+.board__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--on-surface-variant);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+}
+.board__count {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+}
+.board__pulse {
+  color: var(--primary);
+  animation: fade 1.2s ease-out;
+}
+@keyframes fade { from { opacity: 1; } to { opacity: 0.5; } }
+.empty {
+  border: 1px dashed var(--outline-variant);
+  border-radius: var(--radius-md);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  color: var(--on-surface-variant);
+}
+.empty pre {
+  background: var(--surface-container);
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-family: var(--font-mono);
+  color: var(--primary);
+}
+.grid {
+  display: grid;
+  grid-template-columns: var(--grid-cols);
+  gap: var(--space-sm);
+  align-items: stretch;
+}
+.grid__corner, .grid__header {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--on-surface-variant);
+  padding: 0 0.5rem 0.4rem;
+}
+.grid__header--build {
+  color: var(--primary);
+}
+.row__label {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 0.6rem 0.5rem;
+}
+.row__label strong {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.row__label small {
+  color: var(--on-surface-variant);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  margin-top: 0.2rem;
+}
+/* Cells are flex containers so their single child card stretches to the full
+ * row-track height (the row track is sized to its tallest cell by the grid's
+ * align-items: stretch). Without this the card renders at intrinsic content
+ * height and overflows / leaves ragged bottoms. */
+.row__cell {
+  display: flex;
+  min-height: 5.5rem;
+  /* Row-direction flex (flex:1 on the card drives full column width on the main
+   * axis; the cross axis is vertical). Top-align so a capped stage card pins
+   * to the top of a taller row track (driven by the BUILD glance or a tall
+   * Walkthroughs sub-card stack) instead of sinking to the bottom with a gap
+   * above it. */
+  align-items: flex-start;
+}
+/* The card fills the cell in both axes: flex:1 takes the full track height,
+ * align-self: stretch (flex default) gives it the full column width. */
+.row__cell > .card,
+.row__cell > .card--button {
+  flex: 1;
+  /* flex:1 (main = horizontal) gives full column width; with the cell
+   * top-aligned (align-items: flex-start) the vertical size is the card's own
+   * height. Pin stage cards to one compact mock height so a sparse row no longer
+   * stretches them to the tall track (~206–226px in Phase C) — they stay equal
+   * to each other and bottom-aligned, with title + badges + version fitting
+   * inside the cap (no inner scroll), matching docs/temp/redesign/board.png.
+   * The walkthroughs sub-card stack and the BUILD glance opt out below.
+   * border-box so the fixed height is the total box across both the plain
+   * .card (border-box via the global reset) and the .card--button (which
+   * `all: unset` flips to content-box) — otherwise the button variant renders
+   * ~19px taller than its dashed siblings and the row looks ragged. */
+  box-sizing: border-box;
+  height: 5.5rem;
+}
+/* Tonal-elevation card: surface-container fill, hairline outline, no shadow.
+ * Hover/active brightens and gains a violet tint (DESIGN.md Cards). */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  height: 100%;
+  background: var(--card-gradient);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 0.7rem;
+  transition: border-color 0.14s ease, background 0.14s ease,
+    box-shadow 0.14s ease, transform 0.14s ease;
+}
+.card:hover {
+  border-color: var(--card-border-hover);
+  background: var(--card-gradient-hover);
+  box-shadow: var(--shadow-card);
+  transform: translateY(-1px) scale(1.01);
+}
+.card--empty, .card--locked {
+  background: transparent;
+  border-style: dashed;
+  color: var(--on-surface-variant);
+  justify-content: center;
+  align-items: center;
+  font-size: 0.78rem;
+  text-align: center;
+}
+.card--empty:hover, .card--locked:hover {
+  background: var(--surface-container-low);
+  box-shadow: none;
+  transform: none;
+  border-color: var(--outline-variant);
+}
+.card--ready {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+/* Design (optional) cell — visually distinct from locked / required-generate. */
+.card--optional {
+  border-style: dotted;
+  opacity: 0.85;
+}
+.card--optional-ready {
+  border-color: var(--secondary);
+  color: var(--secondary);
+  opacity: 1;
+}
+.card__optional-tag {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--secondary);
+  opacity: 0.85;
+}
+.card__empty-label, .card__locked-label {
+  font-weight: 500;
+}
+.card__empty-sub, .card__locked-sub {
+  font-size: 0.7rem;
+  opacity: 0.7;
+  margin-top: 0.15rem;
+}
+.card__locked-sub::before { content: "🔒 "; }
+.card--stale {
+  border-color: var(--error);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--error) 18%, transparent);
+}
+/* Keep the stale error border on hover (the depth lift still applies). */
+.card--stale:hover {
+  border-color: var(--error);
+  box-shadow: var(--shadow-card),
+    inset 0 0 0 1px color-mix(in srgb, var(--error) 18%, transparent);
+}
+.card__title {
+  font-weight: 500;
+  font-size: 0.85rem;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: auto;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  background: var(--surface-container-highest);
+  color: var(--on-surface-variant);
+}
+.badge--draft    { color: var(--status-draft); }
+.badge--approved { color: var(--status-approved); }
+.badge--stale    {
+  color: var(--error);
+  background: color-mix(in srgb, var(--error) 14%, transparent);
+}
+.badge--meta     { opacity: 0.6; }
+.badge--design   { color: var(--secondary); }
+/* Neutral interview tag: outline ghost, deliberately NOT on the draft/approved
+ * status hues — "a label, not a state" (design Screen 3). */
+.badge--interview {
+  background: transparent;
+  border: 1px solid var(--outline-variant);
+  color: var(--on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+/* Interview chip (design Option A) ----------------------------------
+ * Column wrapper for the prd cell so the chip can sit beneath the card
+ * without disturbing the 5.5rem card cap. The cell is align-items:
+ * flex-start, so the taller stack pins to the top of the row track. */
+.cell-stack {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+.cell-stack > .card,
+.cell-stack > .card--button {
+  /* Mirrors .row__cell > .card: same pinned height, border-box across both
+   * the plain .card and the `all: unset` button variant. */
+  box-sizing: border-box;
+  height: 5.5rem;
+}
+/* Pill under the PRD card / generate affordance. The hollow --primary ring
+ * inverts the status pills' glowing filled dot: filled = lifecycle status,
+ * hollow = reference material with no status. */
+.chip-interview {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  align-self: flex-start;
+  margin-top: 0.35rem;
+  padding: 0.24rem 0.6rem;
+  background: var(--surface-container-low);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  transition: border-color 0.14s ease, color 0.14s ease;
+}
+.chip-interview .ring {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--primary);
+  background: transparent;
+  flex-shrink: 0;
+}
+.chip-interview .meta { opacity: 0.55; }
+.chip-interview:hover {
+  border-color: var(--card-border-hover);
+  color: var(--on-surface);
+}
+.chip-interview:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+/* BUILD region — reserved right-hand track per row (Architecture §6, A).
+ * A read-only progress glance that opens the existing BuildPanel overlay. */
+.row__cell--build {
+  display: flex;
+  min-height: 5.5rem;
+}
+.row__cell--build > .card,
+.row__cell--build > .card--button {
+  flex: 1;
+  min-height: 0;
+  /* The BUILD glance pins to the same compact height as the stage cards so the
+   * row reads as one even band (matching .row__cell > .card above). */
+  box-sizing: border-box;
+  height: 5.5rem;
+}
+.card--build {
+  background: var(--surface-container-low);
+}
+.card--build .card__title {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--on-surface-variant);
+}
+.bar {
+  position: relative;
+  background: var(--surface-container-highest);
+  border-radius: var(--radius-sm);
+  height: 0.4rem;
+  overflow: hidden;
+  display: flex;
+}
+.bar__seg { height: 100%; }
+.bar__seg--done { background: var(--status-done); }
+.bar__seg--prog { background: var(--status-in-progress); }
+.card__build-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--on-surface-variant);
+  font-variant-numeric: tabular-nums;
+}
+/* Card as button (clickable docs) ----------------------------------- */
+.card--button {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  height: 100%;
+  background: var(--card-gradient);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 0.7rem;
+  text-align: left;
+  transition: border-color 0.14s ease, background 0.14s ease,
+    box-shadow 0.14s ease, transform 0.14s ease;
+}
+.card--button:hover {
+  border-color: var(--card-border-hover);
+  background: var(--card-gradient-hover);
+  box-shadow: var(--shadow-card);
+  transform: translateY(-1px) scale(1.01);
+}
+.card--button:active { transform: translateY(0) scale(0.998); }
+.card--button:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.card__empty-cmd {
+  all: unset;
+  cursor: pointer;
+  font-size: 0.7rem;
+  color: var(--primary);
+  font-family: var(--font-mono);
+  margin-top: 0.15rem;
+}
+.card__empty-cmd:hover { text-decoration: underline; }
+/* Doc detail panel -------------------------------------------------- */
+.panel-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--backdrop-dim);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 100;
+}
+/* Focused right-side drawer (~65% width) so the dimmed board stays visible
+ * behind it (matching panel.png). A glass leading edge (tinted border + inner
+ * highlight) plus the large soft --shadow-overlay separate it from the board. */
+.panel {
+  width: min(64rem, 68vw);
+  height: 100vh;
+  background: var(--surface);
+  border-left: 1px solid var(--glass-edge);
+  border-top-left-radius: var(--radius-lg);
+  border-bottom-left-radius: var(--radius-lg);
+  box-shadow: var(--shadow-overlay),
+    inset 1px 0 0 color-mix(in srgb, var(--primary) 14%, transparent);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slide-in 0.18s ease;
+}
+@keyframes slide-in {
+  from { transform: translateX(2rem); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+/* Single horizontal header bar (matching panel.png): the title + breadcrumb +
+ * badges sit in a left cluster, the Save/Approve(or Edit)/Gate? actions and the
+ * close × align right on the SAME row. */
+.panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid var(--outline-variant);
+}
+.panel__header-main {
+  min-width: 0;
+  flex: 1;
+}
+.panel__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+.panel__close {
+  background: transparent;
+  border: 0;
+  color: var(--on-surface-variant);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.1rem 0.4rem;
+  margin-left: 0.15rem;
+}
+.panel__close:hover { color: var(--on-surface); }
+/* Stage breadcrumb above the title (matching panel.png) — mono, low-contrast,
+ * derived from already-loaded doc data (no new fetch). */
+.panel__crumb {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: var(--on-surface-variant);
+  margin-bottom: 0.3rem;
+}
+.panel__crumb-sep {
+  color: var(--outline);
+  margin: 0 0.1rem;
+}
+.panel__title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+.panel__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.2rem;
+  letter-spacing: -0.01em;
+}
+.panel__meta {
+  color: var(--on-surface-variant);
+  font-size: 0.8rem;
+}
+.panel__version {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.panel__badges {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+.panel__error {
+  padding: 1.5rem;
+  color: var(--error);
+}
+.panel__stale {
+  background: color-mix(in srgb, var(--error) 9%, transparent);
+  border-bottom: 1px solid var(--outline-variant);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.85rem;
+}
+.stale-list {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--on-surface-variant);
+}
+.stale-list__item { padding: 0.15rem 0; }
+.stale-list__item--drift { color: var(--on-surface); }
+.drift-tag {
+  background: var(--error);
+  color: var(--on-error);
+  padding: 0 0.3rem;
+  border-radius: var(--radius-sm);
+  margin-left: 0.4rem;
+  font-size: 0.65rem;
+}
+.panel__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  border-bottom: 1px solid var(--outline-variant);
+}
+.panel__toolbar-spacer { flex: 1; }
+.panel__toggle {
+  font-size: 0.78rem;
+  color: var(--on-surface-variant);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.panel__toggle input { accent-color: var(--primary); }
+/* ===== Markdown WYSIWYG editor + formatting toolbar (Phase 2) =========
+ * Toolbar bar above a scrollable surface. Full reading-column / surface
+ * polish lands in Phase 3; these are the toolbar rules the toolbar phase
+ * needs to render and be testable. All token-driven (design `.md-toolbar`). */
+.md-editor {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+/* The scrollable surface; the prose column inside fills ~90% of the panel
+ * width (Polish task 4.2 — supersedes the Phase 3 centered ~72ch reading cap).
+ * Milkdown owns the DOM inside, so the measure is applied to the ProseMirror
+ * editor root (.prose lands on it via editorViewOptions attributes). Chat-open
+ * follows the same ~90% ratio of the narrower --cols-2 body track. */
+.md-surface {
+  flex: 1;
+  overflow: auto;
+  background: var(--surface);
+}
+/* Unified custom scrollbar — token-driven, scoped to the named markdown
+ * surface (never a global `*` rule, which would regress other board scroll
+ * containers). The iframe document gets the matching rules via injected
+ * srcDoc \3c style>. The thumb's faux-padding border tracks --surface, the
+ * colour this surface sits on. No change to the 90% prose column. */
+.md-surface {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+.md-surface::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+.md-surface::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+.md-surface::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid var(--surface);
+}
+.md-surface::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+.md-surface--ro { background: var(--surface); }
+.md-surface .prose,
+.md-surface .ProseMirror {
+  width: 90%;
+  max-width: none;
+  margin-inline: auto;
+  padding: var(--space-lg) var(--space-md) var(--space-xl);
+  color: var(--on-surface);
+  outline: none;
+}
+/* Reading column typography (design Screen 1 `.prose` rules). Lifted to
+ * 0.95rem for long-form comfort at the wider measure; reuses the token palette
+ * so editing and reading look identical. */
+.prose h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.3rem;
+  margin: 0.6rem 0 0.8rem;
+  letter-spacing: -0.01em;
+}
+.prose h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 1.3rem 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+.prose h3 { font-size: 0.95rem; margin: 1rem 0 0.4rem; font-weight: 600; }
+.prose p, .prose li { font-size: 0.95rem; line-height: 1.62; }
+.prose p { margin: 0.55rem 0; }
+.prose ul, .prose ol { margin: 0.5rem 0; padding-left: 1.3rem; }
+.prose li { margin: 0.28rem 0; }
+.prose a { color: var(--primary); }
+.prose strong { font-weight: 700; color: var(--on-surface); }
+.prose em { font-style: italic; }
+.prose code {
+  background: var(--surface-container-highest);
+  padding: 0.05rem 0.3rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+}
+.prose pre {
+  background: var(--surface-container-highest);
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--radius-md);
+  overflow: auto;
+  margin: 0.7rem 0;
+}
+.prose pre code { background: transparent; padding: 0; font-size: 0.8rem; line-height: 1.5; }
+.prose blockquote {
+  border-left: 3px solid var(--outline-variant);
+  padding-left: 0.8rem;
+  color: var(--on-surface-variant);
+  margin: 0.7rem 0;
+}
+.md-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.45rem 1.25rem;
+  border-bottom: 1px solid var(--outline-variant);
+  background: var(--surface-container);
+}
+.md-toolbar .tb-spacer { flex: 1; }
+/* Chat toggle — right-most control in the toolbar (design Screen 2). The same
+ * rule serves the read-only hint row, where the toolbar is hidden. */
+.tb-toggle {
+  font-size: 0.78rem;
+  color: var(--on-surface-variant);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: default;
+}
+.tb-toggle input { accent-color: var(--primary); }
+.ro-hint .tb-spacer { flex: 1; }
+.tb-sep {
+  width: 1px;
+  align-self: stretch;
+  margin: 0.25rem 0.4rem;
+  background: var(--outline-variant);
+}
+.tb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.85rem;
+  height: 1.85rem;
+  padding: 0 0.45rem;
+  background: transparent;
+  color: var(--on-surface-variant);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.tb-btn:hover:not(:disabled) {
+  color: var(--on-surface);
+  border-color: var(--outline-variant);
+  background: var(--surface-container-high);
+}
+.tb-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.tb-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.tb-btn b { font-weight: 700; }
+.tb-btn i { font-style: italic; }
+.tb-btn .mono { font-family: var(--font-mono); font-size: 0.74rem; }
+.tb-btn .caret { font-size: 0.6rem; margin-left: 0.2rem; opacity: 0.7; }
+/* Active / selected — the mark covering the selection is on. */
+.tb-btn--active {
+  color: var(--primary);
+  border-color: color-mix(in srgb, var(--primary) 55%, var(--outline-variant));
+  background: var(--tb-active-bg, color-mix(in srgb, var(--primary) 14%, transparent));
+}
+/* Heading level-picker popover + overflow menu (tasks 010 / 011). */
+.tb-pop-wrap { position: relative; display: inline-flex; }
+.tb-menu {
+  position: absolute;
+  top: calc(100% + 0.3rem);
+  left: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  min-width: 8rem;
+  padding: 0.25rem;
+  background: var(--surface-container-high);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-overlay);
+}
+.tb-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  background: transparent;
+  color: var(--on-surface);
+  border: 0;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  text-align: left;
+  cursor: pointer;
+}
+.tb-menu__item:hover { background: var(--surface-container-highest); }
+.tb-menu__item--active { color: var(--primary); }
+.tb-menu__glyph { display: inline-flex; width: 1.2rem; justify-content: center; }
+/* Read-only hint row shown in place of the toolbar on approved docs. */
+.ro-hint {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--on-surface-variant);
+  padding: 0.45rem 1.25rem;
+  border-bottom: 1px solid var(--outline-variant);
+  background: var(--surface-container-low);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.ro-hint .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 6px var(--success);
+}
+.btn {
+  background: var(--surface-container-high);
+  color: var(--on-surface);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  padding: 0.32rem 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+.btn:hover:not(:disabled) { border-color: var(--primary); background: var(--surface-container-highest); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+/* Primary (high-intent) — filled indigo→purple gradient with a 1px top-border
+ * highlight, light text, and a brightened hover (DESIGN.md Buttons §Primary). */
+.btn--primary {
+  border-color: color-mix(in srgb, var(--primary-container) 70%, transparent);
+  color: var(--on-surface);
+  background: var(--gradient-primary);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--primary) 55%, transparent);
+}
+.btn--primary:hover:not(:disabled) {
+  border-color: var(--primary);
+  background: var(--gradient-primary-hover);
+}
+.btn--ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--on-surface-variant);
+}
+.btn--ghost:hover:not(:disabled) {
+  border-color: var(--outline-variant);
+  background: transparent;
+}
+.banner {
+  padding: 0.55rem 1.25rem;
+  font-size: 0.8rem;
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  border-bottom: 1px solid var(--outline-variant);
+}
+.banner--warn  { background: color-mix(in srgb, var(--tertiary) 12%, transparent); color: var(--tertiary); }
+.banner--error { background: color-mix(in srgb, var(--error) 12%, transparent); color: var(--error); }
+.banner--ok    { background: color-mix(in srgb, var(--success) 14%, transparent); color: var(--success); }
+.link {
+  background: transparent;
+  border: 0;
+  color: var(--primary);
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  text-decoration: underline;
+}
+.panel__body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  overflow: hidden;
+}
+.panel__body--cols-1 { grid-template-columns: 1fr; }
+.panel__body--cols-2 { grid-template-columns: 1fr 1fr; }
+.panel__body--cols-3 { grid-template-columns: 1.1fr 0.9fr 1fr; }
+/* Legacy class — kept until older calls migrate, harmless */
+.panel__body--split { grid-template-columns: 1fr 1fr; }
+.panel__editor {
+  overflow: hidden;
+  border-right: 1px solid var(--outline-variant);
+}
+.panel__editor:last-child { border-right: 0; }
+.editor {
+  height: 100%;
+}
+.panel__preview {
+  overflow: auto;
+  padding: 1rem 1.5rem;
+  background: var(--surface-container-low);
+  border-left: 1px solid var(--outline-variant);
+  color: var(--on-surface);
+}
+/* Design-brief preview renders verbatim HTML in a sandboxed iframe; it keeps
+ * its own white background by design and the dark .markdown rules below must
+ * NOT bleed into it (the iframe is a separate document, so they cannot). */
+.panel__preview--iframe {
+  display: block; /* replaced inline default leaves a baseline descender gap
+                   * that forces wrapper overflow; block removes it. */
+  padding: 0;
+  border: 0;
+  border-left: 1px solid var(--outline-variant);
+  background: var(--design-preview-bg);
+  width: 100%;
+  height: 100%;
+}
+.markdown h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.3rem;
+  margin: 0.6rem 0 0.8rem;
+}
+.markdown h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 1rem 0 0.5rem;
+}
+.markdown h3 { font-size: 0.95rem; margin: 0.8rem 0 0.4rem; }
+.markdown p, .markdown li { font-size: 0.88rem; line-height: 1.55; }
+.markdown a { color: var(--primary); }
+.markdown code {
+  background: var(--surface-container-highest);
+  padding: 0.05rem 0.3rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+.markdown pre {
+  background: var(--surface-container-highest);
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius-md);
+  overflow: auto;
+}
+.markdown pre code { background: transparent; padding: 0; }
+.markdown blockquote {
+  border-left: 3px solid var(--outline-variant);
+  padding-left: 0.7rem;
+  color: var(--on-surface-variant);
+}
+/* ===== VS Code-quality tables (design Screen 5) =======================
+ * Scoped to .markdown so editing (Milkdown's GFM node) and reading share the
+ * same grid: collapsed 1px borders, a filled header row, even-row zebra, and
+ * comfortable padding. The four derived values are named in tokens.css
+ * (task-016) with the literal color-mix retained as the fallback. */
+.markdown table {
+  border-collapse: collapse;
+  width: auto;
+  max-width: 100%;
+  margin: 0.9rem 0;
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+}
+.markdown th, .markdown td {
+  border: 1px solid var(--table-cell-border, var(--outline-variant));
+  padding: 0.42rem 0.7rem;
+  text-align: left;
+  vertical-align: top;
+}
+.markdown th {
+  background: var(--table-header-bg, var(--surface-container-high));
+  font-weight: 600;
+  color: var(--on-surface);
+  white-space: nowrap;
+}
+.markdown tbody tr:nth-child(even) td {
+  background: var(--table-zebra-bg, color-mix(in srgb, var(--surface-container) 55%, transparent));
+}
+/* Wide tables scroll horizontally inside their wrapper rather than reflowing
+ * (resolved design Q2). `.tbl-wrap` is the design's named container for any
+ * non-editor render path; `.tableWrapper` is the live div prosemirror-tables
+ * emits around the GFM table node in the editing surface — both scroll. */
+.markdown .tbl-wrap,
+.markdown .tableWrapper {
+  overflow-x: auto;
+  max-width: 100%;
+  margin: 0.9rem 0;
+}
+.markdown .tbl-wrap table,
+.markdown .tableWrapper table { margin: 0; }
+.panel__footer {
+  padding: 0.4rem 1.25rem;
+  border-top: 1px solid var(--outline-variant);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--on-surface-variant);
+}
+.panel__footer--actions {
+  display: flex;
+  gap: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--on-surface);
+}
+/* Build panel ------------------------------------------------------- */
+.panel__tasks {
+  flex: 1;
+  overflow: auto;
+}
+.task-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.4rem 1.25rem 1rem;
+}
+.task {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--outline-variant);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.task:last-child { border-bottom: 0; }
+.task--busy { opacity: 0.5; pointer-events: none; }
+.task--done { opacity: 0.85; }
+.task--done .task__title {
+  text-decoration: line-through;
+  text-decoration-color: var(--outline-variant);
+}
+.task__head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.task__id {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--on-surface-variant);
+  min-width: 4.5rem;
+}
+.task__title {
+  flex: 1;
+  font-size: 0.9rem;
+}
+.task__status {
+  display: flex;
+  gap: 0.25rem;
+}
+.status-pill {
+  background: transparent;
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-sm);
+  padding: 0.15rem 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+}
+.status-pill:hover:not(:disabled) { color: var(--on-surface); border-color: var(--outline); }
+.status-pill:disabled { cursor: not-allowed; opacity: 0.6; }
+/* Active chip: glowing dot to the left of the text (DESIGN.md Chips & Tags). */
+.status-pill--on {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.status-pill--on::before {
+  content: "";
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: var(--radius-full, 9999px);
+  background: currentColor;
+  box-shadow: 0 0 6px currentColor;
+}
+.status-pill--on.status-pill--todo {
+  border-color: var(--status-draft);
+  color: var(--status-draft);
+  background: color-mix(in srgb, var(--status-draft) 10%, transparent);
+}
+.status-pill--on.status-pill--in_progress {
+  border-color: var(--status-in-progress);
+  color: var(--status-in-progress);
+  background: color-mix(in srgb, var(--status-in-progress) 10%, transparent);
+}
+.status-pill--on.status-pill--done {
+  border-color: var(--status-done);
+  color: var(--status-done);
+  background: color-mix(in srgb, var(--status-done) 12%, transparent);
+}
+.status-pill--on.status-pill--blocked {
+  border-color: var(--error);
+  color: var(--error);
+  background: color-mix(in srgb, var(--error) 12%, transparent);
+}
+.task--blocked {
+  box-shadow: inset 2px 0 0 var(--error);
+}
+.card__build-blocked,
+.phase-group__count .blocked { color: var(--error); }
+.task__toggle {
+  background: transparent;
+  border: 0;
+  color: var(--on-surface-variant);
+  font-size: 0.72rem;
+  cursor: pointer;
+  font-family: var(--font-body);
+  padding: 0.1rem 0;
+  align-self: flex-start;
+}
+.task__artifact-count { opacity: 0.7; }
+.task__artifacts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.8rem;
+  background: var(--surface-container);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 0.8rem;
+}
+.task__artifact-group { display: flex; flex-direction: column; gap: 0.25rem; }
+.task__artifact-group label {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.task__artifact-group ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.task__artifact-group li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+.task__artifact-group code {
+  background: var(--surface-container-highest);
+  padding: 0.05rem 0.3rem;
+  border-radius: var(--radius-sm);
+  word-break: break-all;
+}
+.input {
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  color: var(--on-surface);
+  padding: 0.35rem 0.55rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  flex: 1;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+.input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+.input--small {
+  font-size: 0.78rem;
+  padding: 0.25rem 0.45rem;
+}
+.link--small {
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+/* Chat panel ------------------------------------------------------- */
+.panel__chat {
+  border-left: 1px solid var(--outline-variant);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--surface);
+}
+.chat--loading,
+.chat--unavailable {
+  padding: 1.5rem 1.25rem;
+  color: var(--on-surface-variant);
+  font-size: 0.85rem;
+}
+.chat--unavailable strong { color: var(--error); display: block; margin-bottom: 0.3rem; }
+.chat--unavailable p { margin: 0.2rem 0; line-height: 1.4; }
+.chat__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.8rem;
+  border-bottom: 1px solid var(--outline-variant);
+  font-size: 0.8rem;
+}
+.chat__messages {
+  flex: 1;
+  overflow: auto;
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.chat__empty {
+  color: var(--on-surface-variant);
+  font-size: 0.82rem;
+  padding: 0.4rem 0;
+  line-height: 1.45;
+}
+.msg {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.msg__label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--on-surface-variant);
+}
+.msg__body {
+  font-size: 0.86rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.msg--user .msg__body {
+  background: var(--surface-container);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  padding: 0.35rem 0.55rem;
+}
+.msg--assistant .msg__body {
+  background: color-mix(in srgb, var(--primary) 5%, transparent);
+  border-left: 2px solid var(--primary);
+  padding: 0.35rem 0.55rem;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.msg--info .msg__body,
+.msg--tool .msg__body {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--on-surface-variant);
+}
+.msg--error .msg__body {
+  color: var(--error);
+  font-size: 0.82rem;
+}
+.msg__caret {
+  display: inline-block;
+  margin-left: 0.2rem;
+  color: var(--primary);
+  animation: blink 1s steps(2) infinite;
+}
+@keyframes blink { to { opacity: 0; } }
+.chat__composer {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.5rem 0.6rem;
+  border-top: 1px solid var(--outline-variant);
+  align-items: flex-end;
+}
+.chat__composer textarea {
+  flex: 1;
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  color: var(--on-surface);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  padding: 0.35rem 0.45rem;
+  resize: vertical;
+  min-height: 2.2rem;
+  max-height: 8rem;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+.chat__composer textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+/* Phase grouping (Phase 7.C) ---------------------------------------- */
+.phase-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.4rem 1.25rem 1rem;
+}
+.phase-group {
+  background: var(--surface-container);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  padding: 0.55rem 0.7rem;
+}
+.phase-group--done {
+  border-color: color-mix(in srgb, var(--success) 35%, transparent);
+  background: color-mix(in srgb, var(--success) 6%, transparent);
+}
+.phase-group--blocked {
+  border-color: color-mix(in srgb, var(--error) 40%, transparent);
+  background: color-mix(in srgb, var(--error) 6%, transparent);
+}
+.phase-group__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.35rem;
+}
+.phase-group__toggle {
+  background: transparent;
+  border: 0;
+  color: var(--on-surface);
+  cursor: pointer;
+  font-family: var(--font-body);
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  padding: 0;
+  flex: 1;
+  text-align: left;
+}
+.phase-group__caret {
+  color: var(--on-surface-variant);
+  width: 0.8rem;
+  display: inline-block;
+}
+.phase-group__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+.phase-group__count {
+  color: var(--on-surface-variant);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+.phase-group__cmd {
+  all: unset;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--primary);
+  opacity: 0.55;
+  padding: 0 0.2rem;
+  border-radius: var(--radius-sm);
+}
+.phase-group__cmd:hover { opacity: 1; text-decoration: underline; }
+.phase-group__bar {
+  margin-bottom: 0.45rem;
+}
+.task-list--in-phase {
+  padding: 0;
+}
+.task-list--in-phase .task:last-child { border-bottom: 0; }
+/* Walkthrough column: per-phase cards + final roll-up --------------- */
+.card--walkthroughs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.4rem 0.45rem;
+  background: transparent;
+  border: 0;
+}
+/* The roll-up is a stack of per-phase sub-cards; it sizes to its content and
+ * opts out of the fixed stage-card height (it legitimately drives a tall row
+ * track that the compact, bottom-aligned stage cards align against). Scoped to
+ * `.row__cell >` so it outranks the stage-card height rule. */
+.row__cell > .card--walkthroughs {
+  height: auto;
+}
+.card--sub {
+  padding: 0.5rem 0.55rem 0.42rem;
+  border-radius: var(--radius-sm);
+  min-height: 0;
+  gap: 0.2rem;
+  background: var(--card-gradient);
+  border: 1px solid var(--card-border);
+}
+/* Sub-cards take the depth at a lighter weight: border brighten + a soft glow,
+ * no scale (the rows are tight). */
+.card--sub:hover {
+  border-color: var(--card-border-hover);
+  box-shadow: var(--shadow-card);
+  transform: none;
+}
+.card--sub.card--empty {
+  padding: 0.46rem 0.55rem 0.38rem;
+  font-size: 0.72rem;
+}
+/* Dashed placeholder sub-cards stay flat — no glow on hover. */
+.card--sub.card--empty:hover,
+.card--sub.card--locked:hover {
+  box-shadow: none;
+  border-color: var(--outline-variant);
+}
+.card--sub.card--locked {
+  background: transparent;
+  border-style: dashed;
+  color: var(--on-surface-variant);
+}
+.card__sub-label {
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  /* Constrain the line box so the label (incl. the ★ glyph's tall cap) clears
+   * the 1px border + --radius-sm corner instead of riding over it. */
+  line-height: 1.15;
+}
+.card--final {
+  border-color: color-mix(in srgb, var(--primary) 35%, transparent);
+}
+.card--final .card__sub-label {
+  color: var(--primary);
+}
+.card--final.card--locked {
+  border-style: dashed;
+  opacity: 0.7;
+}
+.card__build-exec {
+  margin-top: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--primary);
+  opacity: 0.65;
+  cursor: pointer;
+}
+.card__build-exec:hover { opacity: 1; text-decoration: underline; }
+/* ===================================================================
+ * Responsive — three Obsidian Flux breakpoints (Architecture §6).
+ * CSS-only; no JS layout logic. The grid template is driven by the
+ * --grid-cols custom property set on .grid, so media queries can
+ * re-shape it without inline-style specificity fights.
+ * =================================================================== */
+/* Tablet 640–1024px: narrower stage columns; BUILD wraps below the row as a
+ * compact strip rather than a fixed right-hand track. */
+@media (max-width: 1024px) {
+  .grid {
+    --grid-cols: 10rem repeat(5, minmax(8rem, 1fr));
+  }
+  .grid__header--build { display: none; }
+  .row__cell--build {
+    grid-column: 1 / -1;
+    min-height: 0;
+  }
+  .card--build {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  .card--build .bar { flex: 1; min-width: 8rem; }
+
+  /* At the narrower drawer width the 3-column split is cramped, so chat
+   * stacks under the editor/preview row rather than taking a third column
+   * (layout-only — the chat pane is still shown, no behavior change). */
+  .panel__body--cols-3 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr auto;
+  }
+  .panel__body--cols-3 .panel__chat {
+    grid-column: 1 / -1;
+    border-left: 0;
+    border-top: 1px solid var(--outline-variant);
+  }
+}
+/* Mobile <640px: the grid linearizes — each feature stacks as a single column
+ * of cards with a 16px margin; panels go full-width; the split body collapses
+ * to one column (preview/chat stack under the editor). */
+@media (max-width: 639px) {
+  .board { padding: 0 var(--space-md) var(--space-xl); }
+  .board__header { margin: 0 calc(var(--space-md) * -1) var(--space-md); }
+  /* Display title scales to headline-lg-mobile (24px) so the header fits. */
+  .board__title { font-size: 1.5rem; line-height: 2rem; }
+
+  .grid {
+    --grid-cols: 1fr;
+    gap: var(--space-md);
+  }
+  .grid__corner, .grid__header { display: none; }
+  .row { gap: var(--space-xs); }
+  .row__label {
+    border-right: 0;
+    border-bottom: 1px solid var(--outline-variant);
+    padding-bottom: 0.4rem;
+  }
+  .row__cell, .row__cell--build { min-height: 0; }
+
+  .panel { width: 100vw; border-radius: 0; }
+  /* The horizontal header may wrap to two rows on narrow screens — acceptable;
+   * the action cluster drops below the title rather than crushing it. */
+  .panel__header { flex-wrap: wrap; }
+  .panel__header-actions { flex-wrap: wrap; }
+  .panel__body--cols-2,
+  .panel__body--cols-3 { grid-template-columns: 1fr; }
+  .panel__editor { border-right: 0; border-bottom: 1px solid var(--outline-variant); }
+  .panel__preview, .panel__chat { border-left: 0; }
+}
+/* Reduced motion: disable the scale/glow/slide micro-interactions but keep the
+ * UI fully functional (Architecture Q9). */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .panel { animation: none; }
+  .status-pill--on::before { box-shadow: none; }
+  /* Disable the Phase B card glow + scale micro-interactions (keep the border
+   * brighten as the sole hover affordance). */
+  .card:hover,
+  .card--button:hover,
+  .card--sub:hover {
+    box-shadow: none;
+    transform: none;
+  }
+}
+/* Glass fallback: when backdrop-filter is unsupported, use the opaque glass
+ * background so the sticky top bar stays readable. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .board__header {
+    background: var(--glass-bg-opaque);
+    backdrop-filter: none;
+  }
+}

@@ -13,5 +13,12 @@ export default defineConfig({
   build: {
     outDir: "dist",
     emptyOutDir: true,
+    minify: false,
+    rollupOptions: {
+      output: {
+        manualChunks: (id) =>
+          id.match(/node_modules\/((?:@[^/]+\/)?[^/]+)/)?.[1]?.replace("@", "").replace("/", "-"),
+      },
+    },
   },
 });
