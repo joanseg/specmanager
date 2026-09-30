@@ -59,6 +59,27 @@ Run these before every push to `main`, not only before a release: the directory 
 
 ## 3. Test on each surface before submitting
 
+### Local results, 2026-09-30
+
+Already verified on the development machine, so you do not need to repeat it for the first submission. The results apply to commit `79f8f08` on `directory-readiness`; a later commit that changes only files under `docs/` does not affect them. Toolchain: Node v25.6.1, npm 11.9.0, Claude Code 2.1.281.
+
+| Check | Result | Limit or expectation |
+|---|---|---|
+| Server build, then `selftest-directory` and the 14 existing scripts (`selftest`, `selftest-board`, `selftest-phases`, `selftest-build`, `selftest-tiers`, `selftest-stopgate`, `selftest-roundtrip`, `selftest-pidfile`, `selftest-shutdown`, `selftest-autoport`, `selftest-repos`, `selftest-specslice`, `selftest-prompts`, `smoke-mcp`) | All 15 pass, exit code 0 | All pass |
+| Committed `dist` against a fresh build | Identical (`git status --short plugins/` empty after the build) | Identical |
+| `claude plugin validate plugins/specmanager` | `✔ Validation passed`, no warnings | Passed, no warnings |
+| `npm ci --ignore-scripts` in a clean copy of the shipped folder, empty npm cache: wall time | 4.98 s (5.46 s on a second run) | 60 s |
+| Same install: download size (size of the npm cache afterwards) | 12 MB | None stated |
+| Same install: `node_modules` size | 48 MB, 6,615 files | None stated |
+| Same install: packages | 232 | None stated |
+| MCP smoke test, board selftest and Stop-gate selftest, run from that copy with only the root `node_modules` (no `server/node_modules`, `NODE_PATH` unset) | All three pass | All pass |
+| Shipped files (`git ls-files plugins/specmanager`) | 228 | 512 |
+| Largest shipped file that is not an image or font | 195,298 bytes, about 191 KiB (`ui/dist/assets/react-dom-3WAF5SeA.js`) | 256 KiB |
+
+Not verified locally, and still yours to do: the interactive `--plugin-dir` session in (a), the Cowork upload in (b), the marketplace path in (c), and everything in the portal.
+
+To look at before submitting: `npm ci` reports 11 audit advisories in the dependency tree (1 low, 3 moderate, 7 high). Nobody has examined them yet; `npm audit` at the plugin root lists them.
+
 ### (a) Claude Code, loading the folder directly
 
 `--plugin-dir` loads the folder in place and does not install dependencies, so install them first.
