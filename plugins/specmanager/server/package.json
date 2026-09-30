@@ -12,6 +12,7 @@
     "selftest": "node dist/selftest.js",
     "selftest-autoport": "node dist/selftest-autoport.js",
     "selftest-board": "node dist/selftest-board.js",
+    "selftest-directory": "node dist/selftest-directory.js",
     "selftest-phases": "node dist/selftest-phases.js",
     "selftest-build": "node dist/selftest-build.js",
     "selftest-tiers": "node dist/selftest-tiers.js",
