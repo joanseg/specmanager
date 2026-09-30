@@ -44,7 +44,7 @@ _This file follows the [Stitch DESIGN.md spec](./references/stitch-design-md.md)
 
 ## Overview
 
-Inferred from `plugins/specmanager/ui` (7 component file(s)). The project's voice and feel should be described here — replace this paragraph with brand personality, target audience, and the emotional response the UI should evoke.
+Inferred from `plugins/specmanager/ui` (6 component file(s)). The project's voice and feel should be described here — replace this paragraph with brand personality, target audience, and the emotional response the UI should evoke.
 
 ## Colors
 

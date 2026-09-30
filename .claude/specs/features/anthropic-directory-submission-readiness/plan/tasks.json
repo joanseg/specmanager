@@ -1,0 +1,351 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-anthropic-directory-submission-readiness",
+      "title": "Add `selftest-directory` with the file-tree assertions",
+      "status": "done",
+      "phase": "conformance",
+      "complexity": 3,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "3df0176"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest-directory.ts",
+          "plugins/specmanager/server/package.json",
+          "plugins/specmanager/server/dist/selftest-directory.js",
+          "plugins/specmanager/server/dist/selftest-directory.js.map"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-09-30T10:33:47.457Z",
+      "updatedAt": "2026-09-30T11:06:27.837Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-anthropic-directory-submission-readiness",
+      "title": "Add the manifest, command and package assertions to `selftest-directory`",
+      "status": "done",
+      "phase": "conformance",
+      "complexity": 3,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "635cfe7"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest-directory.ts",
+          "plugins/specmanager/server/dist/selftest-directory.js",
+          "plugins/specmanager/server/dist/selftest-directory.js.map"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-09-30T10:33:52.191Z",
+      "updatedAt": "2026-09-30T11:08:58.276Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-anthropic-directory-submission-readiness",
+      "title": "Move runtime dependencies to a plugin-root `package.json` + `package-lock.json`",
+      "status": "done",
+      "phase": "conformance",
+      "complexity": 3,
+      "dependsOn": [
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [
+          "e6de321"
+        ],
+        "files": [
+          "plugins/specmanager/package.json",
+          "plugins/specmanager/package-lock.json",
+          "plugins/specmanager/server/package.json",
+          "plugins/specmanager/server/package-lock.json"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-09-30T10:33:53.416Z",
+      "updatedAt": "2026-09-30T11:11:56.412Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-anthropic-directory-submission-readiness",
+      "title": "Reduce `.mcp.json` env to the board port and `hooks.json` to `Stop` only",
+      "status": "done",
+      "phase": "conformance",
+      "complexity": 1,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [
+          "7286d66"
+        ],
+        "files": [
+          "plugins/specmanager/.mcp.json",
+          "plugins/specmanager/hooks/hooks.json"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-09-30T10:33:54.878Z",
+      "updatedAt": "2026-09-30T11:14:44.606Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-anthropic-directory-submission-readiness",
+      "title": "Turn off server source maps and delete the tracked `.map` files",
+      "status": "done",
+      "phase": "conformance",
+      "complexity": 1,
+      "dependsOn": [
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [
+          "2699789"
+        ],
+        "files": [
+          "plugins/specmanager/server/tsconfig.json",
+          "plugins/specmanager/server/dist"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-09-30T10:33:55.878Z",
+      "updatedAt": "2026-09-30T11:20:56.854Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-anthropic-directory-submission-readiness",
+      "title": "Build the UI unminified, one chunk per npm package",
+      "status": "done",
+      "phase": "conformance",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "281164e"
+        ],
+        "files": [
+          "plugins/specmanager/ui/vite.config.ts",
+          "plugins/specmanager/ui/dist"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-09-30T10:33:57.111Z",
+      "updatedAt": "2026-09-30T11:26:57.762Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-anthropic-directory-submission-readiness",
+      "title": "Remove agent chat from the UI",
+      "status": "done",
+      "phase": "conformance",
+      "complexity": 3,
+      "dependsOn": [
+        "task-006"
+      ],
+      "artifacts": {
+        "commits": [
+          "bf83bbc"
+        ],
+        "files": [
+          "plugins/specmanager/ui/src/ChatPanel.tsx",
+          "plugins/specmanager/ui/src/DocPanel.tsx",
+          "plugins/specmanager/ui/src/MarkdownEditor.tsx",
+          "plugins/specmanager/ui/src/MarkdownToolbar.tsx",
+          "plugins/specmanager/ui/src/api.ts",
+          "plugins/specmanager/ui/src/types.ts",
+          "plugins/specmanager/ui/src/styles.css",
+          "plugins/specmanager/ui/dist",
+          "docs/DESIGN.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-09-30T10:33:58.356Z",
+      "updatedAt": "2026-09-30T11:32:56.955Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-anthropic-directory-submission-readiness",
+      "title": "Remove agent chat from the server and drop the agent SDK dependency",
+      "status": "done",
+      "phase": "conformance",
+      "complexity": 2,
+      "dependsOn": [
+        "task-003",
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [
+          "ea7e433"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/agent-chat.ts",
+          "plugins/specmanager/server/src/board-server.ts",
+          "plugins/specmanager/server/dist/agent-chat.js",
+          "plugins/specmanager/server/dist/board-server.js",
+          "plugins/specmanager/package.json",
+          "plugins/specmanager/package-lock.json"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-09-30T10:33:59.584Z",
+      "updatedAt": "2026-09-30T11:36:01.020Z"
+    },
+    {
+      "id": "task-009",
+      "featureId": "feat-anthropic-directory-submission-readiness",
+      "title": "Set `version` 1.0.0 and the new `board_port` description in `plugin.json`",
+      "status": "done",
+      "phase": "conformance",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "29aca8a"
+        ],
+        "files": [
+          "plugins/specmanager/.claude-plugin/plugin.json"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-09-30T10:34:01.029Z",
+      "updatedAt": "2026-09-30T11:36:52.599Z"
+    },
+    {
+      "id": "task-010",
+      "featureId": "feat-anthropic-directory-submission-readiness",
+      "title": "Write the plugin-folder README",
+      "status": "done",
+      "phase": "conformance",
+      "complexity": 2,
+      "dependsOn": [
+        "task-004",
+        "task-008"
+      ],
+      "artifacts": {
+        "commits": [
+          "18678a2"
+        ],
+        "files": [
+          "plugins/specmanager/README.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-09-30T10:34:02.046Z",
+      "updatedAt": "2026-09-30T11:41:00.959Z"
+    },
+    {
+      "id": "task-011",
+      "featureId": "feat-anthropic-directory-submission-readiness",
+      "title": "Write `docs/directory-submission.md`, the owner's submission checklist",
+      "status": "done",
+      "phase": "conformance",
+      "complexity": 2,
+      "dependsOn": [
+        "task-009"
+      ],
+      "artifacts": {
+        "commits": [
+          "d0ba883"
+        ],
+        "files": [
+          "docs/directory-submission.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-09-30T10:34:03.255Z",
+      "updatedAt": "2026-09-30T11:45:28.408Z"
+    },
+    {
+      "id": "task-012",
+      "featureId": "feat-anthropic-directory-submission-readiness",
+      "title": "Update contributor and install text in root `README.md`, `CLAUDE.md` and `.gitignore`",
+      "status": "done",
+      "phase": "conformance",
+      "complexity": 2,
+      "dependsOn": [
+        "task-004",
+        "task-008"
+      ],
+      "artifacts": {
+        "commits": [
+          "79f8f08"
+        ],
+        "files": [
+          "README.md",
+          "CLAUDE.md",
+          ".gitignore"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-09-30T10:34:04.563Z",
+      "updatedAt": "2026-09-30T11:48:21.223Z"
+    },
+    {
+      "id": "task-013",
+      "featureId": "feat-anthropic-directory-submission-readiness",
+      "title": "Run the local surface tests and record the results",
+      "status": "done",
+      "phase": "conformance",
+      "complexity": 2,
+      "dependsOn": [
+        "task-005",
+        "task-010",
+        "task-011",
+        "task-012"
+      ],
+      "artifacts": {
+        "commits": [
+          "1bccb55"
+        ],
+        "files": [
+          "docs/directory-submission.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-09-30T10:34:05.768Z",
+      "updatedAt": "2026-09-30T11:57:05.901Z"
+    }
+  ],
+  "meta": {
+    "phases": {
+      "conformance": {
+        "testCommand": "cd plugins/specmanager/server && npm run build && for s in selftest-directory selftest selftest-board selftest-phases selftest-build selftest-tiers selftest-stopgate selftest-roundtrip selftest-pidfile selftest-shutdown selftest-autoport selftest-repos selftest-specslice selftest-prompts smoke-mcp; do npm run -s \"$s\" || exit 1; done",
+        "architectureRefs": [
+          "R1",
+          "R2",
+          "R3",
+          "R4",
+          "R5",
+          "R6",
+          "R7",
+          "R8",
+          "R9",
+          "R10",
+          "R11",
+          "Q1",
+          "Q2",
+          "Q3",
+          "Q4",
+          "Q5",
+          "Q6",
+          "Q7",
+          "Q8",
+          "Q9",
+          "evidence-log",
+          "agent-chat-removal",
+          "affected-components",
+          "failure-edge-cases",
+          "open-questions-risks"
+        ]
+      }
+    },
+    "blocked": {}
+  }
+}

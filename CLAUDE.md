@@ -26,19 +26,19 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 | Multi-session boards (auto-port) | PRD (approved) | — |
 | Website agent readiness | PRD | — |
 | Landing page redesign (ethskills style) | PRD (approved) | — |
-| Marketing phase | PRD (draft) | — |
+| Marketing phase | PRD (approved) | Plan ⚠️ stale |
 | Fly.io deployment | PRD (approved) | — |
 | SpecManager simplification cleanup | PRD (approved) | — |
 | Company-brain grounding | PRD | — |
 
-_9 features shipped — full history on the board._
+_10 features shipped — full history on the board._
 
 **Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation.
 
 **Commands:**
 `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)
 
-_Last synced: 2026-08-31T14:49:26.429Z_
+_Last synced: 2026-09-30T12:44:06.082Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
@@ -47,107 +47,115 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-This repo **is** the SpecManager plugin (implemented, not a spec). SpecManager is a Claude Code **plugin** that turns a project's lifecycle (PRD → Architecture → optional Design → Plan + tasks → Build → Walkthroughs) into a localhost kanban board backed by plain markdown in the *target* project's repo. Single-user, fully local, bound to `127.0.0.1`, no auth. Claude drafts each stage from the previous approved one plus the existing codebase; the human edits and approves in the board; git tracks every artifact.
+This repo **is** the SpecManager plugin (implemented, not a spec): a Claude Code **plugin** that turns a project's lifecycle (PRD → Architecture → optional Design → Plan + tasks → Build → Walkthroughs) into a localhost kanban board backed by plain markdown in the *target* project's repo. Single-user, fully local, bound to `127.0.0.1`, no auth. Claude drafts each stage from the previous approved one plus the codebase; the human edits and approves in the board; git tracks every artifact.
 
-The repo also dogfoods itself: its own features live under `.claude/specs/features/` and are driven with the same `/specmanager:specmanager-*` commands.
+The repo dogfoods itself: its own features live under `.claude/specs/features/` and are driven with the same `/specmanager:specmanager-*` commands.
 
 ## Layout
 
 - **`.claude-plugin/marketplace.json`** — marketplace manifest, at the repo root.
 - **`plugins/specmanager/`** — the plugin itself:
-  - `.claude-plugin/plugin.json` — plugin manifest (`board_port` user config, default 4317 — a *preferred* port: the board falls forward to the next free port if it's taken, so concurrent sessions each get their own board).
-  - `package.json` + `package-lock.json` — the **runtime** dependencies only (no `scripts`, no `devDependencies`). Claude Code installs them natively at plugin install into `plugins/specmanager/node_modules`, which `server/dist` resolves by normal Node lookup.
-  - `README.md` — the plugin-folder README the Anthropic directory lists (what the plugin does on the user's machine, requirements, troubleshooting).
-  - `.mcp.json` — wires the MCP server: `node ${CLAUDE_PLUGIN_ROOT}/server/dist/mcp.js`, with a single env entry, `SPECMANAGER_BOARD_PORT=${user_config.board_port}`. The project root comes from `CLAUDE_PROJECT_DIR`, which Claude Code exports.
-  - `commands/*.md` — the user-facing slash commands (orchestration prompts). `specmanager-interview.md` is the exception to the delegation pattern: a multi-turn conversation can't live in a single-shot subagent, so its full interview protocol runs in the main session.
-  - `agents/*.md` — the subagents the drafting/build commands delegate to (prd-writer, architect, designer, planner, builder, walkthrough-writer, plus `reviewer` — a read-only spec-compliance reviewer the build command runs after a phase's tasks build).
-  - `hooks/hooks.json` — one hook only: `Stop` runs `hooks/stop-gate.sh` (see Build leverage primitives below).
-  - `server/` — `@specmanager/server`, TypeScript, ships compiled `dist/` (no source maps). Its `package.json` holds scripts and dev dependencies only.
+  - `.claude-plugin/plugin.json` — manifest: `version`, and the `board_port` user config (default 4317, a *preferred* port — the board falls forward to the next free one, so concurrent sessions each get a board).
+  - `package.json` + `package-lock.json` — **runtime** dependencies only (no `scripts`, no `devDependencies`). Claude Code installs them natively at plugin install; `server/dist` resolves them by normal Node lookup.
+  - `README.md` — the README the Anthropic directory lists: what the plugin does on the user's machine, requirements, troubleshooting.
+  - `.mcp.json` — runs `node ${CLAUDE_PLUGIN_ROOT}/server/dist/mcp.js` with one env entry, `SPECMANAGER_BOARD_PORT=${user_config.board_port}`. The project root comes from `CLAUDE_PROJECT_DIR`, which Claude Code exports.
+  - `commands/*.md` — the slash commands (orchestration prompts). `specmanager-interview.md` is the one that does not delegate: a multi-turn conversation can't live in a single-shot subagent, so it runs in the main session.
+  - `agents/*.md` — the subagents: prd-writer, architect, designer, planner, builder, walkthrough-writer, and `reviewer` (read-only spec-compliance review after a phase builds).
+  - `hooks/hooks.json` — one hook: `Stop` runs `hooks/stop-gate.sh` (see Build leverage primitives).
+  - `server/` — `@specmanager/server`, TypeScript, ships compiled `dist/` without source maps. Its `package.json` holds scripts and dev dependencies only.
   - `ui/` — `@specmanager/ui`, React 18 + Vite, ships compiled `dist/`, built unminified with one chunk per npm package so every non-font file stays under 256 KiB.
-- **`docs/`** — `docs/DESIGN.md` is the managed design-system spec; `docs/directory-submission.md` is the owner's checklist for submitting and releasing to the Anthropic plugin directory; the original full spec and phased plan are archived under `docs/temp/original-specs/` (historical snapshots — don't edit).
-- **`docs/agent-snippets/`** — canonical text for prompt fragments that appear in **more than one** agent. There is no install-time preprocessor, so each fragment is physically copy-pasted into the agents that need it; the snippet file is the source of truth and names its carriers. **Change the fragment here and update every carrier in the same commit** — a copy that silently diverges is a real defect class, not a style nit (`design-grounding.md` once told the architect to `read_document` a design doc while `planner.md`/`builder.md` warned against exactly that). `selftest-prompts` guards this: snippet parity is asserted as a positive/negative pattern pair, so a drifted copy fails the suite.
+- **`docs/`** — `DESIGN.md` is the managed design-system spec; `directory-submission.md` is the owner's checklist for submitting and releasing to the Anthropic plugin directory; `temp/original-specs/` holds historical snapshots (don't edit).
+- **`docs/agent-snippets/`** — canonical text for prompt fragments used by **more than one** agent. There is no preprocessor: each fragment is copy-pasted into its carriers, and the snippet file names them. **Change the fragment here and update every carrier in the same commit** — a diverged copy is a real defect, and `selftest-prompts` fails on it.
 
 ## Architecture (the big picture)
 
-Two server entry points, **one shared `core/` module** under `server/src/core/` (re-exported from `core/index.ts`) imported by both. Every mutation — agent or human — flows through `core`, so validation, state transitions, and events are identical; do not duplicate that logic in either entry point.
+Two server entry points share **one `core/` module** (`server/src/core/`, re-exported from `core/index.ts`). Every mutation — agent or human — flows through `core`, so validation, state transitions and events are identical; do not duplicate that logic in either entry point.
 
-- **`server/src/mcp.ts`** — the MCP stdio server (Claude's interface). Registers all the tools (`specmanager_init`, `list/create_feature`, `*_document`, `set_status`, `check_gate`, `list_stale`, `*_task`, `list_phases`, `get_next_phase`, `get_phase_completion`, `get_spec_slice`, `sync_claude_md`, `sync_design_md`, `open_board`, …). **It also boots the board server in-process** (`startBoardServer`), so one `claude` session brings up everything. It runs `startClaudeMdAutoSync` / `startDesignMdAutoSync` listeners that refresh the managed CLAUDE.md block on doc/status events and `docs/DESIGN.md` on `feature.shipped`.
-- **`server/src/board-server.ts`** — Fastify + `ws` + `chokidar`. Serves `ui/dist`, exposes the REST API the UI calls, pushes live updates over websockets, and watches `.claude/specs/**`. Its REST writes emit the same `core` events as the MCP tools, so the two views never drift. **Auto-port bind:** `bindWithFallback` tries the preferred port → sequential scan (`N=20`) → ephemeral `{port:0}`, then surfaces the *actual* bound port (`app.server.address()`) on `BoardServer.url`/`.port` and through `board_url`/`open_board` (which return `available:false`/null rather than fabricating a URL when the board is down). Paired with **per-project pidfiles** (`core/pidfile.ts`: `board-<sha1(root).slice(0,8)>.pid`) so one session's reap backstop never SIGTERMs a peer *project's* live board — two `claude` sessions in different projects run concurrent boards on distinct ports (same-project sessions still share one pidfile → newer takes over).
-- **`server/src/core/repos.ts`** — **multi-repo nested docs.** `specmanager_init` accepts optional `repoPaths: string[]` (`/specmanager:specmanager-init /path/repo-1 /path/repo-2`): the caller-supplied sibling paths *are* the read grant. `declareRepos` validates each (`validateRepoPath` — must exist + be a directory; missing `.git` is a warning, not a gate), reads *only* that sibling's `CLAUDE.md`/`DESIGN.md` (no tree walk), and seeds a mirror under the meta root at `repos/<name>/{CLAUDE.md,DESIGN.md,.specmanager-repo.json}` (seed-if-present / placeholder `DESIGN.md` when the repo has no UI; write-if-absent so re-runs never clobber annotated mirrors). `renderBlock` (`core/claude-md.ts`) adds a links-only "Declared repos" subsection inside the existing markers when `scanDeclaredRepos` is non-empty. **Read may leave the meta root; write structurally cannot** — every write routes through `assertInsideRoot`, and the sidecar's `sourcePath` is stored relative to the meta root's parent (portable, not machine-local). The `repos/` tree is authoritative (nothing in `manifest.json`). Self-test: `selftest-repos`.
+- **`server/src/mcp.ts`** — the MCP stdio server (Claude's interface). Registers all the tools (`specmanager_init`, `list/create_feature`, `*_document`, `set_status`, `check_gate`, `list_stale`, `*_task`, `list_phases`, `get_next_phase`, `get_phase_completion`, `get_spec_slice`, `sync_claude_md`, `sync_design_md`, `open_board`, …). **It also boots the board server in-process** (`startBoardServer`), so one `claude` session brings up everything. Its `startClaudeMdAutoSync` / `startDesignMdAutoSync` listeners refresh the managed CLAUDE.md block on doc/status events and `docs/DESIGN.md` on `feature.shipped`.
+- **`server/src/board-server.ts`** — Fastify + `ws` + `chokidar`. Serves `ui/dist`, exposes the REST API the UI calls, pushes live updates over websockets, and watches `.claude/specs/**`. Its REST writes emit the same `core` events as the MCP tools, so the two views never drift.
+  - **Auto-port bind:** `bindWithFallback` tries the preferred port → sequential scan (`N=20`) → ephemeral `{port:0}`, and surfaces the *actual* bound port on `BoardServer.url`/`.port` and through `board_url`/`open_board` (which return `available:false`/null rather than a made-up URL when the board is down).
+  - **Per-project pidfiles** (`core/pidfile.ts`: `board-<sha1(root).slice(0,8)>.pid`): starting a board SIGTERMs the pid recorded for the *same* project, never a peer project's. Sessions in different projects run concurrent boards; same-project sessions share one pidfile, so the newer takes over. When booting a test board against this repo, point `CLAUDE_PLUGIN_DATA` at a scratch directory or it will reap the session's own board.
+- **`server/src/core/repos.ts`** — **multi-repo nested docs.** `specmanager_init` accepts optional `repoPaths: string[]`; the caller-supplied sibling paths *are* the read grant. `declareRepos` validates each (must exist and be a directory; missing `.git` is a warning), reads *only* that sibling's `CLAUDE.md`/`DESIGN.md` (no tree walk), and seeds a mirror at `repos/<name>/{CLAUDE.md,DESIGN.md,.specmanager-repo.json}` under the meta root (write-if-absent, so re-runs never clobber annotated mirrors; a placeholder `DESIGN.md` when the repo has no UI). `renderBlock` (`core/claude-md.ts`) adds a links-only "Declared repos" subsection inside the markers. **Read may leave the meta root; write structurally cannot** — every write goes through `assertInsideRoot`, and the sidecar's `sourcePath` is stored relative to the meta root's parent. The `repos/` tree is authoritative (nothing in `manifest.json`). Self-test: `selftest-repos`.
 
 Load-bearing invariants (don't drift):
 
 - **Gate enforcement lives in `core`, not in prompts** (`checkGate`). The model cannot bypass a closed gate by being told to.
-- **Staleness is computed in `core`** by walking the `dependsOn` graph on any `approved→draft` transition (`propagateStale`, `core/status.ts`) — a non-blocking badge cleared on reconciliation. A write to an already-`approved` doc does **not** cascade staleness; it only bumps `version` and leaves dependents unflagged.
+- **Staleness is computed in `core`** by walking the `dependsOn` graph on any `approved→draft` transition (`propagateStale`, `core/status.ts`) — a non-blocking badge cleared on reconciliation. A write to an already-`approved` doc only bumps `version`; it does **not** cascade staleness.
 - **Frontmatter is authoritative; `manifest.json` is a rebuildable cache.** Deleting the manifest must not lose data.
-- **The plugin writes into the *project's* `CLAUDE.md`**, never its own. The managed region is strictly between `<!-- specmanager:start -->` / `<!-- specmanager:end -->`. The marker-merge in `core/claude-md.ts` is **line-anchored**, so native `/init` content (which lives *outside* the markers) and the managed block never clobber each other. `docs/DESIGN.md` works the same way with `<!-- specmanager:design:start/end -->`.
+- **The plugin writes into the *project's* `CLAUDE.md`**, never its own. The managed region is strictly between `<!-- specmanager:start -->` / `<!-- specmanager:end -->`; the marker-merge in `core/claude-md.ts` is **line-anchored**, so `/init` content outside the markers and the managed block never clobber each other. `docs/DESIGN.md` works the same way with `<!-- specmanager:design:start/end -->`.
 - **Resolve the project root from the env** (`SPECMANAGER_PROJECT_DIR` ?? `CLAUDE_PROJECT_DIR` ?? cwd), never assume cwd.
-- **Optimistic concurrency on AI writes:** every `write_document` carries the base `version` it read; mismatched versions are rejected so manual edits aren't clobbered.
+- **Optimistic concurrency on AI writes:** every `write_document` carries the base `version` it read; a mismatch is rejected so manual edits aren't clobbered.
 
 ### Lifecycle gate quirks worth memorising
 
-- **The interview is optional and pre-PRD** — `/specmanager:specmanager-interview` runs an adaptive idea-extraction chat (office-hours forcing questions) in the main session; nothing gates on it and it gates nothing. It stores as a `kind: "interview"` doc inside the prd stage (`interview.md`, `dependsOn: []`, status frozen at `draft`); `checkGate`, `currentStageLabel`, and the UI's `findDoc` all exclude `kind === "interview"` so it can never open a gate, shadow the PRD's stage label, or become the PRD column's primary card. Re-interviews update the doc in place (`write_document` + `baseVersion`).
-- Stages PRD / Architecture / Plan gate on the *previous stage being `approved`* (Plan also requires an approved Design doc *if one exists*).
-- **Plan emits both `plan.md` and the task records (`tasks.json` + rollup) in one step.** There is no separate "tasks" stage. Plans are organised into **phases**; tasks carry a Fibonacci `complexity` and anything over 3 must be split.
-- **Build has no document** — it is execution, "complete" when every task in `tasks.json` is `done`. `/specmanager:specmanager-build` builds one phase and stops at its boundary.
-- **Walkthroughs gate on tasks `done`, not on an approved doc** — the one stage whose gate is completion, not approval. Approving the `phase: "final"` walkthrough fires `feature.shipped`, which refreshes `docs/DESIGN.md`.
+- **The interview is optional and pre-PRD.** Nothing gates on it and it gates nothing. It is stored as a `kind: "interview"` doc in the prd stage (`interview.md`, `dependsOn: []`, status frozen at `draft`); `checkGate`, `currentStageLabel` and the UI's `findDoc` all exclude that kind, so it can never open a gate, shadow the PRD's stage label, or become the PRD column's primary card. Re-interviews update the doc in place.
+- PRD / Architecture / Plan gate on the *previous stage being `approved`*; Plan also requires an approved Design doc *if one exists*.
+- **Plan emits `plan.md` and the task records (`tasks.json` + rollup) in one step**; there is no separate "tasks" stage. Plans are organised into **phases**; tasks carry a Fibonacci `complexity`, and anything over 3 must be split.
+- **Task records have no notes field**, and a task cannot move to `done` without at least one commit or file artifact — a verification-only task needs a results file to point at.
+- **Build has no document** — it is execution, complete when every task is `done`. `/specmanager:specmanager-build` builds one phase and stops at its boundary.
+- **Walkthroughs gate on tasks `done`, not on an approved doc.** Approving the `phase: "final"` walkthrough fires `feature.shipped`, which refreshes `docs/DESIGN.md`. **Single-phase features never have a `final` walkthrough**: the per-phase one is terminal and ships the feature (`isFeatureShipped`, `core/shipped.ts`).
 
 ### Build leverage primitives
 
-The build pipeline carries a few primitives beyond plain task execution:
-
-- **Per-task tier dispatch** (`core/tiers.ts`) — maps a task's Fibonacci `complexity` → tier → Claude model *alias* (1→cheap→**sonnet**, 2→standard→sonnet, 3→strong→opus; >3/null→strong). Three tiers, two aliases: `cheap` was re-pointed off `haiku` because Haiku 4.5 caps at **200K context** where Sonnet 5 / Opus 5 carry 1M — a correctness cliff on a large repo, not a cost preference. The ladder is kept (not collapsed) so the reviewer-fail escalation `sonnet → opus` still has somewhere to go, and so a future Haiku 5 is a one-line table edit. The build command reads each task's complexity and passes the resolved alias as the builder `Task`'s `model`. It routes on **aliases, never pinned dated model ids**, so new model generations need no plugin update; an unknown/unavailable alias ⇒ omit `model:` (inherit the session default), never error.
-- **Deterministic spec slicing** (`core/spec-slice.ts`, `get_spec_slice` tool) — assembling the reviewer's spec slice (phase plan section + task records + the Architecture sections named in `meta.architectureRefs`) is a pure function, not prose the model re-derives per build. Anchors resolve by leading id-token (`R6`, `Q1`) or kebab-slug (`core-spec-slice`), sliced to the next heading of level ≤ its own. **An unresolved anchor is loud** — it lands in `unresolvedRefs` rather than silently yielding an empty slice the reviewer would pass for lack of anything to check. Name-matching fallback fires only when refs are absent *or* all unresolved, flagged by `fallbackUsed`. Covered by `selftest-specslice`; `matchPhaseHeading` lives here and is imported by `core/active-card.ts` so there is one phase-heading parser, not two.
-- **Stop-gate hook** (`hooks/stop-gate.sh`, pure bash, zero model calls) — on a `Stop` it resolves the **active build** and, if a phase is genuinely in flight, runs that phase's test command + checks all phase tasks are `done`, exiting 2 (keep working) until they pass, with an iteration cap (N=3) that surfaces the phase as `blocked`. Active-build resolution is **marker-first**: `core/active-build.ts` writes `.claude/specs/.cache/active-build.json` (via `set_active_build`/`clear_active_build`, set/cleared by `/specmanager:specmanager-build`); `resolveActiveCard` (`core/active-card.ts`) returns `null` when no marker exists, so the gate is a strict no-op outside an in-flight build and can never fire on an unrelated feature's open tasks. The marker is **session-scoped**: `set_active_build` records `CLAUDE_CODE_SESSION_ID`, the hook reads `session_id` from its stdin, and a stop from any other session in the same project is a no-op (it neither nags nor spends the retry budget).
-- **Reviewer** (`agents/reviewer.md`) — read-only; given the assembled spec slice + the phase diff, returns a pass/fail spec-compliance verdict. Never writes.
-- **Resilient post-phase finalize** (`core/phase-completion.ts`, `get_phase_completion` tool) — after the builder loop returns *or errors*, `/specmanager:specmanager-build` calls `getPhaseCompletion(featureId, phase)` (`{ complete, hasWalkthrough, needsWalkthrough, isSinglePhase }`) and runs the post-phase walkthrough + doc-sync whenever the phase's tasks are all `done` — so a builder that 529s mid-phase but whose work landed still triggers the auto-walkthrough/sync. Per-task tier dispatch is the enforced default (`--bulk` opts into one whole-phase Task); a single builder Task retries bounded (R=2) on transient `529`/Overloaded. **Single-phase features never produce a `final` walkthrough** — the per-phase walkthrough is terminal and ships the feature (`isFeatureShipped`, `core/shipped.ts`); `phase: "final"` is multi-phase only.
+- **Per-task tier dispatch** (`core/tiers.ts`) — a task's `complexity` maps to a tier and a Claude model *alias*: 1 → cheap → `sonnet`, 2 → standard → `sonnet`, 3 (and >3 / null) → strong → `opus`. `cheap` is `sonnet`, not `haiku`, because Haiku 4.5's 200K context is a correctness cliff on a large repo. The three-tier ladder is kept so the reviewer-fail escalation has somewhere to go. The build command passes the alias as the builder `Task`'s `model`; it routes on **aliases, never dated model ids**, and an unknown alias means omit `model:` (inherit the session default), never error.
+- **Deterministic spec slicing** (`core/spec-slice.ts`, `get_spec_slice`) — the reviewer's slice (phase plan section + task records + the Architecture sections named in `meta.architectureRefs`) is a pure function. Anchors resolve by leading id-token (`R6`, `Q1`) or kebab-slug (single hyphens: `failure-edge-cases`), sliced to the next heading of level ≤ their own. **An unresolved anchor is loud**: it lands in `unresolvedRefs` instead of silently thinning the slice. Name-matching fallback fires only when refs are absent or all unresolved, flagged by `fallbackUsed`. `matchPhaseHeading` lives here and is imported by `core/active-card.ts`, so there is one phase-heading parser.
+- **Stop-gate hook** (`hooks/stop-gate.sh`, pure bash, no model calls) — on `Stop`, if a build phase is in flight it runs that phase's test command and checks all its tasks are `done`, exiting 2 (keep working) until they pass; after N=3 failures it marks the phase `blocked` and allows the stop. Resolution is **marker-first**: `core/active-build.ts` writes `.claude/specs/.cache/active-build.json` (`set_active_build` / `clear_active_build`, called by the build command), and `resolveActiveCard` returns `null` without a marker, so the gate is a no-op outside an in-flight build. The marker is **session-scoped** (`CLAUDE_CODE_SESSION_ID` against the hook's stdin `session_id`): a stop from another session neither nags nor spends the retry budget.
+- **Reviewer** (`agents/reviewer.md`) — read-only; given the spec slice and the phase diff, returns a pass/fail verdict. Never writes.
+- **Resilient post-phase finalize** (`core/phase-completion.ts`, `get_phase_completion`) — after the builder loop returns *or errors*, the build command calls it (`{ complete, hasWalkthrough, needsWalkthrough, isSinglePhase }`) and runs the walkthrough + doc-sync whenever the phase's tasks are all `done`, so a builder that 529s after its work landed still finalizes. Per-task dispatch is the default (`--bulk` opts into one whole-phase Task); a builder Task retries at most twice on transient `529`/Overloaded.
 
 ## Build / test commands
 
 The plugin ships compiled `server/dist` and `ui/dist`, so end users install with no build step. **Rebuild before committing source changes** — the committed `dist/` is what ships.
 
 ```bash
-# Runtime deps (Claude Code installs these natively for end users; an in-place checkout needs them by hand)
-cd plugins/specmanager
-npm ci
+# Runtime deps (installed natively for end users; an in-place checkout needs them by hand)
+cd plugins/specmanager && npm ci
 
 # Server (@specmanager/server)
-cd server
-npm ci
-npm run build            # tsc -p tsconfig.json → dist/
-
-# Self-tests (hand-rolled scripts in dist/, not a test runner — run one by name; 15 total)
-npm run selftest-directory # pre-push check: Anthropic directory conformance of the shipped plugin folder
-npm run selftest           # core flow against a tmp dir
-npm run selftest-board     # boots board: REST + WS + file watcher
-npm run selftest-phases    # phase rollup + Fibonacci ≤3 validation
-npm run selftest-build     # per-phase gates + walkthrough storage
-npm run selftest-tiers     # complexity → tier → alias mapping
-npm run selftest-stopgate  # active-build marker resolution + Stop-gate no-op/in-flight cases
-npm run selftest-roundtrip
-npm run selftest-pidfile
-npm run selftest-shutdown
-npm run selftest-autoport  # bindWithFallback: preferred → sequential scan → ephemeral port
-npm run selftest-repos     # multi-repo declare/seed/render, write-containment
-npm run selftest-specslice # get_spec_slice anchor resolution + fallback path
-npm run selftest-prompts   # prompt-invariant regression net over agents/ + commands/
-npm run smoke-mcp          # MCP wire protocol + tools registered
-# (equivalently: node dist/<name>.js)
+cd server && npm ci
+npm run build              # tsc → dist/
+npm run selftest-directory # one self-test by name (equivalently: node dist/selftest-directory.js)
 
 # UI (@specmanager/ui)
-cd ../ui
-npm ci
-npm run dev              # vite dev server
-npm run build            # tsc + vite build → ui/dist (served by the board server)
+cd ../ui && npm ci
+npm run dev                # vite dev server
+npm run build              # tsc + vite build → ui/dist (served by the board server)
 ```
 
-Validate the plugin manifest/commands with `claude plugin validate plugins/specmanager`. To reinstall after rebuilding: `/plugin marketplace update specmanager` → `/plugin install specmanager@specmanager` → `/reload-plugins`, then reconnect via `/mcp` (a full Claude restart is the reliable fix if reconnect fails — see README Troubleshooting).
+Self-tests are hand-rolled scripts in `server/dist/`, not a test runner; run one by name with `npm run <name>` from `server/`. There are 15:
 
-**Release rule:** bump `version` in `plugins/specmanager/.claude-plugin/plugin.json` on every release — Claude Code detects updates by comparing version strings, so an unchanged version means marketplace users get no update, however many commits land. Run `selftest-directory` before every push to `main`. The full checklist is `docs/directory-submission.md`.
+- `selftest-directory` — Anthropic directory conformance of the shipped plugin folder (the pre-release check).
+- `selftest` (core flow against a tmp dir), `selftest-board` (REST + WS + file watcher), `selftest-phases`, `selftest-build` (per-phase gates + walkthrough storage), `selftest-tiers`, `selftest-stopgate`, `selftest-roundtrip`, `selftest-pidfile`, `selftest-shutdown`, `selftest-autoport`, `selftest-repos`, `selftest-specslice`.
+- `selftest-prompts` — prompt-invariant regression net over `agents/` + `commands/`, including snippet parity.
+- `smoke-mcp` — MCP wire protocol + tools registered.
+
+`selftest-shutdown` and `selftest-autoport` allow 3 seconds for the MCP handshake and can time out on a heavily loaded machine; re-run before treating that as a regression.
+
+To reinstall after rebuilding: `/plugin marketplace update specmanager` → `/plugin install specmanager@specmanager` → `/reload-plugins`, then reconnect via `/mcp` (a full Claude restart is the reliable fix if reconnect fails — see README Troubleshooting).
+
+## Releasing
+
+A **release** is any push to `main` that changes files under `plugins/specmanager/`. The Anthropic directory scans every commit on `main`, and marketplace users get an update only when `version` changes. Docs-only and spec-only pushes are not releases. `docs/directory-submission.md` (sections 2 and 3) has the detail and wins if this summary drifts from it.
+
+**Before pushing a release, do all four yourself, in order, and stop at the first failure:**
+
+1. **Bump `version`** in `plugins/specmanager/.claude-plugin/plugin.json` (semver: patch for fixes, minor for features).
+2. **Rebuild** — `npm ci` at the plugin root, then `npm ci && npm run build` in `server/` and in `ui/`. Commit any change under either `dist/`.
+3. **`npm run selftest-directory`** in `server/` — must end with `All directory-conformance assertions passed.` A `FAIL:` line names the file or field to fix.
+4. **`claude plugin validate plugins/specmanager`** from the repo root — must print `✔ Validation passed` with no warning.
+
+**Surface tests are also required when the release changes packaging** — `plugin.json`, `.mcp.json`, `hooks/`, the plugin-root `package.json` / `package-lock.json`, `ui/vite.config.ts` or `server/tsconfig.json`. Only the owner can run them, so say they are due and do not push until the owner reports the result:
+
+- a `claude --plugin-dir plugins/specmanager` session: the `specmanager` MCP server connects, the board opens, a document can be edited and saved;
+- a Cowork upload of the zipped plugin folder (`git archive --format=zip -o <file> HEAD:plugins/specmanager`), recording the four observations in the checklist.
+
+**After every release lands on `main`**, remind the owner of the marketplace check: `claude plugin marketplace update specmanager`, then `claude plugin update specmanager@specmanager`, and the server connects with no manual `npm` step.
+
+If a surface test fails, do not add an install hook or any other workaround to make it pass; that reintroduces findings the directory blocks. Report it and let the owner decide.
 
 ## Conventions
 
 - **Latest APIs** — current versions of `@modelcontextprotocol/sdk`, React 18+, Vite, Fastify, `chokidar`, `gray-matter`, `zod`. Server and UI are both `"type": "module"`, Node 20+.
-- **Editors:** the UI uses CodeMirror 6 (HTML design briefs, live sandboxed `<iframe>` preview) and Milkdown (markdown docs).
+- **Editors:** the UI edits markdown docs with Milkdown; HTML design briefs are not edited in the board — they render verbatim in a sandboxed `<iframe>`. `ui/package.json` still lists CodeMirror packages, but nothing in `ui/src` imports them.
 - **Runtime deps are installed natively** — declare a runtime dependency in `plugins/specmanager/package.json` and regenerate its lockfile (`npm install --package-lock-only --ignore-scripts`), never in `server/package.json`. There is no install hook; `${CLAUDE_PLUGIN_DATA}` holds only the board pidfile.
-- **No model or API calls from the plugin** — the server and board talk only to the local filesystem and `127.0.0.1`; the plugin README and the directory's data-handling answers state this, so a feature that changes it must update both in the same release.
+- **No model or API calls from the plugin** — the server and board talk only to the local filesystem and `127.0.0.1`. The plugin README and the directory's data-handling answers state this, so a feature that changes it must update both in the same release.
