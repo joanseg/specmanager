@@ -56,13 +56,15 @@ The repo also dogfoods itself: its own features live under `.claude/specs/featur
 - **`.claude-plugin/marketplace.json`** — marketplace manifest, at the repo root.
 - **`plugins/specmanager/`** — the plugin itself:
   - `.claude-plugin/plugin.json` — plugin manifest (`board_port` user config, default 4317 — a *preferred* port: the board falls forward to the next free port if it's taken, so concurrent sessions each get their own board).
-  - `.mcp.json` — wires the MCP server: `node server/dist/mcp.js`, with `SPECMANAGER_PROJECT_DIR=${CLAUDE_PROJECT_DIR}`, `SPECMANAGER_BOARD_PORT=${user_config.board_port}`, `NODE_PATH=${CLAUDE_PLUGIN_DATA}/node_modules`.
+  - `package.json` + `package-lock.json` — the **runtime** dependencies only (no `scripts`, no `devDependencies`). Claude Code installs them natively at plugin install into `plugins/specmanager/node_modules`, which `server/dist` resolves by normal Node lookup.
+  - `README.md` — the plugin-folder README the Anthropic directory lists (what the plugin does on the user's machine, requirements, troubleshooting).
+  - `.mcp.json` — wires the MCP server: `node ${CLAUDE_PLUGIN_ROOT}/server/dist/mcp.js`, with a single env entry, `SPECMANAGER_BOARD_PORT=${user_config.board_port}`. The project root comes from `CLAUDE_PROJECT_DIR`, which Claude Code exports.
   - `commands/*.md` — the user-facing slash commands (orchestration prompts). `specmanager-interview.md` is the exception to the delegation pattern: a multi-turn conversation can't live in a single-shot subagent, so its full interview protocol runs in the main session.
   - `agents/*.md` — the subagents the drafting/build commands delegate to (prd-writer, architect, designer, planner, builder, walkthrough-writer, plus `reviewer` — a read-only spec-compliance reviewer the build command runs after a phase's tasks build).
-  - `hooks/hooks.json` — `SessionStart` installs runtime deps into `${CLAUDE_PLUGIN_DATA}` once and symlinks them back into `server/node_modules`; `FileChanged` on `.claude/specs/**` nudges a re-read; `Stop` runs `hooks/stop-gate.sh` (see Build leverage primitives below).
-  - `server/` — `@specmanager/server`, TypeScript, ships compiled `dist/`.
-  - `ui/` — `@specmanager/ui`, React 18 + Vite, ships compiled `dist/`.
-- **`docs/`** — `docs/DESIGN.md` is the managed design-system spec; the original full spec and phased plan are archived under `docs/temp/original-specs/` (historical snapshots — don't edit).
+  - `hooks/hooks.json` — one hook only: `Stop` runs `hooks/stop-gate.sh` (see Build leverage primitives below).
+  - `server/` — `@specmanager/server`, TypeScript, ships compiled `dist/` (no source maps). Its `package.json` holds scripts and dev dependencies only.
+  - `ui/` — `@specmanager/ui`, React 18 + Vite, ships compiled `dist/`, built unminified with one chunk per npm package so every non-font file stays under 256 KiB.
+- **`docs/`** — `docs/DESIGN.md` is the managed design-system spec; `docs/directory-submission.md` is the owner's checklist for submitting and releasing to the Anthropic plugin directory; the original full spec and phased plan are archived under `docs/temp/original-specs/` (historical snapshots — don't edit).
 - **`docs/agent-snippets/`** — canonical text for prompt fragments that appear in **more than one** agent. There is no install-time preprocessor, so each fragment is physically copy-pasted into the agents that need it; the snippet file is the source of truth and names its carriers. **Change the fragment here and update every carrier in the same commit** — a copy that silently diverges is a real defect class, not a style nit (`design-grounding.md` once told the architect to `read_document` a design doc while `planner.md`/`builder.md` warned against exactly that). `selftest-prompts` guards this: snippet parity is asserted as a positive/negative pattern pair, so a drifted copy fails the suite.
 
 ## Architecture (the big picture)
@@ -105,12 +107,17 @@ The build pipeline carries a few primitives beyond plain task execution:
 The plugin ships compiled `server/dist` and `ui/dist`, so end users install with no build step. **Rebuild before committing source changes** — the committed `dist/` is what ships.
 
 ```bash
+# Runtime deps (Claude Code installs these natively for end users; an in-place checkout needs them by hand)
+cd plugins/specmanager
+npm ci
+
 # Server (@specmanager/server)
-cd plugins/specmanager/server
-npm install
+cd server
+npm ci
 npm run build            # tsc -p tsconfig.json → dist/
 
-# Self-tests (hand-rolled scripts in dist/, not a test runner — run one by name; 14 total)
+# Self-tests (hand-rolled scripts in dist/, not a test runner — run one by name; 15 total)
+npm run selftest-directory # pre-push check: Anthropic directory conformance of the shipped plugin folder
 npm run selftest           # core flow against a tmp dir
 npm run selftest-board     # boots board: REST + WS + file watcher
 npm run selftest-phases    # phase rollup + Fibonacci ≤3 validation
@@ -129,15 +136,18 @@ npm run smoke-mcp          # MCP wire protocol + tools registered
 
 # UI (@specmanager/ui)
 cd ../ui
-npm install
+npm ci
 npm run dev              # vite dev server
 npm run build            # tsc + vite build → ui/dist (served by the board server)
 ```
 
 Validate the plugin manifest/commands with `claude plugin validate plugins/specmanager`. To reinstall after rebuilding: `/plugin marketplace update specmanager` → `/plugin install specmanager@specmanager` → `/reload-plugins`, then reconnect via `/mcp` (a full Claude restart is the reliable fix if reconnect fails — see README Troubleshooting).
 
+**Release rule:** bump `version` in `plugins/specmanager/.claude-plugin/plugin.json` on every release — Claude Code detects updates by comparing version strings, so an unchanged version means marketplace users get no update, however many commits land. Run `selftest-directory` before every push to `main`. The full checklist is `docs/directory-submission.md`.
+
 ## Conventions
 
-- **Latest APIs** — current versions of `@modelcontextprotocol/sdk`, `@anthropic-ai/claude-agent-sdk`, React 18+, Vite, Fastify, `chokidar`, `gray-matter`, `zod`. Server and UI are both `"type": "module"`, Node 20+.
+- **Latest APIs** — current versions of `@modelcontextprotocol/sdk`, React 18+, Vite, Fastify, `chokidar`, `gray-matter`, `zod`. Server and UI are both `"type": "module"`, Node 20+.
 - **Editors:** the UI uses CodeMirror 6 (HTML design briefs, live sandboxed `<iframe>` preview) and Milkdown (markdown docs).
-- **Persistent deps via `${CLAUDE_PLUGIN_DATA}`** — the `SessionStart` hook installs `node_modules` there once so they survive plugin updates.
+- **Runtime deps are installed natively** — declare a runtime dependency in `plugins/specmanager/package.json` and regenerate its lockfile (`npm install --package-lock-only --ignore-scripts`), never in `server/package.json`. There is no install hook; `${CLAUDE_PLUGIN_DATA}` holds only the board pidfile.
+- **No model or API calls from the plugin** — the server and board talk only to the local filesystem and `127.0.0.1`; the plugin README and the directory's data-handling answers state this, so a feature that changes it must update both in the same release.

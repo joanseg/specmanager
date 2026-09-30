@@ -65,7 +65,7 @@ The team comes with established product and engineering practice baked in — an
 Example of a Specmanager board:
 ![Specmanager board](assets/Specmanager-board.png)
 
-That's it — no build step. The compiled server and UI are committed, and a `SessionStart` hook installs runtime dependencies into the plugin's data dir on first launch.
+That's it — no build step. The compiled server and UI are committed, and Claude Code installs the plugin's runtime dependencies when it installs the plugin.
 
 **Requirements:** Node 20+ and Claude Code. The board runs at `http://127.0.0.1:4317` (change the port in the plugin's user config).
 
@@ -177,9 +177,11 @@ Frontmatter is authoritative; `manifest.json` is a cache you can delete and rebu
 The plugin ships its compiled `server/dist` and `ui/dist`, so users install with no build step. Rebuild before committing source changes:
 
 ```bash
-cd plugins/specmanager/server
-npm install
-npm run build
+cd plugins/specmanager
+npm ci                    # runtime dependencies (Claude Code installs these for end users)
+
+cd server
+npm ci && npm run build
 npm run selftest          # core flow against a tmp dir
 npm run selftest-board    # boots board: REST + WS + file watcher
 npm run selftest-phases   # phase rollup + Fibonacci ≤3 validation
@@ -187,8 +189,7 @@ npm run selftest-build    # per-phase gates + walkthrough storage
 npm run smoke-mcp         # MCP wire protocol + tools registered
 
 cd ../ui
-npm install
-npm run build             # → ui/dist, served by the board server
+npm ci && npm run build   # → ui/dist, served by the board server
 ```
 
 Then reinstall in a test repo:
