@@ -30,7 +30,7 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 | Fly.io deployment | PRD (approved) | — |
 | SpecManager simplification cleanup | PRD (approved) | — |
 | Company-brain grounding | PRD | — |
-| Cowork support | PRD | — |
+| Cowork support | PRD (draft) | — |
 
 _10 features shipped — full history on the board._
 
@@ -39,7 +39,7 @@ _10 features shipped — full history on the board._
 **Commands:**
 `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)
 
-_Last synced: 2026-09-30T15:31:10.850Z_
+_Last synced: 2026-09-30T15:33:36.564Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
@@ -56,7 +56,7 @@ The repo dogfoods itself: its own features live under `.claude/specs/features/` 
 
 - **`.claude-plugin/marketplace.json`** — marketplace manifest, at the repo root.
 - **`plugins/specmanager/`** — the plugin itself:
-  - `.claude-plugin/plugin.json` — manifest: `version`, and the `board_port` user config (default 4317, a *preferred* port — the board falls forward to the next free one, so concurrent sessions each get a board).
+  - `.claude-plugin/plugin.json` — manifest: `version`, and the `board_port` user config (default 4317, a *preferred* port — the board falls forward to the next free one, so concurrent sessions each get a board). `icon.svg` beside it is the directory listing's icon.
   - `package.json` + `package-lock.json` — **runtime** dependencies only (no `scripts`, no `devDependencies`). Claude Code installs them natively at plugin install; `server/dist` resolves them by normal Node lookup.
   - `README.md` — the README the Anthropic directory lists: what the plugin does on the user's machine, requirements, troubleshooting.
   - `.mcp.json` — runs `node ${CLAUDE_PLUGIN_ROOT}/server/dist/mcp.js` with one env entry, `SPECMANAGER_BOARD_PORT=${user_config.board_port}`. The project root comes from `CLAUDE_PROJECT_DIR`, which Claude Code exports.
@@ -64,7 +64,7 @@ The repo dogfoods itself: its own features live under `.claude/specs/features/` 
   - `agents/*.md` — the subagents: prd-writer, architect, designer, planner, builder, walkthrough-writer, and `reviewer` (read-only spec-compliance review after a phase builds).
   - `hooks/hooks.json` — one hook: `Stop` runs `hooks/stop-gate.sh` (see Build leverage primitives).
   - `server/` — `@specmanager/server`, TypeScript, ships compiled `dist/` without source maps. Its `package.json` holds scripts and dev dependencies only.
-  - `ui/` — `@specmanager/ui`, React 18 + Vite, ships compiled `dist/`, built unminified with one chunk per npm package so every non-font file stays under 256 KiB.
+  - `ui/` — `@specmanager/ui`, React 18 + Vite, ships compiled `dist/`, built unminified with one chunk per npm package so every non-font file stays under 256 KiB. `vite.config.ts` also strips comments from the chunks: the directory validator reads doc-link URLs next to env-like words as credential use.
 - **`docs/`** — `DESIGN.md` is the managed design-system spec; `directory-submission.md` is the owner's checklist for submitting and releasing to the Anthropic plugin directory; `temp/original-specs/` holds historical snapshots (don't edit).
 - **`docs/agent-snippets/`** — canonical text for prompt fragments used by **more than one** agent. There is no preprocessor: each fragment is copy-pasted into its carriers, and the snippet file names them. **Change the fragment here and update every carrier in the same commit** — a diverged copy is a real defect, and `selftest-prompts` fails on it.
 

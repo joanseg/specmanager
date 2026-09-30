@@ -222,7 +222,28 @@ A4 comes from the security scan, so it may not be in the Validate report at all 
 
 If the A2 finding lists more files under `plugins/specmanager/server/dist/` than `mcp.js`, that is the same hold described more widely (they are all part of the same Node program). Write down the list for the walkthrough.
 
-### Two things nobody could check locally
+### What Validate actually reported, 2026-09-30, version 1.0.1 (`main @ 4c7cb81`)
+
+No Blocking findings; 1 warning; 3 policy holds covering 5 findings; 7 checks.
+
+| Finding | Level | Expected? | What was done |
+|---|---|---|---|
+| **Dependencies install from a lockfile** (`package-lock.json`) | Policy hold | Yes, A1. The report says "No action needed: a reviewer clears this hold." | Nothing |
+| **Scripts the validator couldn’t follow** (`hooks/stop-gate.sh`, `server/dist/mcp.js`) | Policy hold | Yes, A2 and A3 reported as one hold | Nothing |
+| **Uses a credential from the user’s machine**, 3 findings | Policy hold | No | Addressed in 1.0.2, see below |
+| **No icon** | Warning | No | `.claude-plugin/icon.svg` added in 1.0.2 |
+| Local MCP server: not on claude.ai; images and fonts passed without a code check | Info | — | Nothing |
+
+The three credential findings were pattern matches, not credential use:
+
+- `ui/dist/assets/prosemirror-model-*.js` and `prosemirror-transform-*.js`: the unminified build kept the library's doc comments, which link to `prosemirror.net`, beside ordinary words such as `set` and `${…}` template strings. Since 1.0.2 the UI build drops comments and rewrites that one doc-link prefix (`ui/vite.config.ts`); no chunk mentions the host any more.
+- `plugin.json`: the validator paired `$PWD` in `hooks/stop-gate.sh` (the last fallback for the project folder) with the text ``cheap→`sonnet` `` in the builder agent's prompt, read as a command assembled at run time. Since 1.0.2 the hook has no `$PWD` fallback (with no project folder in the environment it exits 0, a no-op) and the builder sentence is reworded.
+
+Whether 1.0.2 clears the credential hold is known only after **Re-validate**: the validator's rules are not published, so this was fixed against its wording, not tested against it.
+
+The two unknowns below are settled: the report raised nothing about `env` in `.mcp.json`, and nothing about the quoted path in the Stop hook command.
+
+### Two things nobody could check locally (settled 2026-09-30: no finding for either)
 
 Look for these in the report and write down what you find, including "no finding".
 

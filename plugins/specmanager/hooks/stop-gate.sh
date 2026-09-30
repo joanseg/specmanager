@@ -15,11 +15,11 @@ set -uo pipefail
 HOOK_INPUT="$(cat 2>/dev/null || true)"
 
 PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-}"
-PROJECT_DIR="${SPECMANAGER_PROJECT_DIR:-${CLAUDE_PROJECT_DIR:-$PWD}}"
+PROJECT_DIR="${SPECMANAGER_PROJECT_DIR:-${CLAUDE_PROJECT_DIR:-}}"
 NODE_BIN="$(command -v node || true)"
 
-# No node or no plugin root ⇒ cannot resolve; never invent a failure.
-if [[ -z "$NODE_BIN" || -z "$PLUGIN_ROOT" ]]; then
+# No node, plugin root or project dir ⇒ cannot resolve; never invent a failure.
+if [[ -z "$NODE_BIN" || -z "$PLUGIN_ROOT" || -z "$PROJECT_DIR" ]]; then
   exit 0
 fi
 
