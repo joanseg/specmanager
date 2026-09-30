@@ -76,7 +76,7 @@ Already verified on the development machine, so you do not need to repeat it for
 | Shipped files (`git ls-files plugins/specmanager`) | 228 | 512 |
 | Largest shipped file that is not an image or font | 195,298 bytes, about 191 KiB (`ui/dist/assets/react-dom-3WAF5SeA.js`) | 256 KiB |
 
-Not verified locally, and still yours to do: the interactive `--plugin-dir` session in (a), the Cowork upload in (b), the marketplace path in (c), and everything in the portal.
+Since then: (a) passed in a headless session and the update half of (c) passed on the development machine; their results are recorded in those subsections. Still yours to do: the Cowork upload in (b), a fresh marketplace install in (c), and everything in the portal.
 
 To look at before submitting: `npm ci` reports 11 audit advisories in the dependency tree (1 low, 3 moderate, 7 high). Nobody has examined them yet; `npm audit` at the plugin root lists them.
 
@@ -97,7 +97,21 @@ For that session this copy replaces your installed SpecManager, without any mess
 
 If the server is not connected, the `npm ci` at the plugin root did not run or did not finish. If the board opens but the document editor is blank or throws errors, stop: that is a bug in the UI build to fix before submitting.
 
+**Result, 2026-09-30, commit `f00d3f0`: passed, run without a person at the keyboard.** A headless session (`claude --plugin-dir plugins/specmanager -p …`) in an empty scratch project reported:
+
+| Check | Result |
+|---|---|
+| Plugin loaded from the folder | Yes, version `1.0.0`; the MCP server process was `node …/plugins/specmanager/server/dist/mcp.js` |
+| `specmanager` MCP server | Connected; 28 tools, 9 commands and 7 agents registered |
+| Project root without `SPECMANAGER_PROJECT_DIR` | Resolved: `specmanager_init` wrote `.claude/specs/`, `CLAUDE.md` and `docs/DESIGN.md` into the scratch project |
+| Board | Up at `http://127.0.0.1:4323` (4317 was taken); `/` and `/api/board` returned 200 |
+| Open, edit and save a document | Passed earlier the same day on the same UI build, driven in headless Chrome against a scratch copy of the specs: the edit reached disk and a design doc rendered |
+
+Not covered: a person typing `/specmanager:specmanager-board` and watching the browser open. Tick the three boxes above yourself if you want that seen by eye.
+
 ### (b) Cowork, uploading a zip
+
+**Skip this test for now: as of version 1.0.1 the plugin does not claim Cowork support.** The results below are why. Run it again only when a release sets out to support Cowork.
 
 Make the zip from the committed files, so `node_modules` stays out (with it the folder is over Cowork's 5,000-file limit):
 
@@ -109,6 +123,8 @@ This puts `.claude-plugin/plugin.json` at the top of the zip, 228 files in all. 
 
 In the Claude desktop app: **Customize > Plugins > Add > Upload plugin**, choose the zip, then start a Cowork session **that runs on your computer**, in a scratch folder.
 
+One related fact, measured on 2026-09-30: Claude Code itself does **not** install dependencies for a zip. `claude --plugin-dir specmanager-plugin.zip` unpacked the zip, registered the 9 commands, and the MCP server failed to start (0 tools). That is Claude Code's documented behaviour for `--plugin-dir`, not evidence about Cowork, but it makes question 1 below the one to watch.
+
 Nobody has been able to check what Cowork does with this plugin, so record what you see:
 
 | # | Question | How to tell | Result |
@@ -117,6 +133,21 @@ Nobody has been able to check what Cowork does with this plugin, so record what 
 | 2 | Does the MCP server start? | Same request: Claude uses a SpecManager tool and gets an answer. | |
 | 3 | Does the project root resolve? | Run `/specmanager:specmanager-init`. The `.claude/specs/` folder appears in the scratch folder the session is working in, not somewhere else. | |
 | 4 | Does the board port arrive? | Run `/specmanager:specmanager-board`. The address is `http://127.0.0.1:4317` or the next free port. Anything without a real port number is a no. | |
+
+**Result, 2026-09-30, plugin `1.0.0` at commit `f00d3f0`, Cowork session on the owner's Mac: failed.** The commands loaded (`/specmanager-interview` and `/specmanager-board` ran), but no SpecManager tool was available, so answers 1 to 4 are all "no". Two separate causes, both read from the machine afterwards:
+
+1. **The desktop app drops the MCP server before starting it.** Its log (`~/Library/Logs/Claude/main.log`) says: `server "specmanager": config references plugin user configuration (board_port) — user_config is not supported on the desktop host bridge; dropping server`. The reference is `${user_config.board_port}` in `.mcp.json`. The option has a default, so this is stricter than the platform-support table describes.
+2. **No dependencies were installed.** The copy the app downloaded (under `~/Library/Application Support/Claude/local-agent-mode-sessions/…/rpm/`) has all 228 files and no `node_modules`. A second upload the same day, a test zip with the `${user_config.board_port}` reference removed (version `1.0.0-cowork-test.1`, never committed), settled it: the app no longer dropped the server and tried to start it three times, each ending `Failed to connect to plugin:specmanager:specmanager: Connection closed`. Running the same command by hand from the downloaded copy gives `ERR_MODULE_NOT_FOUND: Cannot find package '@modelcontextprotocol/sdk'`. **The desktop app does not install a plugin's Node dependencies.**
+
+A third upload, a throwaway zip with the server bundled into one file (version `1.0.0-cowork-test.2`, never committed), got further: the app logged `Connected to plugin:specmanager:specmanager (28 tools)`. Then every tool failed, because the server did not know the project folder. The live process had `CLAUDE_PLUGIN_ROOT` and nothing else: no `CLAUDE_PROJECT_DIR`, no `CLAUDE_PLUGIN_DATA`, and its working directory was `/`, so it tried to create `/.claude`. The app also started the server when the plugin synced, before any Cowork session or folder existed, so one server process serves the app, not one project.
+
+**What Cowork support needs, all three:**
+
+1. No `user_config` reference in `.mcp.json`.
+2. A server that runs with no install step (dependencies bundled into `server/dist`).
+3. A way to tell the server the project folder per session, since the environment does not carry it. This touches the "resolve the project root from the env" invariant, the board, the pidfile and the CLAUDE.md auto-sync, which all assume one project per server process.
+
+Until those exist, SpecManager does not work in Cowork, and `plugins/specmanager/README.md` must not claim it.
 
 Also confirm the commands appear as `/specmanager:<command>`.
 
@@ -145,6 +176,8 @@ Copy the filled table into the feature's walkthrough.
 
   Restart Claude. Expect the update to `1.0.0` to go through and the server to connect with no manual cleanup. If it says the plugin is already at the latest version, the marketplace copy did not refresh.
 
+**Result for the update, 2026-09-30, commit `f00d3f0`: passed** on the development machine. The install moved from `3c898ea31a32` to `1.0.0`; Claude Code installed the dependencies itself (48 MB of `node_modules` in the cached copy, no manual step), and the MCP smoke test passed from that copy. The fresh install on a machine with no SpecManager is still to do.
+
 If the server fails to start in either case, run `claude --debug` and look for a dependency-install warning. The manual recovery is in the Troubleshooting section of `plugins/specmanager/README.md`.
 
 ## 4. Portal steps
@@ -166,7 +199,7 @@ If the server fails to start in either case, run `claude --debug` and look for a
    - If you see **Couldn’t validate that repository** with no findings: check the three Source values for typos first.
    - If you see **Already submitted by another organization**: an earlier submission of this folder exists. Withdraw it at <https://platform.claude.com/plugins/submissions>, or email `directory@anthropic.com`.
 7. If you had to fix something: push the fix to `main`, come back to the **Source** step of the same form and select **Re-validate**. A report describes one commit only and does not change when you push, so re-validate after every push.
-8. **Listing details.** The directory shows `plugins/specmanager/README.md` as the listing's description. Where the form asks for them, use the values from `plugin.json`: name `specmanager`, display name `SpecManager`, licence `MIT`, homepage `https://specmanager.org`. The portal works out the supported surfaces itself and shows them here. Expect Claude Code and Cowork. If it also lists Chat, that is because Chat loads command files as skills; the README already says Chat is unsupported and why. Note it and move on.
+8. **Listing details.** The directory shows `plugins/specmanager/README.md` as the listing's description. Where the form asks for them, use the values from `plugin.json`: name `specmanager`, display name `SpecManager`, licence `MIT`, homepage `https://specmanager.org`. The portal works out the supported surfaces itself and shows them here. Expect Claude Code. It may also list Cowork and Chat, because both load the command files; the README says neither is supported and why. Note it and move on.
 9. **Data handling.** Use section 6.
 10. **Compliance.** Enter a contact email you read: reviewers use it. Read the four acknowledgements and tick them yourself. They bind you to the Anthropic Software Directory Terms and Policy.
 11. **Review and submit.** Choose how the directory learns about new commits: **GitHub push webhook** (it is told on each push) or **Scheduled check only** (it looks on its own schedule). Either works with the release flow in section 7. Then select **Submit for review**.

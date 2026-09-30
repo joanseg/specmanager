@@ -30,6 +30,7 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 | Fly.io deployment | PRD (approved) | — |
 | SpecManager simplification cleanup | PRD (approved) | — |
 | Company-brain grounding | PRD | — |
+| Cowork support | PRD | — |
 
 _10 features shipped — full history on the board._
 
@@ -38,7 +39,7 @@ _10 features shipped — full history on the board._
 **Commands:**
 `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)
 
-_Last synced: 2026-09-30T12:44:06.082Z_
+_Last synced: 2026-09-30T15:31:10.850Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
@@ -144,10 +145,9 @@ A **release** is any push to `main` that changes files under `plugins/specmanage
 3. **`npm run selftest-directory`** in `server/` — must end with `All directory-conformance assertions passed.` A `FAIL:` line names the file or field to fix.
 4. **`claude plugin validate plugins/specmanager`** from the repo root — must print `✔ Validation passed` with no warning.
 
-**Surface tests are also required when the release changes packaging** — `plugin.json`, `.mcp.json`, `hooks/`, the plugin-root `package.json` / `package-lock.json`, `ui/vite.config.ts` or `server/tsconfig.json`. Only the owner can run them, so say they are due and do not push until the owner reports the result:
+**A surface test is also required when the release changes packaging** — anything in `plugin.json` beyond the `version` bump, `.mcp.json`, `hooks/`, the plugin-root `package.json` / `package-lock.json`, `ui/vite.config.ts` or `server/tsconfig.json`. Run it yourself, headless, in an empty scratch project outside the repo: `claude --plugin-dir <repo>/plugins/specmanager -p "<call specmanager_init, create_feature and board_url, then curl the board>" --output-format stream-json --verbose`. It passes when the init event shows the `specmanager` MCP server `connected`, the tools succeed, the scratch project gains `.claude/specs/`, and the board answers 200. If the release touched `ui/`, also ask the owner to open and save a document in the board.
 
-- a `claude --plugin-dir plugins/specmanager` session: the `specmanager` MCP server connects, the board opens, a document can be edited and saved;
-- a Cowork upload of the zipped plugin folder (`git archive --format=zip -o <file> HEAD:plugins/specmanager`), recording the four observations in the checklist.
+**Cowork is not supported** (tested 2026-09-30; findings in `docs/directory-submission.md` section 3b): the desktop app drops an MCP server whose config references `${user_config.*}`, does not install Node dependencies, and starts the server once per app with no `CLAUDE_PROJECT_DIR` and cwd `/`. Do not claim Cowork support in the plugin README until a feature addresses all three.
 
 **After every release lands on `main`**, remind the owner of the marketplace check: `claude plugin marketplace update specmanager`, then `claude plugin update specmanager@specmanager`, and the server connects with no manual `npm` step.
 

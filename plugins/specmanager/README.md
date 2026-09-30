@@ -4,9 +4,11 @@ SpecManager runs a project's lifecycle as a kanban board: PRD â†’ Architecture â
 
 ## Where it works
 
-Claude Code, and Cowork sessions running on your computer.
+Claude Code only: the terminal, the IDE extensions, and the Code tab of the desktop app.
 
-Chat on claude.ai is not supported. Chat does not load local MCP servers, agents or hooks, and this plugin is made of those: an MCP server (a local program that gives Claude the SpecManager tools and serves the board), agents (prompts that draft each document) and one hook (a script run when Claude finishes responding).
+Cowork is not supported. The plugin's commands appear there, but its MCP server (a local program that gives Claude the SpecManager tools and serves the board) cannot run: the desktop app does not install the server's dependencies, and does not tell it which project folder a session is working in.
+
+Chat on claude.ai is not supported. Chat does not load local MCP servers, agents or hooks, and this plugin is made of those: the MCP server, agents (prompts that draft each document) and one hook (a script run when Claude finishes responding).
 
 ## Requirements
 
