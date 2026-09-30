@@ -20,4 +20,3 @@ export async function writeDoc(filePath, frontmatter, body) {
     const out = matter.stringify(body, stripUndefined(validated));
     await fs.writeFile(filePath, out, "utf8");
 }
-//# sourceMappingURL=frontmatter.js.map

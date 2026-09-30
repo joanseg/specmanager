@@ -20,4 +20,3 @@ export async function getPhaseCompletion(featureId, phase, root = projectRoot())
         isSinglePhase: phases.length === 1,
     };
 }
-//# sourceMappingURL=phase-completion.js.map

@@ -256,4 +256,3 @@ export function cancelChat(docId) {
     }
     return false;
 }
-//# sourceMappingURL=agent-chat.js.map

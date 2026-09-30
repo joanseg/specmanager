@@ -133,4 +133,3 @@ export async function syncClaudeMd(root = projectRoot()) {
     }
     return { path: file, created };
 }
-//# sourceMappingURL=claude-md.js.map

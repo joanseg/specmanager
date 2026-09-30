@@ -307,4 +307,3 @@ main().catch((err) => {
     console.error(err);
     process.exit(1);
 });
-//# sourceMappingURL=selftest-board.js.map

@@ -62,4 +62,3 @@ export async function writeManifest(root = projectRoot()) {
     await fs.writeFile(manifestPath(root), JSON.stringify(m, null, 2), "utf8");
     return m;
 }
-//# sourceMappingURL=manifest.js.map

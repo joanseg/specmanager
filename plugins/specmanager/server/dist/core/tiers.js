@@ -41,4 +41,3 @@ export function aliasForTier(tier, sessionTable = {}) {
 export function aliasForComplexity(complexity, sessionTable = {}) {
     return aliasForTier(tierForComplexity(complexity), sessionTable);
 }
-//# sourceMappingURL=tiers.js.map

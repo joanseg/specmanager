@@ -23,4 +23,3 @@ export async function initProject(root = projectRoot(), opts) {
         rejectedRepos,
     };
 }
-//# sourceMappingURL=init.js.map

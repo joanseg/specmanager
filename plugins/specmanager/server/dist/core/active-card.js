@@ -90,4 +90,3 @@ export async function resolveActiveCard(root = projectRoot(), sessionId = null) 
         openTaskIds,
     };
 }
-//# sourceMappingURL=active-card.js.map

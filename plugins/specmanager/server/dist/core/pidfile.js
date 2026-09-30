@@ -91,4 +91,3 @@ export async function reapStalePid(port, root = projectRoot()) {
     }
     await new Promise((resolve) => setTimeout(resolve, 200));
 }
-//# sourceMappingURL=pidfile.js.map

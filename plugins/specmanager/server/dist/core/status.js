@@ -65,4 +65,3 @@ export async function propagateStale(upstreamId, cause, root = projectRoot()) {
     }
     return flagged;
 }
-//# sourceMappingURL=status.js.map

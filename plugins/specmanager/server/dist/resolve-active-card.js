@@ -15,4 +15,3 @@ resolveActiveCard(root, sessionId)
     process.stderr.write(`resolve-active-card: ${err.message}\n`);
     process.stdout.write("null");
 });
-//# sourceMappingURL=resolve-active-card.js.map

@@ -215,4 +215,3 @@ export async function writeDocument(input, root = projectRoot()) {
     });
     return { frontmatter: updated, body, filePath: current.filePath };
 }
-//# sourceMappingURL=documents.js.map

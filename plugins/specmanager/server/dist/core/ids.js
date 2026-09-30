@@ -26,4 +26,3 @@ export function taskId(n) {
 export function nowIso() {
     return new Date().toISOString();
 }
-//# sourceMappingURL=ids.js.map

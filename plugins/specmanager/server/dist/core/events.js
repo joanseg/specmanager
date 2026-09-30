@@ -10,4 +10,3 @@ class TypedBus {
     }
 }
 export const events = new TypedBus();
-//# sourceMappingURL=events.js.map

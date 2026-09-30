@@ -47,4 +47,3 @@ export function stageDir(slug, stage, root = projectRoot()) {
     };
     return path.join(featureDir(slug, root), map[stage]);
 }
-//# sourceMappingURL=paths.js.map

@@ -116,4 +116,3 @@ console.log(failures
     ? `\n${failures} directory-conformance assertion(s) failed.`
     : "\nAll directory-conformance assertions passed.");
 process.exit(failures ? 1 : 0);
-//# sourceMappingURL=selftest-directory.js.map

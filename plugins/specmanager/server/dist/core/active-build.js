@@ -46,4 +46,3 @@ export async function clearActiveBuild(root = projectRoot()) {
     await fs.rm(activeBuildPath(root), { force: true });
     events.emit({ type: "build.cleared" });
 }
-//# sourceMappingURL=active-build.js.map

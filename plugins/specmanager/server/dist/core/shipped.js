@@ -19,4 +19,3 @@ export function isFeatureShipped(documents, phases) {
     }
     return false;
 }
-//# sourceMappingURL=shipped.js.map

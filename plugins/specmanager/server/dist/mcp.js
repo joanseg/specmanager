@@ -452,4 +452,3 @@ main().catch((err) => {
     console.error("specmanager mcp failed to start:", err);
     process.exit(1);
 });
-//# sourceMappingURL=mcp.js.map

@@ -122,4 +122,3 @@ export async function checkGate(featureId, stage, rootOrOpts, optsArg) {
 export async function listStale(root = projectRoot()) {
     return listDocuments({ stale: true }, root);
 }
-//# sourceMappingURL=dependencies.js.map

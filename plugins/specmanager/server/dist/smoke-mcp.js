@@ -95,4 +95,3 @@ main()
     .finally(() => {
     setTimeout(() => process.exit(0), 100);
 });
-//# sourceMappingURL=smoke-mcp.js.map

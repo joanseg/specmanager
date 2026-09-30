@@ -189,4 +189,3 @@ main().catch((err) => {
     console.error(err);
     process.exit(1);
 });
-//# sourceMappingURL=selftest-repos.js.map

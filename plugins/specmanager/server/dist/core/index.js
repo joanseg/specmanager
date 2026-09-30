@@ -21,4 +21,3 @@ export * from "./claude-md.js";
 export * from "./design-md.js";
 export * from "./init.js";
 export * from "./repos.js";
-//# sourceMappingURL=index.js.map

@@ -23,4 +23,3 @@ if (!featureId || !phase) {
     process.stderr.write(`set-phase-blocked: ${err.message}\n`);
     process.exit(1);
 });
-//# sourceMappingURL=set-phase-blocked.js.map

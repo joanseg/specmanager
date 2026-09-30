@@ -503,4 +503,3 @@ export async function syncDesignMd(rootOrOpts, optsArg) {
     events.emit({ type: "design.synced", path: file, mode });
     return { path: file, created, updated, mode };
 }
-//# sourceMappingURL=design-md.js.map
