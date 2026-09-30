@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import MarkdownEditor from "./MarkdownEditor";
-import ChatPanel from "./ChatPanel";
 import { fetchDoc, fetchGate, postDocStatus, putDoc } from "./api";
 import { DocFull, Stage } from "./types";
 
@@ -58,7 +57,6 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
   const [body, setBody] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [save, setSave] = useState<SaveState>({ kind: "idle" });
-  const [showChat, setShowChat] = useState<boolean>(false);
   const [depVersions, setDepVersions] = useState<Record<string, number>>({});
 
   // Initial load
@@ -279,20 +277,6 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
           </section>
         )}
 
-        {isDesign && (
-          <div className="panel__toolbar">
-            <div className="panel__toolbar-spacer" />
-            <label className="panel__toggle">
-              <input
-                type="checkbox"
-                checked={showChat}
-                onChange={(e) => setShowChat(e.target.checked)}
-              />
-              Chat
-            </label>
-          </div>
-        )}
-
         {save.kind === "conflict" && (
           <div className="banner banner--warn">
             File changed on disk (now v{save.serverVersion}). Your edits weren't saved.
@@ -311,9 +295,7 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
           </div>
         )}
 
-        <div
-          className={`panel__body panel__body--cols-${1 + (showChat ? 1 : 0)}`}
-        >
+        <div className="panel__body panel__body--cols-1">
           {isDesign ? (
             <iframe
               className="panel__preview panel__preview--iframe"
@@ -328,14 +310,7 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
                 value={body}
                 readOnly={!!readOnly}
                 onChange={setBody}
-                showChat={showChat}
-                onToggleChat={setShowChat}
               />
-            </div>
-          )}
-          {showChat && (
-            <div className="panel__chat">
-              <ChatPanel docId={doc.id} docStatus={doc.status} onDocChanged={reload} />
             </div>
           )}
         </div>

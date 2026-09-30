@@ -85,7 +85,6 @@ Sample component files discovered:
 
 - `plugins/specmanager/ui/src/App.tsx`
 - `plugins/specmanager/ui/src/BuildPanel.tsx`
-- `plugins/specmanager/ui/src/ChatPanel.tsx`
 - `plugins/specmanager/ui/src/DocPanel.tsx`
 - `plugins/specmanager/ui/src/MarkdownEditor.tsx`
 - `plugins/specmanager/ui/src/MarkdownToolbar.tsx`

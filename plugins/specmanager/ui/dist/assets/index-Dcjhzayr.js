@@ -175,36 +175,6 @@ async function patchTask(featureId, taskId, patch) {
   if (!res.ok) throw new Error(`patch task → ${res.status}`);
   return await res.json();
 }
-async function fetchChatStatus() {
-  const res = await fetch("/api/chat/status");
-  if (!res.ok) throw new Error(`/api/chat/status → ${res.status}`);
-  return await res.json();
-}
-function openChatSocket(docId, onEvent) {
-  const proto = location.protocol === "https:" ? "wss:" : "ws:";
-  const ws = new WebSocket(`${proto}//${location.host}/ws`);
-  ws.addEventListener("message", (msg) => {
-    try {
-      const event = JSON.parse(msg.data);
-      if ("docId" in event && event.docId !== docId) return;
-      onEvent(event);
-    } catch {
-    }
-  });
-  return {
-    send: (message, mode) => {
-      if (ws.readyState === ws.OPEN) {
-        ws.send(JSON.stringify({ type: "chat.send", docId, message, mode }));
-      }
-    },
-    cancel: () => {
-      if (ws.readyState === ws.OPEN) {
-        ws.send(JSON.stringify({ type: "chat.cancel", docId }));
-      }
-    },
-    close: () => ws.close()
-  };
-}
 async function fetchGate(featureId, stage) {
   const res = await fetch(
     `/api/features/${encodeURIComponent(featureId)}/gate?stage=${stage}`
@@ -230,7 +200,7 @@ const SECONDARY = [
   { action: "table", title: "Table", glyph: "▦" },
   { action: "codeBlock", title: "Code block", glyph: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "mono", children: "</>" }) }
 ];
-function MarkdownToolbar({ onAction, disabled, active, chatOn, onToggleChat }) {
+function MarkdownToolbar({ onAction, disabled, active }) {
   const [headingOpen, setHeadingOpen] = reactExports.useState(false);
   const [overflowOpen, setOverflowOpen] = reactExports.useState(false);
   const [narrow, setNarrow] = reactExports.useState(false);
@@ -352,19 +322,7 @@ function MarkdownToolbar({ onAction, disabled, active, chatOn, onToggleChat }) {
         },
         action
       )) })
-    ] }) : SECONDARY.map(({ action, title, glyph }) => /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: btn(action, title, glyph) }, action)),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "tb-spacer" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "tb-toggle", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "input",
-        {
-          type: "checkbox",
-          checked: chatOn,
-          onChange: (e) => onToggleChat(e.target.checked)
-        }
-      ),
-      "Chat"
-    ] })
+    ] }) : SECONDARY.map(({ action, title, glyph }) => /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: btn(action, title, glyph) }, action))
   ] });
 }
 function activeActions(state) {
@@ -418,7 +376,7 @@ function runAction(editor, action, payload) {
     }
   });
 }
-function MarkdownEditor({ value, readOnly, onChange, showChat, onToggleChat }) {
+function MarkdownEditor({ value, readOnly, onChange }) {
   const hostRef = reactExports.useRef(null);
   const editorRef = reactExports.useRef(null);
   const onChangeRef = reactExports.useRef(onChange);
@@ -524,201 +482,17 @@ function MarkdownEditor({ value, readOnly, onChange, showChat, onToggleChat }) {
       /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "dot" }),
       " Approved — read-only. Choose ",
       /* @__PURE__ */ jsxRuntimeExports.jsx("b", { children: "Edit" }),
-      " to reopen as a draft and format.",
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "tb-spacer" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "tb-toggle", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            type: "checkbox",
-            checked: showChat,
-            onChange: (e) => onToggleChat(e.target.checked)
-          }
-        ),
-        "Chat"
-      ] })
+      " to reopen as a draft and format."
     ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
       MarkdownToolbar,
       {
         onAction,
         disabled: readOnly,
-        active,
-        chatOn: showChat,
-        onToggleChat
+        active
       }
     ),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: hostRef, className: `md-surface${readOnly ? " md-surface--ro" : ""}` })
   ] });
-}
-let counter = 0;
-const nextId = () => ++counter;
-function ChatPanel({ docId, docStatus, onDocChanged }) {
-  const [status, setStatus] = reactExports.useState(null);
-  const [messages, setMessages] = reactExports.useState([]);
-  const [input, setInput] = reactExports.useState("");
-  const [inFlight, setInFlight] = reactExports.useState(false);
-  const [mode, setMode] = reactExports.useState(void 0);
-  const socketRef = reactExports.useRef(null);
-  const scrollerRef = reactExports.useRef(null);
-  reactExports.useEffect(() => {
-    let alive = true;
-    fetchChatStatus().then((s) => alive && setStatus(s)).catch(() => {
-      if (alive) setStatus({ available: false, reason: "could not reach /api/chat/status" });
-    });
-    return () => {
-      alive = false;
-    };
-  }, []);
-  reactExports.useEffect(() => {
-    if (!(status == null ? void 0 : status.available)) return;
-    const sock = openChatSocket(docId, (event) => handleEvent(event));
-    socketRef.current = sock;
-    return () => {
-      sock.close();
-      socketRef.current = null;
-    };
-  }, [docId, status == null ? void 0 : status.available]);
-  reactExports.useEffect(() => {
-    const el = scrollerRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [messages]);
-  const appendAssistantDelta = (text) => {
-    setMessages((prev) => {
-      const last = prev[prev.length - 1];
-      if (last && last.kind === "assistant" && last.streaming) {
-        const updated = { ...last, text: last.text + text };
-        return [...prev.slice(0, -1), updated];
-      }
-      return [...prev, { kind: "assistant", text, streaming: true, id: nextId() }];
-    });
-  };
-  const finishAssistant = (final) => {
-    setMessages((prev) => {
-      const last = prev[prev.length - 1];
-      if (last && last.kind === "assistant" && last.streaming) {
-        const updated = {
-          ...last,
-          streaming: false,
-          text: final && final.length > last.text.length ? final : last.text
-        };
-        return [...prev.slice(0, -1), updated];
-      }
-      if (final) return [...prev, { kind: "assistant", text: final, streaming: false, id: nextId() }];
-      return prev;
-    });
-  };
-  const handleEvent = (event) => {
-    switch (event.type) {
-      case "chat.started":
-        setInFlight(true);
-        break;
-      case "chat.info":
-        if (event.reason) {
-          setMessages((prev) => [...prev, { kind: "info", text: event.reason, id: nextId() }]);
-          if (event.reason.startsWith("mode: ")) {
-            setMode(event.reason.slice(6));
-          }
-        }
-        break;
-      case "chat.delta":
-        if (event.text) appendAssistantDelta(event.text);
-        break;
-      case "chat.tool": {
-        const t = event.tool;
-        if (!t) break;
-        const label = t.name === "mcp__specmanager__write_document" ? `tool: write_document` : t.name === "mcp__specmanager__read_document" ? `tool: read_document` : `tool: ${t.name}`;
-        setMessages((prev) => [...prev, { kind: "tool", text: label, id: nextId() }]);
-        if (t.name === "mcp__specmanager__write_document") onDocChanged();
-        break;
-      }
-      case "chat.done":
-        finishAssistant(event.text);
-        setInFlight(false);
-        break;
-      case "chat.error":
-        finishAssistant();
-        setMessages((prev) => [
-          ...prev,
-          { kind: "error", text: event.reason ?? "unknown error", id: nextId() }
-        ]);
-        setInFlight(false);
-        break;
-      case "chat.cancelled":
-        finishAssistant();
-        setInFlight(false);
-        break;
-    }
-  };
-  const send = () => {
-    const text = input.trim();
-    if (!text || inFlight || !socketRef.current || !(status == null ? void 0 : status.available)) return;
-    setMessages((prev) => [...prev, { kind: "user", text, id: nextId() }]);
-    setInput("");
-    socketRef.current.send(text, mode);
-  };
-  const cancel = () => {
-    var _a;
-    (_a = socketRef.current) == null ? void 0 : _a.cancel();
-  };
-  if (!status) {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "chat chat--loading", children: "Checking chat backend…" });
-  }
-  if (!status.available) {
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "chat chat--unavailable", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Chat unavailable." }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: status.reason ?? "no API credential found" })
-    ] });
-  }
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "chat", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "chat__header", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Chat" }),
-      mode && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `badge badge--meta`, children: mode }),
-      docStatus === "approved" && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "badge badge--stale", title: "approved docs are read-only", children: "read-only" })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "chat__messages", ref: scrollerRef, children: [
-      messages.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "chat__empty", children: docStatus === "approved" ? "Reopen the doc to chat about edits, or ask questions about its current state." : "Ask anything — the agent can read this doc, browse the repo, and persist edits via write_document." }),
-      messages.map((m) => /* @__PURE__ */ jsxRuntimeExports.jsx(MessageView, { message: m }, m.id))
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "chat__composer", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "textarea",
-        {
-          rows: 2,
-          placeholder: docStatus === "approved" ? "Read-only — reopen to edit." : "Message the agent…",
-          value: input,
-          onChange: (e) => setInput(e.target.value),
-          onKeyDown: (e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              send();
-            }
-          }
-        }
-      ),
-      inFlight ? /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "btn", onClick: cancel, children: "Cancel" }) : /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "btn btn--primary", onClick: send, disabled: !input.trim(), children: "Send" })
-    ] })
-  ] });
-}
-function MessageView({ message }) {
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `msg msg--${message.kind}`, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "msg__label", children: labelFor(message.kind) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "msg__body", children: message.text }),
-    message.kind === "assistant" && message.streaming && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "msg__caret", "aria-hidden": true, children: "▋" })
-  ] });
-}
-function labelFor(kind) {
-  switch (kind) {
-    case "user":
-      return "You";
-    case "assistant":
-      return "Agent";
-    case "info":
-      return "info";
-    case "tool":
-      return "tool";
-    case "error":
-      return "error";
-  }
 }
 function featureTitle(featureId) {
   return featureId.replace(/^feat-/, "").split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
@@ -743,7 +517,6 @@ function DocPanel({ docId, onClose, onJumpTo }) {
   const [body, setBody] = reactExports.useState("");
   const [error, setError] = reactExports.useState(null);
   const [save, setSave] = reactExports.useState({ kind: "idle" });
-  const [showChat, setShowChat] = reactExports.useState(false);
   const [depVersions, setDepVersions] = reactExports.useState({});
   reactExports.useEffect(() => {
     let cancelled = false;
@@ -929,20 +702,6 @@ function DocPanel({ docId, onClose, onJumpTo }) {
         ] }, depId);
       }) })
     ] }),
-    isDesign && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "panel__toolbar", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "panel__toolbar-spacer" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "panel__toggle", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            type: "checkbox",
-            checked: showChat,
-            onChange: (e) => setShowChat(e.target.checked)
-          }
-        ),
-        "Chat"
-      ] })
-    ] }),
     save.kind === "conflict" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "banner banner--warn", children: [
       "File changed on disk (now v",
       save.serverVersion,
@@ -958,34 +717,23 @@ function DocPanel({ docId, onClose, onJumpTo }) {
       "Saved · now v",
       doc.version
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      "div",
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "panel__body panel__body--cols-1", children: isDesign ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "iframe",
       {
-        className: `panel__body panel__body--cols-${1 + (showChat ? 1 : 0)}`,
-        children: [
-          isDesign ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "iframe",
-            {
-              className: "panel__preview panel__preview--iframe",
-              title: "design brief preview",
-              sandbox: "allow-same-origin",
-              srcDoc: PREVIEW_STYLE + body
-            }
-          ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "panel__editor", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            MarkdownEditor,
-            {
-              value: body,
-              readOnly: !!readOnly,
-              onChange: setBody,
-              showChat,
-              onToggleChat: setShowChat
-            },
-            doc.id
-          ) }),
-          showChat && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "panel__chat", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChatPanel, { docId: doc.id, docStatus: doc.status, onDocChanged: reload }) })
-        ]
+        className: "panel__preview panel__preview--iframe",
+        title: "design brief preview",
+        sandbox: "allow-same-origin",
+        srcDoc: PREVIEW_STYLE + body
       }
-    ),
+    ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "panel__editor", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      MarkdownEditor,
+      {
+        value: body,
+        readOnly: !!readOnly,
+        onChange: setBody
+      },
+      doc.id
+    ) }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("footer", { className: "panel__footer", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: doc.filePath }) })
   ] }) });
 }

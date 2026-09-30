@@ -56,10 +56,6 @@ interface MarkdownEditorProps {
   value: string;
   readOnly: boolean;
   onChange: (next: string) => void;
-  /** Whether the chat column is attached (Chat toggle lives in the toolbar). */
-  showChat: boolean;
-  /** Toggle the chat column on/off. */
-  onToggleChat: (next: boolean) => void;
 }
 
 // Maps a toolbar action to the Milkdown command it dispatches. Secondary
@@ -101,7 +97,7 @@ function runAction(editor: Editor, action: ToolbarAction, payload?: unknown): vo
  * byte-clean markdown matching the corpus conventions (`-` bullets, fenced
  * code, GFM tables), which is what selftest-roundtrip guards.
  */
-export default function MarkdownEditor({ value, readOnly, onChange, showChat, onToggleChat }: MarkdownEditorProps) {
+export default function MarkdownEditor({ value, readOnly, onChange }: MarkdownEditorProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<Editor | null>(null);
   const onChangeRef = useRef(onChange);
@@ -187,7 +183,7 @@ export default function MarkdownEditor({ value, readOnly, onChange, showChat, on
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Sync external doc changes (reload after save, chat co-write, 409 reload)
+  // Sync external doc changes (reload after save, 409 reload)
   // without firing a spurious onChange. Skip when `value` is just our own last
   // emitted markdown bouncing back through DocPanel state.
   useEffect(() => {
@@ -236,23 +232,12 @@ export default function MarkdownEditor({ value, readOnly, onChange, showChat, on
       {readOnly ? (
         <div className="ro-hint">
           <span className="dot" /> Approved — read-only. Choose <b>Edit</b> to reopen as a draft and format.
-          <span className="tb-spacer" />
-          <label className="tb-toggle">
-            <input
-              type="checkbox"
-              checked={showChat}
-              onChange={(e) => onToggleChat(e.target.checked)}
-            />
-            Chat
-          </label>
         </div>
       ) : (
         <MarkdownToolbar
           onAction={onAction}
           disabled={readOnly}
           active={active}
-          chatOn={showChat}
-          onToggleChat={onToggleChat}
         />
       )}
       <div ref={hostRef} className={`md-surface${readOnly ? " md-surface--ro" : ""}`} />

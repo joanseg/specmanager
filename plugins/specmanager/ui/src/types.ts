@@ -114,16 +114,4 @@ export type WsEvent =
   | { type: "task.updated"; taskId: string; featureId: string }
   | { type: "file.changed"; filePath: string }
   | { type: "feature.shipped"; featureId: string }
-  | { type: "design.synced"; path: string; mode: "init" | "refresh" }
-  | { type: "chat.started"; docId: string }
-  | { type: "chat.cancelled"; docId: string; ok: boolean }
-  | { type: "chat.info"; docId: string; reason?: string }
-  | { type: "chat.delta"; docId: string; text?: string }
-  | { type: "chat.tool"; docId: string; tool?: { name: string; input?: unknown; ok?: boolean; error?: string } }
-  | { type: "chat.done"; docId: string; text?: string }
-  | { type: "chat.error"; docId: string; reason?: string };
-
-export interface ChatStatus {
-  available: boolean;
-  reason?: string;
-}
+  | { type: "design.synced"; path: string; mode: "init" | "refresh" };

@@ -580,23 +580,6 @@ html, body, #root {
   font-size: 0.65rem;
 }
 
-.panel__toolbar {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1.25rem;
-  border-bottom: 1px solid var(--outline-variant);
-}
-.panel__toolbar-spacer { flex: 1; }
-.panel__toggle {
-  font-size: 0.78rem;
-  color: var(--on-surface-variant);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-.panel__toggle input { accent-color: var(--primary); }
-
 /* ===== Markdown WYSIWYG editor + formatting toolbar (Phase 2) =========
  * Toolbar bar above a scrollable surface. Full reading-column / surface
  * polish lands in Phase 3; these are the toolbar rules the toolbar phase
@@ -610,8 +593,7 @@ html, body, #root {
 /* The scrollable surface; the prose column inside fills ~90% of the panel
  * width (Polish task 4.2 — supersedes the Phase 3 centered ~72ch reading cap).
  * Milkdown owns the DOM inside, so the measure is applied to the ProseMirror
- * editor root (.prose lands on it via editorViewOptions attributes). Chat-open
- * follows the same ~90% ratio of the narrower --cols-2 body track. */
+ * editor root (.prose lands on it via editorViewOptions attributes). */
 .md-surface {
   flex: 1;
   overflow: auto;
@@ -707,19 +689,6 @@ html, body, #root {
   border-bottom: 1px solid var(--outline-variant);
   background: var(--surface-container);
 }
-.md-toolbar .tb-spacer { flex: 1; }
-/* Chat toggle — right-most control in the toolbar (design Screen 2). The same
- * rule serves the read-only hint row, where the toolbar is hidden. */
-.tb-toggle {
-  font-size: 0.78rem;
-  color: var(--on-surface-variant);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  cursor: default;
-}
-.tb-toggle input { accent-color: var(--primary); }
-.ro-hint .tb-spacer { flex: 1; }
 .tb-sep {
   width: 1px;
   align-self: stretch;
@@ -877,8 +846,6 @@ html, body, #root {
   overflow: hidden;
 }
 .panel__body--cols-1 { grid-template-columns: 1fr; }
-.panel__body--cols-2 { grid-template-columns: 1fr 1fr; }
-.panel__body--cols-3 { grid-template-columns: 1.1fr 0.9fr 1fr; }
 /* Legacy class — kept until older calls migrate, harmless */
 .panel__body--split { grid-template-columns: 1fr 1fr; }
 .panel__editor {
@@ -1179,126 +1146,6 @@ html, body, #root {
   text-decoration: none;
 }
 
-/* Chat panel ------------------------------------------------------- */
-.panel__chat {
-  border-left: 1px solid var(--outline-variant);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-.chat {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: var(--surface);
-}
-.chat--loading,
-.chat--unavailable {
-  padding: 1.5rem 1.25rem;
-  color: var(--on-surface-variant);
-  font-size: 0.85rem;
-}
-.chat--unavailable strong { color: var(--error); display: block; margin-bottom: 0.3rem; }
-.chat--unavailable p { margin: 0.2rem 0; line-height: 1.4; }
-
-.chat__header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.55rem 0.8rem;
-  border-bottom: 1px solid var(--outline-variant);
-  font-size: 0.8rem;
-}
-.chat__messages {
-  flex: 1;
-  overflow: auto;
-  padding: 0.6rem 0.8rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-.chat__empty {
-  color: var(--on-surface-variant);
-  font-size: 0.82rem;
-  padding: 0.4rem 0;
-  line-height: 1.45;
-}
-
-.msg {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-.msg__label {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--on-surface-variant);
-}
-.msg__body {
-  font-size: 0.86rem;
-  line-height: 1.5;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-.msg--user .msg__body {
-  background: var(--surface-container);
-  border: 1px solid var(--outline-variant);
-  border-radius: var(--radius-md);
-  padding: 0.35rem 0.55rem;
-}
-.msg--assistant .msg__body {
-  background: color-mix(in srgb, var(--primary) 5%, transparent);
-  border-left: 2px solid var(--primary);
-  padding: 0.35rem 0.55rem;
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-}
-.msg--info .msg__body,
-.msg--tool .msg__body {
-  font-family: var(--font-mono);
-  font-size: 0.74rem;
-  color: var(--on-surface-variant);
-}
-.msg--error .msg__body {
-  color: var(--error);
-  font-size: 0.82rem;
-}
-.msg__caret {
-  display: inline-block;
-  margin-left: 0.2rem;
-  color: var(--primary);
-  animation: blink 1s steps(2) infinite;
-}
-@keyframes blink { to { opacity: 0; } }
-
-.chat__composer {
-  display: flex;
-  gap: 0.4rem;
-  padding: 0.5rem 0.6rem;
-  border-top: 1px solid var(--outline-variant);
-  align-items: flex-end;
-}
-.chat__composer textarea {
-  flex: 1;
-  background: var(--surface-container-lowest);
-  border: 1px solid var(--outline-variant);
-  border-radius: var(--radius-md);
-  color: var(--on-surface);
-  font-family: var(--font-body);
-  font-size: 0.85rem;
-  padding: 0.35rem 0.45rem;
-  resize: vertical;
-  min-height: 2.2rem;
-  max-height: 8rem;
-  transition: border-color 0.12s ease, box-shadow 0.12s ease;
-}
-.chat__composer textarea:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent);
-}
-
 /* Phase grouping (Phase 7.C) ---------------------------------------- */
 .phase-groups {
   display: flex;
@@ -1475,24 +1322,10 @@ html, body, #root {
     gap: 0.6rem;
   }
   .card--build .bar { flex: 1; min-width: 8rem; }
-
-  /* At the narrower drawer width the 3-column split is cramped, so chat
-   * stacks under the editor/preview row rather than taking a third column
-   * (layout-only — the chat pane is still shown, no behavior change). */
-  .panel__body--cols-3 {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr auto;
-  }
-  .panel__body--cols-3 .panel__chat {
-    grid-column: 1 / -1;
-    border-left: 0;
-    border-top: 1px solid var(--outline-variant);
-  }
 }
 
 /* Mobile <640px: the grid linearizes — each feature stacks as a single column
- * of cards with a 16px margin; panels go full-width; the split body collapses
- * to one column (preview/chat stack under the editor). */
+ * of cards with a 16px margin; panels go full-width. */
 @media (max-width: 639px) {
   .board { padding: 0 var(--space-md) var(--space-xl); }
   .board__header { margin: 0 calc(var(--space-md) * -1) var(--space-md); }
@@ -1517,10 +1350,8 @@ html, body, #root {
    * the action cluster drops below the title rather than crushing it. */
   .panel__header { flex-wrap: wrap; }
   .panel__header-actions { flex-wrap: wrap; }
-  .panel__body--cols-2,
-  .panel__body--cols-3 { grid-template-columns: 1fr; }
   .panel__editor { border-right: 0; border-bottom: 1px solid var(--outline-variant); }
-  .panel__preview, .panel__chat { border-left: 0; }
+  .panel__preview { border-left: 0; }
 }
 
 /* Reduced motion: disable the scale/glow/slide micro-interactions but keep the
