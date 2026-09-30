@@ -1,6 +1,7 @@
 // R8 conformance test — the plugin folder checked against the mechanically
 // testable rules of the Anthropic plugin directory: README, file size and
-// count limits, no binaries, no OS system files, no package-source config,
+// count limits, no binaries, the manifest, hook and MCP commands, MCP env, no
+// OS system files, the root lockfile install, no package-source config,
 // source maps, symlinks or bin/. It checks "what a commit of the current tree
 // would ship" (tracked + new unignored files that exist on disk), so it needs
 // a git checkout. Every assertion runs; the exit code is 1 if any failed.
@@ -34,7 +35,13 @@ const IMAGE_OR_FONT = /\.(png|jpe?g|gif|webp|woff2?|ttf|otf)$/i;
 const SYSTEM_NAMES = [".DS_Store", "Thumbs.db", "desktop.ini", "__MACOSX"];
 const CONFIG_NAMES = [".npmrc", "bunfig.toml", "uv.toml", ".gitattributes"];
 
+const SHELL_SYNTAX = /[$`*?;&|<>]/;
+const SHELL_WORDS = /(^|\s)(cd|-c|-e)(\s|$)/;
+const LAUNCHERS = /\b(npx|bunx|pnpm|yarn|uvx|pipx|uv|npm|bun)\b/;
+const PLUGIN_PATH = /\$\{CLAUDE_PLUGIN_ROOT\}\/([^\s"']+)/g;
+
 const abs = (f: string): string => path.join(PLUGIN_ROOT, f);
+const readJson = (f: string): any => JSON.parse(fs.readFileSync(abs(f), "utf8"));
 
 const entries = spawnSync("git", ["ls-files", "-z", "--cached", "--others", "--exclude-standard"], {
   cwd: PLUGIN_ROOT,
@@ -70,9 +77,60 @@ check(entries.length <= MAX_FILES, `plugin ships at most ${MAX_FILES} files (${e
 const binaries = textFiles.filter((f) => fs.readFileSync(abs(f)).subarray(0, 8000).includes(0));
 check(binaries.length === 0, `no binary file other than images/fonts${named(binaries)}`);
 
+// 5. plugin.json: semver version, a default board port, hooks left to hooks/hooks.json.
+const manifest = readJson(".claude-plugin/plugin.json");
+check(/^\d+\.\d+\.\d+$/.test(manifest.version ?? ""), `plugin.json version is semver (${manifest.version})`);
+check(manifest.userConfig?.board_port?.default !== undefined, "plugin.json userConfig.board_port has a default");
+check(!("hooks" in manifest), "plugin.json has no hooks key");
+
+// 6. Hook and MCP commands: only ${CLAUDE_PLUGIN_ROOT} paths and plain arguments.
+const hookGroups: [string, any[]][] = Object.entries(readJson("hooks/hooks.json").hooks);
+const mcpServers: [string, any][] = Object.entries(readJson(".mcp.json").mcpServers);
+const commandLine = (c: any): string => [c.command, ...(c.args ?? [])].join(" ");
+const commands: [string, string][] = [
+  ...hookGroups.flatMap(([event, groups]) =>
+    groups.flatMap((g) => g.hooks.map((h: any): [string, string] => [`hooks.json ${event}`, commandLine(h)]))
+  ),
+  ...mcpServers.map(([name, s]): [string, string] => [`.mcp.json ${name}`, commandLine(s)]),
+];
+for (const [where, cmd] of commands) {
+  const rest = cmd.replaceAll("${CLAUDE_PLUGIN_ROOT}", "");
+  const plain = !SHELL_SYNTAX.test(rest) && !SHELL_WORDS.test(rest) && !LAUNCHERS.test(rest);
+  check(plain, `${where}: command uses only \${CLAUDE_PLUGIN_ROOT} paths and plain arguments — ${cmd}`);
+  const paths = [...cmd.matchAll(PLUGIN_PATH)].map((m) => m[1]!);
+  const shipped = paths.length > 0 && paths.every((p) => files.includes(p));
+  check(shipped, `${where}: every referenced plugin path is a shipped file (${paths.join(", ") || "none"})`);
+}
+
+// 7. .mcp.json env: no NODE_PATH; values are literals or ${user_config.*}.
+for (const [name, server] of mcpServers) {
+  for (const [key, value] of Object.entries<string>(server.env ?? {})) {
+    const literal = !value.replace(/\$\{user_config\.[a-z_]+\}/g, "").includes("$");
+    check(
+      key !== "NODE_PATH" && literal,
+      `.mcp.json ${name}.env.${key} is a literal or a \${user_config.*} reference — ${value}`
+    );
+  }
+}
+
 // 8. No OS system files.
 const systemFiles = entries.filter((f) => f.split("/").some((s) => SYSTEM_NAMES.includes(s)));
 check(systemFiles.length === 0, `no OS system files${named(systemFiles)}`);
+
+// 9. Runtime dependencies install from a lockfile at the plugin root, with no scripts.
+const hasPackageFiles = files.includes("package.json") && files.includes("package-lock.json");
+check(hasPackageFiles, "package.json and package-lock.json exist at the plugin root");
+if (hasPackageFiles) {
+  const pkg = readJson("package.json");
+  const lock = readJson("package-lock.json");
+  check(
+    JSON.stringify(pkg.dependencies) === JSON.stringify(lock.packages[""].dependencies),
+    "package.json dependencies match the package-lock.json root entry"
+  );
+  check(!pkg.devDependencies, "root package.json has no devDependencies");
+  const scripted = Object.keys(lock.packages).filter((k) => lock.packages[k].hasInstallScript);
+  check(scripted.length === 0, `no locked dependency has an install script${named(scripted)}`);
+}
 
 // 10. No package-source config, .gitattributes, source maps, symlinks or bin/.
 const configFiles = entries.filter((f) => CONFIG_NAMES.includes(path.basename(f)));
