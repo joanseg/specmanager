@@ -124,8 +124,11 @@ automatically**; invoking it is the opt-in.
     `Open questions`, unresolved review findings, refinement Assumptions, and
     the planner's loop-mode split decision. Ask them with `AskUserQuestion` in
     batches of ≤4, recommended option first, labelled *(recommended)*. Apply
-    answers with the step-10 write rules. Skipped questions stay recorded in
-    their doc. None → skip and say so.
+    answers with the step-10 write rules; answered entries are removed from, or
+    marked resolved in, that doc's `Open questions`. Skipped questions stay in
+    the affected doc's `Open questions` — skipped refinement Assumptions (R3)
+    and unresolved review findings (R6) are added there, same write rules.
+    None → skip and say so.
 12. **Final report (R8).**
     - feature id and slug;
     - each doc: id, path, status, version;
