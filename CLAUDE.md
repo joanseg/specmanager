@@ -40,7 +40,7 @@ _10 features shipped — full history on the board._
 **Commands:**
 `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)
 
-_Last synced: 2026-10-01T11:13:25.303Z_
+_Last synced: 2026-10-01T12:41:33.493Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
@@ -91,6 +91,7 @@ Load-bearing invariants (don't drift):
 ### Lifecycle gate quirks worth memorising
 
 - **The interview is optional and pre-PRD.** Nothing gates on it and it gates nothing. It is stored as a `kind: "interview"` doc in the prd stage (`interview.md`, `dependsOn: []`, status frozen at `draft`); `checkGate`, `currentStageLabel` and the UI's `findDoc` all exclude that kind, so it can never open a gate, shadow the PRD's stage label, or become the PRD column's primary card. Re-interviews update the doc in place.
+- **Only `/specmanager-loop` approves docs.** Every agent and stage command keeps "Don't approve" (`selftest-prompts` INV-25); the loop calls `set_status` in the main session after each gate opens, and never builds (INV-42 forbids builder dispatch in its file).
 - PRD / Architecture / Plan gate on the *previous stage being `approved`*; Plan also requires an approved Design doc *if one exists*.
 - **Plan emits `plan.md` and the task records (`tasks.json` + rollup) in one step**; there is no separate "tasks" stage. Plans are organised into **phases**; tasks carry a Fibonacci `complexity`, and anything over 3 must be split.
 - **Task records have no notes field**, and a task cannot move to `done` without at least one commit or file artifact — a verification-only task needs a results file to point at.
