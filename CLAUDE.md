@@ -31,6 +31,7 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 | SpecManager simplification cleanup | PRD (approved) | — |
 | Company-brain grounding | PRD | — |
 | Cowork support | PRD (draft) | — |
+| Loop command (/specmanager-loop) | PRD (approved) | — |
 
 _10 features shipped — full history on the board._
 
@@ -39,7 +40,7 @@ _10 features shipped — full history on the board._
 **Commands:**
 `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)
 
-_Last synced: 2026-09-30T15:33:36.564Z_
+_Last synced: 2026-10-01T11:13:25.303Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
@@ -60,7 +61,7 @@ The repo dogfoods itself: its own features live under `.claude/specs/features/` 
   - `package.json` + `package-lock.json` — **runtime** dependencies only (no `scripts`, no `devDependencies`). Claude Code installs them natively at plugin install; `server/dist` resolves them by normal Node lookup.
   - `README.md` — the README the Anthropic directory lists: what the plugin does on the user's machine, requirements, troubleshooting.
   - `.mcp.json` — runs `node ${CLAUDE_PLUGIN_ROOT}/server/dist/mcp.js` with one env entry, `SPECMANAGER_BOARD_PORT=${user_config.board_port}`. The project root comes from `CLAUDE_PROJECT_DIR`, which Claude Code exports.
-  - `commands/*.md` — the slash commands (orchestration prompts). `specmanager-interview.md` is the one that does not delegate: a multi-turn conversation can't live in a single-shot subagent, so it runs in the main session.
+  - `commands/*.md` — the slash commands (orchestration prompts). `specmanager-interview.md` does not delegate: a multi-turn conversation can't live in a single-shot subagent, so it runs in the main session. `specmanager-loop.md` also runs in the main session: it orchestrates the stage subagents and auto-approves each doc, while refinement, the cross-doc review and the end questions stay in the main session.
   - `agents/*.md` — the subagents: prd-writer, architect, designer, planner, builder, walkthrough-writer, and `reviewer` (read-only spec-compliance review after a phase builds).
   - `hooks/hooks.json` — one hook: `Stop` runs `hooks/stop-gate.sh` (see Build leverage primitives).
   - `server/` — `@specmanager/server`, TypeScript, ships compiled `dist/` without source maps. Its `package.json` holds scripts and dev dependencies only.

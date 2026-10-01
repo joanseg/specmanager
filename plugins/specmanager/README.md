@@ -32,6 +32,7 @@ In your project, run `/specmanager:specmanager-init`, then `/specmanager:specman
 |---|---|
 | `/specmanager:specmanager-init` | Sets up the spec folder and the managed files listed below. |
 | `/specmanager:specmanager-interview` | Optional: questions you about an idea before the PRD. |
+| `/specmanager:specmanager-loop` | Runs intent → approved Plan in one go: asks a few questions, drafts and auto-approves each stage, reviews across docs, then stops before Build. |
 | `/specmanager:specmanager-prd` | Drafts the PRD, creating the feature if needed. |
 | `/specmanager:specmanager-architecture` | Drafts the Architecture from the PRD and your code. |
 | `/specmanager:specmanager-design` | Optional: draws the screens as one HTML mockup file. |

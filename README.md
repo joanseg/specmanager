@@ -77,6 +77,7 @@ Each **feature** is a row on the board that flows left to right through the life
 
 ```text
 /specmanager:specmanager-interview "Checkout corridor" # OPTIONAL pre-PRD interview — extracts & stress-tests the idea
+/specmanager:specmanager-loop "Checkout corridor"      # OPTIONAL intent → approved Plan in one go (auto-approves, stops before Build)
 /specmanager:specmanager-prd "Checkout corridor"       # create the feature + draft its PRD → approve in board
 /specmanager:specmanager-architecture   <feature>       # draft the Architecture   → approve in board
 /specmanager:specmanager-design         <feature>       # OPTIONAL high-fi HTML mockups → approve
@@ -90,6 +91,8 @@ Each **feature** is a row on the board that flows left to right through the life
 `<feature>` is the feature's slug or id (reported by `/specmanager:specmanager-prd` when it creates the feature).
 
 `/specmanager:specmanager-interview` is optional: a multi-turn interview in your Claude session that pulls the idea out of your head and challenges it (using the [gstack office-hours](https://github.com/garrytan/gstack/tree/main/office-hours) forcing-question method) before any PRD exists. The result can be stored as `interview.md` in the feature's PRD folder — shown as a chip on the board, never gating anything — and the PRD drafter grounds itself in it when present.
+
+`/specmanager:specmanager-loop` is optional too: it takes a one-line intent, asks a few questions, drafts each stage through its subagent and **approves each stage's document automatically**, reviews across the docs, asks any open questions, and stops before Build.
 
 ### Stages and gates
 
