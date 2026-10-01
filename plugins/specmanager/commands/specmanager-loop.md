@@ -59,3 +59,51 @@ automatically**; invoking it is the opt-in.
      - UI-facing: yes | no — <one-line reason>
      - Assumptions: <gaps carried, or "none">
      ```
+5. **Run each stage the same way.** For each stage in steps 6–9:
+   1. **Existing doc (R10).** `list_documents({ featureId, stage })`, ignoring
+      `kind: "interview"` docs. `approved` → skip the stage, reuse the doc as
+      upstream input, note "reused". `draft` → one `AskUserQuestion`: approve
+      as-is and continue *(recommended)* / stop (edit in the board, rerun).
+      Never overwrite a human draft; approving one still goes through the gate.
+   2. **Gate.** `check_gate({ featureId, stage })`; `ok: false` → stop with
+      `reason` verbatim (step 10). Never draft around a closed gate.
+   3. **Dispatch** the stage subagent with the same inputs as its stage command,
+      plus the refined-intent block verbatim and this line:
+      `Loop mode: running under /specmanager-loop — do not ask the user anything; infer and record assumptions/open questions in the doc.`
+   4. **Verify** the doc landed: `list_documents({ featureId, stage })` shows a
+      new doc. Missing → stop (step 10).
+   5. **Approve** in the main session: `set_status({ id, status: "approved" })`.
+      Only the loop approves; the subagents never do.
+   6. **Progress line**, e.g. `PRD approved — <id>`.
+
+   **Transient retry (R=2).** On a `529` / `Overloaded` error — the Task never
+   returned a usable result — first `list_documents({ featureId, stage })`: if
+   the doc already landed, do not re-dispatch; continue at sub-step 4.
+   Otherwise re-dispatch the same Task immediately, up to **2** retries (3
+   attempts). Genuine failures are not retried.
+6. **PRD.** `Task({ subagent_type: "prd-writer", prompt })` with the feature id
+   + title and the extra context from the argument.
+7. **Architecture.** `Task({ subagent_type: "architect", prompt })` with the
+   feature id/title/slug and the approved PRD id (passed explicitly).
+8. **Design — only if UI-facing (R5).** Decide once, after the PRD is
+   approved, from the refined intent's UI-facing answer and the PRD (screens,
+   board/UI requirements, flows that render); keep a one-line reason for the
+   report. An existing approved Design doc counts as UI-facing.
+   - **UI-facing** → after Architecture is approved,
+     `Task({ subagent_type: "designer", prompt })` with the feature
+     id/title/slug, PRD id + version, Architecture id + version, the extra
+     context, and `No attachments; proceed without a design reference.` The
+     designer writes via `create_design_brief`. Approve before Plan.
+   - **Not UI-facing** → create nothing; the plan gate is satisfied by absence.
+9. **Plan.** `Task({ subagent_type: "planner", prompt })` with the feature
+   id/title/slug, the Architecture id, the PRD id, the Design id + version (or
+   `null`), and the loop-mode split rule: `Loop mode: do not call AskUserQuestion for the phase split — apply your recommended split (or single phase) and record the decision and the alternative under Open questions.`
+   Before approving, also check `plan.md` (`read_document`) has a `## Phase`
+   heading and `list_tasks({ featureId })` is non-empty; a flat plan or no
+   tasks → stop (step 10). The loop does not send it back.
+10. **Failure stop (R9).** Stop immediately on a closed gate, a subagent error
+    after retries, a subagent that returned without its doc, or any tool
+    `ok: false`. Report: last approved stage, failed stage, reason verbatim,
+    and the command to resume with (`/specmanager:specmanager-<stage> <slug>`).
+    Approved docs stay approved; a drafted but unapproved doc stays `draft` —
+    never approve after a failure.
