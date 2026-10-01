@@ -66,12 +66,12 @@ automatically**; invoking it is the opt-in.
       as-is and continue *(recommended)* / stop (edit in the board, rerun).
       Never overwrite a human draft; approving one still goes through the gate.
    2. **Gate.** `check_gate({ featureId, stage })`; `ok: false` → stop with
-      `reason` verbatim (step 10). Never draft around a closed gate.
+      `reason` verbatim (step 13). Never draft around a closed gate.
    3. **Dispatch** the stage subagent with the same inputs as its stage command,
       plus the refined-intent block verbatim and this line:
       `Loop mode: running under /specmanager-loop — do not ask the user anything; infer and record assumptions/open questions in the doc.`
    4. **Verify** the doc landed: `list_documents({ featureId, stage })` shows a
-      new doc. Missing → stop (step 10).
+      new doc. Missing → stop (step 13).
    5. **Approve** in the main session: `set_status({ id, status: "approved" })`.
       Only the loop approves; the subagents never do.
    6. **Progress line**, e.g. `PRD approved — <id>`.
@@ -100,10 +100,56 @@ automatically**; invoking it is the opt-in.
    `null`), and the loop-mode split rule: `Loop mode: do not call AskUserQuestion for the phase split — apply your recommended split (or single phase) and record the decision and the alternative under Open questions.`
    Before approving, also check `plan.md` (`read_document`) has a `## Phase`
    heading and `list_tasks({ featureId })` is non-empty; a flat plan or no
-   tasks → stop (step 10). The loop does not send it back.
-10. **Failure stop (R9).** Stop immediately on a closed gate, a subagent error
+   tasks → stop (step 13). The loop does not send it back.
+10. **Cross-doc review (R6) — inline in the main session, no subagent.** Read
+    the PRD, Architecture and Plan with `read_document`, the Design (if any)
+    with `Read` on its `filePath` in offset/limit chunks, and `list_tasks`.
+    Check, in one pass:
+    - contradictions between docs;
+    - R-id coverage PRD → Architecture → Plan (nothing dropped, nothing invented);
+    - task records match `plan.md` (titles, phases, complexity ≤3);
+    - drift from the Original intent and the refined-intent block.
+
+    Fix what is clear-cut; everything else becomes a step-11 question.
+    - **Docs:** `write_document({ id, body, baseVersion })` with the version you
+      read — docs stay `approved` (only `version` bumps). A version conflict →
+      do not retry; it becomes a step-11 question.
+    - **Design:** only small textual note edits. Before writing, replace every
+      column-0 `---` line in the HTML with `<!-- --- -->`.
+    - **Tasks:** sync with `update_task` / `create_task` (complexity ≤3). There
+      is no delete tool: a task to remove → a question plus a manual follow-up.
+    - After any fix, `link_documents` to re-stamp `basedOn`. Single pass — no
+      re-review.
+11. **End questions (R7).** Gather the open questions: each doc's
+    `Open questions`, unresolved review findings, refinement Assumptions, and
+    the planner's loop-mode split decision. Ask them with `AskUserQuestion` in
+    batches of ≤4, recommended option first, labelled *(recommended)*. Apply
+    answers with the step-10 write rules. Skipped questions stay recorded in
+    their doc. None → skip and say so.
+12. **Final report (R8).**
+    - feature id and slug;
+    - each doc: id, path, status, version;
+    - Design decision and its one-line reason;
+    - review fixes applied;
+    - questions answered vs still open;
+    - manual follow-ups (task removals, unresolved conflicts);
+    - a note that the approvals in this run were made by `/specmanager-loop`,
+      not by the user in the board;
+    - next step: `/specmanager:specmanager-build <slug> next`.
+13. **Failure stop (R9).** Stop immediately on a closed gate, a subagent error
     after retries, a subagent that returned without its doc, or any tool
     `ok: false`. Report: last approved stage, failed stage, reason verbatim,
     and the command to resume with (`/specmanager:specmanager-<stage> <slug>`).
     Approved docs stay approved; a drafted but unapproved doc stays `draft` —
-    never approve after a failure.
+    never approve after a failure. A write error in steps 10–11 (other than a
+    version conflict) stops the remaining fixes; report what was and was not
+    applied — all stage docs stay approved.
+
+## Don't
+
+- Don't draft a stage inline — every stage goes to its subagent.
+- Don't bypass a closed gate or draft around it.
+- Don't approve anything after a failure.
+- Don't overwrite a human draft.
+- Don't start a build, arm the Stop-gate, or run a walkthrough — the loop
+  ends at the report; Build is the user's next command.
