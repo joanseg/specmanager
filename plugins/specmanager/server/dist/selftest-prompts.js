@@ -10,7 +10,8 @@
 //
 // The INVARIANTS table encodes `docs/prompt-invariants-reconciled.md`
 // (task-002): Part A's corrected INV-1…INV-15 and Part B's added
-// INV-16…INV-37 — 37 reconciled entries. A few are encoded as lettered
+// INV-16…INV-37 — 37 reconciled entries — plus Part C's INV-38…INV-44 for
+// the loop command. A few are encoded as lettered
 // rows (INV-14a…e, INV-27a…c, INV-36a/b, and the pre-existing INV-15a/b)
 // because the reconciliation calls for one pattern per independently
 // deletable clause: a single whole-block pattern stays green when all but
@@ -481,6 +482,64 @@ const INVARIANTS = [
         files: ["agents/designer.md", "agents/builder.md"],
         min: 2,
         max: 4,
+    },
+    // ---- Part C — INV-38…INV-44: the loop command (arch R12) ----
+    {
+        id: "INV-38",
+        what: "the loop command calls `check_gate` before each stage — the call is the enforcement, as in INV-16",
+        pattern: "check_gate",
+        files: ["commands/specmanager-loop.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-39",
+        what: "the loop dispatches every drafting stage to its subagent (prd-writer, architect, designer, planner)",
+        pattern: /subagent_type: "(prd-writer|architect|designer|planner)"/g,
+        files: ["commands/specmanager-loop.md"],
+        min: 4,
+        max: 4,
+    },
+    {
+        id: "INV-40",
+        what: "the loop approves each stage through `set_status` with `\"approved\"` — the auto-approval the user opted into",
+        pattern: /set_status\(\{[^}]*status: "approved"/g,
+        files: ["commands/specmanager-loop.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-41",
+        what: "refinement, review and end questions run in the main session, not a subagent",
+        pattern: "main session",
+        files: ["commands/specmanager-loop.md"],
+        min: 1,
+        max: 4,
+    },
+    {
+        id: "INV-42",
+        what: "the loop never starts a build or arms the Stop-gate — no builder dispatch, no `set_active_build` call (negative)",
+        pattern: /subagent_type: "builder"|set_active_build\(/g,
+        files: ["commands/specmanager-loop.md"],
+        min: 0,
+        max: 0,
+        negativeSample: 'subagent_type: "builder"',
+    },
+    {
+        id: "INV-43",
+        what: "the R11 opt-in statement: invoking the loop approves each stage's document automatically",
+        pattern: "approves each stage's document automatically",
+        files: ["commands/specmanager-loop.md"],
+        min: 1,
+        max: 2,
+    },
+    {
+        id: "INV-44",
+        what: "the planner's loop-mode carve-out (no `AskUserQuestion` on a split) survives, stated once",
+        pattern: "loop mode",
+        files: ["agents/planner.md"],
+        min: 1,
+        max: 1,
     },
 ];
 const fileCache = new Map();
