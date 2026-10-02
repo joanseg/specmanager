@@ -31,14 +31,20 @@ function fail(message) {
 }
 const server = new McpServer({ name: "specmanager", version: "0.1.0" });
 server.registerTool("specmanager_init", {
+    title: "Initialise SpecManager in the project",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "Scaffold .claude/specs/ in the project, write the manifest cache, and write/refresh the managed CLAUDE.md block.",
     inputSchema: z.object({ repoPaths: z.array(z.string()).optional() }),
 }, async ({ repoPaths }) => ok(await initProject(PROJECT_DIR, { repoPaths })));
 server.registerTool("list_features", {
+    title: "List features",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "List all features in the project.",
     inputSchema: z.object({}),
 }, async () => ok(await listFeatures(PROJECT_DIR)));
 server.registerTool("create_feature", {
+    title: "Create a feature",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     description: "Create a new feature pipeline by title. Returns the feature record.",
     inputSchema: z.object({ title: z.string().min(1) }),
 }, async ({ title }) => {
@@ -48,6 +54,8 @@ server.registerTool("create_feature", {
     return ok(f);
 });
 server.registerTool("list_documents", {
+    title: "List documents",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "List documents, optionally filtered by featureId / stage / status / stale.",
     inputSchema: z.object({
         featureId: z.string().optional(),
@@ -60,6 +68,8 @@ server.registerTool("list_documents", {
     return ok(docs.map(docSummary));
 });
 server.registerTool("read_document", {
+    title: "Read a document",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "Return a document's frontmatter and body by id.",
     inputSchema: z.object({ id: z.string() }),
 }, async ({ id }) => {
@@ -72,6 +82,8 @@ server.registerTool("read_document", {
     }
 });
 server.registerTool("create_document", {
+    title: "Create a draft document",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     description: "Create a draft document in a feature+stage. For walkthrough docs, pass `phase` (e.g. \"Foundation\") so the manifest can link the doc to its phase; the filename is derived from `phase` (`phase-<name>.md`, or `feature.md` for `phase: \"final\"`). Pass `kind: \"interview\"` with stage `prd` to store a pre-PRD interview artifact; filename defaults to `interview.md`.",
     inputSchema: z.object({
         featureId: z.string(),
@@ -96,6 +108,8 @@ server.registerTool("create_document", {
     }
 });
 server.registerTool("create_design_brief", {
+    title: "Create a draft design brief",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     description: "Create a draft design doc (stacked high-fi screen mockups) in the design stage. Body is one self-contained HTML document — rendered screens + explanatory notes. Wraps create_document with stage=\"design\", defangs any `---` at column 0 (gray-matter collision), and rejects bodies larger than 5MB. Writes to design/mockups.html.",
     inputSchema: z.object({
         featureId: z.string(),
@@ -127,6 +141,8 @@ server.registerTool("create_design_brief", {
     }
 });
 server.registerTool("write_document", {
+    title: "Replace a document body",
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     description: "Replace a document's body / metadata; bumps version. Pass baseVersion for optimistic concurrency.",
     inputSchema: z.object({
         id: z.string(),
@@ -148,6 +164,8 @@ server.registerTool("write_document", {
     }
 });
 server.registerTool("set_status", {
+    title: "Approve or reopen a document",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "Transition a document between draft and approved. Reopening (approved→draft) flags downstream docs stale.",
     inputSchema: z.object({ id: z.string(), status: DOC_STATUS }),
 }, async ({ id, status }) => {
@@ -162,6 +180,8 @@ server.registerTool("set_status", {
     }
 });
 server.registerTool("check_gate", {
+    title: "Check a stage gate",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "Check whether the prerequisite for a feature's stage is met (prior stage approved, or — for walkthrough — all tasks in the named phase are done). `phase` defaults to 'default' and is only meaningful for the walkthrough stage.",
     inputSchema: z.object({
         featureId: z.string(),
@@ -170,6 +190,8 @@ server.registerTool("check_gate", {
     }),
 }, async ({ featureId, stage, phase }) => ok(await checkGate(featureId, stage, PROJECT_DIR, { phase })));
 server.registerTool("list_stale", {
+    title: "List stale documents",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "List documents currently flagged stale.",
     inputSchema: z.object({}),
 }, async () => {
@@ -177,6 +199,8 @@ server.registerTool("list_stale", {
     return ok(docs.map((d) => ({ ...d.frontmatter, filePath: d.filePath })));
 });
 server.registerTool("link_documents", {
+    title: "Link two documents",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "Record a dependsOn edge from downstream to upstream and stamp the basedOn version.",
     inputSchema: z.object({ downstreamId: z.string(), upstreamId: z.string() }),
 }, async ({ downstreamId, upstreamId }) => {
@@ -189,10 +213,14 @@ server.registerTool("link_documents", {
     }
 });
 server.registerTool("list_tasks", {
+    title: "List tasks",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "List tasks for a feature.",
     inputSchema: z.object({ featureId: z.string() }),
 }, async ({ featureId }) => ok(await listTasks(featureId, PROJECT_DIR)));
 server.registerTool("create_task", {
+    title: "Create a task",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     description: "Create a task on a feature's plan. `phase` groups tasks into a working-software increment. `complexity` is Fibonacci (1|2|3|5|8|13); values ≥5 are rejected — split before persisting.",
     inputSchema: z.object({
         featureId: z.string(),
@@ -213,6 +241,8 @@ server.registerTool("create_task", {
     }
 });
 server.registerTool("update_task", {
+    title: "Update a task",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "Update a task's status, title, phase, complexity, or artifacts.",
     inputSchema: z.object({
         id: z.string(),
@@ -240,22 +270,32 @@ server.registerTool("update_task", {
     }
 });
 server.registerTool("list_phases", {
+    title: "List phases",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "List a feature's phases (groups of tasks that ladder up to a testable working-software increment), in first-seen order.",
     inputSchema: z.object({ featureId: z.string() }),
 }, async ({ featureId }) => ok(await listPhases(featureId, PROJECT_DIR)));
 server.registerTool("get_next_phase", {
+    title: "Get the next phase to build",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "Return the first phase whose tasks aren't all done, or null if every phase is complete. Used by /specmanager-build.",
     inputSchema: z.object({ featureId: z.string() }),
 }, async ({ featureId }) => ok(await getNextPhase(featureId, PROJECT_DIR)));
 server.registerTool("get_phase_completion", {
+    title: "Get phase completion",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "Deterministic 'is this phase done and does it still need a walkthrough?' predicate, queried by /specmanager-build after the builder returns OR errors so the post-phase pipeline never depends on the builder's exit path. Returns { complete, hasWalkthrough, needsWalkthrough, isSinglePhase, taskCount, doneCount }, or null for an unknown phase.",
     inputSchema: z.object({ featureId: z.string(), phase: z.string() }),
 }, async ({ featureId, phase }) => ok(await getPhaseCompletion(featureId, phase, PROJECT_DIR)));
 server.registerTool("get_spec_slice", {
+    title: "Get the reviewer spec slice",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "Assemble the spec-compliance reviewer's slice for one phase: the phase's plan.md section, its task titles/notes, and the Architecture sections named in meta.architectureRefs (resolved by leading id-token or kebab-slug; name-matching fallback when refs are absent). Returns { planSection, tasks, architecture, unresolvedRefs, fallbackUsed }, or null for an unknown phase. Called by /specmanager-build before dispatching the reviewer.",
     inputSchema: z.object({ featureId: z.string(), phase: z.string() }),
 }, async ({ featureId, phase }) => ok(await getSpecSlice(featureId, phase, PROJECT_DIR)));
 server.registerTool("set_phase_meta", {
+    title: "Set phase metadata",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "Set a phase's planner metadata in tasks.json: `testCommand` (a runnable shell command, or the literal \"none\" for an intentionally test-less phase — never omit it) and `architectureRefs` (the Architecture anchors that phase implements, e.g. [\"R1\",\"core-active-card\"]). The Stop-gate reads testCommand as its primary verification source; the reviewer slice resolves architectureRefs. Call once per phase after create_task.",
     inputSchema: z.object({
         featureId: z.string(),
@@ -273,10 +313,14 @@ server.registerTool("set_phase_meta", {
     }
 });
 server.registerTool("resolve_active_card", {
+    title: "Resolve the active build card",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "Resolve the active card deterministically: the feature with open plan tasks, its active phase (first phase not all-done), and that phase's verification target (meta.testCommand primary, plan.md **Exit test:** line fallback) + architectureRefs + open task ids. Returns null when nothing is in flight. Used by the Stop-gate hook.",
     inputSchema: z.object({}),
 }, async () => ok(await resolveActiveCard(PROJECT_DIR)));
 server.registerTool("set_active_build", {
+    title: "Mark a build as active",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "Write the active-build marker (.cache/active-build.json) pinning the Stop-gate to one {featureId, phase}. Called by /specmanager-build when a phase starts. sessionId is filled from the env (CLAUDE_CODE_SESSION_ID) so the gate only fires for this session.",
     inputSchema: z.object({ featureId: z.string(), phase: z.string() }),
 }, async ({ featureId, phase }) => {
@@ -290,6 +334,8 @@ server.registerTool("set_active_build", {
     }
 });
 server.registerTool("clear_active_build", {
+    title: "Clear the active build marker",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "Delete the active-build marker (idempotent). Called by /specmanager-build on every terminal path (phase done or blocked) so the next Stop is a no-op.",
     inputSchema: z.object({}),
 }, async () => {
@@ -302,14 +348,20 @@ server.registerTool("clear_active_build", {
     }
 });
 server.registerTool("sync_claude_md", {
+    title: "Refresh the managed CLAUDE.md block",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "Rewrite the managed SpecManager block in the project CLAUDE.md.",
     inputSchema: z.object({}),
 }, async () => ok(await syncClaudeMd(PROJECT_DIR)));
 server.registerTool("sync_design_md", {
+    title: "Generate or refresh docs/DESIGN.md",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "Generate or refresh ./docs/DESIGN.md from the project's UI sources. Idempotent. mode=init creates if missing; mode=refresh updates only the managed block.",
     inputSchema: z.object({ mode: z.enum(["init", "refresh"]).optional() }),
 }, async ({ mode }) => ok(await syncDesignMd(PROJECT_DIR, { mode: mode ?? "refresh" })));
 server.registerTool("bootstrap_design_tokens", {
+    title: "Seed starter design tokens",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "Seed synthesized starter design tokens back into ./docs/DESIGN.md's managed block (R5/AC8). Fills ONLY placeholder/TODO or absent fields — never clobbers harvested real values — and rewrites only the region between the design markers. The single AC8 write path: the designer persists synthesized tokens through this tool, never via raw Write. Pass partial maps; e.g. { colors: { primary: \"#FF5733\" }, rounded: { md: \"10px\" } }.",
     inputSchema: z.object({
         tokens: z.object({
@@ -330,6 +382,8 @@ server.registerTool("bootstrap_design_tokens", {
 });
 let board = null;
 server.registerTool("board_url", {
+    title: "Get the board URL",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "Return the localhost URL of the kanban board server, and whether it is currently running.",
     inputSchema: z.object({}),
 }, async () => ok({
@@ -338,6 +392,8 @@ server.registerTool("board_url", {
     preferredPort: BOARD_PORT,
 }));
 server.registerTool("open_board", {
+    title: "Open the board in the browser",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "Open the SpecManager kanban board in the user's default browser. Returns the URL it tried to open.",
     inputSchema: z.object({}),
 }, async () => {
