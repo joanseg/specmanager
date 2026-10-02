@@ -26,7 +26,7 @@ Each role is its own specialised agent — not one mega-prompt wearing different
 - **Reviewer** — read-only; checks each finished phase against the spec and returns a plain pass/fail verdict. It can't change anything.
 - **Tech writer** — documents what actually shipped, per phase, so you always have a record.
 
-The agents hand off to each other through approved documents, not a hidden shared memory — and **none of them approves its own work. That's your call.** You stay in the loop by design: an agent can't move to the next stage until you've approved the current one. Claude can't start the Architecture until you've approved the PRD, because that rule lives in the software itself, not in instructions the AI could talk its way around.
+The agents hand off to each other through approved documents, not a hidden shared memory — and **none of them approves its own work. That's your call.** You stay in the loop by design: an agent can't move to the next stage until you've approved the current one. Claude can't start the Architecture until you've approved the PRD, because that rule lives in the software itself, not in instructions the AI could talk its way around. The one exception is opt-in: `/specmanager:specmanager-loop` approves each planning document for you when you ask it to, still going through the same gates, and stops before any code is built.
 
 **"Approved" is a commitment, not a freeze.** Reopen an earlier document and every later one that depended on it gets a gentle "stale — worth a re-read" badge that follows the chain of dependencies. And because edits are tracked carefully, a late agent write can never overwrite a change you made by hand.
 
