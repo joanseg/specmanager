@@ -7,16 +7,16 @@
     "node": ">=20"
   },
   "dependencies": {
-    "@fastify/static": "^8.0.0",
-    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@fastify/static": "^10.1.5",
+    "@modelcontextprotocol/sdk": "^1.31.0",
     "chokidar": "^4.0.0",
-    "fastify": "^5.0.0",
+    "fastify": "^5.12.5",
     "gray-matter": "^4.0.3",
     "remark-gfm": "^4.0.1",
     "remark-parse": "^11.0.0",
     "remark-stringify": "^11.0.0",
     "unified": "^11.0.5",
-    "ws": "^8.18.0",
-    "zod": "^4.0.0"
+    "ws": "^8.22.0",
+    "zod": "^4.6.5"
   }
 }
