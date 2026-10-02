@@ -1,4 +1,4 @@
-import { I as InitReady, b as SerializerReady, t as serializerCtx, l as prosePluginsCtx, a as EditorViewReady } from "./milkdown-core-p_amFwad.js";
+import { I as InitReady, b as SerializerReady, t as serializerCtx, l as prosePluginsCtx, a as EditorViewReady } from "./milkdown-core-DsBn0yRa.js";
 import { c as createSlice } from "./milkdown-ctx-B6ZmVA8d.js";
 import { d as debounce } from "./lodash-es-DWsF7gLD.js";
 import { P as Plugin, a as PluginKey } from "./prosemirror-state-DvBpuTqc.js";

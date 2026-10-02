@@ -220,6 +220,8 @@ A **Policy hold** is not a rejection. You can still submit. It means a reviewer 
 
 A4 comes from the security scan, so it may not be in the Validate report at all and may only show up after you submit, on the plugin's **Versions** tab.
 
+**A4 happened, and is removed in 1.0.3.** The security scan held v1.0.2 (`748bfe3`) with "Ships code the scan can't read … so this version can't be cleared automatically. Replace it with source the scan can read, or remove it, then push or upload a new version. If the plugin isn't listed yet, also resubmit it for review." The review did not move for two days. Since 1.0.3 the UI runs on Preact's React-compatible layer, built from Preact's readable source; no React or scheduler code ships. After pushing a fix like this, select **Resubmit for review** as well: a held first version does not clear on its own.
+
 If the A2 finding lists more files under `plugins/specmanager/server/dist/` than `mcp.js`, that is the same hold described more widely (they are all part of the same Node program). Write down the list for the walkthrough.
 
 ### What Validate actually reported, 2026-09-30, version 1.0.1 (`main @ 4c7cb81`)

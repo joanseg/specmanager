@@ -64,7 +64,7 @@ The repo dogfoods itself: its own features live under `.claude/specs/features/` 
   - `agents/*.md` — the subagents: prd-writer, architect, designer, planner, builder, walkthrough-writer, and `reviewer` (read-only spec-compliance review after a phase builds).
   - `hooks/hooks.json` — one hook: `Stop` runs `hooks/stop-gate.sh` (see Build leverage primitives).
   - `server/` — `@specmanager/server`, TypeScript, ships compiled `dist/` without source maps. Its `package.json` holds scripts and dev dependencies only.
-  - `ui/` — `@specmanager/ui`, React 18 + Vite, ships compiled `dist/`, built unminified with one chunk per npm package so every non-font file stays under 256 KiB. `vite.config.ts` also strips comments from the chunks: the directory validator reads doc-link URLs next to env-like words as credential use.
+  - `ui/` — `@specmanager/ui`, written against the React API but built on **Preact** (`vite.config.ts` aliases `react`/`react-dom` to Preact's readable source, because React 18 ships only a minified production build that the directory's security scan cannot read) + Vite; ships compiled `dist/`, built unminified with one chunk per npm package so every non-font file stays under 256 KiB. `vite.config.ts` also strips comments from the chunks: the directory validator reads doc-link URLs next to env-like words as credential use.
 - **`docs/`** — `DESIGN.md` is the managed design-system spec; `directory-submission.md` is the owner's checklist for submitting and releasing to the Anthropic plugin directory; `temp/original-specs/` holds historical snapshots (don't edit).
 - **`docs/agent-snippets/`** — canonical text for prompt fragments used by **more than one** agent. There is no preprocessor: each fragment is copy-pasted into its carriers, and the snippet file names them. **Change the fragment here and update every carrier in the same commit** — a diverged copy is a real defect, and `selftest-prompts` fails on it.
 
@@ -155,7 +155,7 @@ If a surface test fails, do not add an install hook or any other workaround to m
 
 ## Conventions
 
-- **Latest APIs** — current versions of `@modelcontextprotocol/sdk`, React 18+, Vite, Fastify, `chokidar`, `gray-matter`, `zod`. Server and UI are both `"type": "module"`, Node 20+.
+- **Latest APIs** — current versions of `@modelcontextprotocol/sdk`, Preact (React API via `preact/compat`, `@types/react` for type-checking), Vite, Fastify, `chokidar`, `gray-matter`, `zod`. Server and UI are both `"type": "module"`, Node 20+.
 - **Editors:** the UI edits markdown docs with Milkdown; HTML design briefs are not edited in the board — they render verbatim in a sandboxed `<iframe>`. `ui/package.json` still lists CodeMirror packages, but nothing in `ui/src` imports them.
 - **Runtime deps are installed natively** — declare a runtime dependency in `plugins/specmanager/package.json` and regenerate its lockfile (`npm install --package-lock-only --ignore-scripts`), never in `server/package.json`. There is no install hook; `${CLAUDE_PLUGIN_DATA}` holds only the board pidfile.
 - **No model or API calls from the plugin** — the server and board talk only to the local filesystem and `127.0.0.1`. The plugin README and the directory's data-handling answers state this, so a feature that changes it must update both in the same release.

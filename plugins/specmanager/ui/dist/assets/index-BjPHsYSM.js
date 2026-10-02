@@ -1,12 +1,10 @@
-import { r as reactExports, j as jsxRuntimeExports, R as React } from "./react-PMzPw5St.js";
-import { c as createRoot } from "./react-dom-CL5y85kd.js";
-import { E as Editor, q as rootCtx, e as defaultValueCtx, o as remarkStringifyOptionsCtx, h as editorViewOptionsCtx, t as serializerCtx, g as editorViewCtx } from "./milkdown-core-p_amFwad.js";
-import { c as commonmark, a as createCodeBlockCommand, b as toggleLinkCommand, w as wrapInBulletListCommand, e as wrapInHeadingCommand, t as toggleEmphasisCommand, d as toggleStrongCommand } from "./milkdown-preset-commonmark-m9WqS0qF.js";
-import { g as gfm, i as insertTableCommand } from "./milkdown-preset-gfm-B_6-Ndkr.js";
-import { a as listenerCtx, l as listener } from "./milkdown-plugin-listener-B5P13MP8.js";
-import { i as $prose, r as replaceAll, l as callCommand } from "./milkdown-utils-D9Lbx_XT.js";
+import { f as useState, e as useRef, b as useEffect, a as createVNode, d as useMemo, F as Fragment, u as useCallback, c as createRoot, R as React } from "./preact-BS8xTpBQ.js";
+import { E as Editor, q as rootCtx, e as defaultValueCtx, o as remarkStringifyOptionsCtx, h as editorViewOptionsCtx, t as serializerCtx, g as editorViewCtx } from "./milkdown-core-DsBn0yRa.js";
+import { c as commonmark, a as createCodeBlockCommand, b as toggleLinkCommand, w as wrapInBulletListCommand, e as wrapInHeadingCommand, t as toggleEmphasisCommand, d as toggleStrongCommand } from "./milkdown-preset-commonmark-CpU54TZM.js";
+import { g as gfm, i as insertTableCommand } from "./milkdown-preset-gfm-CDmNGmtb.js";
+import { a as listenerCtx, l as listener } from "./milkdown-plugin-listener-Y8gP64VA.js";
+import { i as $prose, r as replaceAll, l as callCommand } from "./milkdown-utils-Dn8fge8U.js";
 import { P as Plugin } from "./prosemirror-state-DvBpuTqc.js";
-import "./scheduler-DVXmCK1v.js";
 import "./milkdown-ctx-B6ZmVA8d.js";
 import "./milkdown-exception-EEjztD1-.js";
 import "./milkdown-prose-BA0s8Ct0.js";
@@ -19,9 +17,9 @@ import "./prosemirror-view-DUWIvuYX.js";
 import "./prosemirror-keymap-bzw026ae.js";
 import "./w3c-keyname-UlJ7zh8K.js";
 import "./milkdown-transformer-BqQ-j1sm.js";
-import "./unified-sSJZ_AJL.js";
+import "./unified-CC3fFDkr.js";
 import "./bail-CqJVcVEc.js";
-import "./extend-DcMKqrzx.js";
+import "./extend-Db_RHqWv.js";
 import "./is-plain-obj-Bdy7oolY.js";
 import "./trough-DPWmlyi3.js";
 import "./vfile-D_rwXw5K.js";
@@ -204,16 +202,16 @@ const SECONDARY = [
   { action: "bulletList", title: "Bullet list", glyph: "☰" },
   { action: "link", title: "Link", glyph: "🔗" },
   { action: "table", title: "Table", glyph: "▦" },
-  { action: "codeBlock", title: "Code block", glyph: jsxRuntimeExports.jsx("span", { className: "mono", children: "</>" }) }
+  { action: "codeBlock", title: "Code block", glyph: createVNode("span", { className: "mono", children: "</>" }) }
 ];
 function MarkdownToolbar({ onAction, disabled, active }) {
-  const [headingOpen, setHeadingOpen] = reactExports.useState(false);
-  const [overflowOpen, setOverflowOpen] = reactExports.useState(false);
-  const [narrow, setNarrow] = reactExports.useState(false);
-  const headingRef = reactExports.useRef(null);
-  const overflowRef = reactExports.useRef(null);
-  const barRef = reactExports.useRef(null);
-  reactExports.useEffect(() => {
+  const [headingOpen, setHeadingOpen] = useState(false);
+  const [overflowOpen, setOverflowOpen] = useState(false);
+  const [narrow, setNarrow] = useState(false);
+  const headingRef = useRef(null);
+  const overflowRef = useRef(null);
+  const barRef = useRef(null);
+  useEffect(() => {
     const el = barRef.current;
     if (!el)
       return;
@@ -225,7 +223,7 @@ function MarkdownToolbar({ onAction, disabled, active }) {
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
-  reactExports.useEffect(() => {
+  useEffect(() => {
     if (!headingOpen && !overflowOpen)
       return;
     const onDown = (e) => {
@@ -240,7 +238,7 @@ function MarkdownToolbar({ onAction, disabled, active }) {
     return () => document.removeEventListener("mousedown", onDown);
   }, [headingOpen, overflowOpen]);
   const isActive = (a) => (active == null ? void 0 : active.has(a)) ?? false;
-  const btn = (action, title, label) => jsxRuntimeExports.jsx("button", {
+  const btn = (action, title, label) => createVNode("button", {
     type: "button",
     className: `tb-btn${isActive(action) ? " tb-btn--active" : ""}`,
     title,
@@ -255,11 +253,11 @@ function MarkdownToolbar({ onAction, disabled, active }) {
     setHeadingOpen(false);
     onAction("heading", level);
   };
-  return jsxRuntimeExports.jsxs("div", { className: "md-toolbar", role: "toolbar", "aria-label": "Formatting", ref: barRef, children: [
-    btn("bold", "Bold (⌘B)", jsxRuntimeExports.jsx("b", { children: "B" })),
-    btn("italic", "Italic (⌘I)", jsxRuntimeExports.jsx("i", { children: "I" })),
-    jsxRuntimeExports.jsxs("div", { className: "tb-pop-wrap", ref: headingRef, children: [
-      jsxRuntimeExports.jsxs("button", {
+  return createVNode("div", { className: "md-toolbar", role: "toolbar", "aria-label": "Formatting", ref: barRef, children: [
+    btn("bold", "Bold (⌘B)", createVNode("b", { children: "B" })),
+    btn("italic", "Italic (⌘I)", createVNode("i", { children: "I" })),
+    createVNode("div", { className: "tb-pop-wrap", ref: headingRef, children: [
+      createVNode("button", {
         type: "button",
         className: `tb-btn${isActive("heading") ? " tb-btn--active" : ""}`,
         title: "Heading",
@@ -270,11 +268,11 @@ function MarkdownToolbar({ onAction, disabled, active }) {
         onMouseDown: (e) => e.preventDefault(),
         onClick: () => setHeadingOpen((o) => !o),
         children: [
-          jsxRuntimeExports.jsx("span", { children: "H" }),
-          jsxRuntimeExports.jsx("span", { className: "caret", children: "▾" })
+          createVNode("span", { children: "H" }),
+          createVNode("span", { className: "caret", children: "▾" })
         ]
       }),
-      headingOpen && jsxRuntimeExports.jsx("div", { className: "tb-menu", role: "menu", "aria-label": "Heading level", children: [1, 2, 3].map((level) => jsxRuntimeExports.jsxs("button", {
+      headingOpen && createVNode("div", { className: "tb-menu", role: "menu", "aria-label": "Heading level", children: [1, 2, 3].map((level) => createVNode("button", {
         type: "button",
         role: "menuitem",
         className: "tb-menu__item",
@@ -286,9 +284,9 @@ function MarkdownToolbar({ onAction, disabled, active }) {
         ]
       }, level)) })
     ] }),
-    jsxRuntimeExports.jsx("span", { className: "tb-sep" }),
-    narrow ? jsxRuntimeExports.jsxs("div", { className: "tb-pop-wrap", ref: overflowRef, children: [
-      jsxRuntimeExports.jsx("button", {
+    createVNode("span", { className: "tb-sep" }),
+    narrow ? createVNode("div", { className: "tb-pop-wrap", ref: overflowRef, children: [
+      createVNode("button", {
         type: "button",
         className: "tb-btn",
         title: "More formatting",
@@ -300,7 +298,7 @@ function MarkdownToolbar({ onAction, disabled, active }) {
         onClick: () => setOverflowOpen((o) => !o),
         children: "⋯"
       }),
-      overflowOpen && jsxRuntimeExports.jsx("div", { className: "tb-menu", role: "menu", "aria-label": "More formatting", children: SECONDARY.map(({ action, title, glyph }) => jsxRuntimeExports.jsxs("button", {
+      overflowOpen && createVNode("div", { className: "tb-menu", role: "menu", "aria-label": "More formatting", children: SECONDARY.map(({ action, title, glyph }) => createVNode("button", {
         type: "button",
         role: "menuitem",
         className: `tb-menu__item${isActive(action) ? " tb-menu__item--active" : ""}`,
@@ -311,12 +309,12 @@ function MarkdownToolbar({ onAction, disabled, active }) {
           onAction(action);
         },
         children: [
-          jsxRuntimeExports.jsx("span", { className: "tb-menu__glyph", children: glyph }),
+          createVNode("span", { className: "tb-menu__glyph", children: glyph }),
           " ",
           title
         ]
       }, action)) })
-    ] }) : SECONDARY.map(({ action, title, glyph }) => jsxRuntimeExports.jsx("span", { children: btn(action, title, glyph) }, action))
+    ] }) : SECONDARY.map(({ action, title, glyph }) => createVNode("span", { children: btn(action, title, glyph) }, action))
   ] });
 }
 function activeActions(state) {
@@ -380,18 +378,18 @@ function runAction(editor, action, payload) {
   });
 }
 function MarkdownEditor({ value, readOnly, onChange }) {
-  const hostRef = reactExports.useRef(null);
-  const editorRef = reactExports.useRef(null);
-  const onChangeRef = reactExports.useRef(onChange);
+  const hostRef = useRef(null);
+  const editorRef = useRef(null);
+  const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
-  const readOnlyRef = reactExports.useRef(readOnly);
+  const readOnlyRef = useRef(readOnly);
   readOnlyRef.current = readOnly;
-  const settingExternal = reactExports.useRef(false);
-  const lastMarkdown = reactExports.useRef(value);
-  const [active, setActive] = reactExports.useState(/* @__PURE__ */ new Set());
-  const setActiveRef = reactExports.useRef(setActive);
+  const settingExternal = useRef(false);
+  const lastMarkdown = useRef(value);
+  const [active, setActive] = useState(/* @__PURE__ */ new Set());
+  const setActiveRef = useRef(setActive);
   setActiveRef.current = setActive;
-  reactExports.useEffect(() => {
+  useEffect(() => {
     if (!hostRef.current)
       return;
     const host = hostRef.current;
@@ -439,7 +437,7 @@ function MarkdownEditor({ value, readOnly, onChange }) {
       editorRef.current = null;
     };
   }, []);
-  reactExports.useEffect(() => {
+  useEffect(() => {
     const editor = editorRef.current;
     if (!editor)
       return;
@@ -459,7 +457,7 @@ function MarkdownEditor({ value, readOnly, onChange }) {
       }
     });
   }, [value]);
-  reactExports.useEffect(() => {
+  useEffect(() => {
     const editor = editorRef.current;
     if (!editor)
       return;
@@ -481,18 +479,18 @@ function MarkdownEditor({ value, readOnly, onChange }) {
     }
     runAction(editor, action, payload);
   };
-  return jsxRuntimeExports.jsxs("div", { className: "md-editor", children: [
-    readOnly ? jsxRuntimeExports.jsxs("div", { className: "ro-hint", children: [
-      jsxRuntimeExports.jsx("span", { className: "dot" }),
+  return createVNode("div", { className: "md-editor", children: [
+    readOnly ? createVNode("div", { className: "ro-hint", children: [
+      createVNode("span", { className: "dot" }),
       " Approved — read-only. Choose ",
-      jsxRuntimeExports.jsx("b", { children: "Edit" }),
+      createVNode("b", { children: "Edit" }),
       " to reopen as a draft and format."
-    ] }) : jsxRuntimeExports.jsx(MarkdownToolbar, {
+    ] }) : createVNode(MarkdownToolbar, {
       onAction,
       disabled: readOnly,
       active
     }),
-    jsxRuntimeExports.jsx("div", { ref: hostRef, className: `md-surface${readOnly ? " md-surface--ro" : ""}` })
+    createVNode("div", { ref: hostRef, className: `md-surface${readOnly ? " md-surface--ro" : ""}` })
   ] });
 }
 function featureTitle(featureId) {
@@ -514,12 +512,12 @@ const STAGE_LABEL$1 = {
   walkthrough: "Walkthrough"
 };
 function DocPanel({ docId, onClose, onJumpTo }) {
-  const [doc, setDoc] = reactExports.useState(null);
-  const [body, setBody] = reactExports.useState("");
-  const [error, setError] = reactExports.useState(null);
-  const [save, setSave] = reactExports.useState({ kind: "idle" });
-  const [depVersions, setDepVersions] = reactExports.useState({});
-  reactExports.useEffect(() => {
+  const [doc, setDoc] = useState(null);
+  const [body, setBody] = useState("");
+  const [error, setError] = useState(null);
+  const [save, setSave] = useState({ kind: "idle" });
+  const [depVersions, setDepVersions] = useState({});
+  useEffect(() => {
     let cancelled = false;
     setDoc(null);
     setError(null);
@@ -534,7 +532,7 @@ function DocPanel({ docId, onClose, onJumpTo }) {
       cancelled = true;
     };
   }, [docId]);
-  reactExports.useEffect(() => {
+  useEffect(() => {
     if (!doc || doc.dependsOn.length === 0)
       return;
     let cancelled = false;
@@ -547,7 +545,7 @@ function DocPanel({ docId, onClose, onJumpTo }) {
       cancelled = true;
     };
   }, [doc == null ? void 0 : doc.id, doc == null ? void 0 : doc.dependsOn.join(",")]);
-  reactExports.useEffect(() => {
+  useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape")
         onClose();
@@ -555,7 +553,7 @@ function DocPanel({ docId, onClose, onJumpTo }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
-  const dirty = reactExports.useMemo(() => doc !== null && body !== doc.body, [doc, body]);
+  const dirty = useMemo(() => doc !== null && body !== doc.body, [doc, body]);
   const isInterview = (doc == null ? void 0 : doc.kind) === "interview";
   const readOnly = (doc == null ? void 0 : doc.status) === "approved" && !isInterview;
   const isDesign = (doc == null ? void 0 : doc.stage) === "design";
@@ -610,117 +608,117 @@ function DocPanel({ docId, onClose, onJumpTo }) {
     alert(gate.ok ? "Gate is open." : `Gate closed: ${gate.reason}`);
   };
   if (error) {
-    return jsxRuntimeExports.jsx("div", { className: "panel-backdrop", onClick: onClose, children: jsxRuntimeExports.jsxs("aside", { className: "panel", onClick: (e) => e.stopPropagation(), children: [
-      jsxRuntimeExports.jsxs("header", { className: "panel__header", children: [
-        jsxRuntimeExports.jsx("button", { className: "panel__close", onClick: onClose, children: "×" }),
-        jsxRuntimeExports.jsx("h2", { children: "Could not load document" })
+    return createVNode("div", { className: "panel-backdrop", onClick: onClose, children: createVNode("aside", { className: "panel", onClick: (e) => e.stopPropagation(), children: [
+      createVNode("header", { className: "panel__header", children: [
+        createVNode("button", { className: "panel__close", onClick: onClose, children: "×" }),
+        createVNode("h2", { children: "Could not load document" })
       ] }),
-      jsxRuntimeExports.jsx("p", { className: "panel__error", children: error })
+      createVNode("p", { className: "panel__error", children: error })
     ] }) });
   }
   if (!doc) {
-    return jsxRuntimeExports.jsx("div", { className: "panel-backdrop", onClick: onClose, children: jsxRuntimeExports.jsx("aside", { className: "panel", onClick: (e) => e.stopPropagation(), children: jsxRuntimeExports.jsx("p", { style: { padding: "2rem", color: "var(--text-dim)" }, children: "Loading…" }) }) });
+    return createVNode("div", { className: "panel-backdrop", onClick: onClose, children: createVNode("aside", { className: "panel", onClick: (e) => e.stopPropagation(), children: createVNode("p", { style: { padding: "2rem", color: "var(--text-dim)" }, children: "Loading…" }) }) });
   }
-  return jsxRuntimeExports.jsx("div", { className: "panel-backdrop", onClick: onClose, children: jsxRuntimeExports.jsxs("aside", { className: "panel", onClick: (e) => e.stopPropagation(), children: [
-    jsxRuntimeExports.jsxs("header", { className: "panel__header", children: [
-      jsxRuntimeExports.jsxs("div", { className: "panel__header-main", children: [
-        jsxRuntimeExports.jsxs("nav", { className: "panel__crumb", children: [
+  return createVNode("div", { className: "panel-backdrop", onClick: onClose, children: createVNode("aside", { className: "panel", onClick: (e) => e.stopPropagation(), children: [
+    createVNode("header", { className: "panel__header", children: [
+      createVNode("div", { className: "panel__header-main", children: [
+        createVNode("nav", { className: "panel__crumb", children: [
           featureTitle(doc.featureId),
           " ",
-          jsxRuntimeExports.jsx("span", { className: "panel__crumb-sep", children: "›" }),
+          createVNode("span", { className: "panel__crumb-sep", children: "›" }),
           " ",
           STAGE_LABEL$1[doc.stage]
         ] }),
-        jsxRuntimeExports.jsxs("div", { className: "panel__title-row", children: [
-          jsxRuntimeExports.jsx("h2", { className: "panel__title", children: doc.title }),
-          jsxRuntimeExports.jsxs("span", { className: "panel__meta", children: [
+        createVNode("div", { className: "panel__title-row", children: [
+          createVNode("h2", { className: "panel__title", children: doc.title }),
+          createVNode("span", { className: "panel__meta", children: [
             STAGE_LABEL$1[doc.stage],
             " · ",
-            jsxRuntimeExports.jsxs("span", { className: "panel__version", children: [
+            createVNode("span", { className: "panel__version", children: [
               "v",
               doc.version
             ] })
           ] })
         ] }),
-        jsxRuntimeExports.jsxs("div", { className: "panel__badges", children: [
-          isInterview ? jsxRuntimeExports.jsx("span", { className: "badge badge--interview", children: "interview" }) : jsxRuntimeExports.jsx("span", { className: `badge badge--${doc.status}`, children: doc.status }),
-          doc.stale && jsxRuntimeExports.jsx("span", { className: "badge badge--stale", children: "⚠ stale" }),
-          jsxRuntimeExports.jsx("span", { className: "badge badge--meta", title: doc.id, children: doc.id }),
-          jsxRuntimeExports.jsx("span", { className: "badge badge--meta", children: doc.generatedBy })
+        createVNode("div", { className: "panel__badges", children: [
+          isInterview ? createVNode("span", { className: "badge badge--interview", children: "interview" }) : createVNode("span", { className: `badge badge--${doc.status}`, children: doc.status }),
+          doc.stale && createVNode("span", { className: "badge badge--stale", children: "⚠ stale" }),
+          createVNode("span", { className: "badge badge--meta", title: doc.id, children: doc.id }),
+          createVNode("span", { className: "badge badge--meta", children: doc.generatedBy })
         ] })
       ] }),
-      jsxRuntimeExports.jsxs("div", { className: "panel__header-actions", children: [
-        jsxRuntimeExports.jsx("button", {
+      createVNode("div", { className: "panel__header-actions", children: [
+        createVNode("button", {
           className: "btn",
           disabled: !dirty || save.kind === "saving" || readOnly,
           onClick: onSave,
           children: save.kind === "saving" ? "Saving…" : dirty ? "Save" : "Saved"
         }),
-        !isInterview && jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-          doc.status === "draft" ? jsxRuntimeExports.jsx("button", {
+        !isInterview && createVNode(Fragment, { children: [
+          doc.status === "draft" ? createVNode("button", {
             className: "btn btn--primary",
             disabled: dirty,
             title: dirty ? "save your changes first" : "",
             onClick: onApprove,
             children: "Approve"
-          }) : jsxRuntimeExports.jsx("button", {
+          }) : createVNode("button", {
             className: "btn",
             onClick: onReopen,
             title: "Editing an approved doc reopens it as a draft",
             children: "Edit"
           }),
-          jsxRuntimeExports.jsx("button", { className: "btn btn--ghost", onClick: onShowGate, children: "Gate?" })
+          createVNode("button", { className: "btn btn--ghost", onClick: onShowGate, children: "Gate?" })
         ] }),
-        jsxRuntimeExports.jsx("button", { className: "panel__close", onClick: onClose, children: "×" })
+        createVNode("button", { className: "panel__close", onClick: onClose, children: "×" })
       ] })
     ] }),
-    doc.stale && doc.dependsOn.length > 0 && jsxRuntimeExports.jsxs("section", { className: "panel__stale", children: [
-      jsxRuntimeExports.jsx("strong", { children: "This doc is stale." }),
+    doc.stale && doc.dependsOn.length > 0 && createVNode("section", { className: "panel__stale", children: [
+      createVNode("strong", { children: "This doc is stale." }),
       " Dependencies have changed since it was based on them.",
-      jsxRuntimeExports.jsx("ul", { className: "stale-list", children: doc.dependsOn.map((depId) => {
+      createVNode("ul", { className: "stale-list", children: doc.dependsOn.map((depId) => {
         const based = doc.basedOn[depId];
         const current = depVersions[depId];
         const drift = current !== void 0 && current !== -1 && based !== void 0 && current !== based;
-        return jsxRuntimeExports.jsxs("li", { className: drift ? "stale-list__item stale-list__item--drift" : "stale-list__item", children: [
-          jsxRuntimeExports.jsx("button", { className: "link", onClick: () => onJumpTo(depId), children: depId }),
-          based !== void 0 && jsxRuntimeExports.jsxs("span", { children: [
+        return createVNode("li", { className: drift ? "stale-list__item stale-list__item--drift" : "stale-list__item", children: [
+          createVNode("button", { className: "link", onClick: () => onJumpTo(depId), children: depId }),
+          based !== void 0 && createVNode("span", { children: [
             " · based on v",
             based
           ] }),
-          current !== void 0 && current !== -1 && jsxRuntimeExports.jsxs("span", { children: [
+          current !== void 0 && current !== -1 && createVNode("span", { children: [
             " · now v",
             current
           ] }),
-          drift && jsxRuntimeExports.jsx("span", { className: "drift-tag", children: " drift" })
+          drift && createVNode("span", { className: "drift-tag", children: " drift" })
         ] }, depId);
       }) })
     ] }),
-    save.kind === "conflict" && jsxRuntimeExports.jsxs("div", { className: "banner banner--warn", children: [
+    save.kind === "conflict" && createVNode("div", { className: "banner banner--warn", children: [
       "File changed on disk (now v",
       save.serverVersion,
       "). Your edits weren't saved.",
-      jsxRuntimeExports.jsx("button", { className: "link", onClick: reload, children: "Reload from disk" }),
+      createVNode("button", { className: "link", onClick: reload, children: "Reload from disk" }),
       " to merge by hand."
     ] }),
-    save.kind === "error" && jsxRuntimeExports.jsxs("div", { className: "banner banner--error", children: [
+    save.kind === "error" && createVNode("div", { className: "banner banner--error", children: [
       save.message,
-      jsxRuntimeExports.jsx("button", { className: "link", onClick: () => setSave({ kind: "idle" }), children: "dismiss" })
+      createVNode("button", { className: "link", onClick: () => setSave({ kind: "idle" }), children: "dismiss" })
     ] }),
-    save.kind === "saved" && jsxRuntimeExports.jsxs("div", { className: "banner banner--ok", children: [
+    save.kind === "saved" && createVNode("div", { className: "banner banner--ok", children: [
       "Saved · now v",
       doc.version
     ] }),
-    jsxRuntimeExports.jsx("div", { className: "panel__body panel__body--cols-1", children: isDesign ? jsxRuntimeExports.jsx("iframe", {
+    createVNode("div", { className: "panel__body panel__body--cols-1", children: isDesign ? createVNode("iframe", {
       className: "panel__preview panel__preview--iframe",
       title: "design brief preview",
       sandbox: "allow-same-origin",
       srcDoc: PREVIEW_STYLE + body
-    }) : jsxRuntimeExports.jsx("div", { className: "panel__editor", children: jsxRuntimeExports.jsx(MarkdownEditor, {
+    }) : createVNode("div", { className: "panel__editor", children: createVNode(MarkdownEditor, {
       value: body,
       readOnly: !!readOnly,
       onChange: setBody
     }, doc.id) }) }),
-    jsxRuntimeExports.jsx("footer", { className: "panel__footer", children: jsxRuntimeExports.jsx("span", { children: doc.filePath }) })
+    createVNode("footer", { className: "panel__footer", children: createVNode("span", { children: doc.filePath }) })
   ] }) });
 }
 const DEFAULT_PHASE$1 = "default";
@@ -733,17 +731,17 @@ const STATUS_LABEL = {
 const STATUS_ORDER = ["todo", "in_progress", "done", "blocked"];
 function BuildPanel({ featureId, featureTitle: featureTitle2, onClose }) {
   var _a;
-  const [tasks, setTasks] = reactExports.useState(null);
-  const [error, setError] = reactExports.useState(null);
-  const [newTitle, setNewTitle] = reactExports.useState("");
-  const [busy, setBusy] = reactExports.useState(null);
+  const [tasks, setTasks] = useState(null);
+  const [error, setError] = useState(null);
+  const [newTitle, setNewTitle] = useState("");
+  const [busy, setBusy] = useState(null);
   const reload = () => {
     fetchTasks(featureId).then((t) => {
       setTasks(t);
       setError(null);
     }).catch((e) => setError(e.message));
   };
-  reactExports.useEffect(() => {
+  useEffect(() => {
     reload();
     let pending = 0;
     const close = openWebSocket((event) => {
@@ -763,7 +761,7 @@ function BuildPanel({ featureId, featureTitle: featureTitle2, onClose }) {
       window.removeEventListener("keydown", onKey);
     };
   }, [featureId]);
-  const counts = reactExports.useMemo(() => {
+  const counts = useMemo(() => {
     const c = { todo: 0, in_progress: 0, done: 0, blocked: 0 };
     for (const t of tasks ?? [])
       c[t.status]++;
@@ -772,7 +770,7 @@ function BuildPanel({ featureId, featureTitle: featureTitle2, onClose }) {
   const total = (tasks ?? []).length;
   const donePct = total === 0 ? 0 : Math.round(counts.done / total * 100);
   const progPct = total === 0 ? 0 : Math.round(counts.in_progress / total * 100);
-  const phaseGroups = reactExports.useMemo(() => {
+  const phaseGroups = useMemo(() => {
     const order = [];
     const byPhase = /* @__PURE__ */ new Map();
     for (const t of tasks ?? []) {
@@ -792,7 +790,7 @@ function BuildPanel({ featureId, featureTitle: featureTitle2, onClose }) {
     });
   }, [tasks]);
   const multiPhase = phaseGroups.length > 1 || ((_a = phaseGroups[0]) == null ? void 0 : _a.name) && phaseGroups[0].name !== DEFAULT_PHASE$1;
-  const [collapsed, setCollapsed] = reactExports.useState({});
+  const [collapsed, setCollapsed] = useState({});
   const toggle = (name) => setCollapsed((m) => ({ ...m, [name]: !m[name] }));
   const setStatus = async (task, status) => {
     setBusy(task.id);
@@ -855,15 +853,15 @@ function BuildPanel({ featureId, featureTitle: featureTitle2, onClose }) {
       setBusy(null);
     }
   };
-  return jsxRuntimeExports.jsx("div", { className: "panel-backdrop", onClick: onClose, children: jsxRuntimeExports.jsxs("aside", { className: "panel", onClick: (e) => e.stopPropagation(), children: [
-    jsxRuntimeExports.jsxs("header", { className: "panel__header", children: [
-      jsxRuntimeExports.jsx("button", { className: "panel__close", onClick: onClose, children: "×" }),
-      jsxRuntimeExports.jsxs("div", { className: "panel__title-row", children: [
-        jsxRuntimeExports.jsxs("h2", { className: "panel__title", children: [
+  return createVNode("div", { className: "panel-backdrop", onClick: onClose, children: createVNode("aside", { className: "panel", onClick: (e) => e.stopPropagation(), children: [
+    createVNode("header", { className: "panel__header", children: [
+      createVNode("button", { className: "panel__close", onClick: onClose, children: "×" }),
+      createVNode("div", { className: "panel__title-row", children: [
+        createVNode("h2", { className: "panel__title", children: [
           featureTitle2,
           " · Build"
         ] }),
-        jsxRuntimeExports.jsxs("span", { className: "panel__meta", children: [
+        createVNode("span", { className: "panel__meta", children: [
           counts.done,
           "/",
           total,
@@ -872,20 +870,20 @@ function BuildPanel({ featureId, featureTitle: featureTitle2, onClose }) {
           counts.blocked > 0 && ` · 🚫 ${counts.blocked} blocked`
         ] })
       ] }),
-      total > 0 && jsxRuntimeExports.jsxs("div", { className: "bar", style: { marginTop: "0.6rem" }, children: [
-        jsxRuntimeExports.jsx("div", { className: "bar__seg bar__seg--done", style: { width: `${donePct}%` } }),
-        jsxRuntimeExports.jsx("div", { className: "bar__seg bar__seg--prog", style: { width: `${progPct}%` } })
+      total > 0 && createVNode("div", { className: "bar", style: { marginTop: "0.6rem" }, children: [
+        createVNode("div", { className: "bar__seg bar__seg--done", style: { width: `${donePct}%` } }),
+        createVNode("div", { className: "bar__seg bar__seg--prog", style: { width: `${progPct}%` } })
       ] })
     ] }),
-    error && jsxRuntimeExports.jsxs("div", { className: "banner banner--error", children: [
+    error && createVNode("div", { className: "banner banner--error", children: [
       error,
-      jsxRuntimeExports.jsx("button", { className: "link", onClick: () => setError(null), children: "dismiss" })
+      createVNode("button", { className: "link", onClick: () => setError(null), children: "dismiss" })
     ] }),
-    jsxRuntimeExports.jsx("div", { className: "panel__tasks", children: tasks === null ? jsxRuntimeExports.jsx("p", { style: { padding: "2rem", color: "var(--text-dim)" }, children: "Loading…" }) : tasks.length === 0 ? jsxRuntimeExports.jsxs("p", { style: { padding: "1.5rem", color: "var(--text-dim)" }, children: [
+    createVNode("div", { className: "panel__tasks", children: tasks === null ? createVNode("p", { style: { padding: "2rem", color: "var(--text-dim)" }, children: "Loading…" }) : tasks.length === 0 ? createVNode("p", { style: { padding: "1.5rem", color: "var(--text-dim)" }, children: [
       "No tasks yet. The planner subagent (Phase 4) emits these from ",
-      jsxRuntimeExports.jsx("code", { children: "/specmanager-plan" }),
+      createVNode("code", { children: "/specmanager-plan" }),
       ". You can also add ad-hoc tasks below."
-    ] }) : multiPhase ? jsxRuntimeExports.jsx("div", { className: "phase-groups", children: phaseGroups.map((g) => {
+    ] }) : multiPhase ? createVNode("div", { className: "phase-groups", children: phaseGroups.map((g) => {
       const phaseDonePct = g.total === 0 ? 0 : Math.round(g.counts.done / g.total * 100);
       const phaseProgPct = g.total === 0 ? 0 : Math.round(g.counts.in_progress / g.total * 100);
       const allDone = g.total > 0 && g.counts.done === g.total;
@@ -897,22 +895,22 @@ function BuildPanel({ featureId, featureTitle: featureTitle2, onClose }) {
         e.stopPropagation();
         void ((_a2 = navigator.clipboard) == null ? void 0 : _a2.writeText(slash));
       };
-      return jsxRuntimeExports.jsxs("section", {
+      return createVNode("section", {
         className: `phase-group${allDone ? " phase-group--done" : ""}${hasBlocked ? " phase-group--blocked" : ""}`,
         children: [
-          jsxRuntimeExports.jsxs("header", { className: "phase-group__head", children: [
-            jsxRuntimeExports.jsxs("button", {
+          createVNode("header", { className: "phase-group__head", children: [
+            createVNode("button", {
               type: "button",
               className: "phase-group__toggle",
               onClick: () => toggle(g.name),
               "aria-expanded": !isCollapsed,
               children: [
-                jsxRuntimeExports.jsx("span", { className: "phase-group__caret", children: isCollapsed ? "▸" : "▾" }),
-                jsxRuntimeExports.jsxs("span", { className: "phase-group__name", children: [
+                createVNode("span", { className: "phase-group__caret", children: isCollapsed ? "▸" : "▾" }),
+                createVNode("span", { className: "phase-group__name", children: [
                   "Phase ",
                   g.name
                 ] }),
-                jsxRuntimeExports.jsxs("span", { className: "phase-group__count", children: [
+                createVNode("span", { className: "phase-group__count", children: [
                   g.counts.done,
                   "/",
                   g.total,
@@ -922,7 +920,7 @@ function BuildPanel({ featureId, featureTitle: featureTitle2, onClose }) {
                 ] })
               ]
             }),
-            jsxRuntimeExports.jsx("button", {
+            createVNode("button", {
               type: "button",
               className: "phase-group__cmd",
               title: "copy /specmanager-build slash command",
@@ -930,11 +928,11 @@ function BuildPanel({ featureId, featureTitle: featureTitle2, onClose }) {
               children: slash
             })
           ] }),
-          jsxRuntimeExports.jsxs("div", { className: "bar phase-group__bar", children: [
-            jsxRuntimeExports.jsx("div", { className: "bar__seg bar__seg--done", style: { width: `${phaseDonePct}%` } }),
-            jsxRuntimeExports.jsx("div", { className: "bar__seg bar__seg--prog", style: { width: `${phaseProgPct}%` } })
+          createVNode("div", { className: "bar phase-group__bar", children: [
+            createVNode("div", { className: "bar__seg bar__seg--done", style: { width: `${phaseDonePct}%` } }),
+            createVNode("div", { className: "bar__seg bar__seg--prog", style: { width: `${phaseProgPct}%` } })
           ] }),
-          !isCollapsed && jsxRuntimeExports.jsx("ul", { className: "task-list task-list--in-phase", children: g.tasks.map((t) => jsxRuntimeExports.jsx(TaskRow, {
+          !isCollapsed && createVNode("ul", { className: "task-list task-list--in-phase", children: g.tasks.map((t) => createVNode(TaskRow, {
             task: t,
             busy: busy === t.id,
             onStatus: (s) => setStatus(t, s),
@@ -944,7 +942,7 @@ function BuildPanel({ featureId, featureTitle: featureTitle2, onClose }) {
           }, t.id)) })
         ]
       }, g.name);
-    }) }) : jsxRuntimeExports.jsx("ul", { className: "task-list", children: tasks.map((t) => jsxRuntimeExports.jsx(TaskRow, {
+    }) }) : createVNode("ul", { className: "task-list", children: tasks.map((t) => createVNode(TaskRow, {
       task: t,
       busy: busy === t.id,
       onStatus: (s) => setStatus(t, s),
@@ -952,8 +950,8 @@ function BuildPanel({ featureId, featureTitle: featureTitle2, onClose }) {
       onRemoveArtifact: (kind, v) => removeArtifact(t, kind, v),
       onSetPr: (v) => setPr(t, v)
     }, t.id)) }) }),
-    jsxRuntimeExports.jsxs("footer", { className: "panel__footer panel__footer--actions", children: [
-      jsxRuntimeExports.jsx("input", {
+    createVNode("footer", { className: "panel__footer panel__footer--actions", children: [
+      createVNode("input", {
         type: "text",
         placeholder: "New task title…",
         value: newTitle,
@@ -964,7 +962,7 @@ function BuildPanel({ featureId, featureTitle: featureTitle2, onClose }) {
         },
         className: "input"
       }),
-      jsxRuntimeExports.jsx("button", {
+      createVNode("button", {
         className: "btn btn--primary",
         disabled: !newTitle.trim() || busy === "__new",
         onClick: createTask,
@@ -974,14 +972,14 @@ function BuildPanel({ featureId, featureTitle: featureTitle2, onClose }) {
   ] }) });
 }
 function TaskRow({ task, busy, onStatus, onAddArtifact, onRemoveArtifact, onSetPr }) {
-  const [showArtifacts, setShowArtifacts] = reactExports.useState(task.artifacts.commits.length + task.artifacts.files.length > 0 || task.artifacts.pr !== null);
-  const [commitInput, setCommitInput] = reactExports.useState("");
-  const [fileInput, setFileInput] = reactExports.useState("");
-  return jsxRuntimeExports.jsxs("li", { className: `task task--${task.status}${busy ? " task--busy" : ""}`, children: [
-    jsxRuntimeExports.jsxs("div", { className: "task__head", children: [
-      jsxRuntimeExports.jsx("span", { className: "task__id", children: task.id }),
-      jsxRuntimeExports.jsx("span", { className: "task__title", children: task.title }),
-      jsxRuntimeExports.jsx("div", { className: "task__status", children: STATUS_ORDER.map((s) => jsxRuntimeExports.jsx("button", {
+  const [showArtifacts, setShowArtifacts] = useState(task.artifacts.commits.length + task.artifacts.files.length > 0 || task.artifacts.pr !== null);
+  const [commitInput, setCommitInput] = useState("");
+  const [fileInput, setFileInput] = useState("");
+  return createVNode("li", { className: `task task--${task.status}${busy ? " task--busy" : ""}`, children: [
+    createVNode("div", { className: "task__head", children: [
+      createVNode("span", { className: "task__id", children: task.id }),
+      createVNode("span", { className: "task__title", children: task.title }),
+      createVNode("div", { className: "task__status", children: STATUS_ORDER.map((s) => createVNode("button", {
         type: "button",
         className: `status-pill${task.status === s ? " status-pill--on" : ""} status-pill--${s}`,
         disabled: busy,
@@ -989,14 +987,14 @@ function TaskRow({ task, busy, onStatus, onAddArtifact, onRemoveArtifact, onSetP
         children: STATUS_LABEL[s]
       }, s)) })
     ] }),
-    jsxRuntimeExports.jsxs("button", {
+    createVNode("button", {
       type: "button",
       className: "task__toggle",
       onClick: () => setShowArtifacts((v) => !v),
       children: [
         showArtifacts ? "▾" : "▸",
         " artifacts",
-        (task.artifacts.commits.length > 0 || task.artifacts.files.length > 0 || task.artifacts.pr) && jsxRuntimeExports.jsxs("span", { className: "task__artifact-count", children: [
+        (task.artifacts.commits.length > 0 || task.artifacts.files.length > 0 || task.artifacts.pr) && createVNode("span", { className: "task__artifact-count", children: [
           " ",
           "(",
           task.artifacts.commits.length + task.artifacts.files.length + (task.artifacts.pr ? 1 : 0),
@@ -1004,14 +1002,14 @@ function TaskRow({ task, busy, onStatus, onAddArtifact, onRemoveArtifact, onSetP
         ] })
       ]
     }),
-    showArtifacts && jsxRuntimeExports.jsxs("div", { className: "task__artifacts", children: [
-      jsxRuntimeExports.jsxs("div", { className: "task__artifact-group", children: [
-        jsxRuntimeExports.jsx("label", { children: "Commits" }),
-        jsxRuntimeExports.jsx("ul", { children: task.artifacts.commits.map((c) => jsxRuntimeExports.jsxs("li", { children: [
-          jsxRuntimeExports.jsx("code", { children: c }),
-          jsxRuntimeExports.jsx("button", { className: "link link--small", onClick: () => onRemoveArtifact("commits", c), children: "×" })
+    showArtifacts && createVNode("div", { className: "task__artifacts", children: [
+      createVNode("div", { className: "task__artifact-group", children: [
+        createVNode("label", { children: "Commits" }),
+        createVNode("ul", { children: task.artifacts.commits.map((c) => createVNode("li", { children: [
+          createVNode("code", { children: c }),
+          createVNode("button", { className: "link link--small", onClick: () => onRemoveArtifact("commits", c), children: "×" })
         ] }, c)) }),
-        jsxRuntimeExports.jsx("input", {
+        createVNode("input", {
           className: "input input--small",
           placeholder: "abc1234 or full sha",
           value: commitInput,
@@ -1024,13 +1022,13 @@ function TaskRow({ task, busy, onStatus, onAddArtifact, onRemoveArtifact, onSetP
           }
         })
       ] }),
-      jsxRuntimeExports.jsxs("div", { className: "task__artifact-group", children: [
-        jsxRuntimeExports.jsx("label", { children: "Files" }),
-        jsxRuntimeExports.jsx("ul", { children: task.artifacts.files.map((f) => jsxRuntimeExports.jsxs("li", { children: [
-          jsxRuntimeExports.jsx("code", { children: f }),
-          jsxRuntimeExports.jsx("button", { className: "link link--small", onClick: () => onRemoveArtifact("files", f), children: "×" })
+      createVNode("div", { className: "task__artifact-group", children: [
+        createVNode("label", { children: "Files" }),
+        createVNode("ul", { children: task.artifacts.files.map((f) => createVNode("li", { children: [
+          createVNode("code", { children: f }),
+          createVNode("button", { className: "link link--small", onClick: () => onRemoveArtifact("files", f), children: "×" })
         ] }, f)) }),
-        jsxRuntimeExports.jsx("input", {
+        createVNode("input", {
           className: "input input--small",
           placeholder: "src/path/to/file.ts",
           value: fileInput,
@@ -1043,9 +1041,9 @@ function TaskRow({ task, busy, onStatus, onAddArtifact, onRemoveArtifact, onSetP
           }
         })
       ] }),
-      jsxRuntimeExports.jsxs("div", { className: "task__artifact-group", children: [
-        jsxRuntimeExports.jsx("label", { children: "PR" }),
-        jsxRuntimeExports.jsx("input", {
+      createVNode("div", { className: "task__artifact-group", children: [
+        createVNode("label", { children: "PR" }),
+        createVNode("input", {
           className: "input input--small",
           placeholder: "https://github.com/.../pull/123",
           defaultValue: task.artifacts.pr ?? "",
@@ -1095,17 +1093,17 @@ function priorStageApproved(row, stage) {
   return true;
 }
 function DocCellView({ doc, onOpen }) {
-  return jsxRuntimeExports.jsxs("button", {
+  return createVNode("button", {
     type: "button",
     className: `card card--button${doc.stale ? " card--stale" : ""}`,
     onClick: () => onOpen(doc.id),
     title: doc.id,
     children: [
-      jsxRuntimeExports.jsx("span", { className: "card__title", children: doc.title }),
-      jsxRuntimeExports.jsxs("span", { className: "card__badges", children: [
-        jsxRuntimeExports.jsx("span", { className: `badge badge--${doc.status}`, children: doc.status }),
-        doc.stale && jsxRuntimeExports.jsx("span", { className: "badge badge--stale", children: "⚠ stale" }),
-        jsxRuntimeExports.jsxs("span", { className: "badge badge--meta", children: [
+      createVNode("span", { className: "card__title", children: doc.title }),
+      createVNode("span", { className: "card__badges", children: [
+        createVNode("span", { className: `badge badge--${doc.status}`, children: doc.status }),
+        doc.stale && createVNode("span", { className: "badge badge--stale", children: "⚠ stale" }),
+        createVNode("span", { className: "badge badge--meta", children: [
           "v",
           doc.version
         ] })
@@ -1114,12 +1112,12 @@ function DocCellView({ doc, onOpen }) {
   });
 }
 function LockedCell({ stage }) {
-  return jsxRuntimeExports.jsxs("div", { className: "card card--locked", children: [
-    jsxRuntimeExports.jsxs("span", { className: "card__locked-label", children: [
+  return createVNode("div", { className: "card card--locked", children: [
+    createVNode("span", { className: "card__locked-label", children: [
       STAGE_LABEL[stage],
       " locked"
     ] }),
-    jsxRuntimeExports.jsx("span", { className: "card__locked-sub", children: "prior stage not approved" })
+    createVNode("span", { className: "card__locked-sub", children: "prior stage not approved" })
   ] });
 }
 function EmptyCell({ stage, ready }) {
@@ -1129,9 +1127,9 @@ function EmptyCell({ stage, ready }) {
     e.stopPropagation();
     void ((_a = navigator.clipboard) == null ? void 0 : _a.writeText(slash));
   };
-  return jsxRuntimeExports.jsxs("div", { className: `card card--empty${ready ? " card--ready" : ""}`, children: [
-    jsxRuntimeExports.jsx("span", { className: "card__empty-label", children: ready ? "Generate" : STAGE_LABEL[stage] }),
-    ready ? jsxRuntimeExports.jsx("button", { type: "button", className: "card__empty-cmd", onClick: onCopy, title: "copy to clipboard", children: slash }) : jsxRuntimeExports.jsx("span", { className: "card__empty-sub", children: "—" })
+  return createVNode("div", { className: `card card--empty${ready ? " card--ready" : ""}`, children: [
+    createVNode("span", { className: "card__empty-label", children: ready ? "Generate" : STAGE_LABEL[stage] }),
+    ready ? createVNode("button", { type: "button", className: "card__empty-cmd", onClick: onCopy, title: "copy to clipboard", children: slash }) : createVNode("span", { className: "card__empty-sub", children: "—" })
   ] });
 }
 function OptionalDesignCell({ ready }) {
@@ -1142,28 +1140,28 @@ function OptionalDesignCell({ ready }) {
     void ((_a = navigator.clipboard) == null ? void 0 : _a.writeText(slash));
   };
   if (!ready) {
-    return jsxRuntimeExports.jsxs("div", { className: "card card--empty card--optional", children: [
-      jsxRuntimeExports.jsx("span", { className: "card__empty-label", children: "Design" }),
-      jsxRuntimeExports.jsx("span", { className: "card__empty-sub", children: "optional · PRD not approved" })
+    return createVNode("div", { className: "card card--empty card--optional", children: [
+      createVNode("span", { className: "card__empty-label", children: "Design" }),
+      createVNode("span", { className: "card__empty-sub", children: "optional · PRD not approved" })
     ] });
   }
-  return jsxRuntimeExports.jsxs("div", { className: "card card--empty card--optional card--optional-ready", children: [
-    jsxRuntimeExports.jsx("span", { className: "card__empty-label", children: "Design" }),
-    jsxRuntimeExports.jsx("span", { className: "card__optional-tag", children: "optional" }),
-    jsxRuntimeExports.jsx("button", { type: "button", className: "card__empty-cmd", onClick: onCopy, title: "copy to clipboard", children: slash })
+  return createVNode("div", { className: "card card--empty card--optional card--optional-ready", children: [
+    createVNode("span", { className: "card__empty-label", children: "Design" }),
+    createVNode("span", { className: "card__optional-tag", children: "optional" }),
+    createVNode("button", { type: "button", className: "card__empty-cmd", onClick: onCopy, title: "copy to clipboard", children: slash })
   ] });
 }
 function BuildCell({ tasks, row, onOpen }) {
   var _a, _b, _c, _d, _e;
   if (tasks.total === 0) {
     const planApproved = ((_a = findDoc(row, "plan")) == null ? void 0 : _a.status) === "approved";
-    return jsxRuntimeExports.jsxs("button", {
+    return createVNode("button", {
       type: "button",
       className: `card card--empty${planApproved ? " card--ready" : ""}`,
       onClick: () => onOpen(row.id, row.title),
       children: [
-        jsxRuntimeExports.jsx("span", { className: "card__empty-label", children: "Build" }),
-        jsxRuntimeExports.jsx("span", { className: "card__empty-sub", children: planApproved ? "no tasks yet · click to add" : "plan not approved" })
+        createVNode("span", { className: "card__empty-label", children: "Build" }),
+        createVNode("span", { className: "card__empty-sub", children: planApproved ? "no tasks yet · click to add" : "plan not approved" })
       ]
     });
   }
@@ -1178,41 +1176,41 @@ function BuildCell({ tasks, row, onOpen }) {
       void ((_a2 = navigator.clipboard) == null ? void 0 : _a2.writeText(slash));
   };
   const multiPhase = (((_c = row.phases) == null ? void 0 : _c.length) ?? 0) > 1 || ((_e = (_d = row.phases) == null ? void 0 : _d[0]) == null ? void 0 : _e.name) && row.phases[0].name !== DEFAULT_PHASE;
-  return jsxRuntimeExports.jsxs("button", {
+  return createVNode("button", {
     type: "button",
     className: "card card--build card--button",
     onClick: () => onOpen(row.id, row.title),
     children: [
-      jsxRuntimeExports.jsx("span", { className: "card__title", children: "Build" }),
-      jsxRuntimeExports.jsxs("div", { className: "bar", children: [
-        jsxRuntimeExports.jsx("div", { className: "bar__seg bar__seg--done", style: { width: `${donePct}%` } }),
-        jsxRuntimeExports.jsx("div", { className: "bar__seg bar__seg--prog", style: { width: `${inProgressPct}%` } })
+      createVNode("span", { className: "card__title", children: "Build" }),
+      createVNode("div", { className: "bar", children: [
+        createVNode("div", { className: "bar__seg bar__seg--done", style: { width: `${donePct}%` } }),
+        createVNode("div", { className: "bar__seg bar__seg--prog", style: { width: `${inProgressPct}%` } })
       ] }),
-      jsxRuntimeExports.jsxs("span", { className: "card__build-counts", children: [
-        jsxRuntimeExports.jsxs("span", { children: [
+      createVNode("span", { className: "card__build-counts", children: [
+        createVNode("span", { children: [
           tasks.done,
           "/",
           tasks.total,
           " done"
         ] }),
-        multiPhase && row.phases && jsxRuntimeExports.jsxs("span", { children: [
+        multiPhase && row.phases && createVNode("span", { children: [
           "· phases ",
           row.phases.filter((p) => p.status === "done").length,
           "/",
           row.phases.length
         ] }),
-        tasks.in_progress > 0 && jsxRuntimeExports.jsxs("span", { children: [
+        tasks.in_progress > 0 && createVNode("span", { children: [
           "· ",
           tasks.in_progress,
           " in progress"
         ] }),
-        tasks.blocked > 0 && jsxRuntimeExports.jsxs("span", { className: "card__build-blocked", children: [
+        tasks.blocked > 0 && createVNode("span", { className: "card__build-blocked", children: [
           "· 🚫 ",
           tasks.blocked,
           " blocked"
         ] })
       ] }),
-      slash && jsxRuntimeExports.jsxs("span", {
+      slash && createVNode("span", {
         className: "card__build-exec",
         onClick: onCopy,
         title: "copy /specmanager-build next slash command",
@@ -1227,19 +1225,19 @@ function BuildCell({ tasks, row, onOpen }) {
 function PhaseWalkthroughCard({ phase, row, onOpen }) {
   const doc = phase.walkthroughId ? row.documents.find((d) => d.id === phase.walkthroughId) : void 0;
   if (doc) {
-    return jsxRuntimeExports.jsxs("button", {
+    return createVNode("button", {
       type: "button",
       className: `card card--button card--sub${doc.stale ? " card--stale" : ""}`,
       onClick: () => onOpen(doc.id),
       title: doc.id,
       children: [
-        jsxRuntimeExports.jsxs("span", { className: "card__sub-label", children: [
+        createVNode("span", { className: "card__sub-label", children: [
           "Phase ",
           phase.name
         ] }),
-        jsxRuntimeExports.jsxs("span", { className: "card__badges", children: [
-          jsxRuntimeExports.jsx("span", { className: `badge badge--${doc.status}`, children: doc.status }),
-          doc.stale && jsxRuntimeExports.jsx("span", { className: "badge badge--stale", children: "⚠ stale" })
+        createVNode("span", { className: "card__badges", children: [
+          createVNode("span", { className: `badge badge--${doc.status}`, children: doc.status }),
+          doc.stale && createVNode("span", { className: "badge badge--stale", children: "⚠ stale" })
         ] })
       ]
     });
@@ -1251,12 +1249,12 @@ function PhaseWalkthroughCard({ phase, row, onOpen }) {
     e.stopPropagation();
     void ((_a = navigator.clipboard) == null ? void 0 : _a.writeText(slash));
   };
-  return jsxRuntimeExports.jsxs("div", { className: `card card--sub card--empty${ready ? " card--ready" : " card--locked"}`, children: [
-    jsxRuntimeExports.jsxs("span", { className: "card__sub-label", children: [
+  return createVNode("div", { className: `card card--sub card--empty${ready ? " card--ready" : " card--locked"}`, children: [
+    createVNode("span", { className: "card__sub-label", children: [
       "Phase ",
       phase.name
     ] }),
-    ready ? jsxRuntimeExports.jsx("button", { type: "button", className: "card__empty-cmd", onClick: onCopy, title: "copy to clipboard", children: slash }) : jsxRuntimeExports.jsxs("span", { className: "card__locked-sub", children: [
+    ready ? createVNode("button", { type: "button", className: "card__empty-cmd", onClick: onCopy, title: "copy to clipboard", children: slash }) : createVNode("span", { className: "card__locked-sub", children: [
       phase.doneCount,
       "/",
       phase.taskCount,
@@ -1268,16 +1266,16 @@ function FinalWalkthroughCard({ row, onOpen }) {
   const phases = row.phases ?? [];
   const finalDoc = row.documents.find((d) => d.stage === "walkthrough" && d.phase === FINAL_PHASE);
   if (finalDoc) {
-    return jsxRuntimeExports.jsxs("button", {
+    return createVNode("button", {
       type: "button",
       className: `card card--button card--sub card--final${finalDoc.stale ? " card--stale" : ""}`,
       onClick: () => onOpen(finalDoc.id),
       title: finalDoc.id,
       children: [
-        jsxRuntimeExports.jsx("span", { className: "card__sub-label", children: "★ Feature roll-up" }),
-        jsxRuntimeExports.jsxs("span", { className: "card__badges", children: [
-          jsxRuntimeExports.jsx("span", { className: `badge badge--${finalDoc.status}`, children: finalDoc.status }),
-          finalDoc.stale && jsxRuntimeExports.jsx("span", { className: "badge badge--stale", children: "⚠ stale" })
+        createVNode("span", { className: "card__sub-label", children: "★ Feature roll-up" }),
+        createVNode("span", { className: "card__badges", children: [
+          createVNode("span", { className: `badge badge--${finalDoc.status}`, children: finalDoc.status }),
+          finalDoc.stale && createVNode("span", { className: "badge badge--stale", children: "⚠ stale" })
         ] })
       ]
     });
@@ -1292,12 +1290,12 @@ function FinalWalkthroughCard({ row, onOpen }) {
       void ((_a = navigator.clipboard) == null ? void 0 : _a.writeText(slash));
   };
   const tooltip = ready ? "all phase walkthroughs approved — ready to draft" : missing.length > 0 ? `awaiting approval: ${missing.map((m) => `phase ${m}`).join(", ")}` : "no phases yet";
-  return jsxRuntimeExports.jsxs("div", {
+  return createVNode("div", {
     className: `card card--sub card--final card--empty${ready ? " card--ready" : " card--locked"}`,
     title: tooltip,
     children: [
-      jsxRuntimeExports.jsx("span", { className: "card__sub-label", children: "★ Feature roll-up" }),
-      ready ? jsxRuntimeExports.jsx("button", { type: "button", className: "card__empty-cmd", onClick: onCopy, title: "copy to clipboard", children: slash }) : jsxRuntimeExports.jsx("span", { className: "card__locked-sub", children: missing.length > 0 ? `${missing.length} phase(s) pending` : "no phases yet" })
+      createVNode("span", { className: "card__sub-label", children: "★ Feature roll-up" }),
+      ready ? createVNode("button", { type: "button", className: "card__empty-cmd", onClick: onCopy, title: "copy to clipboard", children: slash }) : createVNode("span", { className: "card__locked-sub", children: missing.length > 0 ? `${missing.length} phase(s) pending` : "no phases yet" })
     ]
   });
 }
@@ -1305,37 +1303,37 @@ function WalkthroughCell({ row, onOpenDoc }) {
   const phases = row.phases ?? [];
   if (phases.length === 0) {
     if (!priorStageApproved(row, "walkthrough"))
-      return jsxRuntimeExports.jsx(LockedCell, { stage: "walkthrough" });
-    return jsxRuntimeExports.jsx(EmptyCell, { stage: "walkthrough", ready: false });
+      return createVNode(LockedCell, { stage: "walkthrough" });
+    return createVNode(EmptyCell, { stage: "walkthrough", ready: false });
   }
   const showFinal = phases.length > 1;
-  return jsxRuntimeExports.jsxs("div", { className: "card card--walkthroughs", children: [
-    phases.map((p) => jsxRuntimeExports.jsx(PhaseWalkthroughCard, { phase: p, row, onOpen: onOpenDoc }, p.name)),
-    showFinal && jsxRuntimeExports.jsx(FinalWalkthroughCard, { row, onOpen: onOpenDoc })
+  return createVNode("div", { className: "card card--walkthroughs", children: [
+    phases.map((p) => createVNode(PhaseWalkthroughCard, { phase: p, row, onOpen: onOpenDoc }, p.name)),
+    showFinal && createVNode(FinalWalkthroughCard, { row, onOpen: onOpenDoc })
   ] });
 }
 function Cell({ row, column, onOpenDoc, onOpenBuild }) {
   var _a;
   if (column === "build")
-    return jsxRuntimeExports.jsx(BuildCell, { tasks: row.tasks, row, onOpen: onOpenBuild });
+    return createVNode(BuildCell, { tasks: row.tasks, row, onOpen: onOpenBuild });
   if (column === "walkthrough")
-    return jsxRuntimeExports.jsx(WalkthroughCell, { row, onOpenDoc });
+    return createVNode(WalkthroughCell, { row, onOpenDoc });
   const stage = column;
   const doc = findDoc(row, stage);
   if (stage === "prd") {
     const interview = findInterview(row);
     if (interview) {
-      return jsxRuntimeExports.jsxs("div", { className: "cell-stack", children: [
-        doc ? jsxRuntimeExports.jsx(DocCellView, { doc, onOpen: onOpenDoc }) : jsxRuntimeExports.jsx(EmptyCell, { stage: "prd", ready: true }),
-        jsxRuntimeExports.jsxs("button", {
+      return createVNode("div", { className: "cell-stack", children: [
+        doc ? createVNode(DocCellView, { doc, onOpen: onOpenDoc }) : createVNode(EmptyCell, { stage: "prd", ready: true }),
+        createVNode("button", {
           type: "button",
           className: "chip-interview",
           onClick: () => onOpenDoc(interview.id),
           title: interview.id,
           children: [
-            jsxRuntimeExports.jsx("span", { className: "ring" }),
+            createVNode("span", { className: "ring" }),
             "Interview ",
-            jsxRuntimeExports.jsxs("span", { className: "meta", children: [
+            createVNode("span", { className: "meta", children: [
               "· v",
               interview.version
             ] })
@@ -1345,33 +1343,33 @@ function Cell({ row, column, onOpenDoc, onOpenBuild }) {
     }
   }
   if (doc)
-    return jsxRuntimeExports.jsx(DocCellView, { doc, onOpen: onOpenDoc });
+    return createVNode(DocCellView, { doc, onOpen: onOpenDoc });
   if (stage === "design") {
-    return jsxRuntimeExports.jsx(OptionalDesignCell, { ready: ((_a = findDoc(row, "prd")) == null ? void 0 : _a.status) === "approved" });
+    return createVNode(OptionalDesignCell, { ready: ((_a = findDoc(row, "prd")) == null ? void 0 : _a.status) === "approved" });
   }
   if (!priorStageApproved(row, stage))
-    return jsxRuntimeExports.jsx(LockedCell, { stage });
-  return jsxRuntimeExports.jsx(EmptyCell, { stage, ready: true });
+    return createVNode(LockedCell, { stage });
+  return createVNode(EmptyCell, { stage, ready: true });
 }
 function App() {
-  const [board, setBoard] = reactExports.useState(null);
-  const [error, setError] = reactExports.useState(null);
-  const [lastEvent, setLastEvent] = reactExports.useState(null);
-  const [openDocId, setOpenDocId] = reactExports.useState(null);
-  const [openBuild, setOpenBuild] = reactExports.useState(null);
-  const openDoc = reactExports.useCallback((id) => setOpenDocId(id), []);
-  const closeDoc = reactExports.useCallback(() => setOpenDocId(null), []);
-  const openBuildFor = reactExports.useCallback((featureId, title) => {
+  const [board, setBoard] = useState(null);
+  const [error, setError] = useState(null);
+  const [lastEvent, setLastEvent] = useState(null);
+  const [openDocId, setOpenDocId] = useState(null);
+  const [openBuild, setOpenBuild] = useState(null);
+  const openDoc = useCallback((id) => setOpenDocId(id), []);
+  const closeDoc = useCallback(() => setOpenDocId(null), []);
+  const openBuildFor = useCallback((featureId, title) => {
     setOpenBuild({ featureId, title });
   }, []);
-  const closeBuild = reactExports.useCallback(() => setOpenBuild(null), []);
+  const closeBuild = useCallback(() => setOpenBuild(null), []);
   const reload = () => {
     fetchBoard().then((b) => {
       setBoard(b);
       setError(null);
     }).catch((err) => setError(err.message));
   };
-  reactExports.useEffect(() => {
+  useEffect(() => {
     reload();
     let pending = 0;
     const close = openWebSocket((event) => {
@@ -1385,59 +1383,59 @@ function App() {
     };
   }, []);
   if (error) {
-    return jsxRuntimeExports.jsxs("main", { className: "state state--error", children: [
-      jsxRuntimeExports.jsx("h1", { children: "SpecManager" }),
-      jsxRuntimeExports.jsxs("p", { children: [
+    return createVNode("main", { className: "state state--error", children: [
+      createVNode("h1", { children: "SpecManager" }),
+      createVNode("p", { children: [
         "Could not reach the board API: ",
         error
       ] })
     ] });
   }
   if (!board)
-    return jsxRuntimeExports.jsx("main", { className: "state", children: "Loading…" });
-  return jsxRuntimeExports.jsxs("main", { className: "board", children: [
-    jsxRuntimeExports.jsxs("header", { className: "board__header", children: [
-      jsxRuntimeExports.jsx("h1", { className: "board__title", children: "SpecManager" }),
-      jsxRuntimeExports.jsxs("div", { className: "board__meta", children: [
-        jsxRuntimeExports.jsxs("span", { className: "board__count", children: [
+    return createVNode("main", { className: "state", children: "Loading…" });
+  return createVNode("main", { className: "board", children: [
+    createVNode("header", { className: "board__header", children: [
+      createVNode("h1", { className: "board__title", children: "SpecManager" }),
+      createVNode("div", { className: "board__meta", children: [
+        createVNode("span", { className: "board__count", children: [
           board.features.length,
           " feature",
           board.features.length === 1 ? "" : "s"
         ] }),
-        lastEvent && jsxRuntimeExports.jsxs("span", { className: "board__pulse", children: [
+        lastEvent && createVNode("span", { className: "board__pulse", children: [
           "· ",
           lastEvent
         ] })
       ] })
     ] }),
-    board.features.length === 0 ? jsxRuntimeExports.jsxs("section", { className: "empty", children: [
-      jsxRuntimeExports.jsx("p", { children: "No features yet." }),
-      jsxRuntimeExports.jsx("pre", { children: "/specmanager-prd <title>" })
-    ] }) : jsxRuntimeExports.jsxs("section", {
+    board.features.length === 0 ? createVNode("section", { className: "empty", children: [
+      createVNode("p", { children: "No features yet." }),
+      createVNode("pre", { children: "/specmanager-prd <title>" })
+    ] }) : createVNode("section", {
       className: "grid",
       style: {
         "--grid-cols": `12rem repeat(4, minmax(11rem, 1fr)) 14rem minmax(11rem, 1fr)`
       },
       children: [
-        jsxRuntimeExports.jsx("div", { className: "grid__corner", children: "Feature" }),
-        STAGES.map((c) => jsxRuntimeExports.jsxs(reactExports.Fragment, { children: [
-          c === "walkthrough" && jsxRuntimeExports.jsx("div", { className: "grid__header grid__header--build", children: "Build" }),
-          jsxRuntimeExports.jsx("div", { className: "grid__header", children: STAGE_LABEL[c] })
+        createVNode("div", { className: "grid__corner", children: "Feature" }),
+        STAGES.map((c) => createVNode(Fragment, { children: [
+          c === "walkthrough" && createVNode("div", { className: "grid__header grid__header--build", children: "Build" }),
+          createVNode("div", { className: "grid__header", children: STAGE_LABEL[c] })
         ] }, c)),
-        board.features.map((row) => jsxRuntimeExports.jsxs("div", { className: "row", style: { display: "contents" }, children: [
-          jsxRuntimeExports.jsxs("div", { className: "row__label", children: [
-            jsxRuntimeExports.jsx("strong", { children: row.title }),
-            jsxRuntimeExports.jsx("small", { children: row.slug })
+        board.features.map((row) => createVNode("div", { className: "row", style: { display: "contents" }, children: [
+          createVNode("div", { className: "row__label", children: [
+            createVNode("strong", { children: row.title }),
+            createVNode("small", { children: row.slug })
           ] }),
-          STAGES.map((c) => jsxRuntimeExports.jsxs(reactExports.Fragment, { children: [
-            c === "walkthrough" && jsxRuntimeExports.jsx("div", { className: "row__cell row__cell--build", children: jsxRuntimeExports.jsx(Cell, { row, column: "build", onOpenDoc: openDoc, onOpenBuild: openBuildFor }) }),
-            jsxRuntimeExports.jsx("div", { className: "row__cell", children: jsxRuntimeExports.jsx(Cell, { row, column: c, onOpenDoc: openDoc, onOpenBuild: openBuildFor }) })
+          STAGES.map((c) => createVNode(Fragment, { children: [
+            c === "walkthrough" && createVNode("div", { className: "row__cell row__cell--build", children: createVNode(Cell, { row, column: "build", onOpenDoc: openDoc, onOpenBuild: openBuildFor }) }),
+            createVNode("div", { className: "row__cell", children: createVNode(Cell, { row, column: c, onOpenDoc: openDoc, onOpenBuild: openBuildFor }) })
           ] }, c))
         ] }, row.id))
       ]
     }),
-    openDocId && jsxRuntimeExports.jsx(DocPanel, { docId: openDocId, onClose: closeDoc, onJumpTo: openDoc }),
-    openBuild && jsxRuntimeExports.jsx(BuildPanel, {
+    openDocId && createVNode(DocPanel, { docId: openDocId, onClose: closeDoc, onJumpTo: openDoc }),
+    openBuild && createVNode(BuildPanel, {
       featureId: openBuild.featureId,
       featureTitle: openBuild.title,
       onClose: closeBuild
@@ -1447,4 +1445,4 @@ function App() {
 const root = document.getElementById("root");
 if (!root)
   throw new Error("missing #root");
-createRoot(root).render(jsxRuntimeExports.jsx(React.StrictMode, { children: jsxRuntimeExports.jsx(App, {}) }));
+createRoot(root).render(createVNode(React.StrictMode, { children: createVNode(App, {}) }));

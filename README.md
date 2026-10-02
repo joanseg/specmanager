@@ -206,7 +206,7 @@ Then open a Claude Code session and reconnect mcp:
 /mcp      ## select specmanager:specmanager, click enter and reconnect 
 ```
 
-**Tech stack:** Node 20+, TypeScript, MCP stdio transport, Fastify + `ws`, `chokidar`, `gray-matter`, `zod`, React 18 + Vite, CodeMirror 6. One shared `@specmanager/core` library backs both the MCP server (Claude's interface) and the board server (the UI's interface); one MCP process boots the board.
+**Tech stack:** Node 20+, TypeScript, MCP stdio transport, Fastify + `ws`, `chokidar`, `gray-matter`, `zod`, React-style UI on Preact + Vite, Milkdown. One shared `@specmanager/core` library backs both the MCP server (Claude's interface) and the board server (the UI's interface); one MCP process boots the board.
 
 **Repo layout:** the marketplace manifest is at the repo root (`.claude-plugin/marketplace.json`); the plugin itself lives in `plugins/specmanager/`. Design docs are under `docs/` (the original full spec is archived at `docs/temp/original-specs/architecture-and-spec.md`).
 

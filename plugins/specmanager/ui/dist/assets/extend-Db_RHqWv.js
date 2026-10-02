@@ -1,4 +1,6 @@
-import { g as getDefaultExportFromCjs } from "./react-PMzPw5St.js";
+function getDefaultExportFromCjs(x) {
+  return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, "default") ? x["default"] : x;
+}
 var hasOwn = Object.prototype.hasOwnProperty;
 var toStr = Object.prototype.toString;
 var defineProperty = Object.defineProperty;

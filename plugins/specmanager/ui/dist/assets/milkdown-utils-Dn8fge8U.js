@@ -1,4 +1,4 @@
-import { g as editorViewCtx, p as parserCtx, s as schemaCtx, f as editorStateOptionsCtx, l as prosePluginsCtx, S as SchemaReady, c as commandsCtx, i as inputRulesCtx, C as CommandsReady, j as pasteRulesCtx, n as nodesCtx, d as createCmdKey, I as InitReady, r as remarkPluginsCtx, m as marksCtx, K as KeymapReady, k as keymapCtx } from "./milkdown-core-p_amFwad.js";
+import { g as editorViewCtx, p as parserCtx, s as schemaCtx, f as editorStateOptionsCtx, l as prosePluginsCtx, S as SchemaReady, c as commandsCtx, i as inputRulesCtx, C as CommandsReady, j as pasteRulesCtx, n as nodesCtx, d as createCmdKey, I as InitReady, r as remarkPluginsCtx, m as marksCtx, K as KeymapReady, k as keymapCtx } from "./milkdown-core-DsBn0yRa.js";
 import { c as createSlice } from "./milkdown-ctx-B6ZmVA8d.js";
 import { g as missingNodeInSchema, m as missingMarkInSchema } from "./milkdown-exception-EEjztD1-.js";
 import { d as Slice } from "./prosemirror-model-CNXHVs9h.js";

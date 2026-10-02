@@ -1,5 +1,5 @@
 import { b as bail } from "./bail-CqJVcVEc.js";
-import { e as extend } from "./extend-DcMKqrzx.js";
+import { e as extend } from "./extend-Db_RHqWv.js";
 import { i as isPlainObject } from "./is-plain-obj-Bdy7oolY.js";
 import { t as trough } from "./trough-DPWmlyi3.js";
 import { V as VFile } from "./vfile-D_rwXw5K.js";

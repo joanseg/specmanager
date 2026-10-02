@@ -1,7 +1,7 @@
-import { c as commandsCtx } from "./milkdown-core-p_amFwad.js";
+import { c as commandsCtx } from "./milkdown-core-DsBn0yRa.js";
 import { m as markRule, d as findParentNodeType, c as cloneTr, b as findParentNodeClosestToPos } from "./milkdown-prose-BA0s8Ct0.js";
-import { b as $inputRule, h as $pasteRule, $ as $command, g as $nodeSchema, c as $markAttr, d as $markSchema, k as $useKeymap, i as $prose, j as $remark } from "./milkdown-utils-D9Lbx_XT.js";
-import { l as listItemSchema, p as paragraphSchema } from "./milkdown-preset-commonmark-m9WqS0qF.js";
+import { b as $inputRule, h as $pasteRule, $ as $command, g as $nodeSchema, c as $markAttr, d as $markSchema, k as $useKeymap, i as $prose, j as $remark } from "./milkdown-utils-Dn8fge8U.js";
+import { l as listItemSchema, p as paragraphSchema } from "./milkdown-preset-commonmark-CpU54TZM.js";
 import { f as expectDomTypeError } from "./milkdown-exception-EEjztD1-.js";
 import { i as imeSpan } from "./prosemirror-safari-ime-span-BSv6h3JI.js";
 import { P as Plugin, a as PluginKey, S as Selection, T as TextSelection } from "./prosemirror-state-DvBpuTqc.js";

@@ -1,7 +1,7 @@
 {
   "name": "specmanager",
   "displayName": "SpecManager",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Lifecycle kanban for Claude Code projects (PRD → architecture → plan → tasks → walkthroughs).",
   "license": "MIT",
   "homepage": "https://specmanager.org",

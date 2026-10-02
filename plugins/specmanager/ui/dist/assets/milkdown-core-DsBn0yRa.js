@@ -14,7 +14,7 @@ import { S as Schema, D as DOMParser, N as Node } from "./prosemirror-model-CNXH
 import { P as Plugin, a as PluginKey, E as EditorState } from "./prosemirror-state-DvBpuTqc.js";
 import { a as keymap$1 } from "./prosemirror-keymap-bzw026ae.js";
 import { E as EditorView } from "./prosemirror-view-DUWIvuYX.js";
-import { u as unified } from "./unified-sSJZ_AJL.js";
+import { u as unified } from "./unified-CC3fFDkr.js";
 import { r as remarkParse } from "./remark-parse-BPG5bXNI.js";
 import { r as remarkStringify } from "./remark-stringify-BPnE7XFK.js";
 import { c as chainCommands, b as baseKeymap, s as selectNodeBackward, a as joinTextblockBackward, d as deleteSelection } from "./prosemirror-commands-D6u-7607.js";

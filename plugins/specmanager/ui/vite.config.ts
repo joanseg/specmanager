@@ -24,8 +24,27 @@ const stripComments: Plugin = {
   },
 };
 
+const preactSrc = (file: string) =>
+  decodeURIComponent(new URL(`./node_modules/preact/${file}`, import.meta.url).pathname);
+
+/**
+ * The UI is written against React's API but runs on Preact's React-compatible
+ * layer, built from Preact's readable source: React 18 ships only a minified
+ * production build, which the Anthropic directory's security scan cannot read.
+ */
+const preactAliases = [
+  { find: /^react$/, replacement: preactSrc("compat/src/index.js") },
+  { find: /^react-dom$/, replacement: preactSrc("compat/src/index.js") },
+  { find: /^react-dom\/client$/, replacement: preactSrc("compat/client.mjs") },
+  { find: /^react\/jsx(-dev)?-runtime$/, replacement: preactSrc("jsx-runtime/src/index.js") },
+  { find: /^preact$/, replacement: preactSrc("src/index.js") },
+  { find: /^preact\/hooks$/, replacement: preactSrc("hooks/src/index.js") },
+  { find: /^preact\/compat$/, replacement: preactSrc("compat/src/index.js") },
+];
+
 export default defineConfig({
   plugins: [react(), stripComments],
+  resolve: { alias: preactAliases },
   server: {
     port: 5173,
     proxy: {
