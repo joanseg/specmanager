@@ -40,6 +40,12 @@ In your project, run `/specmanager:specmanager-init`, then `/specmanager:specman
 | `/specmanager:specmanager-walkthrough` | Writes up what a finished phase built. |
 | `/specmanager:specmanager-board` | Opens the board in your browser. |
 
+## Examples
+
+1. **Turn an idea into a PRD.** Run `/specmanager:specmanager-interview a CRM to manage our sales pipeline`. Claude asks you a few pointed questions about who needs it and why, and saves the interview. Then run `/specmanager:specmanager-prd Sales pipeline CRM`: a draft PRD appears in the board's PRD column for you to edit and approve.
+2. **Design the build from the approved PRD.** Run `/specmanager:specmanager-architecture sales-pipeline-crm`, approve the result in the board, then run `/specmanager:specmanager-plan sales-pipeline-crm`. The plan lands as a document plus a list of small, scored tasks grouped into phases, visible in the Build column.
+3. **Build one phase and review it.** Run `/specmanager:specmanager-build sales-pipeline-crm next`. Claude builds the first phase task by task, runs that phase's tests, has a read-only reviewer check the result against the plan and architecture, and drafts a walkthrough of what was built. It stops at the end of the phase so you can check the work before the next one.
+
 ## What this plugin does on your machine
 
 - **Installs dependencies.** At plugin install, its Node dependencies are downloaded from the npm registry at the versions pinned in the bundled lockfile. None runs an install script.
@@ -55,6 +61,11 @@ In your project, run `/specmanager:specmanager-init`, then `/specmanager:specman
 
 - **The MCP server fails to start.** The dependency install probably did not finish (slow network, or `npm` missing). Run `npm ci --ignore-scripts` in the plugin's install directory (the folder containing this README, under `~/.claude/plugins/cache/`), then reconnect with `/mcp`.
 - **Upgraded from a version before 1.0.** The `node_modules` folder in the plugin's data directory, under `~/.claude/plugins/data/`, is no longer used and can be deleted.
+
+## Support
+
+- **Bugs, questions and feature requests:** open an issue at <https://github.com/joanseg/specmanager/issues>.
+- **Security concerns:** report them privately from the repository's **Security** tab with **Report a vulnerability**, rather than in a public issue.
 
 ## License
 
