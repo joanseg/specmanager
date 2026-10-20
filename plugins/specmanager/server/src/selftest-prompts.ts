@@ -89,7 +89,7 @@ const INVARIANTS: PromptInvariant[] = [
       "commands/specmanager-walkthrough.md",
     ],
     min: 4,
-    max: 8,
+    max: 7,
   },
   {
     id: "INV-2",

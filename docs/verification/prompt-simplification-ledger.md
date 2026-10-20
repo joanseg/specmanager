@@ -24,7 +24,7 @@ Feature `feat-agent-prompt-simplification-opus-5-5`. Every rule-bearing cut (C2,
 | `agents/planner.md` | 1905 | 5 | | |
 | `agents/prd-writer.md` | 448 | 4 | 421 | 4 |
 | `agents/reviewer.md` | 552 | 0 | 550 | 0 |
-| `agents/walkthrough-writer.md` | 1508 | 7 | | |
+| `agents/walkthrough-writer.md` | 1508 | 7 | 1412 | 5 |
 | `commands/specmanager-architecture.md` | 188 | 1 | | |
 | `commands/specmanager-board.md` | 110 | 1 | | |
 | `commands/specmanager-build.md` | 2683 | 13 | | |
@@ -181,6 +181,12 @@ Kept (Keep-list / plan 1.4): both parent-advances lines (INV-8, reviewer 2 + bui
 
 | # | Removed (≤1-line quote) | Cat | Surviving carrier (file § / line) or core enforcement (file:function) | INV rows | max before→after |
 |---|---|---|---|---|---|
+| 1 | Don't "Don't write `phase: \"final\"` for a single-phase feature at all — `final` is multi-phase only; the lone per-phase walkthrough is terminal and ships the feature on approval." | C2 | `agents/walkthrough-writer.md` § Inputs, phase-name bullet ("For a **single-phase feature** … is the **terminal** artifact … no `\"final\"` roll-up is ever written") and § Final mode refusal line; `core/shipped.ts:isFeatureShipped` | INV-1 (walkthrough-writer 3→2, total 8→7) | 8→7 |
+| 2 | Final-mode lead: "**Multi-phase only:** `\"final\"` exists solely to roll up a feature with **two or more** phases. A **single-phase feature has no `\"final\"`** — its one per-phase walkthrough is terminal…" (the refusal sentence on the same line is kept) | C2 | `agents/walkthrough-writer.md` § Final mode heading ("multi-phase features only"), § Inputs phase-name bullet, and the kept refusal on the same line | INV-1 (line still matches via the refusal, 1) | (counted in row 1) |
+| 3 | Don't "Don't write a new code tour in final mode." | C2 | `agents/walkthrough-writer.md` § Final mode, **Scope discipline** ("no new code tour — the phase walkthroughs own that") | — | — |
+| 4 | C1: "who tests the feature by hand" → "testing by hand", "reading this six months from now" dropped; "(The slash command refuses this early, so you should not normally see it.)"; "ever"; 24 words by `wc -w` | C1 | None: the two audiences and the refusal stay; the cut text only explains them | — | — |
+
+Kept (Keep-list / plan 1.7): the Inputs single-phase line and the Final-mode refusal (INV-1, 2 here), the emit order and headings (INV-50a–e), the `### Git strategy` derivation for manual runs, "Never invent a lesson", the density contract (INV-13/29), the persist sketch (INV-11, 1 here), "Don't approve the doc." (INV-25), and "Don't write `phase: \"final\"` unless every phase walkthrough is `approved`" (restates the Final-mode Gate line but is outside plan 1.7's named cuts; when unsure, keep). Words 1508→1412 (−96); Don't/Never 7→5. INV-1 `max` lowered 8→7 in `selftest-prompts.ts` (min 4 unchanged); no other INV count changed.
 
 ### `commands/specmanager-architecture.md`
 
