@@ -535,7 +535,7 @@ const INVARIANTS = [
     },
     {
         id: "INV-44",
-        what: "the planner's loop-mode carve-out (no `AskUserQuestion` on a split) survives, stated once",
+        what: "the planner's loop-mode carve-out (no `AskUserQuestion` for any planner question — size split, spike, human setup, test account) survives, stated once",
         pattern: "loop mode",
         files: ["agents/planner.md"],
         min: 1,
