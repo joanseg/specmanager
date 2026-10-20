@@ -34,8 +34,8 @@ Feature `feat-agent-prompt-simplification-opus-5-5`. Every rule-bearing cut (C2,
 | `commands/specmanager-loop.md` | 1501 | 5 | 1495 | 5 |
 | `commands/specmanager-plan.md` | 633 | 4 | 521 | 4 |
 | `commands/specmanager-prd.md` | 304 | 3 | 289 | 3 |
-| `commands/specmanager-walkthrough.md` | 459 | 2 | | |
-| `docs/agent-snippets/design-grounding.md` | 173 | 0 | | |
+| `commands/specmanager-walkthrough.md` | 459 | 2 | 329 | 1 |
+| `docs/agent-snippets/design-grounding.md` | 173 | 0 | 173 | 0 |
 | `docs/agent-snippets/lossless-carryover.md` | 193 | 0 | 82 | 0 |
 | **Total** | **16,248** | **71** | | |
 
@@ -317,7 +317,7 @@ Kept (plan 1.10): "Don't approve the PRD" and "Don't approve the new feature" (I
 | 6 | Step 5 final mode: "explicitly, so the agent doesn't search for them" | C1 | None: rationale only; the command still passes the phase walkthrough doc ids | — | — |
 | 7 | Rename `Task({ subagent_type: "walkthrough-writer", … })` → `Agent({ … })` (Arch Q4); no rule change | — | Same line, step 5 | — | — |
 
-Kept (plan 1.13): step 3's single-phase `final` refusal (INV-1 carrier for this actor, 1 line) and the `isFeatureShipped` pointer, the `check_gate` call (INV-16, count unchanged), the no-duplicate rule, the phase `kind` pass, the manual-run "no build log" Lessons-learned instruction (the command is the only actor that knows the run is manual), "Don't approve the walkthrough" (INV-25, count unchanged). Words 459→329 (−130); Don't/Never 5→3. INV-1 `max` 7→6 in `selftest-prompts.ts`.
+Kept (plan 1.13): step 3's single-phase `final` refusal (INV-1 carrier for this actor, 1 line) and the `isFeatureShipped` pointer, the `check_gate` call (INV-16, count unchanged), the no-duplicate rule, the phase `kind` pass, the manual-run "no build log" Lessons-learned instruction (the command is the only actor that knows the run is manual), "Don't approve the walkthrough" (INV-25, count unchanged). Words 459→329 (−130); Don't/Never 2→1 by the pinned rule (task-021 re-measure at `ad11cd8` and HEAD; the earlier "5→3" did not use the pinned `grep`). INV-1 `max` 7→6 in `selftest-prompts.ts`.
 
 ### `docs/agent-snippets/design-grounding.md`
 
@@ -339,6 +339,8 @@ Kept (plan 1.9 / Arch § docs/agent-snippets/): the fragment below `---`, byte-i
 |---|---|---|---|
 | prd-writer, architect, designer, planner, walkthrough-writer | `model: inherit`, no `tools` (inherit all) | No change | Arch G2: restricting tools risks breaking MCP access |
 | builder | `model: inherit`, explicit `tools:` allowlist with no `Skill` | Add `Skill` to `tools:` (Q-A probe: the builder could not invoke skills) | See "Q-A probe (task-020)" below |
+| reviewer | `model: opus`, `disallowedTools` denylist | Keep the `opus` pin (PRD Q3) | `commands/specmanager-build.md` 7b; `docs/verification/reviewer-disallowedtools.md` |
+| all | no `effort` | Leave unset (PRD Q2) | Revisit only if the G4 dogfood shows a defect `effort` addresses |
 
 ### Q-A probe (task-020)
 
@@ -357,9 +359,29 @@ env -i HOME="$HOME" PATH="$PATH" USER="$USER" SHELL="$SHELL" TMPDIR="$TMPDIR" CL
 - **After** (`Skill` added after `Grep`): the builder reported `Skill` in its tool list. The stream shows `Skill {"skill":"probe-skill"}`, then the skill's `Bash printf 'SKILL_RAN' > probe-marker.txt`, both under the builder's `parent_tool_use_id`, and `probe-marker.txt` contains `SKILL_RAN`. Cost: $0.33 before, $0.41 after.
 - Checks after the change: `npm run build`, `npm run selftest-prompts` (77 invariants) and `npm run selftest-directory` all pass.
 - Side finding, not changed here: `Glob` and `Grep` are in the allowlist, but CLI 2.1.285 doesn't offer them as tools, not even in the main session's init list. The builder silently goes without them and searches with Bash. The entries are harmless, and the task's scope was `Skill` only.
-| reviewer | `model: opus`, `disallowedTools` denylist | Keep the `opus` pin (PRD Q3) | `commands/specmanager-build.md` 7b; `docs/verification/reviewer-disallowedtools.md` |
-| all | no `effort` | Leave unset (PRD Q2) | Revisit only if the G4 dogfood shows a defect `effort` addresses |
 
 ## Verification results
 
-_Filled by task-021._
+task-021, at `f3ba60b` (all trim tasks committed), CLI 2.1.285. From `plugins/specmanager/server` after `npm run build` (tsc clean; the rebuild left no diff under `dist/`), with `CLAUDE_PLUGIN_DATA` pointed at a scratch dir. Every command ran once, exit 0; no re-runs were needed.
+
+| Command | Result | Key output line |
+|---|---|---|
+| `npm run build` | pass | `tsc -p tsconfig.json` (no errors) |
+| `npm run selftest` | pass | All Phase 1 assertions passed. |
+| `npm run selftest-board` | pass | Phase B reap/rebind assertions passed. |
+| `npm run selftest-phases` | pass | All Phase 7.A assertions passed. |
+| `npm run selftest-build` | pass | All Phase 7.B assertions passed. |
+| `npm run selftest-tiers` | pass | All R2 tier assertions passed. |
+| `npm run selftest-stopgate` | pass | All R1 Stop-gate assertions passed. |
+| `npm run selftest-roundtrip` | pass | PASS — selftest-roundtrip |
+| `npm run selftest-pidfile` | pass | All Phase A pidfile assertions passed. |
+| `npm run selftest-shutdown` | pass | All Phase C shutdown assertions passed. |
+| `npm run selftest-autoport` | pass | All autoport assertions passed. |
+| `npm run selftest-repos` | pass | All multi-repo declare/seed/render/reconcile + containment assertions passed. |
+| `npm run selftest-specslice` | pass | All R6 spec-slice assertions passed. |
+| `npm run selftest-prompts` | pass | All prompt invariant assertions passed (77 invariants checked: match + mutation). |
+| `npm run selftest-directory` | pass | All directory-conformance assertions passed. |
+| `npm run smoke-mcp` | pass | ok — all 18 tools registered |
+| `claude plugin validate plugins/specmanager` (repo root) | pass | ✔ Validation passed (no warnings) |
+
+Bookkeeping fixed in this task: the `commands/specmanager-walkthrough.md` per-file row (re-measured with the pinned commands: 459/2 at `ad11cd8`, 329/1 at HEAD; the task-013 note said 5→3) and the `design-grounding.md` after-columns (173/0, unchanged). The `reviewer` and `all` rows of the Frontmatter table had ended up below the Q-A probe section; they are back in the table.
