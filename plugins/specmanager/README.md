@@ -28,6 +28,11 @@ Install from the plugin directory, or from the GitHub marketplace:
 
 In your project, run `/specmanager:specmanager-init`, then `/specmanager:specmanager-prd` with a feature title. A stage opens only after you approve the previous stage's document in the board.
 
+Init also helps you set up:
+
+- **Recommended plugins.** It checks for `superpowers`, `frontend-design`, `context7` and `playwright` (all from `claude-plugins-official`) and asks which missing ones to install. It never installs anything you did not pick, and installs nothing when it cannot ask you. The agents work without them, with a simpler fallback.
+- **Other repositories.** It lists the repos already declared and asks whether this project works with others. You can also pass their absolute paths to the command directly.
+
 | Command | What it does |
 |---|---|
 | `/specmanager:specmanager-init` | Sets up the spec folder and the managed files listed below. |
@@ -57,7 +62,7 @@ In your project, run `/specmanager:specmanager-init`, then `/specmanager:specman
 - **Edits code and commits during a build.** The build command has Claude change your code and make local git commits, under your normal permissions. It does not push.
 - **Opens your browser.** The board command launches your default browser at the board's address through the system opener (`open`, `xdg-open` or `cmd /c start`).
 - **Keeps small state files.** A pidfile with the board's process id, in the plugin's data directory (or the system temporary directory if there is none). Under the git-ignored `.claude/specs/.cache/`: `active-build.json`, naming the build in flight, and `stop-gate/`, the hook's retry counter.
-- **Sends no data anywhere.** The plugin makes no model or API calls of its own and has no telemetry or analytics. Its only network use is the npm registry at install and the board on the loopback address; the board loads nothing from the internet. Drafting and building run in your own Claude session, where the architecture agent may use the session's web tools to look up public library documentation.
+- **Sends no data anywhere.** The plugin makes no model or API calls of its own and has no telemetry or analytics. Its only network use is the npm registry at install and the board on the loopback address; the board loads nothing from the internet. Drafting and building run in your own Claude session, where the architecture agent may use the session's web tools to look up public library documentation. Plugins you pick during init are installed by Claude in your session with the `claude` CLI, not by the plugin's server.
 
 ## Troubleshooting
 
