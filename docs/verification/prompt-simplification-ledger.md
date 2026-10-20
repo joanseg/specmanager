@@ -31,7 +31,7 @@ Feature `feat-agent-prompt-simplification-opus-5-5`. Every rule-bearing cut (C2,
 | `commands/specmanager-design.md` | 416 | 2 | 279 | 2 |
 | `commands/specmanager-init.md` | 884 | 4 | 643 | 3 |
 | `commands/specmanager-interview.md` | 1031 | 5 | 992 | 3 |
-| `commands/specmanager-loop.md` | 1501 | 5 | | |
+| `commands/specmanager-loop.md` | 1501 | 5 | 1495 | 5 |
 | `commands/specmanager-plan.md` | 633 | 4 | 521 | 4 |
 | `commands/specmanager-prd.md` | 304 | 3 | 289 | 3 |
 | `commands/specmanager-walkthrough.md` | 459 | 2 | | |
@@ -260,6 +260,10 @@ Kept (plan 1.14 / Arch § commands/specmanager-interview.md): the behaviour spec
 
 | # | Removed (≤1-line quote) | Cat | Surviving carrier (file § / line) or core enforcement (file:function) | INV rows | max before→after |
 |---|---|---|---|---|---|
+| 1 | Requirement tags in step headings and step 11: "(R10)", "(R5)", "(R6)" ×2, "(R7)", "(R3)", "(R8)", "(R9)" | C4 | None: provenance only, no instruction | — | — |
+| 2 | Rename the 4 `Task({ subagent_type: … })` dispatches → `Agent({ … })`, and "the Task" → "the Agent call" in the transient-retry paragraph (Arch Q4); no rule change | — | Same lines, steps 5–9; INV-39 matches `subagent_type: "<agent>"`, still 4 | INV-39 (count unchanged, 4) | 4→4 |
+
+Kept (plan 1.16 / Arch § commands/specmanager-loop.md): everything frozen by INV-38–44 and INV-46b (counts unchanged: `check_gate` 1, `subagent_type` 4, `set_status` approved 1, "main session" 4, builder/`set_active_build` 0, opt-in statement 2, "no task is a human verification task" 1); the `Loop mode:` lines, the refined-intent block template, "Transient retry (R=2)" (a retry count, not a provenance tag), all `## Don't` bullets. Words 1501→1495 (−6; the tags go, "Agent call" adds two words); Don't/Never 5→5. No INV count changed, so no `max` moves and `selftest-prompts.ts` is untouched.
 
 ### `commands/specmanager-plan.md`
 

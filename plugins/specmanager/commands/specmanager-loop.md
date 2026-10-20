@@ -60,7 +60,7 @@ automatically**; invoking it is the opt-in.
      - Assumptions: <gaps carried, or "none">
      ```
 5. **Run each stage the same way.** For each stage in steps 6–9:
-   1. **Existing doc (R10).** `list_documents({ featureId, stage })`, ignoring
+   1. **Existing doc.** `list_documents({ featureId, stage })`, ignoring
       `kind: "interview"` docs. `approved` → skip the stage, reuse the doc as
       upstream input, note "reused". `draft` → one `AskUserQuestion`: approve
       as-is and continue *(recommended)* / stop (edit in the board, rerun).
@@ -76,32 +76,32 @@ automatically**; invoking it is the opt-in.
       Only the loop approves; the subagents never do.
    6. **Progress line**, e.g. `PRD approved — <id>`.
 
-   **Transient retry (R=2).** On a `529` / `Overloaded` error — the Task never
+   **Transient retry (R=2).** On a `529` / `Overloaded` error — the Agent call never
    returned a usable result — first `list_documents({ featureId, stage })`: if
    the doc already landed, do not re-dispatch; continue at sub-step 4.
-   Otherwise re-dispatch the same Task immediately, up to **2** retries (3
+   Otherwise re-dispatch the same Agent call immediately, up to **2** retries (3
    attempts). Genuine failures are not retried.
-6. **PRD.** `Task({ subagent_type: "prd-writer", prompt })` with the feature id
+6. **PRD.** `Agent({ subagent_type: "prd-writer", prompt })` with the feature id
    + title and the extra context from the argument.
-7. **Architecture.** `Task({ subagent_type: "architect", prompt })` with the
+7. **Architecture.** `Agent({ subagent_type: "architect", prompt })` with the
    feature id/title/slug and the approved PRD id (passed explicitly).
-8. **Design — only if UI-facing (R5).** Decide once, after the PRD is
+8. **Design — only if UI-facing.** Decide once, after the PRD is
    approved, from the refined intent's UI-facing answer and the PRD (screens,
    board/UI requirements, flows that render); keep a one-line reason for the
    report. An existing approved Design doc counts as UI-facing.
    - **UI-facing** → after Architecture is approved,
-     `Task({ subagent_type: "designer", prompt })` with the feature
+     `Agent({ subagent_type: "designer", prompt })` with the feature
      id/title/slug, PRD id + version, Architecture id + version, the extra
      context, and `No attachments; proceed without a design reference.` The
      designer writes via `create_design_brief`. Approve before Plan.
    - **Not UI-facing** → create nothing; the plan gate is satisfied by absence.
-9. **Plan.** `Task({ subagent_type: "planner", prompt })` with the feature
+9. **Plan.** `Agent({ subagent_type: "planner", prompt })` with the feature
    id/title/slug, the Architecture id, the PRD id, the Design id + version (or
    `null`), and the loop-mode rule: `Loop mode: do not call AskUserQuestion for any planner question (size split, spike, human setup, test account) — apply your recommended choice and record each decision and the alternative under Open questions.`
    Before approving, also check `plan.md` (`read_document`) has a `## Phase`
    heading and `list_tasks({ featureId })` is non-empty; a flat plan or no
    tasks → stop (step 13). The loop does not send it back.
-10. **Cross-doc review (R6) — inline in the main session, no subagent.** Read
+10. **Cross-doc review — inline in the main session, no subagent.** Read
     the PRD, Architecture and Plan with `read_document`, the Design (if any)
     with `Read` on its `filePath` in offset/limit chunks, and `list_tasks`.
     Check, in one pass:
@@ -124,16 +124,16 @@ automatically**; invoking it is the opt-in.
       is no delete tool: a task to remove → a question plus a manual follow-up.
     - After any fix, `link_documents` to re-stamp `basedOn`. Single pass — no
       re-review.
-11. **End questions (R7).** Gather the open questions: each doc's
+11. **End questions.** Gather the open questions: each doc's
     `Open questions`, unresolved review findings, refinement Assumptions, and
     the planner's loop-mode decisions. Ask them with `AskUserQuestion` in
     batches of ≤4, recommended option first, labelled *(recommended)*. Apply
     answers with the step-10 write rules; answered entries are removed from, or
     marked resolved in, that doc's `Open questions`. Skipped questions stay in
-    the affected doc's `Open questions` — skipped refinement Assumptions (R3)
-    and unresolved review findings (R6) are added there, same write rules.
+    the affected doc's `Open questions` — skipped refinement Assumptions
+    and unresolved review findings are added there, same write rules.
     None → skip and say so.
-12. **Final report (R8).**
+12. **Final report.**
     - feature id and slug;
     - each doc: id, path, status, version;
     - Design decision and its one-line reason;
@@ -143,7 +143,7 @@ automatically**; invoking it is the opt-in.
     - a note that the approvals in this run were made by `/specmanager-loop`,
       not by the user in the board;
     - next step: `/specmanager:specmanager-build <slug> next`.
-13. **Failure stop (R9).** Stop immediately on a closed gate, a subagent error
+13. **Failure stop.** Stop immediately on a closed gate, a subagent error
     after retries, a subagent that returned without its doc, or any tool
     `ok: false`. Report: last approved stage, failed stage, reason verbatim,
     and the command to resume with (`/specmanager:specmanager-<stage> <slug>`).
