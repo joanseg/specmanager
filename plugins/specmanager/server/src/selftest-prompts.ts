@@ -11,9 +11,12 @@
 // The INVARIANTS table encodes `docs/prompt-invariants-reconciled.md`
 // (task-002): Part A's corrected INV-1…INV-15 and Part B's added
 // INV-16…INV-37 — 37 reconciled entries — plus Part C's INV-38…INV-44 for
-// the loop command and Part D's INV-45/46 for the planner's phase triggers
-// and its ban on human verification tasks. A few are encoded as lettered
-// rows (INV-14a…e, INV-27a…c, INV-36a/b, INV-45a…c, INV-46a/b, and the pre-existing INV-15a/b)
+// the loop command, Part D's INV-45/46 for the planner's phase triggers
+// and its ban on human verification tasks, and Part E's INV-47…INV-50 for
+// build prerequisites, secrets, the reviewer's UI check and the walkthrough
+// sections. A few are encoded as lettered rows (INV-14a…e, INV-27a…c,
+// INV-36a/b, INV-45a…c, INV-46a/b, INV-47a/b, INV-48a…c, INV-49a/b,
+// INV-50a…d, and the pre-existing INV-15a/b)
 // because the reconciliation calls for one pattern per independently
 // deletable clause: a single whole-block pattern stays green when all but
 // one clause is cut, which is the exact failure the entry exists to catch.
@@ -612,6 +615,95 @@ const INVARIANTS: PromptInvariant[] = [
     what: "the loop's cross-doc review checks the plan has no human verification task",
     pattern: "no task is a human verification task",
     files: ["commands/specmanager-loop.md"],
+    min: 1,
+    max: 1,
+  },
+  // ---- Part E — INV-47…INV-50: build prerequisites, secrets, reviewer UI, walkthrough ----
+  {
+    id: "INV-47a",
+    what: "the build's prerequisite question offers deferral: \"Start now and ask when actually needed\"",
+    pattern: "**Start now and ask when actually needed**",
+    files: ["commands/specmanager-build.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-47b",
+    what: "the build suggests granting Claude access (MCP server, CLI login or token) so Claude can self-serve the setup",
+    pattern: /suggest granting Claude access[^.\n]*MCP server[^.\n]*CLI[^.\n]*token/g,
+    files: ["commands/specmanager-build.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-48a",
+    what: "prerequisite answers stay in session state — never written to `.claude/specs/`, never committed",
+    pattern: "never into `.claude/specs/`, never commit them",
+    files: ["commands/specmanager-build.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-48b",
+    what: "the build's Don't list bars credentials and test-account secrets from `.claude/specs/` and commits",
+    pattern: /^- Don't write [^\n]*credentials[^\n]*`\.claude\/specs\/`[^\n]*commit/gm,
+    files: ["commands/specmanager-build.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-48c",
+    what: "the planner records how to grant a prerequisite, never a secret value — as the rule and as a self-check step",
+    pattern: /never a secret value|with no secret value/g,
+    files: ["agents/planner.md"],
+    min: 2,
+    max: 2,
+  },
+  {
+    id: "INV-49a",
+    what: "the reviewer drives the changed UI's happy path, signing in with the test account the parent names",
+    pattern: /drive the happy path[^.\n]*signing in with the test account/g,
+    files: ["agents/reviewer.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-49b",
+    what: "the reviewer never fails a phase for missing UI tooling",
+    pattern: "never fail for missing tools",
+    files: ["agents/reviewer.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-50a",
+    what: "the walkthrough's emit order puts the stakeholder guide first and Lessons learned last",
+    pattern: /Emit in this order: the stakeholder guide[^\n]*then Lessons learned/g,
+    files: ["agents/walkthrough-writer.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-50b",
+    what: "the walkthrough opens with `## Stakeholder test guide`",
+    pattern: "**Part 1 — `## Stakeholder test guide`** (first)",
+    files: ["agents/walkthrough-writer.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-50c",
+    what: "spike phases get a `## Spike findings` section",
+    pattern: "**`## Spike findings`** — only when the phase's `kind` is `\"spike\"`",
+    files: ["agents/walkthrough-writer.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-50d",
+    what: "the walkthrough ends with a `## Lessons learned` section",
+    pattern: "**Last — `## Lessons learned`.**",
+    files: ["agents/walkthrough-writer.md"],
     min: 1,
     max: 1,
   },
