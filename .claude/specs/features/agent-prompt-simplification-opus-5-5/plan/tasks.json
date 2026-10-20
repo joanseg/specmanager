@@ -1,0 +1,433 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Create the removal ledger and pin the baseline",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:56:34.121Z",
+      "updatedAt": "2026-10-20T13:56:34.121Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Write the dogfood harness and capture the before run",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 3,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:56:48.895Z",
+      "updatedAt": "2026-10-20T13:56:48.895Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Trim agents/prd-writer.md",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 1,
+      "dependsOn": [
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:56:54.564Z",
+      "updatedAt": "2026-10-20T13:56:54.564Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Trim agents/reviewer.md and fix the \"task notes\" wording (Q-B)",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 1,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:56:58.077Z",
+      "updatedAt": "2026-10-20T13:56:58.077Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Trim agents/architect.md",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 1,
+      "dependsOn": [
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:57:01.914Z",
+      "updatedAt": "2026-10-20T13:57:01.914Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Trim agents/designer.md",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 2,
+      "dependsOn": [
+        "task-005"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:57:05.426Z",
+      "updatedAt": "2026-10-20T13:57:05.426Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Trim agents/walkthrough-writer.md",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 2,
+      "dependsOn": [
+        "task-006"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:57:09.243Z",
+      "updatedAt": "2026-10-20T13:57:09.243Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Trim agents/planner.md",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 3,
+      "dependsOn": [
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:57:12.953Z",
+      "updatedAt": "2026-10-20T13:57:12.953Z"
+    },
+    {
+      "id": "task-009",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Trim the lossless-carryover.md snippet header",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 1,
+      "dependsOn": [
+        "task-008"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:57:16.592Z",
+      "updatedAt": "2026-10-20T13:57:16.592Z"
+    },
+    {
+      "id": "task-010",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Trim and rename Task dispatch in specmanager-prd.md, -architecture.md, -board.md",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 1,
+      "dependsOn": [
+        "task-009"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:57:20.257Z",
+      "updatedAt": "2026-10-20T13:57:20.257Z"
+    },
+    {
+      "id": "task-011",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Trim commands/specmanager-design.md",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 1,
+      "dependsOn": [
+        "task-010"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:57:24.265Z",
+      "updatedAt": "2026-10-20T13:57:24.265Z"
+    },
+    {
+      "id": "task-012",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Trim commands/specmanager-plan.md",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 1,
+      "dependsOn": [
+        "task-011"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:57:27.625Z",
+      "updatedAt": "2026-10-20T13:57:27.625Z"
+    },
+    {
+      "id": "task-013",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Trim commands/specmanager-walkthrough.md",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 1,
+      "dependsOn": [
+        "task-012"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:57:31.264Z",
+      "updatedAt": "2026-10-20T13:57:31.264Z"
+    },
+    {
+      "id": "task-014",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Trim commands/specmanager-interview.md",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 1,
+      "dependsOn": [
+        "task-013"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:57:34.841Z",
+      "updatedAt": "2026-10-20T13:57:34.841Z"
+    },
+    {
+      "id": "task-015",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Trim commands/specmanager-init.md and fix the stitch-spec link",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 2,
+      "dependsOn": [
+        "task-014"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:57:38.608Z",
+      "updatedAt": "2026-10-20T13:57:38.608Z"
+    },
+    {
+      "id": "task-016",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Trim commands/specmanager-loop.md",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 1,
+      "dependsOn": [
+        "task-015"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:57:45.437Z",
+      "updatedAt": "2026-10-20T13:57:45.437Z"
+    },
+    {
+      "id": "task-017",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Trim agents/builder.md",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 2,
+      "dependsOn": [
+        "task-016"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:57:49.129Z",
+      "updatedAt": "2026-10-20T13:57:49.129Z"
+    },
+    {
+      "id": "task-018",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Trim commands/specmanager-build.md steps (tags, step 9, task-notes wording)",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 2,
+      "dependsOn": [
+        "task-017"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:57:52.973Z",
+      "updatedAt": "2026-10-20T13:57:52.973Z"
+    },
+    {
+      "id": "task-019",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Trim commands/specmanager-build.md Don't bullets",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 2,
+      "dependsOn": [
+        "task-018"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:57:56.573Z",
+      "updatedAt": "2026-10-20T13:57:56.573Z"
+    },
+    {
+      "id": "task-020",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Probe builder Skill access (Q-A) and apply the result",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 2,
+      "dependsOn": [
+        "task-019"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:58:00.670Z",
+      "updatedAt": "2026-10-20T13:58:00.670Z"
+    },
+    {
+      "id": "task-021",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Run the full verification and record results in the ledger",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 2,
+      "dependsOn": [
+        "task-020"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:58:05.090Z",
+      "updatedAt": "2026-10-20T13:58:05.090Z"
+    },
+    {
+      "id": "task-022",
+      "featureId": "feat-agent-prompt-simplification-opus-5-5",
+      "title": "Capture the after dogfood run and close the ledger",
+      "status": "todo",
+      "phase": "trim",
+      "complexity": 3,
+      "dependsOn": [
+        "task-021"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T13:58:08.561Z",
+      "updatedAt": "2026-10-20T13:58:08.561Z"
+    }
+  ],
+  "meta": {
+    "phases": {
+      "trim": {
+        "testCommand": "cd plugins/specmanager/server && npm run build && npm run selftest-prompts && npm run selftest-directory && npm run selftest && npm run smoke-mcp",
+        "architectureRefs": [
+          "approach",
+          "removal-taxonomy",
+          "keep-list",
+          "removal-ledger",
+          "per-file-critique",
+          "G1",
+          "G2",
+          "G3",
+          "G4",
+          "interfaces",
+          "failure-edge-cases"
+        ],
+        "kind": "build",
+        "prerequisites": [
+          {
+            "id": "pre-1",
+            "title": "Claude Code CLI logged in for headless claude -p runs (dogfood runs and Skill probe)",
+            "kind": "credential",
+            "neededBy": [
+              "task-002",
+              "task-020",
+              "task-022"
+            ],
+            "grantVia": "CLI: claude (already logged in, or /login)"
+          }
+        ]
+      }
+    },
+    "blocked": {}
+  }
+}
