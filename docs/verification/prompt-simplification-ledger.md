@@ -21,7 +21,7 @@ Feature `feat-agent-prompt-simplification-opus-5-5`. Every rule-bearing cut (C2,
 | `agents/architect.md` | 892 | 4 | 845 | 4 |
 | `agents/builder.md` | 1173 | 5 | | |
 | `agents/designer.md` | 1195 | 6 | 1125 | 4 |
-| `agents/planner.md` | 1905 | 5 | | |
+| `agents/planner.md` | 1905 | 5 | 1743 | 3 |
 | `agents/prd-writer.md` | 448 | 4 | 421 | 4 |
 | `agents/reviewer.md` | 552 | 0 | 550 | 0 |
 | `agents/walkthrough-writer.md` | 1508 | 7 | 1412 | 5 |
@@ -158,6 +158,14 @@ Kept (Keep-list / plan 1.6): the five fallback elements (INV-14a–e), `bootstra
 
 | # | Removed (≤1-line quote) | Cat | Surviving carrier (file § / line) or core enforcement (file:function) | INV rows | max before→after |
 |---|---|---|---|---|---|
+| 1 | Self-check item 2: "Any task you could score 5+? **Split it now.**" | C2 | `agents/planner.md` § The complexity rule ("Every task you persist must score ≤3. Anything that would score 5+ must be split before calling `create_task`."); `core/tasks.ts:assertSplittable` rejects complexity >3 | — | — |
+| 2 | Self-check item 3: "More than one phase? The Overview must name the trigger … no trigger → collapse to one phase. A size split must already be confirmed via `AskUserQuestion` (or recorded per the loop-mode rule)." | C2 | `agents/planner.md` § The phase rule ("One phase is the default … Split only when a trigger below applies, and every split names its trigger in the Overview"; Size trigger "call `AskUserQuestion` *before persisting any task*"; the loop-mode paragraph) and § What a good Plan doc contains item 1 | INV-44 (count unchanged, 1: "loop-mode" never matched "loop mode") | 1→1 |
+| 3 | Self-check item 4: "Confirm every numbered convention in **What a good Plan doc contains** is present, and that no parsed construct changed shape — …" | C2 | `agents/planner.md` § What a good Plan doc contains items 2–4 (the `**Scale:**` legend, `\| Phase \| Theme \| Points \|` + **Total**, `## Phase <name> — <theme>` "exactly this shape — downstream tools parse it", `**Exit test:**`, `# \| Task \| Pts \| Notes`, dotted numbering) | — | — |
+| 4 | Don't "Don't emit a flat plan with no phases — even one phase uses the `## Phase` heading." | C2 | `agents/planner.md` § The phase rule ("One phase is the default; it still uses the `## Phase <name> — <theme>` heading and an exit test") | — | — |
+| 5 | `testCommand` mechanics: "The Stop-gate reads this as its primary verification source (a real command is run; `\"none\"` skips the run and checks only that tasks are `done`); … so always declare it." | C5 | `hooks/stop-gate.sh` (`TEST_COMMAND="$(card_field testCommand)"`, the `"none"` branch) fed by `core/active-card.ts:resolveActiveCard`; the prompt keeps "never leave the field absent, or the Stop-gate falls back to a brittle convention probe" in one clause | INV-10 (count unchanged, 2) | 2→2 |
+| 6 | C1: Don't "Don't write the code itself — tasks are work items, not solutions." (the planner has no code task); C4: "(R1)" and "(R3)" on the `testCommand`/`architectureRefs` bullets; 14 words by `wc -w` | C1, C4 | None: no rule; the planner's job (intro) is the plan and task records | — | — |
+
+Kept (Keep-list / plan 1.8): every parsed shape (§ What a good Plan doc contains), the loop-mode carve-out (INV-44), the triggers (INV-45a–c), self-check "person verifying…" (INV-46a, 2), the prerequisites rule and self-check (INV-48c, 2), the `set_phase_meta` self-check (INV-10), fill mode, the complexity ≤3 statement (cleanup's single carrier), the density contract (INV-13/29), the persist sketches and the `basedOn` Don't (INV-11, 2 here), "Don't approve anything" (INV-25), the `architectureRefs` resolution sentence (outside plan 1.8's named cuts; when unsure, keep), and self-check item 1 "Re-read your draft." (outside plan 1.8's named cuts). Words 1905→1743 (−162); Don't/Never 5→3. No INV count changed (INV-10 2, INV-11 9, INV-13 4, INV-15a 3, INV-25 10, INV-29 4, INV-44 1, INV-45a–c 1, INV-46a 2, INV-48c 2), so no `max` moves and `selftest-prompts.ts` is untouched.
 
 ### `agents/prd-writer.md`
 

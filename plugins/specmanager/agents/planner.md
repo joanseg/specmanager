@@ -69,12 +69,9 @@ Sizing: each task shippable in one sitting (≤3); a phase is typically 3–10 t
 ## Self-check before persisting
 
 1. Re-read your draft.
-2. Any task you could score 5+? **Split it now.**
-3. More than one phase? The Overview must name the trigger (spike or size); no trigger → collapse to one phase. A size split must already be confirmed via `AskUserQuestion` (or recorded per the loop-mode rule).
-4. Confirm every numbered convention in **What a good Plan doc contains** is present, and that no parsed construct changed shape — `## Phase <name> — <theme>` headings, `**Exit test:**` lines, `# | Task | Pts | Notes` tables, the `**Scale:**` legend, the `| Phase | Theme | Points |` summary + **Total** row, dotted numbering.
-5. Any task whose work is a person verifying, testing, approving or eyeballing? **Delete it** (or turn it into a test-writing task).
-6. Every human need is a prerequisite on its phase and in `## Human prerequisites`, with no secret value.
-7. Confirm you will call `set_phase_meta` for **every** phase (spike and placeholder included) with a non-empty `testCommand` (a real command or the literal `"none"`) and `architectureRefs` — a missing `testCommand` weakens the Stop-gate to a convention probe.
+2. Any task whose work is a person verifying, testing, approving or eyeballing? **Delete it** (or turn it into a test-writing task).
+3. Every human need is a prerequisite on its phase and in `## Human prerequisites`, with no secret value.
+4. Confirm you will call `set_phase_meta` for **every** phase (spike and placeholder included) with a non-empty `testCommand` (a real command or the literal `"none"`) and `architectureRefs` — a missing `testCommand` weakens the Stop-gate to a convention probe.
 
 ## Emit the artifacts
 
@@ -111,9 +108,9 @@ Sizing: each task shippable in one sitting (≤3); a phase is typically 3–10 t
      prerequisites: [{ id, title, kind, neededBy: [<task ids>], grantVia }] // [] when none
    })
    ```
-   - **`testCommand` (R1) — required for every phase.** A single runnable shell command that verifies the phase's exit test from the repo root (e.g. `npm test`, `npm run build && npm run selftest-x`, `uv run pytest`, `cargo test`). When a phase has no automated test by design (pure prompt-wiring, manual/dry-run verification), emit the literal string `"none"` — never leave the field absent. The Stop-gate reads this as its primary verification source (a real command is run; `"none"` skips the run and checks only that tasks are `done`); an absent field forces a brittle convention probe, so always declare it. It should align with that phase's `**Exit test:**` line.
+   - **`testCommand` — required for every phase.** A single runnable shell command that verifies the phase's exit test from the repo root (e.g. `npm test`, `npm run build && npm run selftest-x`, `uv run pytest`, `cargo test`). When a phase has no automated test by design (pure prompt-wiring, manual/dry-run verification), emit the literal string `"none"` — never leave the field absent, or the Stop-gate falls back to a brittle convention probe. It should align with that phase's `**Exit test:**` line.
    - **`kind`.** `"build"` by default; `"spike"` for the spike phase; `"placeholder"` (with `testCommand: "none"`, zero tasks) for the phase after it.
-   - **`architectureRefs` (R3).** The Architecture anchors this phase implements — the requirement ids (`R1`, `R2`, …) or kebab-slug component headings (`core-active-card`) under which the architect wrote the relevant sections. The build command resolves these to assemble the spec-compliance reviewer's slice; an empty array falls back to name/id matching, so name them whenever you can.
+   - **`architectureRefs`.** The Architecture anchors this phase implements — the requirement ids (`R1`, `R2`, …) or kebab-slug component headings (`core-active-card`) under which the architect wrote the relevant sections. The build command resolves these to assemble the spec-compliance reviewer's slice; an empty array falls back to name/id matching, so name them whenever you can.
 4. Report the plan doc id + task count + phase names in order.
 
 ## Fill mode
@@ -126,8 +123,6 @@ The prompt carries `Mode: fill` (from `/specmanager-plan` after the spike is bui
 4. Rewrite only the placeholder's section of `plan.md` (heading loses `(placeholder)`, real `**Exit test:**`, task table) plus the summary table row and **Total**, and update `## Human prerequisites`; persist via `write_document({ id, body, baseVersion: <version> })`. Never touch the spike's section or its tasks.
 
 ## Don't
-- Don't emit a flat plan with no phases — even one phase uses the `## Phase` heading.
 - Don't merge unrelated work into one task to "save a row".
-- Don't write the code itself — tasks are work items, not solutions.
 - Don't approve anything; that's the user's call.
 - Don't omit `dependsOn`/`basedOn` on the plan doc — staleness depends on them.
