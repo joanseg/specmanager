@@ -32,16 +32,24 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 | Company-brain grounding | PRD | — |
 | Cowork support | PRD (draft) | — |
 | Loop command (/specmanager-loop) | PRD (approved) | — |
-| Planner rewrite | PRD (approved) | — |
+| Agent prompt simplification (Opus 5.5) | PRD (approved) | — |
 
-_10 features shipped — full history on the board._
+_11 features shipped — full history on the board._
+
+### Git strategy
+
+_From Agent prompt simplification (Opus 5.5) — phase trim walkthrough (wt-agent-prompt-simplification-opus-5-5-026)._
+
+- **Proposed (build step 6a):** base `feat/planner-rewrite`, because `main` is under directory review and 1.2.0 lives on the stack. Branch `feat/agent-prompt-simplification`. Spec docs went first as a spec-only commit (`181a9b1`), then one commit per task, staging only that task's files. Message style: `Prompt simplification: <summary> (task-0NN, plan 1.N)` plus the `Co-Authored-By` trailer. Never push. Leave unrelated uncommitted work untouched (marketing-phase, cowork-support, `manifest.json`, `CLAUDE.md`, the planner-rewrite walkthrough, `docs/install-from-branch.md`).
+- **User change:** none. The owner accepted it unchanged.
+- **Result:** 22 task commits `9cf228a..e21fce3`, one per task, none pushed.
 
 **Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation.
 
 **Commands:**
 `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD) · `/specmanager-loop` (auto-approves, stops before Build)
 
-_Last synced: 2026-10-20T12:49:23.942Z_
+_Last synced: 2026-10-20T15:25:41.343Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
@@ -63,11 +71,11 @@ The repo dogfoods itself: its own features live under `.claude/specs/features/` 
   - `README.md` — the README the Anthropic directory lists: what the plugin does on the user's machine, requirements, troubleshooting.
   - `.mcp.json` — runs `node ${CLAUDE_PLUGIN_ROOT}/server/dist/mcp.js` with one env entry, `SPECMANAGER_BOARD_PORT=${user_config.board_port}`. The project root comes from `CLAUDE_PROJECT_DIR`, which Claude Code exports.
   - `commands/*.md` — the slash commands (orchestration prompts). `specmanager-interview.md` does not delegate: a multi-turn conversation can't live in a single-shot subagent, so it runs in the main session. `specmanager-loop.md` also runs in the main session: it orchestrates the stage subagents and auto-approves each doc, while refinement, the cross-doc review and the end questions stay in the main session.
-  - `agents/*.md` — the subagents: prd-writer, architect, designer, planner, builder, walkthrough-writer, and `reviewer` (read-only spec-compliance review after a phase builds).
+  - `agents/*.md` — the subagents: prd-writer, architect, designer, planner, builder, walkthrough-writer, and `reviewer` (read-only spec-compliance review after a phase builds). The builder alone has an explicit `tools:` allowlist; it must include `Skill`, or its Superpowers / `frontend-design` hand-offs silently never fire (probe evidence in `docs/verification/prompt-simplification-ledger.md`).
   - `hooks/hooks.json` — one hook: `Stop` runs `hooks/stop-gate.sh` (see Build leverage primitives).
   - `server/` — `@specmanager/server`, TypeScript, ships compiled `dist/` without source maps. Its `package.json` holds scripts and dev dependencies only.
   - `ui/` — `@specmanager/ui`, written against the React API but built on **Preact** (`vite.config.ts` aliases `react`/`react-dom` to Preact's readable source, because React 18 ships only a minified production build that the directory's security scan cannot read) + Vite; ships compiled `dist/`, built unminified with one chunk per npm package so every non-font file stays under 256 KiB. `vite.config.ts` also strips comments from the chunks: the directory validator reads doc-link URLs next to env-like words as credential use.
-- **`docs/`** — `DESIGN.md` is the managed design-system spec; `directory-submission.md` is the owner's checklist for submitting and releasing to the Anthropic plugin directory; `temp/original-specs/` holds historical snapshots (don't edit).
+- **`docs/`** — `DESIGN.md` is the managed design-system spec; `directory-submission.md` is the owner's checklist for submitting and releasing to the Anthropic plugin directory; `temp/original-specs/` holds historical snapshots (don't edit); `verification/` holds evidence files, including `dogfood-harness.sh <label> <sha> <scratch-dir>`, which runs `/specmanager-loop` + one build headless against a plugin worktree to compare prompt changes before/after.
 - **`docs/agent-snippets/`** — canonical text for prompt fragments used by **more than one** agent. There is no preprocessor: each fragment is copy-pasted into its carriers, and the snippet file names them. **Change the fragment here and update every carrier in the same commit** — a diverged copy is a real defect, and `selftest-prompts` fails on it.
 
 ## Architecture (the big picture)
@@ -153,7 +161,7 @@ A **release** is any push to `main` that changes files under `plugins/specmanage
 3. **`npm run selftest-directory`** in `server/` — must end with `All directory-conformance assertions passed.` A `FAIL:` line names the file or field to fix.
 4. **`claude plugin validate plugins/specmanager`** from the repo root — must print `✔ Validation passed` with no warning.
 
-**A surface test is also required when the release changes packaging** — anything in `plugin.json` beyond the `version` bump, `.mcp.json`, `hooks/`, the plugin-root `package.json` / `package-lock.json`, `ui/vite.config.ts` or `server/tsconfig.json`. Run it yourself, headless, in an empty scratch project outside the repo: `claude --plugin-dir <repo>/plugins/specmanager -p "<call specmanager_init, create_feature and board_url, then curl the board>" --output-format stream-json --verbose`. It passes when the init event shows the `specmanager` MCP server `connected`, the tools succeed, the scratch project gains `.claude/specs/`, and the board answers 200. If the release touched `ui/`, also ask the owner to open and save a document in the board.
+**A surface test is also required when the release changes packaging** — anything in `plugin.json` beyond the `version` bump, `.mcp.json`, `hooks/`, the plugin-root `package.json` / `package-lock.json`, `ui/vite.config.ts` or `server/tsconfig.json`. Run it yourself, headless, in an empty scratch project outside the repo: `claude --plugin-dir <repo>/plugins/specmanager -p "<call specmanager_init, create_feature and board_url, then curl the board>" --output-format stream-json --verbose`. When launching it from inside a Claude Code session, run the child under `env -i HOME=$HOME PATH=$PATH …` (an inherited `ANTHROPIC_API_KEY` overrides the CLI login) and pass `--settings '{"enabledPlugins":{"specmanager@specmanager":false}}'` so only the checkout's plugin loads. It passes when the init event shows the `specmanager` MCP server `connected`, the tools succeed, the scratch project gains `.claude/specs/`, and the board answers 200. If the release touched `ui/`, also ask the owner to open and save a document in the board.
 
 **Cowork is not supported** (tested 2026-09-30; findings in `docs/directory-submission.md` section 3b): the desktop app drops an MCP server whose config references `${user_config.*}`, does not install Node dependencies, and starts the server once per app with no `CLAUDE_PROJECT_DIR` and cwd `/`. Do not claim Cowork support in the plugin README until a feature addresses all three.
 
