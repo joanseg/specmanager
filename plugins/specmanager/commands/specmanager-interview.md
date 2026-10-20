@@ -79,8 +79,8 @@ material. If coverage was thin, say so in the synthesis header ("ending
 immediately — 2 of 6 areas covered") and let **Unresolved** carry the gaps.
 Plan exhausted → say so and synthesise.
 
-**Synthesis** — exactly four sections, in this order (chat and stored
-artifact identical), each tight — bullets, not prose:
+**Synthesis** — exactly four sections, in this order, each tight — bullets,
+not prose:
 - **Extracted** — problem, who hits it, constraints, decisions agreed.
   Facts, not opinions.
 - **Critique** — the strongest surviving challenges: thin evidence,
@@ -127,9 +127,6 @@ mode wastes turns.
 - Don't write anything before the user says yes at the storage prompt;
   persistence only via `create_document` / `write_document` — never write
   files directly.
-- Don't give the interview `dependsOn`/`basedOn` links or approve it — no
-  lifecycle; it stays a `draft` reference doc forever.
+- Don't approve the interview — no lifecycle; it stays a `draft` reference
+  doc forever.
 - Don't delegate to a subagent; don't draft a PRD (that's `/specmanager-prd`).
-- Don't ask more than one question per turn; don't re-print the full plan
-  when a diff will do.
-- Don't second-guess an exit request — synthesis follows immediately.
