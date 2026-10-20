@@ -36,7 +36,7 @@ Feature `feat-agent-prompt-simplification-opus-5-5`. Every rule-bearing cut (C2,
 | `commands/specmanager-prd.md` | 304 | 3 | | |
 | `commands/specmanager-walkthrough.md` | 459 | 2 | | |
 | `docs/agent-snippets/design-grounding.md` | 173 | 0 | | |
-| `docs/agent-snippets/lossless-carryover.md` | 193 | 0 | | |
+| `docs/agent-snippets/lossless-carryover.md` | 193 | 0 | 82 | 0 |
 | **Total** | **16,248** | **71** | | |
 
 ### INV snapshot at baseline
@@ -255,6 +255,10 @@ Kept (Keep-list / plan 1.7): the Inputs single-phase line and the Final-mode ref
 
 | # | Removed (≤1-line quote) | Cat | Surviving carrier (file § / line) or core enforcement (file:function) | INV rows | max before→after |
 |---|---|---|---|---|---|
+| 1 | "Verified identical (byte-for-byte) across all four current call sites as of this task — `architect.md:65`, `planner.md:56`, … — no drift found. The block was originally five sentences; … were deleted (`task-020`). Two sentences survive because…" (stale line refs and history) | C4 | None: provenance only; the byte-identity it reports is enforced by INV-13 and INV-29 (min = max = 4) in `server/src/selftest-prompts.ts` | INV-13, INV-29 (counts unchanged, 4 and 4) | 4→4, 4→4 |
+| 2 | Header line 3 restated as one line: "Shared prompt fragment duplicated verbatim, as the … block, in … The text below is the canonical source — it is also copy-pasted into each agent prompt (no preprocessor at install time, so the install ships the resolved text). If you change the fragment here, also update the four agent prompts." | C1 | Same file, new header line (names the four carriers, "no preprocessor", same-commit update rule, INV-13/29) | — | — |
+
+Kept (plan 1.9 / Arch § docs/agent-snippets/): the fragment below `---`, byte-identical (verified by `diff` against the pre-edit text; INV-13/29 still 1 per carrier, 4 total); the carrier list and the update-every-carrier rule. `design-grounding.md` untouched (INV-15a/b). Words 193→82 (−111); Don't/Never 0→0. No INV count changed, so no `max` moves and `selftest-prompts.ts` is untouched; G3: no carrier changes.
 
 ## Frontmatter decisions (G2)
 
