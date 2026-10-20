@@ -14,7 +14,8 @@
 // the loop command, Part D's INV-45/46 for the planner's phase triggers
 // and its ban on human verification tasks, Part E's INV-47…INV-50 for
 // build prerequisites, secrets, the reviewer's UI check and the walkthrough
-// sections, and Part F's INV-51/52 for the build's git strategy. A few are
+// sections, Part F's INV-51/52 for the build's git strategy, and Part G's
+// INV-53/54 for init's plugin-install consent. A few are
 // encoded as lettered rows (INV-14a…e, INV-27a…c,
 // INV-36a/b, INV-45a…c, INV-46a/b, INV-47a/b, INV-48a…c, INV-49a/b,
 // INV-50a…e, INV-51a…f, INV-52a/b, and the pre-existing INV-15a/b)
@@ -778,6 +779,23 @@ const INVARIANTS: PromptInvariant[] = [
     what: "the builder never pushes",
     pattern: "never push",
     files: ["agents/builder.md"],
+    min: 1,
+    max: 1,
+  },
+  // ---- Part G — INV-53/54: init installs plugins only with consent ----
+  {
+    id: "INV-53",
+    what: "init installs only the recommended plugins the user picked, never silently",
+    pattern: "Install only the plugins the user picked",
+    files: ["commands/specmanager-init.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-54",
+    what: "init never passes `-y` or `--accept-command` to `claude plugin install`",
+    pattern: /Never pass `-y` or\s+`--accept-command`/g,
+    files: ["commands/specmanager-init.md"],
     min: 1,
     max: 1,
   },
