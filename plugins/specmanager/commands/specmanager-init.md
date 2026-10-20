@@ -4,32 +4,9 @@ description: Scaffold .claude/specs/ in the current project and write the manage
 
 Initialize this project for SpecManager.
 
-## What this does
-
-1. Creates `.claude/specs/` (and `features/`) if missing.
-2. Writes/refreshes `manifest.json` (the rebuildable board index).
-3. Writes a managed block into the project's `CLAUDE.md` between
-   `<!-- specmanager:start -->` and `<!-- specmanager:end -->`. Content
-   outside those markers is never touched. If `CLAUDE.md` does not exist
-   it is created with just the managed block.
-4. **Creates or refreshes `./docs/DESIGN.md`** — the repo-level design-system
-   spec, following the [Google Stitch DESIGN.md spec](../docs/references/stitch-design-md.md).
-   Tokens (colors, typography, spacing, components) are inferred from the
-   existing UI source files (CSS custom properties, sample component files,
-   Tailwind config). The managed region lives between
-   `<!-- specmanager:design:start -->` / `<!-- specmanager:design:end -->`;
-   anything outside is the user's territory. Re-runs are idempotent and
-   non-destructive.
-5. **Declares sibling repos passed as positional paths** (optional — a
-   monorepo/meta-repo convenience). For each path you pass, init reads that
-   sibling repo **read-only** and mirrors its docs into
-   `repos/<name>/{CLAUDE.md, DESIGN.md, .specmanager-repo.json}` inside this
-   (meta) project, then adds a linked "Declared repos" subsection to the
-   managed CLAUDE.md block. See "Declaring sibling repos" below.
-
 ## Declaring sibling repos (multi-repo)
 
-Pass one or more repo paths after the command:
+Optional, a monorepo/meta-repo convenience. Pass one or more repo paths after the command:
 
 ```
 /specmanager:specmanager-init /path-to/repo-1 /path-to/repo-2
@@ -53,16 +30,21 @@ Pass one or more repo paths after the command:
 - **Reconcile-on-re-run.** Re-running init with paths reconciles the set:
   newly-passed repos are added; already-declared repos keep their nested
   mirror bodies **byte-for-byte** (write-if-absent — any annotations you made
-  to a mirror survive). A path whose resolved name collides with an existing
+  to a mirror survive, and re-running with the same path is how you refresh a
+  mirror). A path whose resolved name collides with an existing
   repo declared from a *different* source is reported as a conflict and
   skipped, never overwritten.
 
 ## Steps
 
 1. Call the **`specmanager_init`** MCP tool first (idempotent — safe to
-   re-run). This creates `.claude/specs/` + `manifest.json`, writes the
-   managed CLAUDE.md block between the `<!-- specmanager:start -->` /
-   `<!-- specmanager:end -->` markers, and creates/refreshes `./docs/DESIGN.md`.
+   re-run). This creates `.claude/specs/` (and `features/`) + `manifest.json`
+   (the rebuildable board index), writes the managed CLAUDE.md block between
+   the `<!-- specmanager:start -->` / `<!-- specmanager:end -->` markers
+   (creating `CLAUDE.md` if missing), and creates/refreshes `./docs/DESIGN.md`
+   — the design-system spec in the Google Stitch DESIGN.md format, tokens
+   inferred from the existing UI source, managed region between
+   `<!-- specmanager:design:start -->` / `<!-- specmanager:design:end -->`.
    If the user passed sibling repo paths, forward them as the tool's
    `repoPaths` argument (e.g. `repoPaths: ["/path-to/repo-1", "/path-to/repo-2"]`)
    so init declares and seeds them in the same call.
@@ -85,29 +67,16 @@ Pass one or more repo paths after the command:
      — a rejected path never aborts the others.
    - From `/init`: that the general codebase docs in CLAUDE.md (outside the
      markers) were (re)generated — so the user need not run `/init` separately.
-
-## Notes on the optional Design stage
-
-SpecManager's lifecycle now includes an optional Design stage between
-Architecture and Plan (`PRD → Architecture → Design (optional) → Plan → Build
-→ Walkthroughs`). Run `/specmanager-design <feature>` after the PRD is
-approved to produce an HTML design brief. The Plan gate stays open if you
-skip Design entirely; if a design brief exists in `draft`, the Plan gate
-refuses to open until you either approve it or delete the draft.
+   - That Design is an optional stage between Architecture and Plan
+     (`/specmanager-design <feature>`); a `draft` design brief keeps the Plan
+     gate closed until it is approved or deleted.
 
 ## Don't
 
 - Don't hand-edit content **between** the `<!-- specmanager:start -->` /
   `<!-- specmanager:end -->` markers in `CLAUDE.md` — that managed block is
-  owned by `sync_claude_md`. Native `/init` writes only **outside** those
-  markers (the general codebase-doc region); because the marker-merge in
-  `core/claude-md.ts` is line-anchored, the two regions are disjoint and
-  `/init` never clobbers the managed block.
+  owned by `sync_claude_md`.
 - Don't edit content **between** the design markers in `./docs/DESIGN.md` by
   hand — SpecManager regenerates it after every feature ships. Hand-edits
   belong above the start marker or below the end marker.
-- Don't expect init to write into a declared sibling repo — it reads siblings
-  read-only and every write stays inside this project's meta root. To refresh
-  a mirror after the source changes, re-run init with the same path (bodies are
-  write-if-absent, so annotated mirrors are preserved).
 - Don't create features here — point the user at `/specmanager-prd`.

@@ -29,7 +29,7 @@ Feature `feat-agent-prompt-simplification-opus-5-5`. Every rule-bearing cut (C2,
 | `commands/specmanager-board.md` | 110 | 1 | 100 | 1 |
 | `commands/specmanager-build.md` | 2683 | 13 | | |
 | `commands/specmanager-design.md` | 416 | 2 | 279 | 2 |
-| `commands/specmanager-init.md` | 884 | 4 | | |
+| `commands/specmanager-init.md` | 884 | 4 | 643 | 3 |
 | `commands/specmanager-interview.md` | 1031 | 5 | 992 | 3 |
 | `commands/specmanager-loop.md` | 1501 | 5 | | |
 | `commands/specmanager-plan.md` | 633 | 4 | 521 | 4 |
@@ -236,6 +236,14 @@ Kept (plan 1.11): the `check_gate` call and closed-gate stop (INV-16), the no-du
 
 | # | Removed (≤1-line quote) | Cat | Surviving carrier (file § / line) or core enforcement (file:function) | INV rows | max before→after |
 |---|---|---|---|---|---|
+| 1 | `## What this does` items 1–3 and 5 ("Creates `.claude/specs/`…", "Writes/refreshes `manifest.json`…", managed block "between `<!-- specmanager:start -->`…", "Declares sibling repos…") | C2 | Same file, Steps 1 (`specmanager_init` creates `.claude/specs/` + `manifest.json`, managed block, `CLAUDE.md` created if missing, `repoPaths`) and § Declaring sibling repos | — | — |
+| 2 | `## What this does` item 4 (DESIGN.md: Stitch spec, tokens inferred from UI source, design markers, "idempotent and non-destructive") folded into one clause | C2 | Same file, Steps 1 ("creates/refreshes `./docs/DESIGN.md` — … Google Stitch DESIGN.md format, tokens inferred from the existing UI source, managed region between `<!-- specmanager:design:start -->` / `…end -->`"; "idempotent — safe to re-run") | — | — |
+| 3 | Don't 1 tail: "Native `/init` writes only **outside** those markers…; because the marker-merge in `core/claude-md.ts` is line-anchored, the two regions are disjoint" (third copy of the rationale) | C2 | Same file, Steps 2 ("writes **only outside** the SpecManager markers … the marker-merge in `core/claude-md.ts` is line-anchored, so the regions are disjoint") | — | — |
+| 4 | Don't: "Don't expect init to write into a declared sibling repo — it reads siblings read-only and every write stays inside this project's meta root. To refresh a mirror… re-run init with the same path" | C2 | Same file, § Declaring sibling repos: "**The paths ARE the read grant.** … **Every write stays inside this project's meta root** — init never writes into the sibling repos"; refresh-by-re-run moved into the Reconcile-on-re-run bullet | — | — |
+| 5 | `## Notes on the optional Design stage` paragraph (lifecycle arrow, "Plan gate stays open if you skip Design; a `draft` brief refuses…") compressed to one Step 3 report bullet | C3/C5 | `server/src/core/dependencies.ts:checkGate` (Plan requires an approved Design doc only if one exists); user-visible pointer kept in Steps 3 last bullet | — | — |
+| 6 | Fix, no rule change: link `[Google Stitch DESIGN.md spec](../docs/references/stitch-design-md.md)` resolved from `commands/` to the non-existent `plugins/specmanager/docs/references/`; the file is repo-root `docs/references/stitch-design-md.md`, outside the plugin. Replaced with the plain spec name "Google Stitch DESIGN.md format" | — | Same file, Steps 1 | — | — |
+
+Kept (plan 1.15 / Arch § commands/specmanager-init.md): the sibling-repo contract (read grant, writes stay in the meta root, absolute paths, per-repo files, reconcile/conflict rules), Steps 1–3 including the `repoPaths` forwarding and the `declaredRepos`/`rejectedRepos` report, the line-anchored-merge rationale once (Step 2), the three remaining Don'ts. Words 884→643 (−241); Don't/Never 4→3. No INV row covers this file, so no `max` moves and `selftest-prompts.ts` is untouched; `selftest-directory` passes after the link fix.
 
 ### `commands/specmanager-interview.md`
 
