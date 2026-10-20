@@ -23,6 +23,9 @@ import {
   isFeatureShipped,
   listDocuments,
   listPhases,
+  listTasks,
+  readTasksMeta,
+  setPhaseMeta,
   getNextPhase,
   getPhaseCompletion,
   migrateWalkthroughs,
@@ -415,6 +418,91 @@ async function main(): Promise<void> {
   assert(
     spPc !== null && spPc.isSinglePhase === true && spPc.complete === true && spPc.needsWalkthrough === true,
     "get_phase_completion: single-phase all-done ⇒ isSinglePhase && complete && needsWalkthrough"
+  );
+
+  // ----- Planner rewrite: spike phase + meta-only placeholder ---------------
+  const skFeat = await createFeature("Spike feat", root);
+  const skPlan = await createDocument(
+    { featureId: skFeat.id, stage: "plan", title: "SK plan", body: "# SK" },
+    root
+  );
+  await setStatus(skPlan.frontmatter.id, "approved", root);
+  const skTask = await createTask(
+    { featureId: skFeat.id, title: "Spike 1", phase: "spike", complexity: 2 },
+    root
+  );
+  await setPhaseMeta(skFeat.id, "spike", { testCommand: "none", kind: "spike" }, root);
+  await setPhaseMeta(skFeat.id, "build", { testCommand: "none", kind: "placeholder" }, root);
+  await updateTask(
+    { id: skTask.id, featureId: skFeat.id, status: "done", artifacts: { files: ["spike.ts"] } },
+    root
+  );
+
+  const skPc = await getPhaseCompletion(skFeat.id, "spike", root);
+  assert(
+    skPc !== null && skPc.isSinglePhase === false && skPc.complete === true,
+    "spike + placeholder ⇒ isSinglePhase === false"
+  );
+
+  const skWt = await createDocument(
+    {
+      featureId: skFeat.id,
+      stage: "walkthrough",
+      title: "SK — spike walkthrough",
+      body: "# Spike\n\n## Spike findings\n",
+      generatedBy: "agent",
+      phase: "spike",
+    },
+    root
+  );
+  await setStatus(skWt.frontmatter.id, "approved", root);
+  const skDocs = await listDocuments({ featureId: skFeat.id }, root);
+  const skPhases = await listPhases(skFeat.id, root);
+  assert(
+    isFeatureShipped(
+      skDocs.map((d) => d.frontmatter),
+      skPhases
+    ) === false,
+    "approved spike walkthrough does not ship the feature"
+  );
+
+  const skFinal = await checkGate(skFeat.id, "walkthrough", root, { phase: "final" });
+  assert(
+    skFinal.ok === false && skFinal.reason?.includes("build") === true,
+    `final gate names the placeholder as missing (got ${skFinal.reason})`
+  );
+
+  // Legacy tasks.json (meta.phases entry without kind / prerequisites) parses.
+  const lgFeat = await createFeature("Legacy tasks feat", root);
+  const lgPath = path.join(root, ".claude/specs/features", lgFeat.slug, "plan", "tasks.json");
+  await fs.mkdir(path.dirname(lgPath), { recursive: true });
+  await fs.writeFile(
+    lgPath,
+    JSON.stringify({
+      tasks: [
+        {
+          id: "task-001",
+          featureId: lgFeat.id,
+          title: "Old task",
+          status: "todo",
+          phase: "core",
+          complexity: 1,
+          dependsOn: [],
+          artifacts: { commits: [], files: [], pr: null },
+          createdAt: now,
+          updatedAt: now,
+        },
+      ],
+      meta: { phases: { core: { testCommand: "none" } }, blocked: {} },
+    }),
+    "utf8"
+  );
+  const lgTasks = await listTasks(lgFeat.id, root);
+  const lgMeta = await readTasksMeta(lgFeat.id, root);
+  assert(lgTasks.length === 1, "legacy tasks.json: tasks still parse");
+  assert(
+    lgMeta.phases.core?.kind === "build" && lgMeta.phases.core?.prerequisites.length === 0,
+    "legacy tasks.json: phase meta defaults kind=build, prerequisites=[]"
   );
 
   console.log("\nAll Phase 7.B assertions passed.");
