@@ -338,7 +338,25 @@ Kept (plan 1.9 / Arch § docs/agent-snippets/): the fragment below `---`, byte-i
 | Agent | Today | Decision | Evidence |
 |---|---|---|---|
 | prd-writer, architect, designer, planner, walkthrough-writer | `model: inherit`, no `tools` (inherit all) | No change | Arch G2: restricting tools risks breaking MCP access |
-| builder | `model: inherit`, explicit `tools:` allowlist with no `Skill` | Conditional on the Q-A probe | _filled by task-020_ |
+| builder | `model: inherit`, explicit `tools:` allowlist with no `Skill` | Add `Skill` to `tools:` (Q-A probe: the builder could not invoke skills) | See "Q-A probe (task-020)" below |
+
+### Q-A probe (task-020)
+
+Setup: a scratch git project with one project-local skill, `.claude/skills/probe-skill/SKILL.md` ("write SKILL_RAN to probe-marker.txt"). One headless run per state, CLI 2.1.285, under a clean env, with the repo's plugin loaded and the installed one disabled:
+
+```bash
+env -i HOME="$HOME" PATH="$PATH" USER="$USER" SHELL="$SHELL" TMPDIR="$TMPDIR" CLAUDE_PLUGIN_DATA=<scratch>/data \
+  claude --plugin-dir <repo>/plugins/specmanager \
+    --settings '{"enabledPlugins":{"specmanager@specmanager":false}}' \
+    --allowedTools Agent Skill Read Write Bash \
+    -p 'Dispatch the specmanager:builder subagent ... list every tool available to you; if you have a tool named Skill, call it with skill "probe-skill" ...; else say NO_SKILL_TOOL' \
+    --output-format stream-json --verbose
+```
+
+- **Before** (allowlist without `Skill`): the main session's init lists `Skill` and `probe-skill`, but the builder reported its tools as Read, Edit, Write, Bash plus the 7 SpecManager MCP tools, and answered `NO_SKILL_TOOL`. The stream had no `Skill` tool_use under the builder's `parent_tool_use_id`, and `probe-marker.txt` was absent. So the Superpowers and `frontend-design` defer paths in builder.md could never fire.
+- **After** (`Skill` added after `Grep`): the builder reported `Skill` in its tool list. The stream shows `Skill {"skill":"probe-skill"}`, then the skill's `Bash printf 'SKILL_RAN' > probe-marker.txt`, both under the builder's `parent_tool_use_id`, and `probe-marker.txt` contains `SKILL_RAN`. Cost: $0.33 before, $0.41 after.
+- Checks after the change: `npm run build`, `npm run selftest-prompts` (77 invariants) and `npm run selftest-directory` all pass.
+- Side finding, not changed here: `Glob` and `Grep` are in the allowlist, but CLI 2.1.285 doesn't offer them as tools, not even in the main session's init list. The builder silently goes without them and searches with Bash. The entries are harmless, and the task's scope was `Skill` only.
 | reviewer | `model: opus`, `disallowedTools` denylist | Keep the `opus` pin (PRD Q3) | `commands/specmanager-build.md` 7b; `docs/verification/reviewer-disallowedtools.md` |
 | all | no `effort` | Leave unset (PRD Q2) | Revisit only if the G4 dogfood shows a defect `effort` addresses |
 
