@@ -3,6 +3,8 @@ import { claudeMdPath, projectRoot } from "./paths.js";
 import { buildManifest } from "./manifest.js";
 import { isFeatureShipped } from "./shipped.js";
 import { scanDeclaredRepos } from "./repos.js";
+import { listDocuments } from "./documents.js";
+import { indexHeadings, resolveArchitectureRefs } from "./spec-slice.js";
 
 const START = "<!-- specmanager:start -->";
 const END = "<!-- specmanager:end -->";
@@ -74,6 +76,42 @@ function isShipped(f: {
   return isFeatureShipped(f.documents, f.phases);
 }
 
+const GIT_STRATEGY_SLUG = "git-strategy";
+
+/** True when a body has a `### Git strategy` heading (via the spec-slice indexer). */
+function hasGitStrategy(body: string): boolean {
+  return indexHeadings(body).some((h) => h.level === 3 && h.slug === GIT_STRATEGY_SLUG);
+}
+
+/**
+ * The newest walkthrough's (any feature, any status, by `updatedAt`) `### Git
+ * strategy` section, rendered for the managed block: own heading dropped and
+ * any line carrying a `specmanager:` marker removed so it cannot break the
+ * block. Sub-headings are already `####`+ because the slice stops at `###`.
+ * Null when no walkthrough has the section.
+ */
+async function gitStrategySection(
+  root: string,
+  titles: Map<string, string>
+): Promise<string[] | null> {
+  const docs = (await listDocuments({ stage: "walkthrough" }, root))
+    .filter((d) => hasGitStrategy(d.body))
+    .sort((a, b) => b.frontmatter.updatedAt.localeCompare(a.frontmatter.updatedAt));
+  const doc = docs[0];
+  if (!doc) return null;
+  const { sections } = resolveArchitectureRefs(doc.body, [GIT_STRATEGY_SLUG]);
+  const body = (sections[0]?.body ?? "")
+    .split("\n")
+    .slice(1)
+    .filter((l) => !l.includes("<!-- specmanager:"))
+    .join("\n")
+    .trim();
+  const fm = doc.frontmatter;
+  const feature = titles.get(fm.featureId) ?? fm.featureId;
+  const note = `_From ${feature} — phase ${fm.phase ?? "default"} walkthrough (${fm.id})._`;
+  return body ? [note, "", body] : [note];
+}
+
 export async function renderBlock(root = projectRoot()): Promise<string> {
   const m = await buildManifest(root);
   const lines: string[] = [];
@@ -115,6 +153,13 @@ export async function renderBlock(root = projectRoot()): Promise<string> {
         `- **${r.name}** — [CLAUDE.md](./repos/${r.name}/CLAUDE.md) · [DESIGN.md](./repos/${r.name}/DESIGN.md)${placeholder}`
       );
     }
+  }
+  const git = await gitStrategySection(root, new Map(m.features.map((f) => [f.id, f.title])));
+  if (git) {
+    lines.push("");
+    lines.push("### Git strategy");
+    lines.push("");
+    lines.push(...git);
   }
   lines.push("");
   lines.push(
