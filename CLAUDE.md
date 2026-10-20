@@ -32,15 +32,16 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 | Company-brain grounding | PRD | — |
 | Cowork support | PRD (draft) | — |
 | Loop command (/specmanager-loop) | PRD (approved) | — |
+| Planner rewrite | PRD (approved) | — |
 
 _10 features shipped — full history on the board._
 
 **Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation.
 
 **Commands:**
-`/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)
+`/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD) · `/specmanager-loop` (auto-approves, stops before Build)
 
-_Last synced: 2026-10-01T12:41:33.493Z_
+_Last synced: 2026-10-20T11:21:44.094Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
@@ -103,7 +104,10 @@ Load-bearing invariants (don't drift):
 - **Per-task tier dispatch** (`core/tiers.ts`) — a task's `complexity` maps to a tier and a Claude model *alias*: 1 → cheap → `sonnet`, 2 → standard → `sonnet`, 3 (and >3 / null) → strong → `opus`. `cheap` is `sonnet`, not `haiku`, because Haiku 4.5's 200K context is a correctness cliff on a large repo. The three-tier ladder is kept so the reviewer-fail escalation has somewhere to go. The build command passes the alias as the builder `Task`'s `model`; it routes on **aliases, never dated model ids**, and an unknown alias means omit `model:` (inherit the session default), never error.
 - **Deterministic spec slicing** (`core/spec-slice.ts`, `get_spec_slice`) — the reviewer's slice (phase plan section + task records + the Architecture sections named in `meta.architectureRefs`) is a pure function. Anchors resolve by leading id-token (`R6`, `Q1`) or kebab-slug (single hyphens: `failure-edge-cases`), sliced to the next heading of level ≤ their own. **An unresolved anchor is loud**: it lands in `unresolvedRefs` instead of silently thinning the slice. Name-matching fallback fires only when refs are absent or all unresolved, flagged by `fallbackUsed`. `matchPhaseHeading` lives here and is imported by `core/active-card.ts`, so there is one phase-heading parser.
 - **Stop-gate hook** (`hooks/stop-gate.sh`, pure bash, no model calls) — on `Stop`, if a build phase is in flight it runs that phase's test command and checks all its tasks are `done`, exiting 2 (keep working) until they pass; after N=3 failures it marks the phase `blocked` and allows the stop. Resolution is **marker-first**: `core/active-build.ts` writes `.claude/specs/.cache/active-build.json` (`set_active_build` / `clear_active_build`, called by the build command), and `resolveActiveCard` returns `null` without a marker, so the gate is a no-op outside an in-flight build. The marker is **session-scoped** (`CLAUDE_CODE_SESSION_ID` against the hook's stdin `session_id`): a stop from another session neither nags nor spends the retry budget.
-- **Reviewer** (`agents/reviewer.md`) — read-only; given the spec slice and the phase diff, returns a pass/fail verdict. Never writes.
+- **Phase meta** (`core/phases.ts`) — each phase in `tasks.json` meta carries `kind` (`build` | `spike` | `placeholder`) and `prerequisites` (human-setup descriptions + `grantVia`, never secret values). `rollupPhases` lists meta-only `placeholder` phases as `empty`, so a spike + placeholder plan is not single-phase. Spike findings live in the spike's walkthrough; `/specmanager-plan` fill mode then fills the placeholder (the plan goes back to `draft`).
+- **Human prerequisites** — the build command asks a phase's prerequisites up front (start now / ask when needed); a builder that returns `NEEDS_HUMAN: <item>` is paused, not failed: the command asks the user and re-dispatches the task without spending a retry.
+- **Reviewer** (`agents/reviewer.md`) — read-only via a `disallowedTools` denylist (Write, Edit, NotebookEdit, Agent, SpecManager MCP tools; verified headlessly in `docs/verification/reviewer-disallowedtools.md`), so it inherits browser/device tools for UI checks. Given the spec slice and the phase diff, returns a pass/fail verdict. Never writes.
+- **Walkthroughs** open with a stakeholder test guide and end with Lessons learned (from the build log, commits and `meta.blocked` notes).
 - **Resilient post-phase finalize** (`core/phase-completion.ts`, `get_phase_completion`) — after the builder loop returns *or errors*, the build command calls it (`{ complete, hasWalkthrough, needsWalkthrough, isSinglePhase }`) and runs the walkthrough + doc-sync whenever the phase's tasks are all `done`, so a builder that 529s after its work landed still finalizes. Per-task dispatch is the default (`--bulk` opts into one whole-phase Task); a builder Task retries at most twice on transient `529`/Overloaded.
 
 ## Build / test commands
