@@ -52,13 +52,13 @@ export function furthestStage(
 }
 
 function notesFor(f: {
-  documents: Array<{ stage: string; status: string; stale: boolean }>;
+  documents: Array<{ stage: string; status: string; stale: boolean; kind?: string }>;
   tasks: { todo: number; in_progress: number; done: number; blocked?: number; total: number };
-  currentStage: string;
   phases?: Array<{ name: string; status: string }>;
 }): string {
   const stale = f.documents.filter((d) => d.stale).map((d) => stageLabel(d.stage));
-  if (f.currentStage === "plan" && f.tasks.total > 0) {
+  const stage = furthestStage(f.documents)?.stage;
+  if ((stage === "plan" || stage === "walkthrough") && f.tasks.total > 0) {
     const phaseSummary =
       f.phases && f.phases.length > 1
         ? ` · phases ${f.phases.filter((p) => p.status === "done").length}/${f.phases.length}`
@@ -72,17 +72,13 @@ function notesFor(f: {
   return "—";
 }
 
+/** Table label from the furthest stage the docs reach; `PRD` with no doc. */
 function currentStageLabel(f: {
-  currentStage: string;
   documents: Array<{ stage: string; status: string; kind?: string }>;
 }): string {
-  // Skip interview artifacts: readdir puts interview.md before prd.md, so
-  // without this the interview's status would shadow the PRD's in the table.
-  const doc = f.documents.find(
-    (d) => d.stage === f.currentStage && d.kind !== "interview"
-  );
-  if (!doc) return stageLabel(f.currentStage);
-  return `${stageLabel(f.currentStage)} (${doc.status})`;
+  const top = furthestStage(f.documents);
+  if (!top) return stageLabel("prd");
+  return `${stageLabel(top.stage)} (${top.status})`;
 }
 
 /** Shipped = the feature's terminal walkthrough is approved (same signal as

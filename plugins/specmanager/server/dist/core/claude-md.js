@@ -47,7 +47,8 @@ export function furthestStage(documents) {
 }
 function notesFor(f) {
     const stale = f.documents.filter((d) => d.stale).map((d) => stageLabel(d.stage));
-    if (f.currentStage === "plan" && f.tasks.total > 0) {
+    const stage = furthestStage(f.documents)?.stage;
+    if ((stage === "plan" || stage === "walkthrough") && f.tasks.total > 0) {
         const phaseSummary = f.phases && f.phases.length > 1
             ? ` · phases ${f.phases.filter((p) => p.status === "done").length}/${f.phases.length}`
             : "";
@@ -60,13 +61,12 @@ function notesFor(f) {
         return `${stale.join(", ")} ⚠️ stale`;
     return "—";
 }
+/** Table label from the furthest stage the docs reach; `PRD` with no doc. */
 function currentStageLabel(f) {
-    // Skip interview artifacts: readdir puts interview.md before prd.md, so
-    // without this the interview's status would shadow the PRD's in the table.
-    const doc = f.documents.find((d) => d.stage === f.currentStage && d.kind !== "interview");
-    if (!doc)
-        return stageLabel(f.currentStage);
-    return `${stageLabel(f.currentStage)} (${doc.status})`;
+    const top = furthestStage(f.documents);
+    if (!top)
+        return stageLabel("prd");
+    return `${stageLabel(top.stage)} (${top.status})`;
 }
 /** Shipped = the feature's terminal walkthrough is approved (same signal as
  * feature.shipped): a "final" roll-up, or a single-phase feature's only phase. */

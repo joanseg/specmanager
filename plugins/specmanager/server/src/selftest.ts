@@ -26,6 +26,7 @@ import {
   manifestPath,
   writeManifest,
   furthestStage,
+  createTask,
 } from "./core/index.js";
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -394,6 +395,39 @@ async function main(): Promise<void> {
       { stage: "walkthrough", status: "approved" },
     ]) === JSON.stringify({ stage: "walkthrough", status: "approved" }),
     "furthestStage: all walkthroughs approved → approved"
+  );
+
+  // 11.4b The table label and Build note follow furthestStage, not the
+  // never-advanced currentStage ("prd"): an approved Plan with tasks reads
+  // `Plan (approved)` + Build note; a draft walkthrough keeps the note.
+  const labelFeature = await createFeature("Label widget", root);
+  const labelPlan = await createDocument(
+    { featureId: labelFeature.id, stage: "plan", title: "Label widget plan", body: "# Plan" },
+    root
+  );
+  await setStatus(labelPlan.frontmatter.id, "approved", root);
+  await createTask({ featureId: labelFeature.id, title: "Do it", complexity: 1 }, root);
+  await syncClaudeMd(root);
+  const claudeMdLabel = await fs.readFile(path.join(root, "CLAUDE.md"), "utf8");
+  assert(
+    claudeMdLabel.includes("| Label widget | Plan (approved) | Build (0/1 tasks done) |"),
+    "approved Plan with tasks → `Plan (approved)` label and Build note"
+  );
+  await createDocument(
+    {
+      featureId: labelFeature.id,
+      stage: "walkthrough",
+      title: "Label widget walkthrough",
+      body: "# Walkthrough",
+      phase: "default",
+    },
+    root
+  );
+  await syncClaudeMd(root);
+  const claudeMdWt = await fs.readFile(path.join(root, "CLAUDE.md"), "utf8");
+  assert(
+    claudeMdWt.includes("| Label widget | Walkthroughs (draft) | Build (0/1 tasks done) |"),
+    "draft walkthrough → `Walkthroughs (draft)` label keeps the Build note"
   );
 
   // 11.5 Re-interview updates in place with a version bump (optimistic concurrency).
