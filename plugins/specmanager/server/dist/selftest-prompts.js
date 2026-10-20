@@ -311,7 +311,7 @@ const INVARIANTS = [
     },
     {
         id: "INV-22",
-        what: "the reviewer's stated read-only claim survives in its description. Residual, recorded not fixed: `tools:` narrows it to Read/Glob/Grep/Bash and Bash can write — no regex closes that gap",
+        what: "the reviewer's stated read-only claim survives in its description. Residual, recorded not fixed: a `disallowedTools` denylist removes Write/Edit/NotebookEdit/Agent and all SpecManager tools; Bash can still write — no regex closes that gap",
         pattern: "Never writes.",
         files: ["agents/reviewer.md"],
         min: 1,
