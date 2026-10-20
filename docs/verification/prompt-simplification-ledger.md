@@ -32,7 +32,7 @@ Feature `feat-agent-prompt-simplification-opus-5-5`. Every rule-bearing cut (C2,
 | `commands/specmanager-init.md` | 884 | 4 | | |
 | `commands/specmanager-interview.md` | 1031 | 5 | | |
 | `commands/specmanager-loop.md` | 1501 | 5 | | |
-| `commands/specmanager-plan.md` | 633 | 4 | | |
+| `commands/specmanager-plan.md` | 633 | 4 | 521 | 4 |
 | `commands/specmanager-prd.md` | 304 | 3 | 289 | 3 |
 | `commands/specmanager-walkthrough.md` | 459 | 2 | | |
 | `docs/agent-snippets/design-grounding.md` | 173 | 0 | | |
@@ -251,6 +251,10 @@ Kept (plan 1.11): the `check_gate` call and closed-gate stop (INV-16), the no-du
 
 | # | Removed (≤1-line quote) | Cat | Surviving carrier (file § / line) or core enforcement (file:function) | INV rows | max before→after |
 |---|---|---|---|---|---|
+| 1 | Step 3 trailing paragraph: "The planner writes `plan.md` (organised into `## Phase <name> — <theme>` sections with `**Exit test:**` lines) AND emits a `create_task` call per Build-order item with `phase` and Fibonacci `complexity` (≤3), … single named phase … spike … ≈100 points … `AskUserQuestion` … In fill mode it adds tasks to the placeholder phase only." | C3 | `agents/planner.md`: intro (one phase default, `## Phase <name> — <theme>`, spike/size triggers + `AskUserQuestion`), "Every task you persist must score ≤3", step 2 design grounding (screens/components/tokens), plan-structure steps 3–4 (`**Exit test:**`), `create_task` sketch (`phase`, `complexity`), Fill mode step 2 (placeholder phase only) | — | — |
+| 2 | Rename `Task({ subagent_type: "planner", … })` → `Agent({ … })` (Arch Q4); no rule change | — | Same line, step 3 | — | — |
+
+Kept (plan 1.12): the "Don't accept a truly flat plan … send it back to redo" bullet (the command acts on it; single-named-phase clause intact), the gate/mode resolution, the fill-mode `set_status` draft step, `check_gate` (INV-16, count unchanged), "Don't approve the plan". Words 633→521 (−112); Don't/Never 4→4. No INV count changed, so no `max` moves and `selftest-prompts.ts` is untouched.
 
 ### `commands/specmanager-prd.md`
 
