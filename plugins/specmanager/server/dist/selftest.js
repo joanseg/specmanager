@@ -8,7 +8,7 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { initProject, createFeature, createDocument, writeDocument, setStatus, readDocumentById, checkGate, listStale, syncClaudeMd, syncDesignMd, scanUiSources, sanitizeDesignBriefBody, manifestPath, writeManifest, } from "./core/index.js";
+import { initProject, createFeature, createDocument, writeDocument, setStatus, readDocumentById, checkGate, listStale, syncClaudeMd, syncDesignMd, scanUiSources, sanitizeDesignBriefBody, manifestPath, writeManifest, furthestStage, } from "./core/index.js";
 function assert(condition, message) {
     if (!condition) {
         throw new Error(`FAIL: ${message}`);
@@ -203,6 +203,29 @@ async function main() {
     await syncClaudeMd(root);
     const claudeMd3 = await fs.readFile(path.join(root, "CLAUDE.md"), "utf8");
     assert(claudeMd3.includes("| Session timeline | PRD (draft) |"), "CLAUDE.md stage label reflects the PRD, not the interview");
+    // 11.4a furthestStage: STAGE order, interview excluded, drafts count,
+    // design counts, walkthroughs outrank plan (draft if any draft), null if none.
+    const fs1 = (docs) => JSON.stringify(furthestStage(docs));
+    assert(fs1([]) === "null", "furthestStage: no docs → null");
+    assert(fs1([{ stage: "prd", status: "approved", kind: "interview" }]) === "null", "furthestStage: interview-only → null");
+    assert(fs1([
+        { stage: "prd", status: "approved" },
+        { stage: "architecture", status: "approved" },
+        { stage: "plan", status: "draft" },
+    ]) === JSON.stringify({ stage: "plan", status: "draft" }), "furthestStage: a draft plan counts");
+    assert(fs1([
+        { stage: "architecture", status: "approved" },
+        { stage: "design", status: "draft" },
+    ]) === JSON.stringify({ stage: "design", status: "draft" }), "furthestStage: design counts as a stage");
+    assert(fs1([
+        { stage: "plan", status: "approved" },
+        { stage: "walkthrough", status: "approved" },
+        { stage: "walkthrough", status: "draft" },
+    ]) === JSON.stringify({ stage: "walkthrough", status: "draft" }), "furthestStage: walkthroughs outrank plan; any draft walkthrough → draft");
+    assert(fs1([
+        { stage: "plan", status: "approved" },
+        { stage: "walkthrough", status: "approved" },
+    ]) === JSON.stringify({ stage: "walkthrough", status: "approved" }), "furthestStage: all walkthroughs approved → approved");
     // 11.5 Re-interview updates in place with a version bump (optimistic concurrency).
     const interviewV2 = await writeDocument({
         id: interview.frontmatter.id,

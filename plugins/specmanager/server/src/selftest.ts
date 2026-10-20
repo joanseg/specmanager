@@ -25,6 +25,7 @@ import {
   sanitizeDesignBriefBody,
   manifestPath,
   writeManifest,
+  furthestStage,
 } from "./core/index.js";
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -353,6 +354,46 @@ async function main(): Promise<void> {
   assert(
     claudeMd3.includes("| Session timeline | PRD (draft) |"),
     "CLAUDE.md stage label reflects the PRD, not the interview"
+  );
+
+  // 11.4a furthestStage: STAGE order, interview excluded, drafts count,
+  // design counts, walkthroughs outrank plan (draft if any draft), null if none.
+  const fs1 = (docs: Array<{ stage: string; status: string; kind?: string }>) =>
+    JSON.stringify(furthestStage(docs));
+  assert(fs1([]) === "null", "furthestStage: no docs → null");
+  assert(
+    fs1([{ stage: "prd", status: "approved", kind: "interview" }]) === "null",
+    "furthestStage: interview-only → null"
+  );
+  assert(
+    fs1([
+      { stage: "prd", status: "approved" },
+      { stage: "architecture", status: "approved" },
+      { stage: "plan", status: "draft" },
+    ]) === JSON.stringify({ stage: "plan", status: "draft" }),
+    "furthestStage: a draft plan counts"
+  );
+  assert(
+    fs1([
+      { stage: "architecture", status: "approved" },
+      { stage: "design", status: "draft" },
+    ]) === JSON.stringify({ stage: "design", status: "draft" }),
+    "furthestStage: design counts as a stage"
+  );
+  assert(
+    fs1([
+      { stage: "plan", status: "approved" },
+      { stage: "walkthrough", status: "approved" },
+      { stage: "walkthrough", status: "draft" },
+    ]) === JSON.stringify({ stage: "walkthrough", status: "draft" }),
+    "furthestStage: walkthroughs outrank plan; any draft walkthrough → draft"
+  );
+  assert(
+    fs1([
+      { stage: "plan", status: "approved" },
+      { stage: "walkthrough", status: "approved" },
+    ]) === JSON.stringify({ stage: "walkthrough", status: "approved" }),
+    "furthestStage: all walkthroughs approved → approved"
   );
 
   // 11.5 Re-interview updates in place with a version bump (optimistic concurrency).

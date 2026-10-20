@@ -5,6 +5,7 @@ import { isFeatureShipped } from "./shipped.js";
 import { scanDeclaredRepos } from "./repos.js";
 import { listDocuments } from "./documents.js";
 import { indexHeadings, resolveArchitectureRefs } from "./spec-slice.js";
+import { STAGE } from "./types.js";
 const START = "<!-- specmanager:start -->";
 const END = "<!-- specmanager:end -->";
 /** Match a marker only when it stands alone on its own line, so markers
@@ -28,6 +29,21 @@ function stageLabel(stage) {
         default:
             return stage;
     }
+}
+/**
+ * The furthest lifecycle stage a feature's documents reach, in `STAGE` order.
+ * Interview docs are excluded and drafts count. With several docs at that
+ * stage (e.g. walkthroughs) the status is `draft` if any is draft. Null when
+ * there is no non-interview doc.
+ */
+export function furthestStage(documents) {
+    const docs = documents.filter((d) => d.kind !== "interview");
+    const stage = [...STAGE.options].reverse().find((s) => docs.some((d) => d.stage === s));
+    if (!stage)
+        return null;
+    const atTop = docs.filter((d) => d.stage === stage);
+    const status = atTop.some((d) => d.status === "draft") ? "draft" : "approved";
+    return { stage, status };
 }
 function notesFor(f) {
     const stale = f.documents.filter((d) => d.stale).map((d) => stageLabel(d.stage));
