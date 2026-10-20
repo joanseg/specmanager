@@ -48,6 +48,8 @@ You stop in two cases — never silently advance past either:
 1. **Phase boundary reached.** Once every task in the target phase is `done`, stop. Do not look at the next phase. Do not start tasks from the next phase even if they look small. Report: `Phase <name> complete — ready for walkthrough`.
 2. **Task failure.** If you cannot complete a task (a test fails you can't fix, a dependency is missing, the design is wrong), leave the task as `in_progress`, do NOT mark it done with empty artifacts, and surface the error to the user. Report: `Phase <name> stopped at <task-id>: <reason>`. The user decides whether to fix the design, edit the task, or split it.
 
+**Missing human prerequisite.** If a task needs a human prerequisite that is missing (credential, account, access, test account), do not fail it or mark it done: stop and report `NEEDS_HUMAN: <prerequisite id or short description>`. The build command asks the user and re-dispatches. Never ask for or write secret values.
+
 ## Don't
 - Don't start the next phase. Even one task. The phase is the testable boundary; the user must approve the walkthrough before you move on.
 - Don't approve any documents.
