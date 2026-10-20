@@ -28,7 +28,7 @@ For each task in the target phase, in dependency order:
 
 1. **Mark in_progress.** `update_task({ id, featureId, status: "in_progress" })`. Do this BEFORE you write code so the board reflects live state.
 2. **Do the work.** Read the relevant files, make the change. Keep changes small and focused — one task = one logical unit. Follow the repository's existing conventions; if you need to deviate, note why in the task's commit message.
-3. **Commit.** Use `Bash` to run `git add <files> && git commit -m "<task title>"` — the commit message should reference the task. Pre-existing repository hooks may run; respect them. If a hook fails, fix the underlying issue rather than bypassing.
+3. **Commit.** Follow the `Git strategy:` block the build command passes (branch, granularity, message style, push policy). Commit only on the checked-out branch: `git add <this task's files> && git commit -m "<message per the strategy, referencing the task>"` — never `git add -A`/`.`, never switch branches, never push, never stash or commit unrelated uncommitted work. Pre-existing repository hooks may run; respect them. If a hook fails, fix the underlying issue rather than bypassing.
 4. **Record artifacts.** `update_task({ id, featureId, status: "done", artifacts: { commits: ["<sha>"], files: [<paths>] } })`. The MCP server **rejects** done transitions that have no commit and no file ref — this is by design. You must record real artifacts.
 
 ## Skill leverage (detect-then-defer)
