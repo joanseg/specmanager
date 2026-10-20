@@ -15,6 +15,7 @@ import {
   listPhases,
   getNextPhase,
   listTasks,
+  setPhaseMeta,
 } from "./core/index.js";
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -149,6 +150,34 @@ async function main(): Promise<void> {
   const blkPhases = await listPhases(blk.id, root);
   assert(blkPhases[0]!.status === "blocked", "a blocked task rolls the phase up to blocked");
   assert(blkPhases[0]!.blockedCount === 1, "phase blockedCount reflects the blocked task");
+
+  // 9. Defaults without meta: kind "build", no prerequisites.
+  assert(
+    phases.every((p) => p.kind === "build" && p.prerequisites.length === 0),
+    "phases without meta default to kind 'build' and no prerequisites"
+  );
+
+  // 10. Meta-only placeholder phase: listed empty, last, kind placeholder; getNextPhase skips it.
+  const spk = await createFeature("Spike then placeholder", root);
+  await createTask({ featureId: spk.id, title: "S1", phase: "spike", complexity: 2 }, root);
+  await setPhaseMeta(spk.id, "spike", { testCommand: "npm test", kind: "spike" }, root);
+  await setPhaseMeta(spk.id, "build", { testCommand: "none", kind: "placeholder" }, root);
+  await setPhaseMeta(spk.id, "renamed", { testCommand: "none" }, root);
+  const spkPhases = await listPhases(spk.id, root);
+  assert(spkPhases.length === 2, "placeholder listed; stale non-placeholder meta key ignored");
+  assert(spkPhases[0]!.name === "spike" && spkPhases[0]!.kind === "spike", "spike phase first, kind spike");
+  const ph = spkPhases[1]!;
+  assert(ph.name === "build" && ph.order === 1, "placeholder appended last");
+  assert(ph.kind === "placeholder" && ph.status === "empty", "placeholder has kind placeholder, status empty");
+  assert(ph.taskCount === 0 && ph.prerequisites.length === 0, "placeholder has zero tasks, no prerequisites");
+  const spkNext = await getNextPhase(spk.id, root);
+  assert(spkNext?.name === "spike", "getNextPhase returns the spike while it is open");
+  const s1 = (await listTasks(spk.id, root))[0]!;
+  await updateTask(
+    { id: s1.id, featureId: spk.id, status: "done", artifacts: { commits: ["s1abc"] } },
+    root
+  );
+  assert((await getNextPhase(spk.id, root)) === null, "getNextPhase skips the empty placeholder");
 
   console.log("\nAll Phase 7.A assertions passed.");
   console.log(`Inspect the tmp project at: ${root}`);
