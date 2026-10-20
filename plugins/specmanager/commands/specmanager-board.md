@@ -11,4 +11,4 @@ Open the SpecManager kanban board.
 
 ## Don't
 
-- Don't try to start a separate process or use `Bash` to launch the browser. The MCP tool handles platform-specific opening (`open` on macOS, `xdg-open` on Linux, `start` on Windows).
+- Don't try to start a separate process or use `Bash` to launch the browser. `open_board` opens the browser itself.

@@ -13,9 +13,8 @@ feature, the PRD is drafted for that feature instead.
 
 1. **Resolve or create the feature.** Call `list_features`. If a feature's `id`
    or `slug` matches the argument, use it. Otherwise treat the argument as a
-   **new feature title** and call `create_feature({ title })` — it generates a
-   kebab-case slug, scaffolds the per-stage folders, writes `feature.json`, and
-   refreshes `manifest.json`; report the new `id`, `slug`, and folder path. If no
+   **new feature title** and call `create_feature({ title })`; report the new
+   `id`, `slug`, and folder path. If no
    argument was given, ask the user for one short title and stop.
 2. **Check for an existing draft.** Call
    `list_documents({ featureId, stage: "prd" })`. **Ignore docs with
@@ -24,7 +23,7 @@ feature, the PRD is drafted for that feature instead.
    non-interview PRD already exists, ask whether to (a) iterate on it via the
    panel UI or (b) start over (the user must delete it manually). Do **not**
    create a duplicate.
-3. **Invoke the subagent.** Use the `Task` tool with `subagent_type: "prd-writer"`
+3. **Invoke the subagent.** Use the `Agent` tool with `subagent_type: "prd-writer"`
    and a prompt carrying the feature id + title and any extra context the user
    gave alongside the slash command.
 4. **Report.** The new document id and file path. Suggest opening it in the board

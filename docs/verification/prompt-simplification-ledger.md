@@ -25,15 +25,15 @@ Feature `feat-agent-prompt-simplification-opus-5-5`. Every rule-bearing cut (C2,
 | `agents/prd-writer.md` | 448 | 4 | 421 | 4 |
 | `agents/reviewer.md` | 552 | 0 | 550 | 0 |
 | `agents/walkthrough-writer.md` | 1508 | 7 | 1412 | 5 |
-| `commands/specmanager-architecture.md` | 188 | 1 | | |
-| `commands/specmanager-board.md` | 110 | 1 | | |
+| `commands/specmanager-architecture.md` | 188 | 1 | 176 | 1 |
+| `commands/specmanager-board.md` | 110 | 1 | 100 | 1 |
 | `commands/specmanager-build.md` | 2683 | 13 | | |
 | `commands/specmanager-design.md` | 416 | 2 | | |
 | `commands/specmanager-init.md` | 884 | 4 | | |
 | `commands/specmanager-interview.md` | 1031 | 5 | | |
 | `commands/specmanager-loop.md` | 1501 | 5 | | |
 | `commands/specmanager-plan.md` | 633 | 4 | | |
-| `commands/specmanager-prd.md` | 304 | 3 | | |
+| `commands/specmanager-prd.md` | 304 | 3 | 289 | 3 |
 | `commands/specmanager-walkthrough.md` | 459 | 2 | | |
 | `docs/agent-snippets/design-grounding.md` | 173 | 0 | | |
 | `docs/agent-snippets/lossless-carryover.md` | 193 | 0 | 82 | 0 |
@@ -200,11 +200,18 @@ Kept (Keep-list / plan 1.7): the Inputs single-phase line and the Final-mode ref
 
 | # | Removed (≤1-line quote) | Cat | Surviving carrier (file § / line) or core enforcement (file:function) | INV rows | max before→after |
 |---|---|---|---|---|---|
+| 1 | "The architect reads the PRD, scans repo conventions, and calls `create_document` itself." | C3 | `agents/architect.md` § Persist ("Call `create_document` with:") and its PRD/convention read steps; the command keeps § Don't "Don't draft architecture inline" | INV-16 (count unchanged, 1 here) | 5→5 |
+| 2 | Rename "Use the `Task` tool" → "Use the `Agent` tool" (Arch Q4); no rule change | — | Same line, step 2 | — | — |
+
+Kept (plan 1.10): `check_gate` call and closed-gate stop (INV-16), the explicit PRD-id hand-off, the Don't. Words 188→176 (−12); Don't/Never 1→1. No INV count changed, so no `max` moves and `selftest-prompts.ts` is untouched.
 
 ### `commands/specmanager-board.md`
 
 | # | Removed (≤1-line quote) | Cat | Surviving carrier (file § / line) or core enforcement (file:function) | INV rows | max before→after |
 |---|---|---|---|---|---|
+| 1 | "The MCP tool handles platform-specific opening (`open` on macOS, `xdg-open` on Linux, `start` on Windows)." → "`open_board` opens the browser itself." | C5 | `server/src/mcp.ts` `open_board` tool (platform switch at the `xdg-open` branch); the Don't "try to start a separate process or use `Bash`" is kept | — | — |
+
+Kept: both steps and the Don't. Words 110→100 (−10); Don't/Never 1→1. No INV row covers this file; `selftest-prompts.ts` untouched.
 
 ### `commands/specmanager-build.md`
 
@@ -240,6 +247,10 @@ Kept (Keep-list / plan 1.7): the Inputs single-phase line and the Final-mode ref
 
 | # | Removed (≤1-line quote) | Cat | Surviving carrier (file § / line) or core enforcement (file:function) | INV rows | max before→after |
 |---|---|---|---|---|---|
+| 1 | "— it generates a kebab-case slug, scaffolds the per-stage folders, writes `feature.json`, and refreshes `manifest.json`" | C5 | `server/src/core/features.ts:createFeature`; the prompt keeps the `create_feature({ title })` call and the report of `id`, `slug`, folder path | — | — |
+| 2 | Rename "Use the `Task` tool" → "Use the `Agent` tool" (Arch Q4); no rule change | — | Same line, step 3 | — | — |
+
+Kept (plan 1.10): "Don't approve the PRD" and "Don't approve the new feature" (INV-25, 2 here, total 10, min 8), the interview-kind exclusion, no-duplicate rule, the subagent-only Don't. Words 304→289 (−15); Don't/Never 3→3. No INV count changed, so no `max` moves and `selftest-prompts.ts` is untouched.
 
 ### `commands/specmanager-walkthrough.md`
 
