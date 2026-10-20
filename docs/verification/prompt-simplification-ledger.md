@@ -269,6 +269,15 @@ Kept (plan 1.10): "Don't approve the PRD" and "Don't approve the new feature" (I
 
 | # | Removed (≤1-line quote) | Cat | Surviving carrier (file § / line) or core enforcement (file:function) | INV rows | max before→after |
 |---|---|---|---|---|---|
+| 1 | Don't: "Don't fabricate code tours. The subagent must read real files in per-phase mode; in final mode it must read the existing phase walkthroughs and link, not re-explain." | C3 | `agents/walkthrough-writer.md`: per-phase "Scope discipline (load-bearing)" (read the files and commits from this phase's tasks), exit checks "read them, don't invent"; final mode "do NOT re-read code" + "Link, don't re-explain"; Don't "describe what *is*" | — | — |
+| 2 | Step 3: "`final` is valid only for multi-phase features. Don't burn a gate round-trip or a subagent Task." | C2 | Same step 3: "refuse before touching the gate" + the refusal text ("there is no `final` roll-up") | — | — |
+| 3 | Step 4: "— for a phase name it fails until every task in that phase is `done`; for `final` it fails until every phase has an **approved** walkthrough (it lists the missing ones, and is only reachable for multi-phase features — single-phase `final` was refused at step 3)" | C5 | `server/src/core/dependencies.ts:checkGate` (walkthrough branch: phase tasks `done`; `final` lists unapproved phase walkthroughs in `reason`); the prompt keeps the `check_gate` call (INV-16) and "report `reason` and stop"; single-phase refusal stays in step 3 | INV-1 (walkthrough cmd 2→1, total 7→6, min 4) | 7→6 |
+| 4 | Step 5: "and hint that that phase's task artifacts come from `list_tasks` filtered by `phase`" | C3 | `agents/walkthrough-writer.md` per-phase Inputs (`list_tasks({ featureId })` filtered to `task.phase === <phase>`) | — | — |
+| 5 | Step 5: "Its `### Git strategy` comes from the commits (branch via `git branch --contains <sha>`, the message pattern; proposal unknown)." | C3 | `agents/walkthrough-writer.md` Lessons learned: "Manual run (no build log): derive the branch from the phase commits (`git branch --contains <sha>`) and the commit-message pattern, and say the proposal is unknown." | — | — |
+| 6 | Step 5 final mode: "explicitly, so the agent doesn't search for them" | C1 | None: rationale only; the command still passes the phase walkthrough doc ids | — | — |
+| 7 | Rename `Task({ subagent_type: "walkthrough-writer", … })` → `Agent({ … })` (Arch Q4); no rule change | — | Same line, step 5 | — | — |
+
+Kept (plan 1.13): step 3's single-phase `final` refusal (INV-1 carrier for this actor, 1 line) and the `isFeatureShipped` pointer, the `check_gate` call (INV-16, count unchanged), the no-duplicate rule, the phase `kind` pass, the manual-run "no build log" Lessons-learned instruction (the command is the only actor that knows the run is manual), "Don't approve the walkthrough" (INV-25, count unchanged). Words 459→329 (−130); Don't/Never 5→3. INV-1 `max` 7→6 in `selftest-prompts.ts`.
 
 ### `docs/agent-snippets/design-grounding.md`
 
