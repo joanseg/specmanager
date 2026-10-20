@@ -35,6 +35,8 @@ import {
   getPhaseCompletion,
   getSpecSlice,
   setPhaseMeta,
+  PhaseKindSchema,
+  PrerequisiteSchema,
   resolveActiveCard,
   setActiveBuild,
   clearActiveBuild,
@@ -450,18 +452,26 @@ server.registerTool(
     title: "Set phase metadata",
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description:
-      "Set a phase's planner metadata in tasks.json: `testCommand` (a runnable shell command, or the literal \"none\" for an intentionally test-less phase — never omit it) and `architectureRefs` (the Architecture anchors that phase implements, e.g. [\"R1\",\"core-active-card\"]). The Stop-gate reads testCommand as its primary verification source; the reviewer slice resolves architectureRefs. Call once per phase after create_task.",
+      "Set a phase's planner metadata in tasks.json: `testCommand` (a runnable shell command, or the literal \"none\" for an intentionally test-less phase — never omit it) and `architectureRefs` (the Architecture anchors that phase implements, e.g. [\"R1\",\"core-active-card\"]). Optional `kind`: \"build\" (default), \"spike\" (a time-boxed prototype that de-risks the rest), or \"placeholder\" (meta-only, zero tasks, filled after the spike — call this for it even though it has no create_task). Optional `prerequisites`: human setup the phase needs ({ id, title, kind: account|credential|access|test-account|other, neededBy: task ids, [] = from the first task, grantVia: how to grant it, e.g. an MCP server, CLI login or token env var}) — never a secret value. The call replaces the phase's whole meta entry. The Stop-gate reads testCommand as its primary verification source; the reviewer slice resolves architectureRefs. Call once per phase after create_task.",
     inputSchema: z.object({
       featureId: z.string(),
       phase: z.string().min(1),
       testCommand: z.string().min(1),
       architectureRefs: z.array(z.string()).optional(),
+      kind: PhaseKindSchema.optional(),
+      prerequisites: z.array(PrerequisiteSchema).optional(),
     }),
   },
-  async ({ featureId, phase, testCommand, architectureRefs }) => {
+  async ({ featureId, phase, testCommand, architectureRefs, kind, prerequisites }) => {
     try {
-      await setPhaseMeta(featureId, phase, { testCommand, architectureRefs }, PROJECT_DIR);
-      return ok({ phase, testCommand, architectureRefs: architectureRefs ?? [] });
+      await setPhaseMeta(featureId, phase, { testCommand, architectureRefs, kind, prerequisites }, PROJECT_DIR);
+      return ok({
+        phase,
+        testCommand,
+        architectureRefs: architectureRefs ?? [],
+        kind: kind ?? "build",
+        prerequisites: prerequisites ?? [],
+      });
     } catch (err) {
       return fail((err as Error).message);
     }

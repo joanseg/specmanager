@@ -4,7 +4,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { startBoardServer } from "./board-server.js";
 import { spawn } from "node:child_process";
-import { STAGE, DOC_KIND, DOC_STATUS, TASK_STATUS, TASK_COMPLEXITY, GENERATED_BY, events, initProject, listFeatures, createFeature, listDocuments, readDocumentById, createDocument, sanitizeDesignBriefBody, DESIGN_BRIEF_MAX_BYTES, writeDocument, setStatus, checkGate, listStale, linkDocuments, listTasks, createTask, updateTask, listPhases, getNextPhase, getPhaseCompletion, getSpecSlice, setPhaseMeta, resolveActiveCard, setActiveBuild, clearActiveBuild, syncClaudeMd, syncDesignMd, mergeSynthesizedTokens, writeManifest, } from "./core/index.js";
+import { STAGE, DOC_KIND, DOC_STATUS, TASK_STATUS, TASK_COMPLEXITY, GENERATED_BY, events, initProject, listFeatures, createFeature, listDocuments, readDocumentById, createDocument, sanitizeDesignBriefBody, DESIGN_BRIEF_MAX_BYTES, writeDocument, setStatus, checkGate, listStale, linkDocuments, listTasks, createTask, updateTask, listPhases, getNextPhase, getPhaseCompletion, getSpecSlice, setPhaseMeta, PhaseKindSchema, PrerequisiteSchema, resolveActiveCard, setActiveBuild, clearActiveBuild, syncClaudeMd, syncDesignMd, mergeSynthesizedTokens, writeManifest, } from "./core/index.js";
 const PROJECT_DIR = process.env.SPECMANAGER_PROJECT_DIR ?? process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
 const BOARD_PORT = Number(process.env.SPECMANAGER_BOARD_PORT ?? 4317);
 function text(payload) {
@@ -296,17 +296,25 @@ server.registerTool("get_spec_slice", {
 server.registerTool("set_phase_meta", {
     title: "Set phase metadata",
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
-    description: "Set a phase's planner metadata in tasks.json: `testCommand` (a runnable shell command, or the literal \"none\" for an intentionally test-less phase — never omit it) and `architectureRefs` (the Architecture anchors that phase implements, e.g. [\"R1\",\"core-active-card\"]). The Stop-gate reads testCommand as its primary verification source; the reviewer slice resolves architectureRefs. Call once per phase after create_task.",
+    description: "Set a phase's planner metadata in tasks.json: `testCommand` (a runnable shell command, or the literal \"none\" for an intentionally test-less phase — never omit it) and `architectureRefs` (the Architecture anchors that phase implements, e.g. [\"R1\",\"core-active-card\"]). Optional `kind`: \"build\" (default), \"spike\" (a time-boxed prototype that de-risks the rest), or \"placeholder\" (meta-only, zero tasks, filled after the spike — call this for it even though it has no create_task). Optional `prerequisites`: human setup the phase needs ({ id, title, kind: account|credential|access|test-account|other, neededBy: task ids, [] = from the first task, grantVia: how to grant it, e.g. an MCP server, CLI login or token env var}) — never a secret value. The call replaces the phase's whole meta entry. The Stop-gate reads testCommand as its primary verification source; the reviewer slice resolves architectureRefs. Call once per phase after create_task.",
     inputSchema: z.object({
         featureId: z.string(),
         phase: z.string().min(1),
         testCommand: z.string().min(1),
         architectureRefs: z.array(z.string()).optional(),
+        kind: PhaseKindSchema.optional(),
+        prerequisites: z.array(PrerequisiteSchema).optional(),
     }),
-}, async ({ featureId, phase, testCommand, architectureRefs }) => {
+}, async ({ featureId, phase, testCommand, architectureRefs, kind, prerequisites }) => {
     try {
-        await setPhaseMeta(featureId, phase, { testCommand, architectureRefs }, PROJECT_DIR);
-        return ok({ phase, testCommand, architectureRefs: architectureRefs ?? [] });
+        await setPhaseMeta(featureId, phase, { testCommand, architectureRefs, kind, prerequisites }, PROJECT_DIR);
+        return ok({
+            phase,
+            testCommand,
+            architectureRefs: architectureRefs ?? [],
+            kind: kind ?? "build",
+            prerequisites: prerequisites ?? [],
+        });
     }
     catch (err) {
         return fail(err.message);
