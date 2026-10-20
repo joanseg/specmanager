@@ -12,11 +12,12 @@
 // (task-002): Part A's corrected INV-1…INV-15 and Part B's added
 // INV-16…INV-37 — 37 reconciled entries — plus Part C's INV-38…INV-44 for
 // the loop command, Part D's INV-45/46 for the planner's phase triggers
-// and its ban on human verification tasks, and Part E's INV-47…INV-50 for
+// and its ban on human verification tasks, Part E's INV-47…INV-50 for
 // build prerequisites, secrets, the reviewer's UI check and the walkthrough
-// sections. A few are encoded as lettered rows (INV-14a…e, INV-27a…c,
+// sections, and Part F's INV-51/52 for the build's git strategy. A few are
+// encoded as lettered rows (INV-14a…e, INV-27a…c,
 // INV-36a/b, INV-45a…c, INV-46a/b, INV-47a/b, INV-48a…c, INV-49a/b,
-// INV-50a…d, and the pre-existing INV-15a/b)
+// INV-50a…e, INV-51a…f, INV-52a/b, and the pre-existing INV-15a/b)
 // because the reconciliation calls for one pattern per independently
 // deletable clause: a single whole-block pattern stays green when all but
 // one clause is cut, which is the exact failure the entry exists to catch.
@@ -672,6 +673,79 @@ const INVARIANTS = [
         what: "the walkthrough ends with a `## Lessons learned` section",
         pattern: "**Last — `## Lessons learned`.**",
         files: ["agents/walkthrough-writer.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-50e",
+        what: "Lessons learned opens with a `### Git strategy` subsection (exact heading, mirrored by CLAUDE.md and read by later builds)",
+        pattern: "It opens with **`### Git strategy`**",
+        files: ["agents/walkthrough-writer.md"],
+        min: 1,
+        max: 1,
+    },
+    // ---- Part F — INV-51/52: git strategy (build asks first, builder stays put) ----
+    {
+        id: "INV-51a",
+        what: "the build's git-strategy step runs before the prerequisite and tier steps, and so before any builder dispatch",
+        pattern: /^6a\. \*\*Git strategy \(once per build invocation, before 6c\/6b/gm,
+        files: ["commands/specmanager-build.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-51b",
+        what: "the git-strategy question offers \"Use this strategy\" as the recommended answer",
+        pattern: "**Use this strategy** *(recommended)*",
+        files: ["commands/specmanager-build.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-51c",
+        what: "the user can change the proposed git strategy with free-text edits, which are applied",
+        pattern: "Other (free-text edits; apply them",
+        files: ["commands/specmanager-build.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-51d",
+        what: "no branch is created, switched or committed before the user answers the git-strategy question",
+        pattern: "Never create a branch, switch, or commit before the answer.",
+        files: ["commands/specmanager-build.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-51e",
+        what: "the build's Don't list repeats: no branch create/switch before the 6a answer, never push the base branch",
+        pattern: /^- Don't create or switch a branch before the user answers step 6a[^\n]*push the base branch/gm,
+        files: ["commands/specmanager-build.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-51f",
+        what: "every builder dispatch (bulk and fix included) carries the `Git strategy:` block",
+        pattern: "every builder dispatch, bulk and fix included, carries it",
+        files: ["commands/specmanager-build.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-52a",
+        what: "the builder never switches branches",
+        pattern: "never switch branches",
+        files: ["agents/builder.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-52b",
+        what: "the builder never pushes",
+        pattern: "never push",
+        files: ["agents/builder.md"],
         min: 1,
         max: 1,
     },
