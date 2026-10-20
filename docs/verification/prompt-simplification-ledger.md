@@ -18,7 +18,7 @@ Feature `feat-agent-prompt-simplification-opus-5-5`. Every rule-bearing cut (C2,
 
 | File | Words before | Don't/Never before | Words after | Don't/Never after |
 |---|---|---|---|---|
-| `agents/architect.md` | 892 | 4 | | |
+| `agents/architect.md` | 892 | 4 | 845 | 4 |
 | `agents/builder.md` | 1173 | 5 | | |
 | `agents/designer.md` | 1195 | 6 | | |
 | `agents/planner.md` | 1905 | 5 | | |
@@ -131,6 +131,11 @@ Columns as below. C1/C4 spans: one row per file with a word count.
 
 | # | Removed (≤1-line quote) | Cat | Surviving carrier (file § / line) or core enforcement (file:function) | INV rows | max before→after |
 |---|---|---|---|---|---|
+| 1 | "Keep it grounded — every \"we will add X\" should reference a real file or directory that exists today." (standalone paragraph) | C2 | `agents/architect.md` § Don't, first bullet ("Don't invent files or modules that don't exist — every \"we will add X\" references a real file or directory that exists today.") | — | — |
+| 2 | "This is the structure this prompt already produces; making it a rule guarantees … `meta.architectureRefs` … resolves unambiguously — the build command locates the heading whose id-token (or kebab-slug) equals the ref and slices to the next same-level heading…" | C5 | `core/spec-slice.ts:resolveArchitectureRefs` (via `idToken` / `kebabSlug` / `indexHeadings`); the prompt keeps the anchor rules, the `architectureRefs` link and "do not reuse an anchor for two sections" | INV-35 (count unchanged, 1) | 1→1 |
+| 3 | C4 tags "— R6" (Context7 heading) and "R3/AC2a — " (anchor heading); 3 words by `wc -w` | C4 | None: provenance only | — | — |
+
+Kept (Keep-list / plan 1.5): the Context7 block verbatim (INV-27a–c, INV-28), the design-grounding clause (INV-15a), the density contract (INV-13/29), the persist sketch and the `basedOn` lines (INV-11, 3 here), "Don't approve the doc." (INV-25), "outside `.claude/specs/`" (INV-30), the anchor rules (INV-35). Words 892→845 (−47); Don't/Never 4→4. No INV count changed, so no `max` moves and `selftest-prompts.ts` is untouched.
 
 ### `agents/builder.md`
 
