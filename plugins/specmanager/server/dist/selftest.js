@@ -241,6 +241,36 @@ async function main() {
     await syncClaudeMd(root);
     const claudeMd5 = await fs.readFile(path.join(root, "CLAUDE.md"), "utf8");
     assert(claudeMd5.includes("| Shipped widget |") && !claudeMd5.includes("shipped — full history"), "reopening the final walkthrough restores the table row (self-healing)");
+    // 13. Git strategy subsection — rendered from the newest walkthrough's
+    // `### Git strategy` section; omitted when none has it.
+    assert(!claudeMd5.includes("### Git strategy"), "no walkthrough with a Git strategy section → block omits it");
+    const gitWt1 = await createDocument({
+        featureId: shippedFeature.id,
+        stage: "walkthrough",
+        title: "Shipped widget phase A walkthrough",
+        body: "# Walkthrough\n\n## Lessons learned\n\n### Git strategy\n\n- Branch: feat/widget\n\n### Other\n\nx",
+        phase: "A",
+    }, root);
+    await syncClaudeMd(root);
+    const claudeMd6 = await fs.readFile(path.join(root, "CLAUDE.md"), "utf8");
+    assert(claudeMd6.includes("### Git strategy") && claudeMd6.includes("- Branch: feat/widget"), "walkthrough with a Git strategy section → block renders it");
+    assert(claudeMd6.includes(`_From Shipped widget — phase A walkthrough (${gitWt1.frontmatter.id})._`), "Git strategy subsection carries the source note");
+    await new Promise((r) => setTimeout(r, 10));
+    const gitWt2 = await createDocument({
+        featureId: shippedFeature.id,
+        stage: "walkthrough",
+        title: "Shipped widget phase B walkthrough",
+        body: "# Walkthrough\n\n### Git strategy\n\n- Branch: main, direct commits\n<!-- specmanager:end -->\n",
+        phase: "B",
+    }, root);
+    await syncClaudeMd(root);
+    const claudeMd7 = await fs.readFile(path.join(root, "CLAUDE.md"), "utf8");
+    assert(claudeMd7.includes("- Branch: main, direct commits") &&
+        !claudeMd7.includes("feat/widget") &&
+        claudeMd7.includes(`walkthrough (${gitWt2.frontmatter.id})._`), "newer walkthrough's Git strategy replaces the older one");
+    const count = (s, needle) => s.split(needle).length - 1;
+    assert(count(claudeMd7, "<!-- specmanager:start -->") === 1 &&
+        count(claudeMd7, "<!-- specmanager:end -->") === 1, "embedded specmanager marker in the section keeps exactly one marker pair");
     console.log("\nAll Phase 1 assertions passed.");
     console.log(`Inspect the tmp project at: ${root}`);
 }
