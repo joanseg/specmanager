@@ -27,7 +27,7 @@ Feature `feat-agent-prompt-simplification-opus-5-5`. Every rule-bearing cut (C2,
 | `agents/walkthrough-writer.md` | 1508 | 7 | 1412 | 5 |
 | `commands/specmanager-architecture.md` | 188 | 1 | 176 | 1 |
 | `commands/specmanager-board.md` | 110 | 1 | 100 | 1 |
-| `commands/specmanager-build.md` | 2683 | 13 | | |
+| `commands/specmanager-build.md` | 2683 | 13 | 2528 | 10 |
 | `commands/specmanager-design.md` | 416 | 2 | 279 | 2 |
 | `commands/specmanager-init.md` | 884 | 4 | 643 | 3 |
 | `commands/specmanager-interview.md` | 1031 | 5 | 992 | 3 |
@@ -232,8 +232,13 @@ Kept: both steps and the Don't. Words 110→100 (−10); Don't/Never 1→1. No I
 | 3 | Step 8 `complete === true`: "(this is the P1 fix: a 529 that crashed the builder *after* the last task landed still fires this whole branch)" | C4, C2 | Same bullet: "the phase is fully done **regardless of how it got there**"; step 8 lead: "whether the last builder Task returned normally OR errored (any error type, including a 529)" | — | — |
 | 4 | Step 9 three canned sync-path sentences: Full sync now → "Codebase docs regenerated via `/init` + both managed blocks refreshed …" · Managed blocks only → "Both managed blocks refreshed …; codebase-doc region left as-is." · Wait/cancel → "Docs intentionally not synced — manual re-sync command printed above." | C1 | Same bullet: "**Which sync path ran** … and what it refreshed"; what each path runs stays in the step 8.4 table; the Wait block stays verbatim (INV-12) | INV-12 (count unchanged, 1) | 1→1 |
 | 5 | Fact fix (Q-B), no rule change: 7b "task titles + notes" → "task titles (notes live in the plan table)" | Fix | `core/spec-slice.ts` emits `notes: null` for every task; the plan table's `Notes` column is inside `planSection` | INV-23 (count unchanged, 4) | 4→4 |
+| 6 | Don't "Don't suggest or attempt a `final` walkthrough for a single-phase feature (`isSinglePhase === true`) — the per-phase walkthrough is terminal …" | C2 | Same file, step 8.3: "**If `isSinglePhase === true`** … this per-phase walkthrough is the **terminal** artifact — never the `final` mode" (one INV-1 match survives here; builder, walkthrough-writer and walkthrough cmd keep theirs) | INV-1 (6→5, min 4) | 6→5 |
+| 7 | Don't "Don't run `/init` on **Managed blocks only**, and don't refresh any managed block on **Wait** — all three sync steps defer together. Never leave a half-synced state." | C2 | Same file, step 8.4 table: Managed blocks only = "(no `/init`)", Wait and cancel = "no sync"; Wait block verbatim (INV-12) | INV-12 (count unchanged, 1) | 1→1 |
+| 8 | Don't "Don't hand the reviewer the whole Architecture doc — pass only the assembled slice (phase plan section + task notes + …)" | C2 | Same file, step 7b: "The reviewer is read-only and never reads the whole Architecture doc — you assemble its slice"; reviewer.md lines 12 and 18 (other actor, untouched). Its "task notes" wording leaves with it, so the Q-B fix has no target here | INV-23 (4→3, min 2) | 4→3 |
 
 Kept (plan 1.18 / Arch § commands/specmanager-build.md): every `## Don't` bullet (task-019's, including its "task notes" wording), steps 4c, 6a, 6c, 6d, the R=2/N=3 non-nesting sentence (INV-9), `get_phase_completion` (INV-5), the `--bulk` lines (INV-4, at max), the Wait block (INV-12), the `clear_active_build` lines (INV-2, at max), and everything cleanup owns: step 6b (incl. its "(R2)"), step 7's tier/alias prose and "(AC4)", the 7b fix ladder (incl. "one R2 tier higher"). Words 2683→2612 (−71); Don't/Never 13→13. No INV count changed, so no `max` moves and `selftest-prompts.ts` is untouched.
+
+Kept (plan 1.19, task-019): the INV-2 (`clear_active_build`), INV-48b (credentials), INV-51e (branch/push) and INV-33 ("the builder owns task state") bullets; "Don't approve any documents" (INV-25); the plan-approved and back-to-back bullets; the tier/alias bullet (cleanup-owned); and "Don't let the reviewer write or change task state" (INV-8 would stay at its min 2, but it is the build command's only "you alone advance" line, and INV-8 is a two-actor rule, so cutting it would de-duplicate across actors; kept, "when unsure, keep"). Words 2612→2528 (−84); Don't/Never 13→10. `selftest-prompts.ts`: INV-1 max 6→5, INV-23 max 4→3; no `min` moved.
 
 ### `commands/specmanager-design.md`
 

@@ -89,7 +89,7 @@ const INVARIANTS: PromptInvariant[] = [
       "commands/specmanager-walkthrough.md",
     ],
     min: 4,
-    max: 6,
+    max: 5,
   },
   {
     id: "INV-2",
@@ -359,7 +359,7 @@ const INVARIANTS: PromptInvariant[] = [
       /^.*(Treat this slice as the contract|not in the slice|the slice is your scope|whole Architecture doc|full Architecture doc).*$/gim,
     files: ["agents/reviewer.md", "commands/specmanager-build.md"],
     min: 2,
-    max: 4,
+    max: 3,
   },
   {
     id: "INV-24",
