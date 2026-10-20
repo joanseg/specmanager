@@ -12,14 +12,14 @@ Feature `feat-agent-prompt-simplification-opus-5-5`. Every rule-bearing cut (C2,
 | Totals | Words | Don't/Never lines | C2/C3/C5 rows with a carrier |
 |---|---|---|---|
 | Before (`ad11cd8`) | 16,248 | 71 | — |
-| After | _filled by task-022_ | _filled by task-022_ | _must be 100%_ |
+| After (`1e85c75`) | 14,775 (−1,473, −9.1%) | 56 (−15) | 49 / 49 = **100%** |
 
 ### Per-file baseline
 
 | File | Words before | Don't/Never before | Words after | Don't/Never after |
 |---|---|---|---|---|
 | `agents/architect.md` | 892 | 4 | 845 | 4 |
-| `agents/builder.md` | 1173 | 5 | 1071 | 3 |
+| `agents/builder.md` | 1173 | 5 | 1072 | 3 |
 | `agents/designer.md` | 1195 | 6 | 1125 | 4 |
 | `agents/planner.md` | 1905 | 5 | 1743 | 3 |
 | `agents/prd-writer.md` | 448 | 4 | 421 | 4 |
@@ -37,7 +37,7 @@ Feature `feat-agent-prompt-simplification-opus-5-5`. Every rule-bearing cut (C2,
 | `commands/specmanager-walkthrough.md` | 459 | 2 | 329 | 1 |
 | `docs/agent-snippets/design-grounding.md` | 173 | 0 | 173 | 0 |
 | `docs/agent-snippets/lossless-carryover.md` | 193 | 0 | 82 | 0 |
-| **Total** | **16,248** | **71** | | |
+| **Total** | **16,248** | **71** | **14,775** | **56** |
 
 ### INV snapshot at baseline
 
@@ -385,3 +385,13 @@ task-021, at `f3ba60b` (all trim tasks committed), CLI 2.1.285. From `plugins/sp
 | `claude plugin validate plugins/specmanager` (repo root) | pass | ✔ Validation passed (no warnings) |
 
 Bookkeeping fixed in this task: the `commands/specmanager-walkthrough.md` per-file row (re-measured with the pinned commands: 459/2 at `ad11cd8`, 329/1 at HEAD; the task-013 note said 5→3) and the `design-grounding.md` after-columns (173/0, unchanged). The `reviewer` and `all` rows of the Frontmatter table had ended up below the Q-A probe section; they are back in the table.
+
+## Ledger close (task-022)
+
+Measured at `1e85c75` with the pinned commands from the Header, over the same 19 files.
+
+- **Words:** 16,248 → 14,775 (−1,473, −9.1%). The `agents/builder.md` row is re-measured at 1072: task-017 recorded 1071, and task-020 then added one word (`Skill`) to its `tools:` line.
+- **Don't/Never lines:** 71 → 56 (−15).
+- **C2/C3/C5 rows with a carrier:** 49 of 49 rows whose Cat names C2, C3 or C5 (incl. mixed C1/C3, C3+C4, C3/C5, C4,C2) name a surviving carrier or `core` enforcement; none says "None". Share **100%**. Counted with an `awk` pass over the Removals tables (Cat column matching `C2|C3|C5`, carrier column non-empty and not starting `None`).
+- **Dogfood (G4):** the after run meets every checklist item the before run met; see `docs/verification/prompt-simplification-dogfood.md`. No regression, so no cut prose was restored.
+- **Exit test re-run at `1e85c75`:** `npm run build && npm run selftest-prompts && npm run selftest-directory && npm run selftest && npm run smoke-mcp` from `plugins/specmanager/server` all pass (77 invariants; directory conformance; Phase 1; 18 tools registered), and the rebuild left no diff under `dist/`. The full 15-self-test + `claude plugin validate` record is § Verification results (task-021, at `f3ba60b`; `1e85c75` changes only this ledger).
