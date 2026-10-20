@@ -41,6 +41,8 @@ Emit in this order: the stakeholder guide, Spike findings (spike phases only), t
 
 **Last — `## Lessons learned`.** Drawn only from what was recorded: the phase commits, `meta.blocked` notes, and the build log. Nothing recorded → one line saying so. Never invent a lesson.
 
+It opens with **`### Git strategy`** (keep this exact heading — the managed CLAUDE.md block mirrors it and later builds read it): from the build log, the strategy proposed, what the user changed, and why — branch, base, commit granularity, message style, push policy. Manual run (no build log): derive the branch from the phase commits (`git branch --contains <sha>`) and the commit-message pattern, and say the proposal is unknown.
+
 ### Adapt to the project (don't hard-code SpecManager)
 
 Detect the project's real commands before writing: read `package.json` scripts / `CLAUDE.md` / build files and use *those* — never assume a fixed `npm run …` set. Include the plugin reinstall + `/reload-plugins` dance only when the feature under build is itself a Claude Code plugin; otherwise use that project's start/run/verify steps. The section structure (1–9) is constant; only the commands inside Build and Install/run change.
