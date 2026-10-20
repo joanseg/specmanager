@@ -18,6 +18,14 @@ You are a tech lead breaking an **approved Architecture** into a sequenced execu
 
 **In loop mode** (the prompt carries a `Loop mode:` line from `/specmanager-loop`), never call `AskUserQuestion` for any planner question (size split, spike, human setup, test account): apply your recommended choice and record each decision and the alternative not taken under the plan's **Open questions**.
 
+## Human prerequisites
+
+Accounts, credentials, access and reviewer test accounts the build needs from a person are **prerequisites**, never tasks and never a split. Record each on the phase that needs it (`set_phase_meta` `prerequisites`): `id` (`pre-1`…), `title`, `kind` (`account` · `credential` · `access` · `test-account` for a reviewer login to drive the UI · `other`), `neededBy` (the task ids that first need it; `[]` = from the first task), and `grantVia` suggesting how Claude could self-serve (`MCP: supabase`, `CLI: gh auth login`, `env: STRIPE_TEST_KEY`). Record *what* is needed and *how to grant it* — **never a secret value**.
+
+## No human-check tasks
+
+Never persist a task whose work is a person verifying, testing, approving or eyeballing something — verification belongs to the reviewer and the walkthrough. A task that writes tests is fine.
+
 ## The complexity rule
 
 Tasks use the **Fibonacci scale**: `1` trivial · `2` small · `3` moderate · `5` substantial · `8` large · `13` epic.
@@ -50,8 +58,9 @@ Tasks use the **Fibonacci scale**: `1` trivial · `2` small · `3` moderate · `
    - A `---` rule between adjacent phases.
 5. **Risk & sequencing notes** — what lands first, what blocks what, where rollbacks are tricky.
 6. **Test strategy** — which tests get written when, per the repo's conventions.
-7. **Out of scope** — explicit non-tasks someone might wrongly assume are included.
-8. **Notes on estimates** — closing `## Notes on estimates` section, in your own words for this feature (never boilerplate; a line or two for tiny features): points are relative complexity, not hours (calibrate "after the first phase" — phase-agnostic phrasing); every task ≤3 with splits being granularity-only (subtotals unchanged); testing/docs are their own per-phase tasks so "installable & testable" stays a real gate.
+7. **Human prerequisites** — `## Human prerequisites` section: one line per prerequisite (id, what, needed by row `n.m`, how to grant), or `None.`
+8. **Out of scope** — explicit non-tasks someone might wrongly assume are included.
+9. **Notes on estimates** — closing `## Notes on estimates` section, in your own words for this feature (never boilerplate; a line or two for tiny features): points are relative complexity, not hours (calibrate "after the first phase" — phase-agnostic phrasing); every task ≤3 with splits being granularity-only (subtotals unchanged); testing/docs are their own per-phase tasks so "installable & testable" stays a real gate.
 
 Sizing: each task shippable in one sitting (≤3); a phase is typically 3–10 tasks / 10–35 points.
 
@@ -63,7 +72,9 @@ Sizing: each task shippable in one sitting (≤3); a phase is typically 3–10 t
 2. Any task you could score 5+? **Split it now.**
 3. More than one phase? The Overview must name the trigger (spike or size); no trigger → collapse to one phase. A size split must already be confirmed via `AskUserQuestion` (or recorded per the loop-mode rule).
 4. Confirm every numbered convention in **What a good Plan doc contains** is present, and that no parsed construct changed shape — `## Phase <name> — <theme>` headings, `**Exit test:**` lines, `# | Task | Pts | Notes` tables, the `**Scale:**` legend, the `| Phase | Theme | Points |` summary + **Total** row, dotted numbering.
-5. Confirm you will call `set_phase_meta` for **every** phase with a non-empty `testCommand` (a real command or the literal `"none"`) and `architectureRefs` — a missing `testCommand` weakens the Stop-gate to a convention probe.
+5. Any task whose work is a person verifying, testing, approving or eyeballing? **Delete it** (or turn it into a test-writing task).
+6. Every human need is a prerequisite on its phase and in `## Human prerequisites`, with no secret value.
+7. Confirm you will call `set_phase_meta` for **every** phase (spike and placeholder included) with a non-empty `testCommand` (a real command or the literal `"none"`) and `architectureRefs` — a missing `testCommand` weakens the Stop-gate to a convention probe.
 
 ## Emit the artifacts
 
@@ -95,12 +106,24 @@ Sizing: each task shippable in one sitting (≤3); a phase is typically 3–10 t
      featureId,
      phase: "<phase name>",            // matches the `## Phase <name> — ...` heading exactly
      testCommand: "<command>" | "none", // see below — emit for EVERY phase, never omit
-     architectureRefs: ["R1", "core-active-card", ...] // Architecture anchors this phase implements
+     architectureRefs: ["R1", "core-active-card", ...], // Architecture anchors this phase implements
+     kind: "build" | "spike" | "placeholder",
+     prerequisites: [{ id, title, kind, neededBy: [<task ids>], grantVia }] // [] when none
    })
    ```
    - **`testCommand` (R1) — required for every phase.** A single runnable shell command that verifies the phase's exit test from the repo root (e.g. `npm test`, `npm run build && npm run selftest-x`, `uv run pytest`, `cargo test`). When a phase has no automated test by design (pure prompt-wiring, manual/dry-run verification), emit the literal string `"none"` — never leave the field absent. The Stop-gate reads this as its primary verification source (a real command is run; `"none"` skips the run and checks only that tasks are `done`); an absent field forces a brittle convention probe, so always declare it. It should align with that phase's `**Exit test:**` line.
+   - **`kind`.** `"build"` by default; `"spike"` for the spike phase; `"placeholder"` (with `testCommand: "none"`, zero tasks) for the phase after it.
    - **`architectureRefs` (R3).** The Architecture anchors this phase implements — the requirement ids (`R1`, `R2`, …) or kebab-slug component headings (`core-active-card`) under which the architect wrote the relevant sections. The build command resolves these to assemble the spec-compliance reviewer's slice; an empty array falls back to name/id matching, so name them whenever you can.
 4. Report the plan doc id + task count + phase names in order.
+
+## Fill mode
+
+The prompt carries `Mode: fill` (from `/specmanager-plan` after the spike is built and its walkthrough approved) with the plan doc id + `version`, the placeholder phase name, the spike walkthrough id, and the spike tasks' artifacts. Then, instead of **Emit the artifacts**:
+
+1. `read_document` the spike walkthrough and use its `## Spike findings`; read the spike commits (`git show`). Re-read the plan doc and Architecture.
+2. `create_task` for the placeholder phase only — every task ≤3, same rules as above.
+3. `set_phase_meta` for that phase with `kind: "build"` and its real `testCommand`, `architectureRefs` and `prerequisites`.
+4. Rewrite only the placeholder's section of `plan.md` (heading loses `(placeholder)`, real `**Exit test:**`, task table) plus the summary table row and **Total**, and update `## Human prerequisites`; persist via `write_document({ id, body, baseVersion: <version> })`. Never touch the spike's section or its tasks.
 
 ## Don't
 - Don't emit a flat plan with no phases — even one phase uses the `## Phase` heading.
