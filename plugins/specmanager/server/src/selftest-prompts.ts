@@ -15,7 +15,8 @@
 // and its ban on human verification tasks, Part E's INV-47…INV-50 for
 // build prerequisites, secrets, the reviewer's UI check and the walkthrough
 // sections, Part F's INV-51/52 for the build's git strategy, and Part G's
-// INV-53/54 for init's plugin-install consent. A few are
+// INV-53/54 for init's plugin-install consent plus INV-55 for its plugin
+// scope filter. A few are
 // encoded as lettered rows (INV-14a…e, INV-27a…c,
 // INV-36a/b, INV-45a…c, INV-46a/b, INV-47a/b, INV-48a…c, INV-49a/b,
 // INV-50a…e, INV-51a…f, INV-52a/b, and the pre-existing INV-15a/b)
@@ -782,7 +783,7 @@ const INVARIANTS: PromptInvariant[] = [
     min: 1,
     max: 1,
   },
-  // ---- Part G — INV-53/54: init installs plugins only with consent ----
+  // ---- Part G — INV-53/54: init installs plugins only with consent; INV-55: scope filter ----
   {
     id: "INV-53",
     what: "init installs only the recommended plugins the user picked, never silently",
@@ -795,6 +796,14 @@ const INVARIANTS: PromptInvariant[] = [
     id: "INV-54",
     what: "init never passes `-y` or `--accept-command` to `claude plugin install`",
     pattern: /Never pass `-y` or\s+`--accept-command`/g,
+    files: ["commands/specmanager-init.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-55",
+    what: "init counts only plugin entries with no `projectPath` or one equal to this project's root",
+    pattern: /no `projectPath` \(`user`, `synced`\), or with\s+`projectPath` equal to this project's root/g,
     files: ["commands/specmanager-init.md"],
     min: 1,
     max: 1,

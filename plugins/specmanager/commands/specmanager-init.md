@@ -65,9 +65,12 @@ The playwright row also counts as present when this session already has
    `repoPaths` argument (e.g. `repoPaths: ["/path-to/repo-1", "/path-to/repo-2"]`)
    so init declares and seeds them in the same call.
 2. **Plugins.** Run `claude plugin list --json` via Bash and match each table id
-   (name and marketplace; versions are not checked). Any enabled entry, in any
-   scope, counts as present.
-   - Installed but `enabled: false`: report it with `claude plugin enable <id>`.
+   (name and marketplace; versions are not checked). Use only entries that apply
+   to this project: those with no `projectPath` (`user`, `synced`), or with
+   `projectPath` equal to this project's root. Ignore the rest. Any enabled
+   applying entry counts as present.
+   - An applying entry with `enabled: false`: report it with
+     `claude plugin enable <id>`.
      Don't offer it for install or enable it yourself.
    - Nothing missing: note "all recommended plugins present" and ask nothing.
    - Missing: ask one multi-select question listing each missing plugin with its
