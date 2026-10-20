@@ -23,7 +23,7 @@ Feature `feat-agent-prompt-simplification-opus-5-5`. Every rule-bearing cut (C2,
 | `agents/designer.md` | 1195 | 6 | | |
 | `agents/planner.md` | 1905 | 5 | | |
 | `agents/prd-writer.md` | 448 | 4 | 421 | 4 |
-| `agents/reviewer.md` | 552 | 0 | | |
+| `agents/reviewer.md` | 552 | 0 | 550 | 0 |
 | `agents/walkthrough-writer.md` | 1508 | 7 | | |
 | `commands/specmanager-architecture.md` | 188 | 1 | | |
 | `commands/specmanager-board.md` | 110 | 1 | | |
@@ -160,6 +160,10 @@ Kept (Keep-list / plan 1.3): "Keep it tight. Target ≤250 lines" (has a number)
 
 | # | Removed (≤1-line quote) | Cat | Surviving carrier (file § / line) or core enforcement (file:function) | INV rows | max before→after |
 |---|---|---|---|---|---|
+| 1 | C1/C4 spans: "How to review" step 2 compressed ("For every concrete requirement … confirm the implementation satisfies it. Note any that are…" → "Confirm every … is satisfied; note any…"); C4 "(a future stage-two reviewer owns that)"; 12 words by `wc -w` (step 2: 25→19, tag: 6) | C1, C4 | None: step 2's instruction stays; the C4 tag names no rule | INV-24 (count unchanged, 1) | 1→1 |
+| 2 | Fact fix (Q-B), no rule change: "task titles/notes" (description) and "task titles + notes (from `tasks.json`)" (§1 item 2) → "task titles (notes live in the plan table)"; +10 words | Fix | `core/spec-slice.ts` emits `notes: null` for every task (task records have no notes field); the plan table's `Notes` column reaches the reviewer inside the plan section (§1 item 1) | INV-22, INV-23 (counts unchanged, 1 and 2) | 1→1, 4→4 |
+
+Kept (Keep-list / plan 1.4): both parent-advances lines (INV-8, reviewer 2 + build 1 = 3; "when unsure, keep"), "Never writes." in the description (INV-22), the slice-only contract (INV-23), no style grading (INV-24), the UI check (INV-49a/b), the verdict JSON. Words 552→550 (−12 cut, +10 fact fix); Don't/Never 0→0. No INV count changed, so no `max` moves and `selftest-prompts.ts` is untouched. The `build.md` 7b "notes" wording is task-018's.
 
 ### `agents/walkthrough-writer.md`
 
