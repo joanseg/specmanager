@@ -22,7 +22,7 @@ Feature `feat-agent-prompt-simplification-opus-5-5`. Every rule-bearing cut (C2,
 | `agents/builder.md` | 1173 | 5 | | |
 | `agents/designer.md` | 1195 | 6 | | |
 | `agents/planner.md` | 1905 | 5 | | |
-| `agents/prd-writer.md` | 448 | 4 | | |
+| `agents/prd-writer.md` | 448 | 4 | 421 | 4 |
 | `agents/reviewer.md` | 552 | 0 | | |
 | `agents/walkthrough-writer.md` | 1508 | 7 | | |
 | `commands/specmanager-architecture.md` | 188 | 1 | | |
@@ -151,6 +151,10 @@ Columns as below. C1/C4 spans: one row per file with a word count.
 
 | # | Removed (≤1-line quote) | Cat | Surviving carrier (file § / line) or core enforcement (file:function) | INV rows | max before→after |
 |---|---|---|---|---|---|
+| 1 | "Your job is to produce a high-signal PRD draft and persist it." | C2 | `agents/prd-writer.md` § How to write it, step 5 (persist with `create_document`) | — | — |
+| 2 | C1 explanation tails: "— the frontmatter carries it." (step 4), "— that's the architect's job." and "— the user owns approval." (Don't); 16 words by `wc -w` | C1 | None: each instruction stays verbatim; the tails only explain it | INV-25 (count unchanged, 1) | 10→10 |
+
+Kept (Keep-list / plan 1.3): "Keep it tight. Target ≤250 lines" (has a number), "Report the new document id" (the command relies on it), the interview `dependsOn` exclusion and its reason (no `core` guard rejects an interview in `dependsOn`; `core/dependencies.ts` only filters it from the graph, so the prompt stays the carrier), the density contract (INV-13/29), "outside `.claude/specs/`" (INV-30). Words 448→421 (−27); Don't/Never 4→4. INV-13, -25, -29, -30 counts unchanged, so no `max` moves.
 
 ### `agents/reviewer.md`
 
