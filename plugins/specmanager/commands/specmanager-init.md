@@ -83,14 +83,20 @@ The playwright row also counts as present when this session already has
      missing plugins as "not installable here" with their ids; install nothing.
    - `plugin list` fails or its output can't be parsed: report it once, skip
      this step, and continue.
-3. Run the native **`/init`** slash command in-session to
+3. **Repos** (only when no paths were passed). List the tool's `knownRepos`
+   (`name` + `sourcePath`, or "none declared"), then ask whether this project
+   should work with other repos.
+   - On yes, collect their **absolute** paths and call `specmanager_init` again
+     with `repoPaths` (idempotent; existing mirrors are kept). On no, skip.
+   - Can't ask (headless or non-interactive run): list `knownRepos` and skip.
+4. Run the native **`/init`** slash command in-session to
    populate CLAUDE.md's general codebase-doc region. `/init` is a native
    interactive command the agent runs in-session — it is not a server/MCP call.
    It writes **only outside** the SpecManager markers, so it never clobbers the
    managed block (the marker-merge in `core/claude-md.ts` is line-anchored, so
    the regions are disjoint). Running `specmanager_init` first means the markers
    already exist when `/init` fills the surrounding codebase docs.
-4. Report what changed across **both** regions:
+5. Report what changed across **both** regions:
    - From `specmanager_init`: which directories were created, whether the
      managed CLAUDE.md block was created/updated, and whether `./docs/DESIGN.md`
      was created/updated.
@@ -100,6 +106,10 @@ The playwright row also counts as present when this session already has
      and any `warnings` such as `notAGitRepo`), **and** list any `rejectedRepos`
      with their `arg` + `reason` (e.g. `notFound`, `notADirectory`, `conflict`)
      — a rejected path never aborts the others.
+   - Repos: the `knownRepos` listed, and any newly declared in step 3.
+   - Plugins: found, missing, offered, installed, declined, failed (with the
+     CLI message) and installed-but-disabled (with the enable command), plus
+     the `/reload-plugins` reminder if anything was installed.
    - From `/init`: that the general codebase docs in CLAUDE.md (outside the
      markers) were (re)generated — so the user need not run `/init` separately.
    - That Design is an optional stage between Architecture and Plan
