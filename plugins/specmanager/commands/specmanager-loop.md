@@ -97,7 +97,7 @@ automatically**; invoking it is the opt-in.
    - **Not UI-facing** → create nothing; the plan gate is satisfied by absence.
 9. **Plan.** `Task({ subagent_type: "planner", prompt })` with the feature
    id/title/slug, the Architecture id, the PRD id, the Design id + version (or
-   `null`), and the loop-mode split rule: `Loop mode: do not call AskUserQuestion for the phase split — apply your recommended split (or single phase) and record the decision and the alternative under Open questions.`
+   `null`), and the loop-mode rule: `Loop mode: do not call AskUserQuestion for any planner question (size split, spike, human setup, test account) — apply your recommended choice and record each decision and the alternative under Open questions.`
    Before approving, also check `plan.md` (`read_document`) has a `## Phase`
    heading and `list_tasks({ featureId })` is non-empty; a flat plan or no
    tasks → stop (step 13). The loop does not send it back.
@@ -108,6 +108,10 @@ automatically**; invoking it is the opt-in.
     - contradictions between docs;
     - R-id coverage PRD → Architecture → Plan (nothing dropped, nothing invented);
     - task records match `plan.md` (titles, phases, complexity ≤3);
+    - no task is a human verification task (a person verifying, testing,
+      approving or eyeballing) — verification belongs to the reviewer and
+      walkthrough;
+    - a multi-phase plan names its trigger (spike or size) in the Overview;
     - drift from the Original intent and the refined-intent block.
 
     Fix what is clear-cut; everything else becomes a step-11 question.
@@ -122,7 +126,7 @@ automatically**; invoking it is the opt-in.
       re-review.
 11. **End questions (R7).** Gather the open questions: each doc's
     `Open questions`, unresolved review findings, refinement Assumptions, and
-    the planner's loop-mode split decision. Ask them with `AskUserQuestion` in
+    the planner's loop-mode decisions. Ask them with `AskUserQuestion` in
     batches of ≤4, recommended option first, labelled *(recommended)*. Apply
     answers with the step-10 write rules; answered entries are removed from, or
     marked resolved in, that doc's `Open questions`. Skipped questions stay in
