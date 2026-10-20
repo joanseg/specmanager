@@ -19,7 +19,7 @@ Feature `feat-agent-prompt-simplification-opus-5-5`. Every rule-bearing cut (C2,
 | File | Words before | Don't/Never before | Words after | Don't/Never after |
 |---|---|---|---|---|
 | `agents/architect.md` | 892 | 4 | 845 | 4 |
-| `agents/builder.md` | 1173 | 5 | | |
+| `agents/builder.md` | 1173 | 5 | 1071 | 3 |
 | `agents/designer.md` | 1195 | 6 | 1125 | 4 |
 | `agents/planner.md` | 1905 | 5 | 1743 | 3 |
 | `agents/prd-writer.md` | 448 | 4 | 421 | 4 |
@@ -141,6 +141,16 @@ Kept (Keep-list / plan 1.5): the Context7 block verbatim (INV-27a–c, INV-28), 
 
 | # | Removed (≤1-line quote) | Cat | Surviving carrier (file § / line) or core enforcement (file:function) | INV rows | max before→after |
 |---|---|---|---|---|---|
+| 1 | Research step 3: "the order returned by `list_tasks` already preserves creation order, which the planner produced in dependency order, but verify with a topological pass" | C1/C3 | Same step 3, reworded: "Order them topologically so each task's `dependsOn` predecessors come first." (the planner's ordering is the planner's concern) | — | — |
+| 2 | Research step 5: "If the doc is `draft` you wouldn't be here (Plan gate would have refused)" | C5 | `server/src/core/dependencies.ts:checkGate` (plan gate requires an approved Design doc if one exists); "If none exists, proceed (design is optional)" kept | — | — |
+| 3 | Execution step 2: "Read the relevant files, make the change. Keep changes small and focused" | C1 | None: default model behaviour | — | — |
+| 4 | Execution step 2: "— one task = one logical unit" | C2 | Same file, Don't "Don't bundle unrelated edits into a single task's commit … planning bug; surface it" (INV-20) | — | — |
+| 5 | Execution step 3: "Pre-existing repository hooks may run; respect them." | C1 | None; the hook-bypass ban "If a hook fails, fix the underlying issue rather than bypassing" is kept | — | — |
+| 6 | Tags `R4` (Superpowers bullet) and `R5/AC2` (`frontend-design` bullet) | C4 | None: provenance only; "R3 reviewer" kept (INV-3) | — | — |
+| 7 | Don't: "Don't start the next phase. Even one task. The phase is the testable boundary; the user must approve the walkthrough before you move on." | C2 | Same file, Stop condition 1 ("Do not look at the next phase. Do not start tasks from the next phase even if they look small.") and the intro ("You never advance to the next phase — the user reviews and explicitly invokes you again.") | INV-19 (builder 4→3, total 5→4, min 2) | 5→4 |
+| 8 | Don't: "Don't skip the `in_progress` transition. The board needs the live signal." | C2 | Same file, execution step 1 "Do this BEFORE you write code so the board reflects live state." (INV-18, count unchanged 1) | INV-18 (1→1) | 1→1 |
+
+Kept (plan 1.17 / Arch § agents/builder.md): the "Model is parent-supplied (R2)" blockquote (cleanup-owned; INV-6/7/21 unchanged) and the `tools:` frontmatter (task-020); the design-grounding method clause (INV-15a); the Superpowers boundary incl. "R3 reviewer" (INV-3, INV-26); "No vendoring" and both "graceful degradation" lines (INV-36a/b); the DESIGN.md token line (INV-37); `NEEDS_HUMAN`; the single-phase terminal line (INV-1); "never switch branches" / "never push" (INV-52a/b); "go through MCP tools only" (INV-31); the artifact-on-done line (cleanup's single carrier; INV-17); "Don't approve any documents." (INV-25). Words 1173→1071 (−102); Don't/Never 5→3. INV-19 `max` 5→4 in `selftest-prompts.ts`.
 
 ### `agents/designer.md`
 

@@ -320,7 +320,7 @@ const INVARIANTS: PromptInvariant[] = [
     pattern: /^.*(next phase|two phases back-to-back).*$/gm,
     files: ["agents/builder.md", "commands/specmanager-build.md"],
     min: 2,
-    max: 5,
+    max: 4,
   },
   {
     id: "INV-20",
