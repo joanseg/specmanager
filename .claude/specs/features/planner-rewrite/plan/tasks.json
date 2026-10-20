@@ -1,0 +1,529 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-planner-rewrite",
+      "title": "Phase meta schema: PrerequisiteSchema, kind + prerequisites on PhaseMetaSchema; setPhaseMeta stores them",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T10:46:27.581Z",
+      "updatedAt": "2026-10-20T10:46:27.581Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-planner-rewrite",
+      "title": "rollupPhases(tasks, metaPhases) appends meta-only placeholder phases as empty; PhaseDescriptor carries kind/prerequisites; listPhases, buildManifest, final gate pass meta.phases",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 3,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T10:46:31.708Z",
+      "updatedAt": "2026-10-20T10:46:31.708Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-planner-rewrite",
+      "title": "MCP set_phase_meta accepts optional kind / prerequisites; description updated",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 1,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T10:46:32.756Z",
+      "updatedAt": "2026-10-20T10:46:32.756Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-planner-rewrite",
+      "title": "selftest-phases assertions: placeholder listed empty, last, kind placeholder; getNextPhase skips it; defaults without meta",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 2,
+      "dependsOn": [
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T10:46:38.188Z",
+      "updatedAt": "2026-10-20T10:46:38.188Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-planner-rewrite",
+      "title": "selftest-build assertions: spike + placeholder not single-phase; spike walkthrough does not ship; final gate names the placeholder; legacy tasks.json parses",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 2,
+      "dependsOn": [
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T10:46:39.499Z",
+      "updatedAt": "2026-10-20T10:46:39.499Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-planner-rewrite",
+      "title": "Planner: spike and ~100-point size triggers, split names its trigger, UI check line, widened single loop-mode statement; re-word INV-44",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 3,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T10:46:40.686Z",
+      "updatedAt": "2026-10-20T10:46:40.686Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-planner-rewrite",
+      "title": "Planner: fill mode, Human prerequisites section + per-phase prerequisites with grantVia, no human-check tasks rule + self-check, set_phase_meta incl. placeholder",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 3,
+      "dependsOn": [
+        "task-006"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T10:46:45.969Z",
+      "updatedAt": "2026-10-20T10:46:45.969Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-planner-rewrite",
+      "title": "Plan command: fill-mode detection (spike done + spike walkthrough approved), refuse otherwise, pass spike walkthrough id, set plan to draft before dispatch",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 2,
+      "dependsOn": [
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T10:46:49.200Z",
+      "updatedAt": "2026-10-20T10:53:35.601Z"
+    },
+    {
+      "id": "task-009",
+      "featureId": "feat-planner-rewrite",
+      "title": "Build command: placeholder-aware step 4 + step 6c prerequisites ask (provide now / start now and ask when actually needed / suggest granting access via MCP/CLI)",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 3,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T10:46:50.556Z",
+      "updatedAt": "2026-10-20T10:46:50.556Z"
+    },
+    {
+      "id": "task-010",
+      "featureId": "feat-planner-rewrite",
+      "title": "Build command: deferred asks before neededBy tasks, NEEDS_HUMAN ask + re-dispatch, bulk asks up front, reviewer hand-off (UI check + test-account route), build log to walkthrough-writer",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 3,
+      "dependsOn": [
+        "task-009"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T10:46:54.338Z",
+      "updatedAt": "2026-10-20T10:46:54.338Z"
+    },
+    {
+      "id": "task-011",
+      "featureId": "feat-planner-rewrite",
+      "title": "Builder: stop with NEEDS_HUMAN report instead of failing a task for a missing credential",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 1,
+      "dependsOn": [
+        "task-010"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T10:46:57.478Z",
+      "updatedAt": "2026-10-20T10:46:57.478Z"
+    },
+    {
+      "id": "task-012",
+      "featureId": "feat-planner-rewrite",
+      "title": "Reviewer: disallowedTools denylist replaces tools allowlist; UI-check step citing checks in reasons, no-tooling fallback; re-word INV-22",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 2,
+      "dependsOn": [
+        "task-010"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T10:46:58.719Z",
+      "updatedAt": "2026-10-20T10:46:58.719Z"
+    },
+    {
+      "id": "task-013",
+      "featureId": "feat-planner-rewrite",
+      "title": "R-1 headless check: confirm the reviewer cannot Write/Edit or call update_task; apply allowlist fallback if disallowedTools is not honoured",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 2,
+      "dependsOn": [
+        "task-012"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T10:47:04.111Z",
+      "updatedAt": "2026-10-20T10:47:04.111Z"
+    },
+    {
+      "id": "task-014",
+      "featureId": "feat-planner-rewrite",
+      "title": "Walkthrough-writer: stakeholder test guide first, Spike findings section for spike phases, unchanged technical sections, Lessons learned from recorded build history; final mode opens with a feature-level guide",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 3,
+      "dependsOn": [
+        "task-010"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T10:47:05.395Z",
+      "updatedAt": "2026-10-20T10:53:36.550Z"
+    },
+    {
+      "id": "task-015",
+      "featureId": "feat-planner-rewrite",
+      "title": "Walkthrough command: manual run has no build log, Lessons learned uses commits + blocked notes",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 1,
+      "dependsOn": [
+        "task-014"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T10:47:09.704Z",
+      "updatedAt": "2026-10-20T10:47:09.704Z"
+    },
+    {
+      "id": "task-016",
+      "featureId": "feat-planner-rewrite",
+      "title": "Loop command: Loop mode line covers all planner questions; cross-doc review checks no human-verification task and split names its trigger; gather plural decisions",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 2,
+      "dependsOn": [
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T10:47:11.138Z",
+      "updatedAt": "2026-10-20T10:47:11.138Z"
+    },
+    {
+      "id": "task-017",
+      "featureId": "feat-planner-rewrite",
+      "title": "selftest-prompts: add planner invariants (spike / human-setup / ~100-point triggers; no human verification tasks)",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 2,
+      "dependsOn": [
+        "task-007",
+        "task-016"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T10:47:12.287Z",
+      "updatedAt": "2026-10-20T10:47:12.287Z"
+    },
+    {
+      "id": "task-018",
+      "featureId": "feat-planner-rewrite",
+      "title": "selftest-prompts: add build / reviewer / walkthrough invariants (start-now + grant-access offer; secrets never in specs or committed; reviewer drives UI with test account; stakeholder guide + Lessons learned)",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 2,
+      "dependsOn": [
+        "task-010",
+        "task-013",
+        "task-014"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T10:47:17.930Z",
+      "updatedAt": "2026-10-20T10:47:17.930Z"
+    },
+    {
+      "id": "task-019",
+      "featureId": "feat-planner-rewrite",
+      "title": "Repo CLAUDE.md: note phase-meta kind/prerequisites and the reviewer denylist under Build leverage primitives",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 1,
+      "dependsOn": [
+        "task-013"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T10:47:19.059Z",
+      "updatedAt": "2026-10-20T10:47:19.059Z"
+    },
+    {
+      "id": "task-020",
+      "featureId": "feat-planner-rewrite",
+      "title": "Build command: step 6a git strategy - learn repo pattern, suggest base/branch/granularity/message/push policy, user accepts or edits, switch branch, pass Git strategy block to builders, add to build log",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 3,
+      "dependsOn": [
+        "task-004",
+        "task-005",
+        "task-008",
+        "task-011",
+        "task-015",
+        "task-017",
+        "task-018",
+        "task-019"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T10:47:22.540Z",
+      "updatedAt": "2026-10-20T11:18:16.998Z"
+    },
+    {
+      "id": "task-021",
+      "featureId": "feat-planner-rewrite",
+      "title": "Builder: commit only on the checked-out branch per the Git strategy block; never switch branches or push",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 1,
+      "dependsOn": [
+        "task-020"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T11:18:22.420Z",
+      "updatedAt": "2026-10-20T11:18:22.420Z"
+    },
+    {
+      "id": "task-022",
+      "featureId": "feat-planner-rewrite",
+      "title": "Walkthrough-writer + command: Lessons learned opens with Git strategy (proposed, user changes, why) from the build log; manual runs derive the branch from commits",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 1,
+      "dependsOn": [
+        "task-020"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T11:18:24.504Z",
+      "updatedAt": "2026-10-20T11:18:24.504Z"
+    },
+    {
+      "id": "task-023",
+      "featureId": "feat-planner-rewrite",
+      "title": "selftest-prompts: git-strategy invariants (build asks before first dispatch + user can change; builder never pushes/switches; walkthrough records Git strategy)",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 2,
+      "dependsOn": [
+        "task-021",
+        "task-022"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T11:18:29.702Z",
+      "updatedAt": "2026-10-20T11:18:29.702Z"
+    },
+    {
+      "id": "task-024",
+      "featureId": "feat-planner-rewrite",
+      "title": "core/claude-md.ts: renderBlock adds Git strategy subsection inside the markers from the newest walkthrough's Git strategy section (reuse spec-slice heading slicer); omitted when none",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 2,
+      "dependsOn": [
+        "task-004",
+        "task-005",
+        "task-008",
+        "task-011",
+        "task-015",
+        "task-017",
+        "task-018",
+        "task-019",
+        "task-020",
+        "task-021",
+        "task-022",
+        "task-023"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T11:18:35.471Z",
+      "updatedAt": "2026-10-20T11:21:45.085Z"
+    },
+    {
+      "id": "task-025",
+      "featureId": "feat-planner-rewrite",
+      "title": "selftest assertions: Git strategy rendered from a walkthrough, newer walkthrough replaces it, none means omitted",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 1,
+      "dependsOn": [
+        "task-024"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T11:21:46.847Z",
+      "updatedAt": "2026-10-20T11:21:46.847Z"
+    },
+    {
+      "id": "task-026",
+      "featureId": "feat-planner-rewrite",
+      "title": "Release prep: bump plugin.json 1.1.0 to 1.2.0, rebuild server/dist and ui/dist, selftest-directory, claude plugin validate",
+      "status": "todo",
+      "phase": "rewrite",
+      "complexity": 2,
+      "dependsOn": [
+        "task-004",
+        "task-005",
+        "task-008",
+        "task-011",
+        "task-015",
+        "task-017",
+        "task-018",
+        "task-019",
+        "task-020",
+        "task-021",
+        "task-022",
+        "task-023",
+        "task-024",
+        "task-025"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T11:21:52.781Z",
+      "updatedAt": "2026-10-20T11:21:52.781Z"
+    }
+  ],
+  "meta": {
+    "phases": {
+      "rewrite": {
+        "testCommand": "cd plugins/specmanager/server && npm run build && npm run selftest && npm run selftest-phases && npm run selftest-build && npm run selftest-prompts && npm run selftest-directory",
+        "architectureRefs": [
+          "data-model-changes",
+          "interfaces",
+          "core-phase-rollup",
+          "G1",
+          "G1a",
+          "G2",
+          "G3",
+          "G4",
+          "G5",
+          "G6",
+          "G7",
+          "G8",
+          "failure-edge-cases",
+          "open-questions-risks"
+        ]
+      }
+    },
+    "blocked": {}
+  }
+}
