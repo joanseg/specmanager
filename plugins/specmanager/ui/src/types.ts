@@ -101,6 +101,7 @@ export interface FeatureRow {
 
 export interface Board {
   generatedAt: string;
+  projectName: string;
   features: FeatureRow[];
 }
 

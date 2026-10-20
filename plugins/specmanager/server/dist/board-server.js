@@ -43,7 +43,10 @@ export async function startBoardServer(opts = {}) {
     const port = opts.port ?? Number(process.env.SPECMANAGER_BOARD_PORT ?? 4317);
     const app = Fastify({ logger: false });
     // REST -------------------------------------------------------------------
-    app.get("/api/board", async () => buildManifest(root));
+    app.get("/api/board", async () => ({
+        ...(await buildManifest(root)),
+        projectName: path.basename(root),
+    }));
     app.get("/api/features", async () => listFeatures(root));
     app.get("/api/features/:id", async (req, reply) => {
         const features = await listFeatures(root);

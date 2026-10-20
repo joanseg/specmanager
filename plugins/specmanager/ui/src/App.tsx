@@ -427,7 +427,10 @@ export default function App() {
   return (
     <main className="board">
       <header className="board__header">
-        <h1 className="board__title">SpecManager</h1>
+        <div>
+          <h1 className="board__title">{board.projectName}</h1>
+          <p className="board__subtitle">SpecManager</p>
+        </div>
         <div className="board__meta">
           <span className="board__count">
             {board.features.length} feature{board.features.length === 1 ? "" : "s"}

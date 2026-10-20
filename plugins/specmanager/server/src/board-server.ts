@@ -86,7 +86,10 @@ export async function startBoardServer(opts: {
   const app: FastifyInstance = Fastify({ logger: false });
 
   // REST -------------------------------------------------------------------
-  app.get("/api/board", async () => buildManifest(root));
+  app.get("/api/board", async () => ({
+    ...(await buildManifest(root)),
+    projectName: path.basename(root),
+  }));
 
   app.get("/api/features", async () => listFeatures(root));
 

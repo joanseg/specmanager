@@ -1395,7 +1395,10 @@ function App() {
     return createVNode("main", { className: "state", children: "Loading…" });
   return createVNode("main", { className: "board", children: [
     createVNode("header", { className: "board__header", children: [
-      createVNode("h1", { className: "board__title", children: "SpecManager" }),
+      createVNode("div", { children: [
+        createVNode("h1", { className: "board__title", children: board.projectName }),
+        createVNode("p", { className: "board__subtitle", children: "SpecManager" })
+      ] }),
       createVNode("div", { className: "board__meta", children: [
         createVNode("span", { className: "board__count", children: [
           board.features.length,

@@ -286,6 +286,13 @@ html, body, #root {
   letter-spacing: -0.02em;
   color: var(--on-surface);
 }
+.board__subtitle {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: var(--on-surface-variant);
+}
 .board__meta {
   display: flex;
   align-items: center;
