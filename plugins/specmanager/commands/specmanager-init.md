@@ -1,5 +1,6 @@
 ---
 description: Scaffold .claude/specs/ in the current project and write the managed SpecManager block into CLAUDE.md.
+argument-hint: "[/abs/path/to/repo ...]"
 ---
 
 Initialize this project for SpecManager.
@@ -35,6 +36,21 @@ Optional, a monorepo/meta-repo convenience. Pass one or more repo paths after th
   repo declared from a *different* source is reported as a conflict and
   skipped, never overwritten.
 
+## Recommended plugins
+
+SpecManager's agents detect these and degrade silently without them. Init offers
+the missing ones; it never requires them.
+
+| Plugin id | Used by | Why | Without it |
+|---|---|---|---|
+| `superpowers@claude-plugins-official` | builder | TDD, systematic-debugging and two-stage-review hand-offs | plain execution loop |
+| `frontend-design@claude-plugins-official` | builder (UI tasks), designer | visual-judgment hand-off, still grounded in `docs/DESIGN.md` tokens | DESIGN.md-only fallback |
+| `context7@claude-plugins-official` | all writers and builder | current library docs ("use latest APIs") | model memory only |
+| `playwright@claude-plugins-official` | reviewer UI check (web) | browser MCP tools to drive the happy path | reviewer judges from the diff |
+
+The playwright row also counts as present when this session already has
+`mcp__chrome-devtools__*` tools. Never recommend both.
+
 ## Steps
 
 1. Call the **`specmanager_init`** MCP tool first (idempotent — safe to
@@ -48,14 +64,33 @@ Optional, a monorepo/meta-repo convenience. Pass one or more repo paths after th
    If the user passed sibling repo paths, forward them as the tool's
    `repoPaths` argument (e.g. `repoPaths: ["/path-to/repo-1", "/path-to/repo-2"]`)
    so init declares and seeds them in the same call.
-2. After it returns, run the native **`/init`** slash command in-session to
+2. **Plugins.** Run `claude plugin list --json` via Bash and match each table id
+   (name and marketplace; versions are not checked). Any enabled entry, in any
+   scope, counts as present.
+   - Installed but `enabled: false`: report it with `claude plugin enable <id>`.
+     Don't offer it for install or enable it yourself.
+   - Nothing missing: note "all recommended plugins present" and ask nothing.
+   - Missing: ask one multi-select question listing each missing plugin with its
+     "Used by / Why", default none. Install only the plugins the user picked,
+     one at a time, with `claude plugin install <id>`. Never pass `-y` or
+     `--accept-command`. A failed install does not stop the rest; record each
+     outcome (installed, or failed with the CLI message) and never retry.
+   - After any install, tell the user to run `/reload-plugins` (or restart)
+     before the new skills and tools appear.
+   - Can't ask (headless or non-interactive run): install nothing; report the
+     missing plugins with their `claude plugin install <id>` commands.
+   - `claude` not available (command not found, or another host): list the
+     missing plugins as "not installable here" with their ids; install nothing.
+   - `plugin list` fails or its output can't be parsed: report it once, skip
+     this step, and continue.
+3. Run the native **`/init`** slash command in-session to
    populate CLAUDE.md's general codebase-doc region. `/init` is a native
    interactive command the agent runs in-session — it is not a server/MCP call.
    It writes **only outside** the SpecManager markers, so it never clobbers the
    managed block (the marker-merge in `core/claude-md.ts` is line-anchored, so
    the regions are disjoint). Running `specmanager_init` first means the markers
    already exist when `/init` fills the surrounding codebase docs.
-3. Report what changed across **both** regions:
+4. Report what changed across **both** regions:
    - From `specmanager_init`: which directories were created, whether the
      managed CLAUDE.md block was created/updated, and whether `./docs/DESIGN.md`
      was created/updated.
