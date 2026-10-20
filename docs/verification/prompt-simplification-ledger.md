@@ -227,6 +227,13 @@ Kept: both steps and the Don't. Words 110→100 (−10); Don't/Never 1→1. No I
 
 | # | Removed (≤1-line quote) | Cat | Surviving carrier (file § / line) or core enforcement (file:function) | INV rows | max before→after |
 |---|---|---|---|---|---|
+| 1 | Step 7b heading tag "(R3)" | C4 | None: provenance only | — | — |
+| 2 | Step 8 heading "(R2 — driven by persisted state, not the builder's exit path)" | C4, C2 | Same step 8: "**always** call `get_phase_completion` … never infer \"phase done\" from the fact that the builder returned" (INV-5); `server/src/core/phase-completion.ts:getPhaseCompletion` | INV-5 (count unchanged, 1) | 1→1 |
+| 3 | Step 8 `complete === true`: "(this is the P1 fix: a 529 that crashed the builder *after* the last task landed still fires this whole branch)" | C4, C2 | Same bullet: "the phase is fully done **regardless of how it got there**"; step 8 lead: "whether the last builder Task returned normally OR errored (any error type, including a 529)" | — | — |
+| 4 | Step 9 three canned sync-path sentences: Full sync now → "Codebase docs regenerated via `/init` + both managed blocks refreshed …" · Managed blocks only → "Both managed blocks refreshed …; codebase-doc region left as-is." · Wait/cancel → "Docs intentionally not synced — manual re-sync command printed above." | C1 | Same bullet: "**Which sync path ran** … and what it refreshed"; what each path runs stays in the step 8.4 table; the Wait block stays verbatim (INV-12) | INV-12 (count unchanged, 1) | 1→1 |
+| 5 | Fact fix (Q-B), no rule change: 7b "task titles + notes" → "task titles (notes live in the plan table)" | Fix | `core/spec-slice.ts` emits `notes: null` for every task; the plan table's `Notes` column is inside `planSection` | INV-23 (count unchanged, 4) | 4→4 |
+
+Kept (plan 1.18 / Arch § commands/specmanager-build.md): every `## Don't` bullet (task-019's, including its "task notes" wording), steps 4c, 6a, 6c, 6d, the R=2/N=3 non-nesting sentence (INV-9), `get_phase_completion` (INV-5), the `--bulk` lines (INV-4, at max), the Wait block (INV-12), the `clear_active_build` lines (INV-2, at max), and everything cleanup owns: step 6b (incl. its "(R2)"), step 7's tier/alias prose and "(AC4)", the 7b fix ladder (incl. "one R2 tier higher"). Words 2683→2612 (−71); Don't/Never 13→13. No INV count changed, so no `max` moves and `selftest-prompts.ts` is untouched.
 
 ### `commands/specmanager-design.md`
 
