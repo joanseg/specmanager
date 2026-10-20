@@ -28,7 +28,7 @@ Feature `feat-agent-prompt-simplification-opus-5-5`. Every rule-bearing cut (C2,
 | `commands/specmanager-architecture.md` | 188 | 1 | 176 | 1 |
 | `commands/specmanager-board.md` | 110 | 1 | 100 | 1 |
 | `commands/specmanager-build.md` | 2683 | 13 | | |
-| `commands/specmanager-design.md` | 416 | 2 | | |
+| `commands/specmanager-design.md` | 416 | 2 | 279 | 2 |
 | `commands/specmanager-init.md` | 884 | 4 | | |
 | `commands/specmanager-interview.md` | 1031 | 5 | | |
 | `commands/specmanager-loop.md` | 1501 | 5 | | |
@@ -222,6 +222,15 @@ Kept: both steps and the Don't. Words 110→100 (−10); Don't/Never 1→1. No I
 
 | # | Removed (≤1-line quote) | Cat | Surviving carrier (file § / line) or core enforcement (file:function) | INV rows | max before→after |
 |---|---|---|---|---|---|
+| 1 | "— open once the PRD is approved; Architecture is **not** required, design can run in parallel with it" | C5 | `server/src/core` `checkGate` (design gate on approved PRD only); the prompt keeps the `check_gate` call and "If closed, report `reason` and stop" | INV-16 (count unchanged, 1 here) | 5→5 |
+| 2 | "— the designer uses them as visual reference and may inline them as data URIs. If no attachments, the designer works from the PRD + DESIGN.md alone." | C3 | `agents/designer.md` step 4 (read attachments, inline as `data:` URI) and Token-source ladder items 1–3 | — | — |
+| 3 | "**Optional design reference (R5/AC7):** when `docs/DESIGN.md` holds only placeholder/`# TODO` tokens, the designer may invite an optional design reference …" | C3 + C4 | `agents/designer.md` "Invite a reference when tokens are thin"; the command keeps "Attachments are optional" | — | — |
+| 4 | "The designer reads the upstream docs and `./docs/DESIGN.md`, designs the actual screens as one self-contained HTML file …, and calls `create_design_brief` itself." | C3 | `agents/designer.md` steps 1–3, Output (self-contained HTML, stacked screens + notes), Persist (`create_design_brief`) | — | — |
+| 5 | Don't "inline in chat" clause: "— the subagent has the system prompt that enforces self-contained, DESIGN.md-grounded, high-fi HTML" | C3 | `agents/designer.md` Hard constraints (Self-contained, Grounded, Aesthetic bar); the Don't instruction stays | — | — |
+| 6 | Don't `create_design_brief` clause: "so the `---` escape and the 5MB cap apply" | C5 | `server/src/core/documents.ts:sanitizeDesignBriefBody` + `DESIGN_BRIEF_MAX_BYTES` (5MB), applied by the `create_design_brief` tool; the Don't instruction stays | — | — |
+| 7 | Rename "Use the `Task` tool" → "Use the `Agent` tool" (Arch Q4); no rule change | — | Same line, step 4 | — | — |
+
+Kept (plan 1.11): the `check_gate` call and closed-gate stop (INV-16), the no-duplicate rule, the PRD/Architecture id lookup with `null` fallback, attachment forwarding, the report step, both Don't instructions. Words 416→279 (−137); Don't/Never 2→2. No INV count changed, so no `max` moves and `selftest-prompts.ts` is untouched.
 
 ### `commands/specmanager-init.md`
 
