@@ -11,8 +11,9 @@
 // The INVARIANTS table encodes `docs/prompt-invariants-reconciled.md`
 // (task-002): Part A's corrected INV-1…INV-15 and Part B's added
 // INV-16…INV-37 — 37 reconciled entries — plus Part C's INV-38…INV-44 for
-// the loop command. A few are encoded as lettered
-// rows (INV-14a…e, INV-27a…c, INV-36a/b, and the pre-existing INV-15a/b)
+// the loop command and Part D's INV-45/46 for the planner's phase triggers
+// and its ban on human verification tasks. A few are encoded as lettered
+// rows (INV-14a…e, INV-27a…c, INV-36a/b, INV-45a…c, INV-46a/b, and the pre-existing INV-15a/b)
 // because the reconciliation calls for one pattern per independently
 // deletable clause: a single whole-block pattern stays green when all but
 // one clause is cut, which is the exact failure the entry exists to catch.
@@ -570,6 +571,47 @@ const INVARIANTS: PromptInvariant[] = [
     what: "the planner's loop-mode carve-out (no `AskUserQuestion` for any planner question — size split, spike, human setup, test account) survives, stated once",
     pattern: "loop mode",
     files: ["agents/planner.md"],
+    min: 1,
+    max: 1,
+  },
+  // ---- Part D — INV-45/46: planner phase triggers and no verification tasks ----
+  {
+    id: "INV-45a",
+    what: "the planner names the spike trigger (core unknowns ⇒ spike phase + placeholder)",
+    pattern: "**Spike trigger**",
+    files: ["agents/planner.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-45b",
+    what: "human setup (accounts, credentials, access) never forces a phase split",
+    pattern: /human setup[^.\n]*never forces a split/gi,
+    files: ["agents/planner.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-45c",
+    what: "the planner's size trigger fires at a soft ≈100-point total",
+    pattern: "**≈100 points**",
+    files: ["agents/planner.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-46a",
+    what: "the planner never persists a human verification task — stated as the rule and as a self-check step",
+    pattern: /task whose work is a person verifying, testing, approving or eyeballing/g,
+    files: ["agents/planner.md"],
+    min: 2,
+    max: 2,
+  },
+  {
+    id: "INV-46b",
+    what: "the loop's cross-doc review checks the plan has no human verification task",
+    pattern: "no task is a human verification task",
+    files: ["commands/specmanager-loop.md"],
     min: 1,
     max: 1,
   },
