@@ -41,7 +41,7 @@ _10 features shipped — full history on the board._
 **Commands:**
 `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD) · `/specmanager-loop` (auto-approves, stops before Build)
 
-_Last synced: 2026-10-20T11:21:44.094Z_
+_Last synced: 2026-10-20T12:49:23.942Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
@@ -108,6 +108,8 @@ Load-bearing invariants (don't drift):
 - **Human prerequisites** — the build command asks a phase's prerequisites up front (start now / ask when needed); a builder that returns `NEEDS_HUMAN: <item>` is paused, not failed: the command asks the user and re-dispatches the task without spending a retry.
 - **Reviewer** (`agents/reviewer.md`) — read-only via a `disallowedTools` denylist (Write, Edit, NotebookEdit, Agent, SpecManager MCP tools; verified headlessly in `docs/verification/reviewer-disallowedtools.md`), so it inherits browser/device tools for UI checks. Given the spec slice and the phase diff, returns a pass/fail verdict. Never writes.
 - **Walkthroughs** open with a stakeholder test guide and end with Lessons learned (from the build log, commits and `meta.blocked` notes).
+- **Git strategy** — build step 6a reads the repo's git pattern (the managed block's `### Git strategy`, recent walkthroughs, `git log`/branches), proposes base/branch/commit granularity/message style/push policy, and lets the user change it before anything is created or committed; builders get a `Git strategy:` block and never switch branches or push. The walkthrough's `## Lessons learned` opens with `### Git strategy`, and `renderBlock` (`core/claude-md.ts`) mirrors the newest one into the managed CLAUDE.md block (sliced with the `core/spec-slice.ts` heading indexer, so the next heading ends it).
+- **Known gap:** the Stop-gate assumes builders finish within the main session's turn. Where subagents run in the background, every turn end counts as a gate attempt, so a long phase can be marked `blocked` while builders are still working.
 - **Resilient post-phase finalize** (`core/phase-completion.ts`, `get_phase_completion`) — after the builder loop returns *or errors*, the build command calls it (`{ complete, hasWalkthrough, needsWalkthrough, isSinglePhase }`) and runs the walkthrough + doc-sync whenever the phase's tasks are all `done`, so a builder that 529s after its work landed still finalizes. Per-task dispatch is the default (`--bulk` opts into one whole-phase Task); a builder Task retries at most twice on transient `529`/Overloaded.
 
 ## Build / test commands
@@ -133,7 +135,7 @@ Self-tests are hand-rolled scripts in `server/dist/`, not a test runner; run one
 
 - `selftest-directory` — Anthropic directory conformance of the shipped plugin folder (the pre-release check).
 - `selftest` (core flow against a tmp dir), `selftest-board` (REST + WS + file watcher), `selftest-phases`, `selftest-build` (per-phase gates + walkthrough storage), `selftest-tiers`, `selftest-stopgate`, `selftest-roundtrip`, `selftest-pidfile`, `selftest-shutdown`, `selftest-autoport`, `selftest-repos`, `selftest-specslice`.
-- `selftest-prompts` — prompt-invariant regression net over `agents/` + `commands/`, including snippet parity.
+- `selftest-prompts` — prompt-invariant regression net over `agents/` + `commands/`, including snippet parity. Most entries pin exact min/max counts, so an edit can fail it by adding a line, not only by removing one: `commands/specmanager-build.md` is already at INV-4's max for `--bulk` lines and INV-2's max for `clear_active_build` lines.
 - `smoke-mcp` — MCP wire protocol + tools registered.
 
 `selftest-shutdown` and `selftest-autoport` allow 3 seconds for the MCP handshake and can time out on a heavily loaded machine; re-run before treating that as a regression.
