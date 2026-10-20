@@ -3,6 +3,9 @@ import path from "node:path";
 import {
   DEFAULT_PHASE,
   MAX_TASK_COMPLEXITY,
+  PhaseKind,
+  PhaseMetaSchema,
+  Prerequisite,
   Task,
   TaskArtifacts,
   TaskComplexity,
@@ -88,20 +91,28 @@ export async function readTasksMeta(
 
 /**
  * Set the planner-emitted metadata for a phase (R1 testCommand, R3
- * architectureRefs). `testCommand` is a runnable command or the literal "none".
- * Idempotent per phase; leaves other phases' meta untouched.
+ * architectureRefs, phase `kind`, human `prerequisites`). `testCommand` is a
+ * runnable command or the literal "none". Replaces the phase's whole entry
+ * (idempotent per phase); leaves other phases' meta untouched.
  */
 export async function setPhaseMeta(
   featureId: string,
   phase: string,
-  meta: { testCommand: string; architectureRefs?: string[] },
+  meta: {
+    testCommand: string;
+    architectureRefs?: string[];
+    kind?: PhaseKind;
+    prerequisites?: Prerequisite[];
+  },
   root = projectRoot()
 ): Promise<void> {
   const file = await readTasksFile(featureId, root);
-  file.meta.phases[phase] = {
+  file.meta.phases[phase] = PhaseMetaSchema.parse({
     testCommand: meta.testCommand,
     architectureRefs: meta.architectureRefs ?? [],
-  };
+    kind: meta.kind,
+    prerequisites: meta.prerequisites,
+  });
   await writeTasksFile(featureId, file, root);
   events.emit({ type: "task.updated", taskId: `phase:${phase}`, featureId });
 }

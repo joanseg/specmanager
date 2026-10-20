@@ -72,9 +72,23 @@ export const TaskSchema = z.object({
 // intentionally test-less phase. Absent ⇒ the gate's convention-probe fallback.
 // `architectureRefs`: stable Architecture anchors (e.g. "R1", "core-active-card")
 // the phase implements; used to assemble the reviewer's spec slice.
+// `kind`: "build" (default), "spike", or "placeholder" (meta-only, zero tasks,
+// filled after the spike). `prerequisites`: human setup the phase needs.
+// A human prerequisite: what is needed and how to grant it, never a secret value.
+// `neededBy`: task ids; [] means needed from the first task.
+export const PrerequisiteSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    kind: z.enum(["account", "credential", "access", "test-account", "other"]),
+    neededBy: z.array(z.string()).default([]),
+    grantVia: z.string().optional(),
+});
+export const PhaseKindSchema = z.enum(["build", "spike", "placeholder"]);
 export const PhaseMetaSchema = z.object({
     testCommand: z.string(),
     architectureRefs: z.array(z.string()).default([]),
+    kind: PhaseKindSchema.default("build"),
+    prerequisites: z.array(PrerequisiteSchema).default([]),
 });
 // Optional `blocked` note surfaced by the Stop-gate iteration cap (R1 AC2).
 // Keyed by phase name; cleared when the phase is re-entered and rebuilt.
