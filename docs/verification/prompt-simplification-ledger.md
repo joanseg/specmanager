@@ -20,7 +20,7 @@ Feature `feat-agent-prompt-simplification-opus-5-5`. Every rule-bearing cut (C2,
 |---|---|---|---|---|
 | `agents/architect.md` | 892 | 4 | 845 | 4 |
 | `agents/builder.md` | 1173 | 5 | | |
-| `agents/designer.md` | 1195 | 6 | | |
+| `agents/designer.md` | 1195 | 6 | 1125 | 4 |
 | `agents/planner.md` | 1905 | 5 | | |
 | `agents/prd-writer.md` | 448 | 4 | 421 | 4 |
 | `agents/reviewer.md` | 552 | 0 | 550 | 0 |
@@ -146,6 +146,13 @@ Kept (Keep-list / plan 1.5): the Context7 block verbatim (INV-27a–c, INV-28), 
 
 | # | Removed (≤1-line quote) | Cat | Surviving carrier (file § / line) or core enforcement (file:function) | INV rows | max before→after |
 |---|---|---|---|---|---|
+| 1 | Aesthetic bar tail: "Avoid generic \"AI slop\" layouts: no centered-everything, no purple gradients unless the design system calls for them, no filler." | C2 | `agents/designer.md` § Design-discipline leverage, fallback "**Critique for genericness** … reject centered-everything, default purple gradients, filler content…" | INV-14e (count unchanged, 1) | 1→1 |
+| 2 | Don't "Don't link external assets or use JS — the sandbox blocks them." | C2 | `agents/designer.md` § Hard constraints, **Self-contained** ("No external stylesheets, fonts, scripts, or image URLs … scripts disabled") and **No frameworks** | — | — |
+| 3 | Don't "Don't persist via anything but `create_design_brief`." | C2 | `agents/designer.md` § Hard constraints, **Self-contained persistence** ("the ONLY way you write anything is the `create_design_brief` tool. Never use `Write`/`Edit`…") | — | — |
+| 4 | "The tool writes to `design/mockups.html`, sets `stage: \"design\"`, `status: \"draft\"`, `generatedBy: \"agent\"`, escapes any leading `---` in your body, and rejects bodies over 5MB." | C5 | `create_design_brief` handler (`server/src/mcp.ts`: `DESIGN_BRIEF_MAX_BYTES` check, `sanitizeDesignBriefBody` in `core/documents.ts`, wraps `createDocument` with `stage: "design"`); the file path stays in the intro paragraph | — | — |
+| 5 | C4 tags "(R5)", "(AC5)", "(AC6)", "(AC7, optional)", "(AC8)" and "Phase 3 stale-propagation" (→ "staleness propagation"); 7 words by `wc -w` | C4 | None: provenance only; "(AC7, optional)" adds nothing beyond the paragraph's own "Always optional" | INV-11 (count unchanged, 3 here) | 9→9 |
+
+Kept (Keep-list / plan 1.6): the five fallback elements (INV-14a–e), `bootstrap_design_tokens` as the only token write path and "Never raw-`Write` to `docs/DESIGN.md`", the sandbox/no-JS constraint, the three token source-of-truth lines (INV-37, 3 here), "No vendoring" (INV-36a), the persist sketch and the `basedOn` lines (INV-11), "Don't approve the doc" (INV-25), "Don't write a prose \"design brief\"" (the intro states the job; when unsure, keep). Words 1195→1125 (−70); Don't/Never 6→4. No INV count changed (INV-11 9, INV-14a–e 1 each, INV-25 10, INV-36a 2, INV-37 4), so no `max` moves and `selftest-prompts.ts` is untouched.
 
 ### `agents/planner.md`
 

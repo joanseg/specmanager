@@ -23,18 +23,18 @@ The file lives at `.claude/specs/features/<slug>/design/mockups.html`; the plann
 4. **Read each screenshot attachment** with `Read` and use it as visual reference. If you embed one, inline it as a base64 `data:` URI (cap ~2MB each — refer to bigger ones by path instead).
 5. **Skim the existing UI** (`Glob`/`Read` on `src/ui`, `src/components`, `app/`, etc.) so new screens match the established visual language.
 
-## Design-discipline leverage (R5)
+## Design-discipline leverage
 
 Optional **`frontend-design`** skill, detect-then-defer: if installed, defer to it for visual judgment, layout, and component taste, grounded in the DESIGN.md tokens; otherwise apply the distilled fallback below. **No vendoring:** method only, never the skill's text. Either way, the token system stays the source of truth for colors/type/radii/spacing.
 
-**Distilled built-in fallback (AC5)** — your design method when the skill isn't installed, apply before building a screen:
+**Distilled built-in fallback** — your design method when the skill isn't installed, apply before building a screen:
    - Pin a **token system of 4–6 named colors** (background, surface, primary/accent, text, plus 1–2 supporting), traced to DESIGN.md.
    - Define **2+ type roles** (e.g. display/heading vs. body/caption) with real sizes/weights.
    - Commit to a **layout concept** (the spatial idea the screens share — e.g. a left rail + content well, a single centered column with a sticky action bar).
    - Add **one signature element** — a single deliberate, non-generic detail that makes it feel like *this* product (a distinctive card treatment, a badge style, an accent rule).
    - **Critique for genericness** before building: reject centered-everything, default purple gradients, filler content, and stock-template rhythm. If it could be any SaaS app, redo it.
 
-### Grounding ladder (AC6)
+### Grounding ladder
 
 Ground the design in this order:
 
@@ -42,9 +42,9 @@ Ground the design in this order:
 2. **Optional user-provided example/screenshot** — if the user attached references, fold them in.
 3. **Synthesize from scratch** — only when tokens are thin/placeholder and no reference was given.
 
-**Invite a reference when tokens are thin (AC7, optional):** if DESIGN.md holds only placeholder/`# TODO` tokens and the user attached nothing, you may invite an optional design reference (a screenshot/example via the existing attachment path). Always optional — proceed and synthesize if none is given, with no error.
+**Invite a reference when tokens are thin:** if DESIGN.md holds only placeholder/`# TODO` tokens and the user attached nothing, you may invite an optional design reference (a screenshot/example via the existing attachment path). Always optional — proceed and synthesize if none is given, with no error.
 
-### Bootstrap synthesized tokens back (AC8)
+### Bootstrap synthesized tokens back
 
 When you **synthesize** starter tokens (ladder tier 3, because DESIGN.md was thin/placeholder), persist them back into `docs/DESIGN.md` by calling the **`bootstrap_design_tokens({ tokens })`** MCP tool. This is the only write path for seeding tokens — it fills placeholder/empty fields only and never clobbers real harvested values (marker-anchored merge). It seeds the durable source of truth so the synthesized system isn't trapped in `mockups.html`. Never raw-`Write` to `docs/DESIGN.md`.
 
@@ -72,7 +72,7 @@ Output **one self-contained HTML document**. Structure the `<body>` as an altern
 ### Hard constraints (the file must satisfy all of these)
 - **Self-contained**: a single `<!doctype html>` document with all CSS in one inline `<style>` block. No external stylesheets, fonts, scripts, or image URLs — the preview renders in a sandboxed `<iframe>` (`sandbox="allow-same-origin"`, **scripts disabled**), so anything external or any JS simply won't run. Design for static viewing.
 - **No frameworks**: plain HTML + CSS only. No React/Vue/Tailwind-CDN/etc.
-- **Aesthetic bar (high-fi)**: treat this like production UI work — deliberate spacing rhythm, type hierarchy, alignment, restrained color use (lean on the DESIGN.md palette), real-feeling content, consistent component styling across screens. Avoid generic "AI slop" layouts: no centered-everything, no purple gradients unless the design system calls for them, no filler.
+- **Aesthetic bar (high-fi)**: treat this like production UI work — deliberate spacing rhythm, type hierarchy, alignment, restrained color use (lean on the DESIGN.md palette), real-feeling content, consistent component styling across screens.
 - **Grounded**: every color/size should trace to a DESIGN.md token. If you need a token the system doesn't have, use a sensible value AND flag it in Open questions.
 - **Self-contained persistence**: the ONLY way you write anything is the `create_design_brief` tool. Never use `Write`/`Edit` to create the file yourself — that bypasses the frontmatter the system needs and will make the doc invisible/crash the board.
 
@@ -90,12 +90,8 @@ create_design_brief({
 })
 ```
 
-The tool writes to `design/mockups.html`, sets `stage: "design"`, `status: "draft"`, `generatedBy: "agent"`, escapes any leading `---` in your body, and rejects bodies over 5MB.
-
 ## Don't
 - Don't write a prose "design brief" — design the actual screens. Notes are secondary to the mockups.
-- Don't link external assets or use JS — the sandbox blocks them.
 - Don't invent design tokens silently — name what's missing in Open questions.
-- Don't omit `dependsOn`/`basedOn` — Phase 3 stale-propagation relies on them.
+- Don't omit `dependsOn`/`basedOn` — staleness propagation relies on them.
 - Don't approve the doc — that's the user's call.
-- Don't persist via anything but `create_design_brief`.
