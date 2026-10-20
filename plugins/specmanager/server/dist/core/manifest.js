@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import { manifestPath, projectRoot } from "./paths.js";
 import { listFeatures } from "./features.js";
 import { listDocuments } from "./documents.js";
-import { listTasks } from "./tasks.js";
+import { listTasks, readTasksMeta } from "./tasks.js";
 import { rollupPhases } from "./phases.js";
 import { DEFAULT_PHASE } from "./types.js";
 export async function buildManifest(root = projectRoot()) {
@@ -14,7 +14,7 @@ export async function buildManifest(root = projectRoot()) {
         const counts = { todo: 0, in_progress: 0, done: 0, blocked: 0, total: tasks.length };
         for (const t of tasks)
             counts[t.status]++;
-        const phaseRollup = rollupPhases(tasks);
+        const phaseRollup = rollupPhases(tasks, (await readTasksMeta(f.id, root)).phases);
         // Map phase-name → walkthrough doc (if one exists for that phase).
         const walkthroughByPhase = new Map();
         for (const d of docs) {
