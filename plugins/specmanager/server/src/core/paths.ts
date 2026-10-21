@@ -22,6 +22,18 @@ export function featureDir(slug: string, root = projectRoot()): string {
   return path.join(featuresDir(root), slug);
 }
 
+export function researchDir(root = projectRoot()): string {
+  return path.join(specsDir(root), "research");
+}
+
+export function studyDir(slug: string, root = projectRoot()): string {
+  return path.join(researchDir(root), slug);
+}
+
+export function studyNotesDir(slug: string, root = projectRoot()): string {
+  return path.join(studyDir(slug, root), "notes");
+}
+
 export function reposDir(root = projectRoot()): string {
   return path.join(root, "repos");
 }

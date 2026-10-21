@@ -36,11 +36,24 @@ export type GeneratedBy = z.infer<typeof GENERATED_BY>;
 export const DOC_KIND = z.enum(["interview"]);
 export type DocKind = z.infer<typeof DOC_KIND>;
 
+// Provenance of a feature handed off from a research study's strategy build list.
+// Lives on feature.json, never in dependsOn, so research stays out of staleness.
+export const FeatureOriginSchema = z.object({
+  studyId: z.string(),
+  strategyId: z.string(),
+  strategyVersion: z.number().int().nonnegative(),
+  rank: z.number().int().positive(),
+  itemId: z.string(),
+  item: z.string(),
+});
+export type FeatureOrigin = z.infer<typeof FeatureOriginSchema>;
+
 export const FeatureSchema = z.object({
   id: z.string(),
   slug: z.string(),
   title: z.string(),
   currentStage: STAGE.default("prd"),
+  origin: FeatureOriginSchema.optional(),
   createdAt: z.string(),
 });
 export type Feature = z.infer<typeof FeatureSchema>;
@@ -66,6 +79,47 @@ export const DocFrontmatterSchema = z.object({
   updatedAt: z.string(),
 });
 export type DocFrontmatter = z.infer<typeof DocFrontmatterSchema>;
+
+// Researcher mode: one doc per kind per study, under .claude/specs/research/<slug>/.
+export const RESEARCH_KIND = z.enum(["market", "concepts", "user-research", "marketing", "strategy"]);
+export type ResearchKind = z.infer<typeof RESEARCH_KIND>;
+
+export const StudySchema = z.object({
+  id: z.string(),
+  slug: z.string(),
+  title: z.string(),
+  idea: z.string(),
+  createdAt: z.string(),
+});
+export type Study = z.infer<typeof StudySchema>;
+
+// No status or stale: research docs are never approved; "outdated" is computed.
+// `findings` lists ingested note filenames and is valid only on user-research.
+export const ResearchDocFrontmatterSchema = z
+  .object({
+    id: z.string(),
+    studyId: z.string(),
+    kind: RESEARCH_KIND,
+    title: z.string(),
+    dependsOn: z.array(z.string()).default([]),
+    basedOn: z.record(z.string(), z.number()).default({}),
+    generatedBy: GENERATED_BY.default("human"),
+    version: z.number().int().nonnegative().default(1),
+    findings: z.array(z.string()).optional(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+  })
+  .refine((fm) => fm.findings === undefined || fm.kind === "user-research", {
+    message: "findings is only valid on user-research docs",
+    path: ["findings"],
+  });
+export type ResearchDocFrontmatter = z.infer<typeof ResearchDocFrontmatterSchema>;
+
+export interface ResearchDocRecord {
+  frontmatter: ResearchDocFrontmatter;
+  body: string;
+  filePath: string;
+}
 
 export interface DocumentRecord {
   frontmatter: DocFrontmatter;
