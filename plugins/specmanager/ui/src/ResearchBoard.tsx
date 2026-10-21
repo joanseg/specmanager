@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { postHandoff } from "./api";
+import EmptyResearch from "./EmptyResearch";
 import {
   BuildItem,
   Handoff,
@@ -297,15 +298,7 @@ export default function ResearchBoard({
   studies: StudySummary[];
   onOpenDoc?: (docId: string) => void;
 }) {
-  if (studies.length === 0) {
-    // Placeholder until the empty state and start-study form land (task-023).
-    return (
-      <section className="empty">
-        <p>No studies yet.</p>
-        <pre>/specmanager-research &lt;idea&gt;</pre>
-      </section>
-    );
-  }
+  if (studies.length === 0) return <EmptyResearch />;
   return (
     <section className="grid grid--research">
       <div className="grid__corner">Study</div>

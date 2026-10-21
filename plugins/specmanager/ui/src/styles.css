@@ -1520,6 +1520,111 @@ label.handoff-item { cursor: pointer; }
   letter-spacing: 0.06em;
 }
 
+/* Researcher empty state: two panes, explanation + start-study form. */
+.empty-research {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  border: 1px dashed var(--outline-variant);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.empty-research__intro { padding: 2.2rem 2.2rem 2rem; }
+.empty-research__intro h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.4rem;
+}
+.empty-research__intro p {
+  margin: 0 0 1.2rem;
+  color: var(--on-surface-variant);
+  line-height: 1.6;
+  max-width: 34rem;
+}
+.steps {
+  list-style: none;
+  margin: 0 0 1.4rem;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+.steps li {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: var(--on-surface-variant);
+  letter-spacing: 0.02em;
+}
+.steps li i {
+  display: block;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface-container-highest);
+  margin-bottom: 0.45rem;
+}
+.steps li:first-child { color: var(--primary); }
+.steps li:first-child i {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--primary);
+  height: 6px;
+  margin-top: -1px;
+  margin-bottom: 0.375rem;
+}
+.empty-research__lead { font-size: 0.78rem; color: var(--on-surface-variant); margin-bottom: 0.45rem; }
+.cmd {
+  all: unset;
+  cursor: pointer;
+  display: inline-block;
+  background: var(--surface-container);
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--primary);
+}
+.cmd:hover { background: var(--surface-container-high); }
+.cmd:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.empty-research__form {
+  padding: 2.2rem;
+  background: var(--surface-container-low);
+  border-left: 1px dashed var(--outline-variant);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.empty-research__form h3 {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--on-surface-variant);
+  font-weight: 500;
+}
+.field label { display: block; font-size: 0.78rem; font-weight: 500; margin-bottom: 0.35rem; }
+.field .input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--surface-container);
+  padding: 0.5rem 0.65rem;
+}
+.field .input:focus { box-shadow: 0 0 0 3px var(--tb-active-bg); }
+.field .input--area { min-height: 4.6rem; line-height: 1.5; resize: vertical; }
+.field .hint { font-size: 0.7rem; color: var(--on-surface-variant); margin-top: 0.3rem; font-family: var(--font-mono); }
+.empty-research__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 0.2rem;
+  font-size: 0.72rem;
+  color: var(--on-surface-variant);
+}
+.empty-research__actions .mono { font-family: var(--font-mono); color: var(--primary); }
+.empty-research__error { font-size: 0.78rem; color: var(--error); }
+
 /* ===================================================================
  * Responsive — three Obsidian Flux breakpoints (Architecture §6).
  * CSS-only; no JS layout logic. The grid template is driven by the
@@ -1575,6 +1680,9 @@ label.handoff-item { cursor: pointer; }
   .panel__header-actions { flex-wrap: wrap; }
   .panel__editor { border-right: 0; border-bottom: 1px solid var(--outline-variant); }
   .panel__preview { border-left: 0; }
+
+  .empty-research { grid-template-columns: 1fr; }
+  .empty-research__form { border-left: 0; border-top: 1px dashed var(--outline-variant); }
 }
 
 /* Reduced motion: disable the scale/glow/slide micro-interactions but keep the
