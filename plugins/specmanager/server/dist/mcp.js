@@ -4,7 +4,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { startBoardServer } from "./board-server.js";
 import { spawn } from "node:child_process";
-import { STAGE, DOC_KIND, DOC_STATUS, TASK_STATUS, TASK_COMPLEXITY, GENERATED_BY, events, initProject, listFeatures, createFeature, listDocuments, readDocumentById, createDocument, sanitizeDesignBriefBody, DESIGN_BRIEF_MAX_BYTES, writeDocument, setStatus, checkGate, listStale, linkDocuments, listTasks, createTask, updateTask, listPhases, getNextPhase, getPhaseCompletion, getSpecSlice, setPhaseMeta, PhaseKindSchema, PrerequisiteSchema, resolveActiveCard, setActiveBuild, clearActiveBuild, syncClaudeMd, syncDesignMd, mergeSynthesizedTokens, writeManifest, } from "./core/index.js";
+import { STAGE, DOC_KIND, DOC_STATUS, TASK_STATUS, TASK_COMPLEXITY, GENERATED_BY, events, initProject, listFeatures, createFeature, listDocuments, readDocumentById, createDocument, sanitizeDesignBriefBody, DESIGN_BRIEF_MAX_BYTES, writeDocument, setStatus, checkGate, listStale, linkDocuments, listTasks, createTask, updateTask, listPhases, getNextPhase, getPhaseCompletion, getSpecSlice, setPhaseMeta, PhaseKindSchema, PrerequisiteSchema, resolveActiveCard, setActiveBuild, clearActiveBuild, syncClaudeMd, syncDesignMd, mergeSynthesizedTokens, writeManifest, RESEARCH_KIND, createStudy, listStudySummaries, readResearchDocById, createResearchDoc, writeResearchDoc, handoffStudyItems, } from "./core/index.js";
 const PROJECT_DIR = process.env.SPECMANAGER_PROJECT_DIR ?? process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
 const BOARD_PORT = Number(process.env.SPECMANAGER_BOARD_PORT ?? 4317);
 function text(payload) {
@@ -422,6 +422,113 @@ server.registerTool("open_board", {
         return fail(`could not open browser (${err.message}); URL: ${url}`);
     }
 });
+// ---- Research studies (researcher mode) ----
+/** Slim mutation ack for research doc writes. */
+function researchAck(d) {
+    return { id: d.frontmatter.id, version: d.frontmatter.version, filePath: d.filePath };
+}
+server.registerTool("create_study", {
+    title: "Create a research study",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+    description: "Create a research study (research/<slug>/study.json plus an empty notes/ folder). Returns the study record.",
+    inputSchema: z.object({ title: z.string().min(1), idea: z.string().min(1) }),
+}, async ({ title, idea }) => {
+    try {
+        const s = await createStudy({ title, idea }, PROJECT_DIR);
+        await writeManifest(PROJECT_DIR);
+        return ok(s);
+    }
+    catch (err) {
+        return fail(err.message);
+    }
+});
+server.registerTool("list_studies", {
+    title: "List research studies",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    description: "List research studies (or one, by studyId) with doc summaries (id, kind, version, outdated[]), newNotes[], nextStep, steps[] (per-step done/next/flag/open/locked + gate reason), buildList[], handedOff[] feature ids and handoffs[] ({ itemId, featureId, slug }).",
+    inputSchema: z.object({ studyId: z.string().optional() }),
+}, async ({ studyId }) => {
+    try {
+        return ok(await listStudySummaries(studyId, PROJECT_DIR));
+    }
+    catch (err) {
+        return fail(err.message);
+    }
+});
+server.registerTool("read_research_doc", {
+    title: "Read a research doc",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    description: "Return a research doc's frontmatter, body and filePath by id.",
+    inputSchema: z.object({ id: z.string() }),
+}, async ({ id }) => {
+    try {
+        const d = await readResearchDocById(id, PROJECT_DIR);
+        return ok({ ...d.frontmatter, body: d.body, filePath: d.filePath });
+    }
+    catch (err) {
+        return fail(err.message);
+    }
+});
+server.registerTool("create_research_doc", {
+    title: "Create a research doc",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+    description: "Create the study's single doc of a kind (market, concepts, user-research, marketing, strategy). Enforces the research ordering gate; fails with \"use write_research_doc\" if the kind already exists. concepts bodies are HTML, sanitised and capped at 5MB.",
+    inputSchema: z.object({
+        studyId: z.string(),
+        kind: RESEARCH_KIND,
+        title: z.string().min(1),
+        body: z.string(),
+        dependsOn: z.array(z.string()).optional(),
+        basedOn: z.record(z.string(), z.number()).optional(),
+    }),
+}, async (input) => {
+    try {
+        const d = await createResearchDoc({ ...input, generatedBy: "agent" }, PROJECT_DIR);
+        await writeManifest(PROJECT_DIR);
+        return ok(researchAck(d));
+    }
+    catch (err) {
+        return fail(err.message);
+    }
+});
+server.registerTool("write_research_doc", {
+    title: "Replace a research doc body",
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
+    description: "Replace a research doc's body / metadata; bumps version. Pass baseVersion for optimistic concurrency. findings (ingested note filenames) is valid only on user-research.",
+    inputSchema: z.object({
+        id: z.string(),
+        body: z.string().optional(),
+        title: z.string().optional(),
+        baseVersion: z.number().int().nonnegative().optional(),
+        dependsOn: z.array(z.string()).optional(),
+        basedOn: z.record(z.string(), z.number()).optional(),
+        findings: z.array(z.string()).optional(),
+    }),
+}, async (input) => {
+    try {
+        const d = await writeResearchDoc({ ...input, generatedBy: "agent" }, PROJECT_DIR);
+        await writeManifest(PROJECT_DIR);
+        return ok(researchAck(d));
+    }
+    catch (err) {
+        return fail(err.message);
+    }
+});
+server.registerTool("handoff_study_items", {
+    title: "Hand off study build items to Builder",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    description: "Create one Builder feature per strategy build item id (S<n>), recording origin on each. Idempotent per item: already handed-off items are returned as skipped. Unknown item ids fail the whole call.",
+    inputSchema: z.object({ studyId: z.string(), itemIds: z.array(z.string()).min(1) }),
+}, async ({ studyId, itemIds }) => {
+    try {
+        const result = await handoffStudyItems({ studyId, itemIds }, PROJECT_DIR);
+        await writeManifest(PROJECT_DIR);
+        return ok(result);
+    }
+    catch (err) {
+        return fail(err.message);
+    }
+});
 // Refresh the CLAUDE.md managed block whenever any mutation flows through core —
 // covers MCP tool calls AND board-server REST writes, since both emit the same events.
 function startClaudeMdAutoSync(root) {
@@ -445,6 +552,8 @@ function startClaudeMdAutoSync(root) {
             case "status.changed":
             case "stale.flagged":
             case "stale.cleared":
+            case "study.created":
+            case "research.created":
                 schedule();
                 break;
             default:

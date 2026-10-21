@@ -15,6 +15,15 @@ export function featuresDir(root = projectRoot()) {
 export function featureDir(slug, root = projectRoot()) {
     return path.join(featuresDir(root), slug);
 }
+export function researchDir(root = projectRoot()) {
+    return path.join(specsDir(root), "research");
+}
+export function studyDir(slug, root = projectRoot()) {
+    return path.join(researchDir(root), slug);
+}
+export function studyNotesDir(slug, root = projectRoot()) {
+    return path.join(studyDir(slug, root), "notes");
+}
 export function reposDir(root = projectRoot()) {
     return path.join(root, "repos");
 }

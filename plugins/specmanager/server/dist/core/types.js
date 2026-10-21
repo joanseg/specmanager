@@ -22,11 +22,22 @@ export const GENERATED_BY = z.enum(["agent", "human"]);
 // "interview" = the optional pre-PRD interview stored in the prd stage;
 // excluded from gating, stage labels, and the board's primary stage card.
 export const DOC_KIND = z.enum(["interview"]);
+// Provenance of a feature handed off from a research study's strategy build list.
+// Lives on feature.json, never in dependsOn, so research stays out of staleness.
+export const FeatureOriginSchema = z.object({
+    studyId: z.string(),
+    strategyId: z.string(),
+    strategyVersion: z.number().int().nonnegative(),
+    rank: z.number().int().positive(),
+    itemId: z.string(),
+    item: z.string(),
+});
 export const FeatureSchema = z.object({
     id: z.string(),
     slug: z.string(),
     title: z.string(),
     currentStage: STAGE.default("prd"),
+    origin: FeatureOriginSchema.optional(),
     createdAt: z.string(),
 });
 export const DocFrontmatterSchema = z.object({
@@ -48,6 +59,35 @@ export const DocFrontmatterSchema = z.object({
     kind: DOC_KIND.optional(),
     createdAt: z.string(),
     updatedAt: z.string(),
+});
+// Researcher mode: one doc per kind per study, under .claude/specs/research/<slug>/.
+export const RESEARCH_KIND = z.enum(["market", "concepts", "user-research", "marketing", "strategy"]);
+export const StudySchema = z.object({
+    id: z.string(),
+    slug: z.string(),
+    title: z.string(),
+    idea: z.string(),
+    createdAt: z.string(),
+});
+// No status or stale: research docs are never approved; "outdated" is computed.
+// `findings` lists ingested note filenames and is valid only on user-research.
+export const ResearchDocFrontmatterSchema = z
+    .object({
+    id: z.string(),
+    studyId: z.string(),
+    kind: RESEARCH_KIND,
+    title: z.string(),
+    dependsOn: z.array(z.string()).default([]),
+    basedOn: z.record(z.string(), z.number()).default({}),
+    generatedBy: GENERATED_BY.default("human"),
+    version: z.number().int().nonnegative().default(1),
+    findings: z.array(z.string()).optional(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+})
+    .refine((fm) => fm.findings === undefined || fm.kind === "user-research", {
+    message: "findings is only valid on user-research docs",
+    path: ["findings"],
 });
 export const TaskArtifactsSchema = z.object({
     commits: z.array(z.string()).default([]),

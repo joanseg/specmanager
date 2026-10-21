@@ -5,10 +5,19 @@ import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
 import { WebSocketServer } from "ws";
 import chokidar from "chokidar";
-import { buildManifest, checkGate, createTask, events, listDocuments, listFeatures, listStale, listTasks, pidFilePath, projectRoot, readDocumentById, reapStalePid, removePidFile, setStatus, specsDir, syncDesignMd, updateTask, writeDocument, writePidFile, } from "./core/index.js";
+import { buildManifest, checkGate, createStudy, handoffStudyItems, listStudySummaries, readResearchDocById, writeResearchDoc, createTask, events, listDocuments, listFeatures, listStale, listTasks, pidFilePath, projectRoot, readDocumentById, reapStalePid, removePidFile, setStatus, specsDir, syncDesignMd, updateTask, writeDocument, writePidFile, } from "./core/index.js";
 const here = path.dirname(fileURLToPath(import.meta.url));
 // dist/board-server.js → plugin root → ui/dist
 const UI_DIST = path.resolve(here, "..", "..", "ui", "dist");
+/** Map a research core error to 409 (version conflict), 404 (not found) or 400. */
+function researchError(reply, err) {
+    const message = err.message;
+    const notFound = err.code === "ENOENT" ||
+        message.includes("not found") ||
+        message.startsWith("not a study id");
+    reply.code(message.startsWith("version conflict") ? 409 : notFound ? 404 : 400);
+    return { error: message };
+}
 // Bind the board to `preferred`, falling forward through `preferred+1..+scanBound`
 // and finally an ephemeral `{ port: 0 }` (guaranteed last resort) whenever a
 // candidate is already taken or refused. Re-`listen` on the same Fastify
@@ -154,6 +163,65 @@ export async function startBoardServer(opts = {}) {
         catch (err) {
             reply.code(400);
             return { error: err.message };
+        }
+    });
+    // Research studies — same core calls (and so the same events) as the MCP tools.
+    app.get("/api/studies", async (req, reply) => {
+        try {
+            return await listStudySummaries(req.query.studyId, root);
+        }
+        catch (err) {
+            return researchError(reply, err);
+        }
+    });
+    app.post("/api/studies", async (req, reply) => {
+        const { title, idea } = req.body ?? {};
+        if (!title || !idea) {
+            reply.code(400);
+            return { error: "title and idea are required" };
+        }
+        try {
+            return await createStudy({ title, idea }, root);
+        }
+        catch (err) {
+            return researchError(reply, err);
+        }
+    });
+    app.get("/api/research/:id", async (req, reply) => {
+        try {
+            const doc = await readResearchDocById(req.params.id, root);
+            return { ...doc.frontmatter, body: doc.body, filePath: doc.filePath };
+        }
+        catch (err) {
+            return researchError(reply, err);
+        }
+    });
+    app.put("/api/research/:id", async (req, reply) => {
+        try {
+            const updated = await writeResearchDoc({
+                id: req.params.id,
+                body: req.body?.body,
+                title: req.body?.title,
+                baseVersion: req.body?.baseVersion,
+                generatedBy: "human",
+            }, root);
+            return { ...updated.frontmatter, body: updated.body, filePath: updated.filePath };
+        }
+        catch (err) {
+            return researchError(reply, err);
+        }
+    });
+    app.post("/api/studies/:id/handoff", async (req, reply) => {
+        const itemIds = req.body?.itemIds;
+        if (!Array.isArray(itemIds) || itemIds.length === 0) {
+            reply.code(400);
+            return { error: "itemIds must be a non-empty array" };
+        }
+        try {
+            return await handoffStudyItems({ studyId: req.params.id, itemIds }, root);
+        }
+        catch (err) {
+            return researchError(reply, err);
         }
     });
     app.post("/api/design/sync", async (req) => {
