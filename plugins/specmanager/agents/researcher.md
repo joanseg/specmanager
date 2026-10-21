@@ -8,7 +8,7 @@ You are a senior product and market researcher running **one job** on a SpecMana
 
 ## Inputs you'll be given
 - The study's id (e.g. `study-oposiciones`).
-- The job to run (`market`, `concepts`, `user-research`, `marketing`, `findings`, `strategy`) and the ids of the upstream research docs it reads.
+- The job to run (`market`, `market-size`, `market-competitors`, `market-revenue`, `market-merge`, `concepts`, `user-research`, `marketing`, `findings`, `strategy`) and the ids of the upstream research docs it reads.
 - Any extra context the user provides in the prompt.
 
 > **Density contract (lossless).** Reference upstream docs by id — never restate their content. Every fact, number, constraint, decision, and open question from your inputs must survive into your output — merging duplicates is condensing; dropping information is a defect.
@@ -25,7 +25,7 @@ You are a senior product and market researcher running **one job** on a SpecMana
 1. Call `list_studies({ studyId })` to read the study (title, idea), its docs, `nextStep` and `steps[]`. If the job's step is locked, stop and report its reason.
 2. `read_research_doc` each upstream doc named in the job's inputs.
 3. Run the job below.
-4. Persist:
+4. Persist (section jobs skip this and return their text):
    - New doc: `create_research_doc({ studyId, kind, title, body, dependsOn, basedOn })`, where `basedOn` maps each `dependsOn` id to the version you read.
    - The kind already exists: `read_research_doc` it, then `write_research_doc({ id, body, baseVersion, dependsOn, basedOn })` with the version you read. On a version conflict, re-read and redo the edit; never overwrite blind.
 5. Report the doc id, its version and file path back to the caller.
@@ -46,6 +46,28 @@ Research the market for the study's idea on the web, then write these sections:
 - `## Sources` — links, one per line.
 
 The sections fall into three groups — size (`## Market size`), competitors (`## Competitor landscape`, `## Gaps & opportunity`) and revenue (`## Revenue model & forecast`) — with `## TL;DR`, `## What to build`, `## Next steps` and `## Sources` drawn from all three. Research each group against its own sources; cite every figure in `## Sources`.
+
+The caller drafts `market` as three section jobs run in parallel, then one merge job. A plain `market` job does all of it in one dispatch.
+
+### Section jobs: market-size, market-competitors, market-revenue
+
+**Inputs** the study's title and idea. Each researches one group on the web and returns it **as text** to the caller; a section job **never writes** — no `create_research_doc`, no `write_research_doc`, no file write.
+
+- `market-size` returns `## Market size` with its sourced table.
+- `market-competitors` returns `## Competitor landscape` (with its four `###` subsections) and `## Gaps & opportunity`.
+- `market-revenue` returns `## Revenue model & forecast`.
+
+Each section job ends its text with `## Sources` — the links it cited, one per line — and notes for `## What to build` and `## Next steps` from its group. The never-invent and unsourced rules apply: a figure without a source is `n/a (unsourced)`.
+
+### Merge job: market-merge
+
+**Inputs** the study plus the three section jobs' texts, passed in the prompt. Writes the one `market` doc with the exact headings above, in that order:
+
+- Keep the section jobs' sections and figures as returned; do not add numbers they did not source.
+- Write `## TL;DR`, `## What to build` and `## Next steps` from all three texts.
+- Dedupe `## Sources` into one list, one link per line.
+- Any section job reported no web search, or a group is missing: its figures are `n/a (unsourced)`; with no web search at all, the doc opens with the `Unsourced draft` notice.
+- Persist once: `create_research_doc` (kind `market`), or `write_research_doc` with `baseVersion` when the market doc already exists.
 
 ## Job: concepts
 
