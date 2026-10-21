@@ -2,7 +2,7 @@
 id: wt-init-onboarding-plugins-repos-027
 featureId: feat-init-onboarding-plugins-repos
 stage: walkthrough
-status: draft
+status: approved
 stale: false
 title: 'Init onboarding: plugins & repos — Phase onboarding walkthrough'
 dependsOn:
@@ -13,7 +13,7 @@ generatedBy: agent
 version: 2
 phase: onboarding
 createdAt: '2026-10-20T18:52:41.966Z'
-updatedAt: '2026-10-21T11:07:42.689Z'
+updatedAt: '2026-10-21T11:12:20.979Z'
 ---
 ## Stakeholder test guide
 

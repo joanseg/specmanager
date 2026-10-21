@@ -1,0 +1,491 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-marketing-phase",
+      "title": "core/trend.ts: computeTrend + TREND_RULE/TREND_THRESHOLD",
+      "status": "todo",
+      "phase": "keywords",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:58:44.599Z",
+      "updatedAt": "2026-09-29T11:58:44.599Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-marketing-phase",
+      "title": "selftest-keywords.ts trend table (a) + selftest-keywords script in package.json",
+      "status": "todo",
+      "phase": "keywords",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:58:48.473Z",
+      "updatedAt": "2026-09-29T11:58:48.473Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-marketing-phase",
+      "title": "core/google-ads.ts: googleAdsConfigFromEnv, GoogleAdsError, getAccessToken, adsPost",
+      "status": "todo",
+      "phase": "keywords",
+      "complexity": 3,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:58:49.382Z",
+      "updatedAt": "2026-09-29T11:58:49.382Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-marketing-phase",
+      "title": "core/keywords.ts: region + language resolution",
+      "status": "todo",
+      "phase": "keywords",
+      "complexity": 3,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:58:52.731Z",
+      "updatedAt": "2026-09-29T11:58:52.731Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-marketing-phase",
+      "title": "core/keywords.ts: checkKeywordDemand + MAX_KEYWORDS + result types; re-export trend/google-ads/keywords from core/index.ts",
+      "status": "todo",
+      "phase": "keywords",
+      "complexity": 3,
+      "dependsOn": [
+        "task-001",
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:58:56.414Z",
+      "updatedAt": "2026-09-29T11:58:56.414Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-marketing-phase",
+      "title": "selftest-keywords (b)–(d) with a stub fetch",
+      "status": "todo",
+      "phase": "keywords",
+      "complexity": 3,
+      "dependsOn": [
+        "task-002",
+        "task-005"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:59:00.002Z",
+      "updatedAt": "2026-09-29T11:59:00.002Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-marketing-phase",
+      "title": "Register check_keyword_demand in mcp.ts + assert in smoke-mcp.ts",
+      "status": "todo",
+      "phase": "keywords",
+      "complexity": 2,
+      "dependsOn": [
+        "task-005"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:59:01.476Z",
+      "updatedAt": "2026-09-29T11:59:01.476Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-marketing-phase",
+      "title": "plugin.json 6 userConfig options + 6 .mcp.json env entries",
+      "status": "todo",
+      "phase": "keywords",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:59:02.105Z",
+      "updatedAt": "2026-09-29T11:59:02.105Z"
+    },
+    {
+      "id": "task-009",
+      "featureId": "feat-marketing-phase",
+      "title": "commands/specmanager-keywords.md",
+      "status": "todo",
+      "phase": "keywords",
+      "complexity": 2,
+      "dependsOn": [
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:59:05.608Z",
+      "updatedAt": "2026-09-29T11:59:05.608Z"
+    },
+    {
+      "id": "task-010",
+      "featureId": "feat-marketing-phase",
+      "title": "Docs: README ## Keyword demand (Google Ads) + repo CLAUDE.md selftest list (14→15) and commands line",
+      "status": "todo",
+      "phase": "keywords",
+      "complexity": 2,
+      "dependsOn": [
+        "task-008"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:59:06.825Z",
+      "updatedAt": "2026-09-29T11:59:06.825Z"
+    },
+    {
+      "id": "task-011",
+      "featureId": "feat-marketing-phase",
+      "title": "Rebuild server/dist + manual Q4 install check",
+      "status": "todo",
+      "phase": "keywords",
+      "complexity": 2,
+      "dependsOn": [
+        "task-006",
+        "task-007",
+        "task-008",
+        "task-009",
+        "task-010"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:59:11.547Z",
+      "updatedAt": "2026-09-29T11:59:11.547Z"
+    },
+    {
+      "id": "task-012",
+      "featureId": "feat-marketing-phase",
+      "title": "Core stage enum: types.ts STAGE, paths.ts STAGES + stageDir, documents.ts DEFAULT_FILENAMES.marketing",
+      "status": "todo",
+      "phase": "stage",
+      "complexity": 2,
+      "dependsOn": [
+        "task-011"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:59:16.797Z",
+      "updatedAt": "2026-09-29T11:59:16.797Z"
+    },
+    {
+      "id": "task-013",
+      "featureId": "feat-marketing-phase",
+      "title": "dependencies.ts: PRIOR_STAGE.marketing=\"prd\" + OPTIONAL_PLAN_STAGES loop",
+      "status": "todo",
+      "phase": "stage",
+      "complexity": 2,
+      "dependsOn": [
+        "task-012"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:59:21.055Z",
+      "updatedAt": "2026-09-29T11:59:21.055Z"
+    },
+    {
+      "id": "task-014",
+      "featureId": "feat-marketing-phase",
+      "title": "claude-md.ts stageLabel + commands line; agent-chat.ts STAGE_PERSONA.marketing + STAGE.optional(); board-server.ts gate cast",
+      "status": "todo",
+      "phase": "stage",
+      "complexity": 2,
+      "dependsOn": [
+        "task-012"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:59:22.025Z",
+      "updatedAt": "2026-09-29T11:59:22.025Z"
+    },
+    {
+      "id": "task-015",
+      "featureId": "feat-marketing-phase",
+      "title": "selftest-marketing.ts (a)–(h) + script",
+      "status": "todo",
+      "phase": "stage",
+      "complexity": 3,
+      "dependsOn": [
+        "task-013",
+        "task-014"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:59:25.603Z",
+      "updatedAt": "2026-09-29T11:59:25.603Z"
+    },
+    {
+      "id": "task-016",
+      "featureId": "feat-marketing-phase",
+      "title": "UI plumbing: ui/src/types.ts Stage/STAGES, STAGE_LABEL in App.tsx + DocPanel.tsx, priorStageApproved marketing/plan legs, --grid-cols repeat(5…) + tablet repeat(6…) in styles.css:1464",
+      "status": "todo",
+      "phase": "stage",
+      "complexity": 2,
+      "dependsOn": [
+        "task-013"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:59:27.100Z",
+      "updatedAt": "2026-09-29T11:59:27.100Z"
+    },
+    {
+      "id": "task-017",
+      "featureId": "feat-marketing-phase",
+      "title": "OptionalDesignCell → OptionalCell({ stage, ready }), routed for design + marketing",
+      "status": "todo",
+      "phase": "stage",
+      "complexity": 2,
+      "dependsOn": [
+        "task-016"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:59:31.270Z",
+      "updatedAt": "2026-09-29T11:59:31.270Z"
+    },
+    {
+      "id": "task-018",
+      "featureId": "feat-marketing-phase",
+      "title": "Plan-cell gate reason: planBlocker(row) + LockedCell optional reason + .card--gated/.card__gate-reason/.card__gate-hint",
+      "status": "todo",
+      "phase": "stage",
+      "complexity": 1,
+      "dependsOn": [
+        "task-016"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:59:32.367Z",
+      "updatedAt": "2026-09-29T11:59:32.367Z"
+    },
+    {
+      "id": "task-019",
+      "featureId": "feat-marketing-phase",
+      "title": "Verify Milkdown numeric column alignment",
+      "status": "todo",
+      "phase": "stage",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:59:33.105Z",
+      "updatedAt": "2026-09-29T11:59:33.105Z"
+    },
+    {
+      "id": "task-020",
+      "featureId": "feat-marketing-phase",
+      "title": "agents/marketing-writer.md",
+      "status": "todo",
+      "phase": "stage",
+      "complexity": 3,
+      "dependsOn": [
+        "task-012",
+        "task-019"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:59:36.403Z",
+      "updatedAt": "2026-09-29T11:59:36.403Z"
+    },
+    {
+      "id": "task-021",
+      "featureId": "feat-marketing-phase",
+      "title": "commands/specmanager-marketing.md",
+      "status": "todo",
+      "phase": "stage",
+      "complexity": 2,
+      "dependsOn": [
+        "task-020"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:59:40.141Z",
+      "updatedAt": "2026-09-29T11:59:40.141Z"
+    },
+    {
+      "id": "task-022",
+      "featureId": "feat-marketing-phase",
+      "title": "Plan wiring: agents/planner.md marketing grounding + dependsOn/basedOn leg; commands/specmanager-plan.md steps 1/2b/3",
+      "status": "todo",
+      "phase": "stage",
+      "complexity": 2,
+      "dependsOn": [
+        "task-013"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:59:41.339Z",
+      "updatedAt": "2026-09-29T11:59:41.339Z"
+    },
+    {
+      "id": "task-023",
+      "featureId": "feat-marketing-phase",
+      "title": "selftest-prompts INV rows",
+      "status": "todo",
+      "phase": "stage",
+      "complexity": 2,
+      "dependsOn": [
+        "task-020",
+        "task-021",
+        "task-022"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:59:44.662Z",
+      "updatedAt": "2026-09-29T11:59:44.662Z"
+    },
+    {
+      "id": "task-024",
+      "featureId": "feat-marketing-phase",
+      "title": "Docs + rebuild: repo CLAUDE.md (selftests 15→16, stage lists, commands), README commands; rebuild server/dist + ui/dist; claude plugin validate",
+      "status": "todo",
+      "phase": "stage",
+      "complexity": 2,
+      "dependsOn": [
+        "task-014",
+        "task-015",
+        "task-017",
+        "task-018",
+        "task-023"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:59:48.344Z",
+      "updatedAt": "2026-09-29T11:59:48.344Z"
+    },
+    {
+      "id": "task-025",
+      "featureId": "feat-marketing-phase",
+      "title": "Manual dogfood on a throwaway feature",
+      "status": "todo",
+      "phase": "stage",
+      "complexity": 1,
+      "dependsOn": [
+        "task-024"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-09-29T11:59:51.983Z",
+      "updatedAt": "2026-09-29T11:59:51.983Z"
+    }
+  ],
+  "meta": {
+    "phases": {
+      "keywords": {
+        "testCommand": "cd plugins/specmanager/server && npm run build && npm run selftest-keywords && npm run smoke-mcp",
+        "architectureRefs": [
+          "R6",
+          "R7",
+          "R8",
+          "R9",
+          "R10",
+          "R11",
+          "R12",
+          "D1",
+          "D2",
+          "failure-and-edge-cases"
+        ]
+      },
+      "stage": {
+        "testCommand": "cd plugins/specmanager/server && npm run build && npm run selftest && npm run selftest-marketing && npm run selftest-prompts && npm run selftest-board && npm run smoke-mcp && cd ../ui && npm run build",
+        "architectureRefs": [
+          "R1",
+          "R2",
+          "R3",
+          "R4",
+          "R5",
+          "R12"
+        ]
+      }
+    },
+    "blocked": {}
+  }
+}

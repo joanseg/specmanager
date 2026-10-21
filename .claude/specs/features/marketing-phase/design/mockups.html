@@ -1,0 +1,502 @@
+---
+id: design-marketing-phase-008
+featureId: feat-marketing-phase
+stage: design
+status: approved
+stale: false
+title: Marketing phase mockups
+dependsOn:
+  - prd-marketing-phase-035
+  - arch-marketing-phase-025
+basedOn:
+  prd-marketing-phase-035: 3
+  arch-marketing-phase-025: 2
+generatedBy: agent
+version: 2
+createdAt: '2026-09-29T11:55:15.510Z'
+updatedAt: '2026-09-29T21:01:39.373Z'
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marketing phase mockups</title>
+<style>
+/* Tokens copied 1:1 from plugins/specmanager/ui/src/tokens.css (Obsidian Flux). No new tokens. */
+:root{
+  --surface:#131315;--surface-container-lowest:#0e0e10;--surface-container-low:#1b1b1d;--surface-container:#201f21;
+  --surface-container-high:#2a2a2c;--surface-container-highest:#353437;
+  --on-surface:#e5e1e4;--on-surface-variant:#c7c4d7;--outline:#908fa0;--outline-variant:#464554;
+  --primary:#c0c1ff;--primary-container:#8083ff;--secondary:#ddb7ff;--secondary-container:#6f00be;
+  --tertiary:#ffb783;--error:#ffb4ab;--success:#10b981;
+  --radius-sm:4px;--radius-md:8px;--radius-lg:16px;
+  --font-display:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --glass-bg:rgba(24,24,27,0.8);--backdrop-dim:rgba(0,0,0,0.55);--shadow-overlay:0px 20px 50px rgba(0,0,0,0.5);
+  --card-gradient:linear-gradient(135deg,var(--surface-container),var(--surface-container-low));
+  --card-border:color-mix(in srgb,var(--outline-variant) 80%,transparent);
+  --gradient-primary:linear-gradient(135deg,var(--primary-container),var(--secondary-container));
+  --table-header-bg:var(--surface-container-high);
+  --table-zebra-bg:color-mix(in srgb,var(--surface-container) 55%,transparent);
+  --design-preview-bg:#ffffff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--surface-container-lowest);color:var(--on-surface);font-family:var(--font-body);font-size:14px}
+.sm-page{max-width:1280px;margin:0 auto;padding:40px 24px 80px}
+.sm-cover{border-bottom:1px solid var(--outline-variant);padding-bottom:24px;margin-bottom:40px}
+.sm-kicker{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--secondary)}
+.sm-cover h1{font-family:var(--font-display);font-weight:600;font-size:40px;letter-spacing:-.02em;margin:8px 0}
+.sm-cover p{color:var(--on-surface-variant);max-width:80ch;line-height:1.6;margin:0}
+.sm-cover code,.sm-note code{font-family:var(--font-mono);font-size:12px;background:var(--surface-container-high);padding:1px 5px;border-radius:var(--radius-sm);color:var(--on-surface)}
+
+.sm-screen{margin:0 0 24px}
+.sm-label{display:flex;align-items:baseline;gap:12px;margin-bottom:10px}
+.sm-label b{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--primary)}
+.sm-label span{font-family:var(--font-display);font-weight:600;font-size:18px}
+.frame{border:1px solid var(--outline-variant);border-radius:12px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow-overlay)}
+.frame__bar{display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--surface-container-low);border-bottom:1px solid var(--outline-variant)}
+.frame__bar i{width:10px;height:10px;border-radius:50%;background:var(--surface-container-highest);display:block}
+.frame__url{margin-left:12px;font-family:var(--font-mono);font-size:11px;color:var(--on-surface-variant);background:var(--surface-container);padding:3px 10px;border-radius:var(--radius-sm)}
+.scroll-x{overflow-x:auto}
+
+/* doc panel (mirrors styles.css .panel / .prose / .markdown table) */
+.stage{display:flex;min-width:1060px;height:860px}
+.stage__board{flex:0 0 170px;position:relative;padding:20px 14px;overflow:hidden}
+.stage__board::after{content:"";position:absolute;inset:0;background:var(--backdrop-dim)}
+.ghost-card{height:64px;border:1px solid var(--card-border);border-radius:var(--radius-md);background:var(--card-gradient);margin-bottom:8px}
+.panel{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--surface);border-left:1px solid color-mix(in srgb,var(--primary) 8%,var(--glass-bg));border-radius:16px 0 0 16px;box-shadow:var(--shadow-overlay),inset 1px 0 0 color-mix(in srgb,var(--primary) 14%,transparent);overflow:hidden}
+.panel__header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:1rem 1.25rem .75rem;border-bottom:1px solid var(--outline-variant)}
+.panel__crumb{font-family:var(--font-mono);font-size:.72rem;color:var(--on-surface-variant);margin-bottom:.3rem}
+.panel__crumb em{font-style:normal;color:var(--outline);margin:0 .2rem}
+.panel__title-row{display:flex;align-items:baseline;gap:.75rem}
+.panel__title{margin:0;font-family:var(--font-display);font-weight:600;font-size:1.2rem;letter-spacing:-.01em}
+.panel__meta{color:var(--on-surface-variant);font-size:.8rem}
+.panel__badges{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.5rem}
+.panel__actions{display:flex;align-items:center;gap:.5rem}
+.badge{display:inline-flex;align-items:center;padding:.1rem .4rem;border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:.66rem;font-weight:500;background:var(--surface-container-highest);color:var(--on-surface-variant)}
+.badge--draft{color:var(--tertiary)}.badge--meta{opacity:.6}
+.btn{background:var(--surface-container-high);color:var(--on-surface);border:1px solid var(--outline-variant);border-radius:var(--radius-md);padding:.32rem .75rem;font-size:.8rem}
+.btn--dim{opacity:.45}
+.btn--primary{border-color:color-mix(in srgb,var(--primary-container) 70%,transparent);background:var(--gradient-primary);box-shadow:inset 0 1px 0 color-mix(in srgb,var(--primary) 55%,transparent)}
+.btn--ghost{border-color:transparent;background:transparent;color:var(--on-surface-variant)}
+.panel__close{color:var(--on-surface-variant);font-size:1.4rem;line-height:1;padding:0 .4rem}
+.md-toolbar{display:flex;align-items:center;gap:2px;padding:.4rem 1.25rem;border-bottom:1px solid var(--outline-variant);background:var(--surface-container-low)}
+.tb-btn{min-width:28px;height:26px;display:inline-flex;align-items:center;justify-content:center;padding:0 .4rem;border-radius:var(--radius-sm);color:var(--on-surface-variant);font-size:.8rem}
+.tb-sep{width:1px;height:16px;background:var(--outline-variant);margin:0 6px}
+.md-surface{flex:1;overflow:hidden;position:relative}
+.md-surface::after{content:"";position:absolute;left:0;right:0;bottom:0;height:80px;background:linear-gradient(transparent,var(--surface))}
+.gap-above{text-align:center;font-family:var(--font-mono);font-size:.7rem;color:var(--outline);padding:10px 0 0}
+.prose{width:90%;margin:0 auto;padding:12px 16px 40px}
+.prose h2{font-family:var(--font-display);font-weight:600;font-size:1.1rem;margin:1.1rem 0 .5rem;letter-spacing:-.01em}
+.prose h3{font-size:.95rem;margin:1rem 0 .4rem;font-weight:600}
+.prose p,.prose li{font-size:.95rem;line-height:1.62}
+.prose p{margin:.5rem 0}
+.prose ul{margin:.4rem 0;padding-left:1.3rem}
+.prose ul.tasks{list-style:none;padding-left:.2rem}
+.prose a{color:var(--primary)}
+.prose code{background:var(--surface-container-highest);padding:.05rem .3rem;border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:.82rem}
+.prose blockquote{border-left:3px solid var(--outline-variant);padding-left:.8rem;color:var(--on-surface-variant);margin:.6rem 0}
+.prose blockquote p{margin:.3rem 0}
+.prose table{border-collapse:collapse;margin:.8rem 0;font-size:.88rem;font-variant-numeric:tabular-nums}
+.prose th,.prose td{border:1px solid var(--outline-variant);padding:.42rem .7rem;text-align:left;vertical-align:top}
+.prose th{background:var(--table-header-bg);font-weight:600;white-space:nowrap}
+.prose tbody tr:nth-child(even) td{background:var(--table-zebra-bg)}
+.prose .num{text-align:right}
+.prose .prov{font-size:.82rem;color:var(--on-surface-variant)}
+.panel__footer{padding:.4rem 1.25rem;border-top:1px solid var(--outline-variant);font-family:var(--font-mono);font-size:.72rem;color:var(--on-surface-variant)}
+
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px;background:var(--surface-container-lowest)}
+.pair--3{grid-template-columns:1fr 1fr 1fr}
+.pair .panel{border-radius:12px;border:1px solid var(--outline-variant);box-shadow:none}
+.pair .prose{width:100%;padding:4px 22px 18px}
+.pair__tag{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--on-surface-variant);padding:12px 22px 0}
+.pair__tag b{color:var(--secondary);font-weight:500}
+
+/* design-brief preview (white iframe canvas, per --design-preview-bg) */
+.brief{background:var(--design-preview-bg);color:#1b1b1d;padding:28px 32px;display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.brief .ls{border-left:3px solid #6f00be;padding:4px 0 4px 18px;font-family:var(--font-body)}
+.brief .ls h2{font-family:var(--font-display);font-size:18px;margin:0 0 4px}
+.brief .ls .tier{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#6f00be}
+.brief .ls p{font-size:13.5px;line-height:1.55;color:#353437;margin:6px 0}
+.brief .ls table{border-collapse:collapse;font-size:12.5px;margin-top:8px;width:100%}
+.brief .ls th,.brief .ls td{border-bottom:1px solid #e5e1e4;padding:6px 8px 6px 0;text-align:left;vertical-align:top}
+.brief .ls th{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#6b6a78;font-weight:500}
+.brief .ls q{font-style:italic;quotes:"\201C" "\201D"}
+
+/* terminal */
+.term{background:var(--surface-container-lowest);font-family:var(--font-mono);font-size:12.5px;line-height:1.55;color:var(--on-surface);padding:18px 22px;min-width:1000px}
+.term pre{margin:0;font-family:inherit;white-space:pre}
+.term .sep{border-top:1px dashed var(--outline-variant);margin:18px 0}
+.t-dim{color:var(--outline)}.t-var{color:var(--on-surface-variant)}.t-prompt{color:var(--primary)}
+.t-ok{color:var(--success)}.t-warn{color:var(--tertiary)}.t-err{color:var(--error)}.t-b{font-weight:600}
+.t-case{display:inline-block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--secondary);margin-bottom:8px}
+
+/* plugin config dialog (approximate Claude Code TUI) */
+.cfg{background:var(--surface-container-lowest);font-family:var(--font-mono);font-size:12.5px;line-height:1.5;padding:20px 22px;min-width:900px}
+.cfg__box{border:1px solid var(--primary-container);border-radius:6px;padding:14px 18px;max-width:900px}
+.cfg__title{color:var(--primary);font-weight:600}
+.cfg__sub{color:var(--outline);margin:2px 0 14px}
+.cfg__row{display:grid;grid-template-columns:18px 1fr 220px;gap:8px;padding:7px 0;border-top:1px solid color-mix(in srgb,var(--outline-variant) 50%,transparent)}
+.cfg__row--sel{background:color-mix(in srgb,var(--primary) 8%,transparent)}
+.cfg__row .c{color:var(--primary)}
+.cfg__name{color:var(--on-surface)}
+.cfg__desc{color:var(--outline);font-size:11.5px}
+.cfg__val{text-align:right;color:var(--on-surface-variant)}
+.cfg__val--empty{color:var(--outline)}
+.cfg__lock{color:var(--tertiary);font-size:11px}
+.cfg__foot{color:var(--outline);margin-top:12px}
+
+/* notes */
+.sm-note{max-width:84ch;margin:0 0 72px;padding:20px 24px;border-left:2px solid var(--secondary);background:var(--surface);border-radius:0 var(--radius-md) var(--radius-md) 0}
+.sm-note h2{font-family:var(--font-display);font-weight:600;font-size:20px;letter-spacing:-.01em;margin:0 0 8px}
+.sm-note h3{font-size:14px;font-weight:600;margin:16px 0 6px}
+.sm-note p,.sm-note li{color:var(--on-surface-variant);line-height:1.62;font-size:14px}
+.sm-note ul,.sm-note ol{padding-left:1.2rem;margin:6px 0}
+.sm-note li{margin:4px 0}
+.sm-note strong{color:var(--on-surface)}
+.sm-note pre{background:var(--surface-container-lowest);border:1px solid var(--outline-variant);border-radius:var(--radius-md);padding:12px 14px;overflow:auto;font-family:var(--font-mono);font-size:12px;line-height:1.55;color:var(--on-surface)}
+.sm-open-questions{border-left-color:var(--tertiary)}
+</style>
+</head>
+<body>
+<div class="sm-page">
+
+<header class="sm-cover">
+  <div class="sm-kicker">feat-marketing-phase · design · based on PRD v3 + Architecture v2</div>
+  <h1>Marketing phase</h1>
+  <p>Marketing is no longer a lifecycle stage, so there are no board changes. What users see: a tier-sized <code>## Market &amp; demand</code> section inside the PRD (Screens 1–3), a <strong>Launch surface</strong> note inside design mockups (Screen 4), the output of <code>/specmanager:specmanager-keywords</code> (Screen 5) and five optional plugin settings (Screen 6). Screens 1–3 use the existing doc panel and Markdown styles unchanged; every colour and type role comes from <code>ui/src/tokens.css</code>.</p>
+</header>
+
+<!-- ============ SCREEN 1: Moderate ============ -->
+<section class="sm-screen">
+  <div class="sm-label"><b>Screen 1</b><span>PRD in the doc panel: Moderate tier Market &amp; demand</span></div>
+  <div class="frame">
+    <div class="frame__bar"><i></i><i></i><i></i><span class="frame__url">127.0.0.1:4317 · doc panel</span></div>
+    <div class="scroll-x"><div class="stage">
+      <div class="stage__board"><div class="ghost-card"></div><div class="ghost-card"></div><div class="ghost-card"></div><div class="ghost-card"></div><div class="ghost-card"></div><div class="ghost-card"></div></div>
+      <aside class="panel">
+        <header class="panel__header">
+          <div>
+            <div class="panel__crumb">Pricing page v2<em>/</em>PRD</div>
+            <div class="panel__title-row"><h2 class="panel__title">Pricing page v2 PRD</h2><span class="panel__meta">PRD · <span style="font-family:var(--font-mono)">v1</span></span></div>
+            <div class="panel__badges"><span class="badge badge--draft">draft</span><span class="badge badge--meta">prd-pricing-page-v2-041</span><span class="badge badge--meta">agent</span></div>
+          </div>
+          <div class="panel__actions"><span class="btn btn--dim">Saved</span><span class="btn btn--primary">Approve</span><span class="btn btn--ghost">Gate?</span><span class="panel__close">×</span></div>
+        </header>
+        <div class="md-toolbar"><span class="tb-btn"><b>B</b></span><span class="tb-btn"><i>I</i></span><span class="tb-btn">H ▾</span><span class="tb-sep"></span><span class="tb-btn">•</span><span class="tb-btn">1.</span><span class="tb-btn">☐</span><span class="tb-sep"></span><span class="tb-btn">❝</span><span class="tb-btn">⊞</span><span class="tb-btn">🔗</span></div>
+        <div class="md-surface"><div class="gap-above">… Problem · Users · Goals · Non-goals · Success metrics · Constraints · High-level user flows …</div><div class="prose">
+          <h2>Market &amp; demand</h2>
+          <p><strong>Tier:</strong> Moderate — an enhancement to an existing user-facing page (pricing); no new product surface.</p>
+          <h3>Positioning</h3>
+          <p>For self-serve teams comparing plans, the new pricing page answers “what will this cost us at 10, 50, 200 seats?” on one screen, without a sales call.</p>
+          <h3>Demand</h3>
+          <table>
+            <thead><tr><th>Keyword</th><th class="num">Avg monthly searches (12 mo)</th><th>Competition (index)</th><th>Trend YoY (Δ%)</th></tr></thead>
+            <tbody>
+              <tr><td>saas pricing page</td><td class="num">2400</td><td>HIGH (78)</td><td>↑ increasing +34.2%</td></tr>
+              <tr><td>pricing page examples</td><td class="num">1900</td><td>MEDIUM (52)</td><td>→ stable +6.1%</td></tr>
+              <tr><td>per seat pricing</td><td class="num">320</td><td>LOW (18)</td><td>↓ decreasing −27.5%</td></tr>
+              <tr><td>usage based pricing calculator</td><td class="num">90</td><td>LOW (9)</td><td>↑ increasing (from zero)</td></tr>
+              <tr><td>pricing tiers template</td><td class="num">30</td><td>UNKNOWN (—)</td><td>· insufficient_data</td></tr>
+            </tbody>
+          </table>
+          <p class="prov">Source: Google Ads API v25 · United States (US) / en · fetched 2026-09-29T12:04:11Z · rule: YoY: mean of last 3 complete months vs same 3 months a year earlier, ±25%, floor 50/mo</p>
+          <p class="prov">Close variants merged: <code>saas pricing pages</code> → saas pricing page</p>
+          <p class="prov">Not returned by Google Ads: <code>pricing page a/b test</code></p>
+          <h3>Channels</h3>
+          <ul><li>Changelog + in-app banner for workspaces on the Team plan</li><li>Comparison-intent page targeting “per seat pricing” searchers</li></ul>
+          <h2>Open questions</h2>
+        </div></div>
+        <footer class="panel__footer">.claude/specs/features/pricing-page-v2/prd/prd.md</footer>
+      </aside>
+    </div></div>
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2>Screen 1 — Moderate tier, and the demand table convention</h2>
+  <p>No UI change: this is the existing doc panel rendering Markdown the prd-writer emits. The section sits after High-level user flows and before Open questions (R2). The only thing to specify is the Markdown, which is the prd-writer's contract.</p>
+<pre>## Market &amp; demand
+**Tier:** Moderate — &lt;one-line rationale&gt;
+
+### Positioning
+&lt;one or two sentences&gt;
+
+### Demand
+| Keyword | Avg monthly searches (12 mo) | Competition (index) | Trend YoY (Δ%) |
+|:--|--:|:--|:--|
+| saas pricing page | 2400 | HIGH (78) | ↑ increasing +34.2% |
+| usage based pricing calculator | 90 | LOW (9) | ↑ increasing (from zero) |
+| pricing tiers template | 30 | UNKNOWN (—) | · insufficient_data |
+
+Source: Google Ads API v25 · United States (US) / en · fetched 2026-09-29T12:04:11Z · rule: &lt;trend.rule&gt;
+
+Close variants merged: `saas pricing pages` → saas pricing page
+
+Not returned by Google Ads: `pricing page a/b test`
+
+### Channels
+- …</pre>
+  <ul>
+    <li><strong>Searches</strong> = <code>avgMonthlySearches12</code>, copied as-is (no separators, no rounding); <code>null</code> prints <code>—</code>, never 0.</li>
+    <li><strong>Competition</strong> = <code>LEVEL (index)</code>; a null index prints <code>(—)</code>.</li>
+    <li><strong>Trend</strong> = arrow + <code>trend.verdict</code> + <code>trend.pctChange</code> signed to one decimal. Arrows: <code>↑</code> increasing, <code>→</code> stable, <code>↓</code> decreasing, <code>·</code> insufficient_data. A null pct prints <code>(from zero)</code> for increasing and nothing for insufficient_data. Arrows carry the meaning because Markdown cells can't be coloured.</li>
+    <li><strong>Source line</strong> right under the table uses the <em>resolved</em> region and language, not the user's input, and ends with <code>trend.rule</code> verbatim.</li>
+    <li>The close-variants and unmatched lines are printed only when they are non-empty.</li>
+    <li>Year-over-year cancels seasonality, so the v1 seasonality caveat is gone. <code>insufficient_data</code> explains itself through the rule text (floor 50/mo).</li>
+  </ul>
+</section>
+
+<!-- ============ SCREEN 2: Lightweight + Full ============ -->
+<section class="sm-screen">
+  <div class="sm-label"><b>Screen 2</b><span>Lightweight and Full tiers</span></div>
+  <div class="frame">
+    <div class="frame__bar"><i></i><i></i><i></i><span class="frame__url">doc panel · ## Market &amp; demand only</span></div>
+    <div class="pair">
+      <div class="panel">
+        <div class="pair__tag"><b>Lightweight</b> · Audit log export PRD</div>
+        <div class="prose">
+          <h2>Market &amp; demand</h2>
+          <p><strong>Tier:</strong> Lightweight — admin-only export with no new end-user surface.</p>
+          <p>Changelog: “Workspace admins can now export the audit log as CSV from Settings → Security.”</p>
+          <h2>Open questions</h2>
+          <p class="prov">…</p>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="pair__tag"><b>Full</b> · Spec workflow app PRD</div>
+        <div class="prose">
+          <h2>Market &amp; demand</h2>
+          <p><strong>Tier:</strong> Full — new product with established competitors.</p>
+          <h3>Positioning</h3>
+          <p>Spec-driven development for teams that already live in Claude Code: specs stay in git, not in another SaaS.</p>
+          <h3>Demand</h3>
+          <table>
+            <thead><tr><th>Keyword</th><th class="num">Avg monthly searches (12 mo)</th><th>Competition (index)</th><th>Trend YoY (Δ%)</th></tr></thead>
+            <tbody>
+              <tr><td>ai coding workflow</td><td class="num">260</td><td>MEDIUM (38)</td><td>→ stable −4.3%</td></tr>
+              <tr><td>spec driven development</td><td class="num">170</td><td>LOW (12)</td><td>↑ increasing +41.7%</td></tr>
+              <tr><td>desarrollo guiado por especificaciones</td><td class="num">30</td><td>LOW (6)</td><td>· insufficient_data</td></tr>
+            </tbody>
+          </table>
+          <p class="prov">Source: Google Ads API v25 · Spain (ES) / es · fetched 2026-09-29T12:04:11Z · rule: YoY: mean of last 3 complete months vs same 3 months a year earlier, ±25%, floor 50/mo</p>
+          <h3>What demand implies</h3>
+          <p>Demand is small but rising for the method name; lead with “spec driven development”, not the Spanish phrasing.</p>
+          <h3>Competitive context</h3>
+          <ul><li>GitHub Spec Kit ships spec templates plus a CLI, with no board or approval flow (<a>https://github.com/github/spec-kit</a>)</li></ul>
+          <h3>Channels</h3>
+          <ul><li>Claude Code plugin marketplace listing; a dev.to walkthrough</li></ul>
+          <h3>Launch checklist</h3>
+          <ul class="tasks"><li>☐ Marketplace listing copy uses the positioning line</li><li>☐ Record a 60-second demo of PRD → board</li></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2>Screen 2 — tiers change length, not format</h2>
+  <ul>
+    <li><strong>Every tier</strong> opens with the same bold <code>**Tier:**</code> line, so a reviewer can see and correct the tier choice first. <code>--market-tier</code> overrides it on the next run.</li>
+    <li><strong>Lightweight</strong> is the Tier line plus one changelog line. No <code>###</code> subsections, no Demand, no keyword call.</li>
+    <li><strong>Moderate</strong> has Positioning, Demand and Channels.</li>
+    <li><strong>Full</strong> keeps Moderate's order and inserts <code>### What demand implies</code> right after the table, then <code>### Competitive context</code> (every claim ends in a URL), then Channels, then <code>### Launch checklist</code> as <code>- [ ]</code> items that Milkdown renders as task checkboxes.</li>
+    <li><strong>Region and language:</strong> the Full example checks Spain/es with mostly English seeds. The source line shows that honestly rather than hiding the mismatch.</li>
+  </ul>
+</section>
+
+<!-- ============ SCREEN 3: fallbacks ============ -->
+<section class="sm-screen">
+  <div class="sm-label"><b>Screen 3</b><span>Fallback lines in the PRD</span></div>
+  <div class="frame">
+    <div class="frame__bar"><i></i><i></i><i></i><span class="frame__url">doc panel · ### Demand only</span></div>
+    <div class="pair pair--3">
+      <div class="panel">
+        <div class="pair__tag"><b>unavailable</b> · no credentials</div>
+        <div class="prose"><h3>Demand</h3><blockquote><p>Demand data unavailable — Google Ads access not configured (missing: <code>google_ads_client_id</code>, <code>google_ads_client_secret</code>, <code>google_ads_refresh_token</code>, <code>google_ads_customer_id</code>). Needs Basic access on your Google Cloud project; see README › Keyword demand (Google Ads, optional).</p></blockquote><h3>Channels</h3><p class="prov">…</p></div>
+      </div>
+      <div class="panel">
+        <div class="pair__tag"><b>error</b> · project lacks Basic access</div>
+        <div class="prose"><h3>Demand</h3><blockquote><p>Demand data unavailable — your Google Cloud project has Test access only — apply for Basic access (see README: Keyword demand). <code>AuthorizationError.CLOUD_PROJECT_NOT_APPROVED_FOR_PRODUCTION</code> · request id <code>kP3xQ9vT2mN8wR1a</code></p></blockquote><h3>Channels</h3><p class="prov">…</p></div>
+      </div>
+      <div class="panel">
+        <div class="pair__tag"><b>error</b> · refresh token expired</div>
+        <div class="prose"><h3>Demand</h3><blockquote><p>Demand data unavailable — refresh token expired or revoked — re-mint it; publish your OAuth consent screen to Production (Testing tokens expire in 7 days)</p></blockquote><h3>Channels</h3><p class="prov">…</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2>Screen 3 — one line instead of the table</h2>
+<pre>### Demand
+&gt; Demand data unavailable — &lt;reason, or missing-settings summary&gt;</pre>
+  <ul>
+    <li><strong>Exactly one line</strong> (R2), as a blockquote so it reads as a note rather than as body prose. It uses neutral grey, not an error colour: missing access is an expected, opt-in state. The <code>### Demand</code> heading stays, so the outline is the same whether or not data came back.</li>
+    <li><strong>Unavailable:</strong> the <code>missing</code> key names only (never values). Only four are listed, because <code>login_customer_id</code> isn't required. The line mentions Basic access, since that is the first thing users hit.</li>
+    <li><strong>Error:</strong> the tool's <code>reason</code> verbatim (R7 <code>explain()</code> table). A request id is appended only when Google returned one; token errors have none. The error code is in the mock for traceability, but only if the reason string carries it (see Open questions).</li>
+    <li>No table, source line or channels are invented from the missing data. The PRD is still written.</li>
+  </ul>
+</section>
+
+<!-- ============ SCREEN 4: Launch surface ============ -->
+<section class="sm-screen">
+  <div class="sm-label"><b>Screen 4</b><span>Designer “Launch surface” note inside a mockups doc</span></div>
+  <div class="frame">
+    <div class="frame__bar"><i></i><i></i><i></i><span class="frame__url">doc panel · design brief preview (sandboxed iframe)</span></div>
+    <div class="brief">
+      <section class="ls">
+        <div class="tier">Launch surface · PRD tier: Moderate</div>
+        <h2>Where users first meet this</h2>
+        <table>
+          <thead><tr><th>Surface</th><th>Moment</th><th>Positioning line carried</th></tr></thead>
+          <tbody>
+            <tr><td>Pricing page (Screen 1)</td><td>Prospect compares plans</td><td><q>What will this cost us at 10, 50, 200 seats?</q></td></tr>
+            <tr><td>In-app banner</td><td>Team-plan admin next login</td><td><q>See your team’s price at any size</q></td></tr>
+            <tr><td>Changelog</td><td>Release day</td><td><q>Pricing page v2: seat calculator</q></td></tr>
+          </tbody>
+        </table>
+        <p>Channels from the PRD not surfaced in these mockups: comparison-intent page (content, not UI).</p>
+      </section>
+      <section class="ls">
+        <div class="tier">Launch surface · PRD tier: Lightweight</div>
+        <h2>Changelog only</h2>
+        <p>No in-product announcement. The PRD's changelog line is used as written: <q>Workspace admins can now export the audit log as CSV from Settings → Security.</q></p>
+      </section>
+    </div>
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2>Screen 4 — the <code>sm-launch-surface</code> note</h2>
+  <p>This is emitted by the designer, not built as UI: one optional <code>&lt;section class="sm-note sm-launch-surface"&gt;</code> placed immediately before the Open questions note, only when the PRD has a <code>## Market &amp; demand</code> heading (R4). It renders in the existing white design-preview iframe, styled by whatever the brief's own CSS says; the mock shows a sensible default.</p>
+  <ul>
+    <li><strong>Header:</strong> “Launch surface”, then the PRD's tier.</li>
+    <li><strong>Moderate/Full:</strong> a three-column table (surface · moment · positioning line carried). Lines are quoted from the PRD's Positioning or Channels. The designer never writes new positioning and never calls <code>check_keyword_demand</code>.</li>
+    <li><strong>Lightweight:</strong> the heading “Changelog only” plus the PRD's changelog line.</li>
+    <li>A trailing sentence names the PRD channels that have no screen, so the planner sees the gap.</li>
+    <li>This mockups doc has no launch surface note of its own, because this feature's PRD (v3) has no <code>## Market &amp; demand</code> section.</li>
+  </ul>
+</section>
+
+<!-- ============ SCREEN 5: terminal ============ -->
+<section class="sm-screen">
+  <div class="sm-label"><b>Screen 5</b><span>/specmanager:specmanager-keywords in the terminal</span></div>
+  <div class="frame">
+    <div class="frame__bar"><i></i><i></i><i></i><span class="frame__url">claude · ~/projects/acme-app</span></div>
+    <div class="scroll-x"><div class="term">
+<span class="t-case">ok</span>
+<pre><span class="t-prompt">&gt;</span> /specmanager:specmanager-keywords "spec driven development, ai coding workflow, claude code plugin" --region Spain
+
+<span class="t-ok">⏺</span> <span class="t-b">specmanager - check_keyword_demand</span> <span class="t-dim">(MCP)(keywords: [3], region: "Spain")</span>
+  <span class="t-dim">⎿  status: ok</span>
+
+<span class="t-ok">⏺</span> <span class="t-b">Keyword demand — Spain (ES) · language es · Google Ads API v25</span>
+
+  ┌─────────────────────────┬──────────────────────────────┬─────────────────────┬──────────────────────┐
+  │ Keyword                 │ Avg monthly searches (12 mo) │ Competition (index) │ Trend YoY (Δ%)       │
+  ├─────────────────────────┼──────────────────────────────┼─────────────────────┼──────────────────────┤
+  │ spec driven development │                          170 │ LOW (12)            │ ↑ increasing +41.7%  │
+  │ ai coding workflow      │                          260 │ MEDIUM (38)         │ → stable −4.3%       │
+  └─────────────────────────┴──────────────────────────────┴─────────────────────┴──────────────────────┘
+
+  <span class="t-var">Close variants merged:</span> spec-driven development → spec driven development
+  <span class="t-var">Not returned by Google Ads:</span> claude code plugin
+  <span class="t-dim">Rule: YoY: mean of last 3 complete months vs same 3 months a year earlier, ±25%, floor 50/mo
+  Fetched 2026-09-29T12:04:11Z · nothing written to the repo</span></pre>
+<div class="sep"></div>
+<span class="t-case">unavailable</span>
+<pre><span class="t-prompt">&gt;</span> /specmanager:specmanager-keywords "spec driven development" --region ES
+
+<span class="t-ok">⏺</span> <span class="t-b">specmanager - check_keyword_demand</span> <span class="t-dim">(MCP)(keywords: [1], region: "ES")</span>
+  <span class="t-dim">⎿  status: unavailable</span>
+
+<span class="t-warn">⏺</span> <span class="t-b">Keyword demand isn't set up — Google Ads access is optional and not configured.</span>
+
+  <span class="t-var">Missing:</span> google_ads_client_id, google_ads_client_secret, google_ads_refresh_token, google_ads_customer_id
+
+  <span class="t-var">To set it up:</span>
+    1. Get <span class="t-b">Basic access</span> on your Google Cloud project first (Explorer access blocks Keyword Planner).
+       Cloud console → Google Ads API → Upgrade access level. No developer token needed.
+    2. In that project, create an OAuth client (Desktop type).
+    3. Publish the OAuth consent screen to <span class="t-b">Production</span>, then mint a refresh token with scope
+       https://www.googleapis.com/auth/adwords  (Testing-mode tokens expire in 7 days).
+    4. Note your Google Ads customer id (and a manager login customer id if you use one).
+    5. Enter them in /plugin → SpecManager → Configure options.
+
+  <span class="t-dim">Guide: README.md › Keyword demand (Google Ads, optional). Nothing was written.</span></pre>
+<div class="sep"></div>
+<span class="t-case">error</span>
+<pre><span class="t-prompt">&gt;</span> /specmanager:specmanager-keywords "usage based pricing, per seat pricing" --region "United States"
+
+<span class="t-ok">⏺</span> <span class="t-b">specmanager - check_keyword_demand</span> <span class="t-dim">(MCP)(keywords: [2], region: "United States")</span>
+  <span class="t-dim">⎿  status: error</span>
+
+<span class="t-err">⏺</span> <span class="t-b">Keyword demand check failed.</span>
+
+  <span class="t-var">Reason:</span>     Keyword Planner needs Basic access on the Cloud project that owns your OAuth client —
+              Explorer access blocks KeywordPlanIdeaService (The caller does not have permission)
+  <span class="t-var">Request id:</span> Zq7LmB04xYk2Pc9e
+
+  <span class="t-dim">Nothing was written.</span></pre>
+    </div></div>
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2>Screen 5 — command output</h2>
+  <p>The command is Markdown the main session writes and Claude Code renders, so only content and order are binding (R12):</p>
+  <ul>
+    <li><strong>ok:</strong> one heading line (resolved region + code, language, API version), then the <em>same four-column table as the PRD</em> so users learn one format. Then close variants and unmatched when non-empty, and a dim footer with <code>trend.rule</code>, <code>fetchedAt</code> and “nothing written”.</li>
+    <li><strong>unavailable:</strong> framed as “isn't set up” and “optional”, not as a failure. It lists the missing key names, then five steps in the order that avoids dead ends: Basic access first (the most common blocker), OAuth client, consent screen to Production plus refresh token, customer id, where to enter the values. It says explicitly that no developer token is needed.</li>
+    <li><strong>error:</strong> the reason verbatim, then the request id if there is one. No stack trace, no retry loop.</li>
+    <li><strong>Missing <code>--region</code>:</strong> ask once and stop, with no tool call (not mocked; one line).</li>
+  </ul>
+</section>
+
+<!-- ============ SCREEN 6: config ============ -->
+<section class="sm-screen">
+  <div class="sm-label"><b>Screen 6</b><span>Plugin options: the five optional Google Ads fields (approximate)</span></div>
+  <div class="frame">
+    <div class="frame__bar"><i></i><i></i><i></i><span class="frame__url">claude · /plugin → specmanager → Configure options</span></div>
+    <div class="scroll-x"><div class="cfg"><div class="cfg__box">
+      <div class="cfg__title">specmanager · Configure options</div>
+      <div class="cfg__sub">All Google Ads fields are optional. Leave them empty unless you want keyword demand in PRDs and /specmanager-keywords.</div>
+      <div class="cfg__row"><span></span><div><div class="cfg__name">Board port</div><div class="cfg__desc">Preferred localhost port for the board</div></div><div class="cfg__val">4317</div></div>
+      <div class="cfg__row cfg__row--sel"><span class="c">❯</span><div><div class="cfg__name">Google Ads OAuth client ID (optional — keyword demand only)</div><div class="cfg__desc">From the Cloud project that has Basic access · <span class="cfg__lock">sensitive · stored in keychain</span></div></div><div class="cfg__val cfg__val--empty">not set</div></div>
+      <div class="cfg__row"><span></span><div><div class="cfg__name">Google Ads OAuth client secret (optional — keyword demand only)</div><div class="cfg__desc">Same OAuth client · <span class="cfg__lock">sensitive · stored in keychain</span></div></div><div class="cfg__val cfg__val--empty">not set</div></div>
+      <div class="cfg__row"><span></span><div><div class="cfg__name">Google Ads refresh token (optional — keyword demand only)</div><div class="cfg__desc">Scope adwords; consent screen published to Production · <span class="cfg__lock">sensitive · stored in keychain</span></div></div><div class="cfg__val cfg__val--empty">not set</div></div>
+      <div class="cfg__row"><span></span><div><div class="cfg__name">Google Ads customer ID (optional — keyword demand only)</div><div class="cfg__desc">The account to plan against, e.g. 123-456-7890</div></div><div class="cfg__val cfg__val--empty">not set</div></div>
+      <div class="cfg__row"><span></span><div><div class="cfg__name">Google Ads login customer ID (optional — keyword demand only)</div><div class="cfg__desc">Only if the account sits under a manager account</div></div><div class="cfg__val cfg__val--empty">not set</div></div>
+      <div class="cfg__foot">↑/↓ select · enter edit · esc close</div>
+    </div></div></div>
+  </div>
+</section>
+
+<section class="sm-note">
+  <h2>Screen 6 — the optional settings</h2>
+  <p>This is an approximate mock: Claude Code owns this UI, and only the manifest strings are ours (R5). What the builder controls:</p>
+  <ul>
+    <li><strong>Titles</strong> end with <code>(optional — keyword demand only)</code>, exactly as shown, so someone skimming install prompts can skip them with confidence.</li>
+    <li><strong>Descriptions</strong> carry the one setup fact each field needs (Basic-access project, Production consent screen, manager account). They stay under about 60 characters.</li>
+    <li>The three secrets are <code>sensitive: true</code>, so they are masked and kept in the OS credential store. The two customer ids are not sensitive, so they can be edited later in <code>/config</code>.</li>
+    <li>All five are <code>default: ""</code> and not <code>required</code>, which is why the default state is “not set” with no warning.</li>
+  </ul>
+</section>
+
+<section class="sm-note sm-open-questions">
+  <h2>Open questions for the planner</h2>
+  <ol>
+    <li><strong>Error code in PRD fallback lines.</strong> R7's <code>reason</code> strings don't include the Google code (for example <code>CLOUD_PROJECT_NOT_APPROVED_FOR_PRODUCTION</code>); Screen 3 shows it appended for traceability. Either have <code>explain()</code> append <code>code</code> when present, or drop it from the line. Recommended: append it, because it makes support searches trivial.</li>
+    <li><strong>Where the five fields actually appear.</strong> Architecture Q2 (prompting on install and update) is unverified, and sensitive fields may not be listed in <code>/config</code> at all. Screen 6 is the plugin-configure view. The manual check the plan must include should also confirm that the titles render there.</li>
+    <li><strong>Right-aligned numbers</strong> (<code>--:</code>): verify that Milkdown keeps column alignment on round-trip and that it overrides <code>.markdown td { text-align: left }</code>. If not, leave the numbers left-aligned; don't add CSS for it.</li>
+    <li><strong>No thousands separators</strong> is the literal “verbatim” reading. If separators are wanted, the prd-writer rule and <code>selftest-prompts</code> must say so explicitly.</li>
+    <li><strong>No tokens added</strong> and no board or UI code changes. <code>docs/DESIGN.md</code>'s managed frontmatter is still thin; <code>tokens.css</code> remains the real source.</li>
+  </ol>
+</section>
+
+</div>
+</body>
+</html>

@@ -2,7 +2,7 @@
 id: wt-planner-rewrite-025
 featureId: feat-planner-rewrite
 stage: walkthrough
-status: draft
+status: approved
 stale: false
 title: Planner rewrite — Phase rewrite walkthrough
 dependsOn:
@@ -13,7 +13,7 @@ generatedBy: agent
 version: 1
 phase: rewrite
 createdAt: '2026-10-20T12:34:29.573Z'
-updatedAt: '2026-10-20T12:34:29.573Z'
+updatedAt: '2026-10-20T13:06:25.884Z'
 ---
 ## Stakeholder test guide
 

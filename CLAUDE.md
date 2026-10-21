@@ -34,22 +34,22 @@ Specs live in `.claude/specs/features/`. Read the approved doc for a feature's s
 | Loop command (/specmanager-loop) | PRD (approved) | — |
 | Agent prompt simplification (Opus 5.5) | PRD (approved) | — |
 
-_11 features shipped — full history on the board._
+_12 features shipped — full history on the board._
 
 ### Git strategy
 
-_From Agent prompt simplification (Opus 5.5) — phase trim walkthrough (wt-agent-prompt-simplification-opus-5-5-026)._
+_From Init onboarding: plugins & repos — phase onboarding walkthrough (wt-init-onboarding-plugins-repos-027)._
 
-- **Proposed (build step 6a):** base `feat/planner-rewrite`, because `main` is under directory review and 1.2.0 lives on the stack. Branch `feat/agent-prompt-simplification`. Spec docs went first as a spec-only commit (`181a9b1`), then one commit per task, staging only that task's files. Message style: `Prompt simplification: <summary> (task-0NN, plan 1.N)` plus the `Co-Authored-By` trailer. Never push. Leave unrelated uncommitted work untouched (marketing-phase, cowork-support, `manifest.json`, `CLAUDE.md`, the planner-rewrite walkthrough, `docs/install-from-branch.md`).
+- **Proposed (build step 6a):** base `feat/agent-prompt-simplification`, because `main` is under directory review and 1.2.0 lives on the stack. New branch `feat/init-onboarding-plugins-repos`. Spec docs went first as a spec-only commit (`7d16c45`), then one commit per task, staging only that task's files. Message style: `Init onboarding: <summary> (task-0NN, plan 1.N)` plus the `Co-Authored-By` trailer. Never push. Leave unrelated uncommitted work untouched (marketing-phase, cowork-support, `manifest.json`, the owner's `CLAUDE.md` hunks, the planner-rewrite walkthrough, `docs/install-from-branch.md`).
 - **User change:** none. The owner accepted it unchanged.
-- **Result:** 22 task commits `9cf228a..e21fce3`, one per task, none pushed.
+- **Result:** 11 task commits, `8e6c938..1a1ab24` plus `305fcfb` (task-011, same strategy and message style), one per task, none pushed. task-010 staged only its own `CLAUDE.md` hunk, through `git hash-object` / `update-index --cacheinfo`, so the owner's managed-block hunks stayed uncommitted.
 
 **Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation.
 
 **Commands:**
 `/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD) · `/specmanager-loop` (auto-approves, stops before Build)
 
-_Last synced: 2026-10-20T15:25:41.343Z_
+_Last synced: 2026-10-21T11:12:21.135Z_
 <!-- specmanager:end -->
 
 # CLAUDE.md
@@ -161,7 +161,7 @@ A **release** is any push to `main` that changes files under `plugins/specmanage
 3. **`npm run selftest-directory`** in `server/` — must end with `All directory-conformance assertions passed.` A `FAIL:` line names the file or field to fix.
 4. **`claude plugin validate plugins/specmanager`** from the repo root — must print `✔ Validation passed` with no warning.
 
-**A surface test is also required when the release changes packaging** — anything in `plugin.json` beyond the `version` bump, `.mcp.json`, `hooks/`, the plugin-root `package.json` / `package-lock.json`, `ui/vite.config.ts` or `server/tsconfig.json`. Run it yourself, headless, in an empty scratch project outside the repo: `claude --plugin-dir <repo>/plugins/specmanager -p "<call specmanager_init, create_feature and board_url, then curl the board>" --output-format stream-json --verbose`. When launching it from inside a Claude Code session, run the child under `env -i HOME=$HOME PATH=$PATH …` (an inherited `ANTHROPIC_API_KEY` overrides the CLI login) and pass `--settings '{"enabledPlugins":{"specmanager@specmanager":false}}'` so only the checkout's plugin loads. It passes when the init event shows the `specmanager` MCP server `connected`, the tools succeed, the scratch project gains `.claude/specs/`, and the board answers 200. If the release touched `ui/`, also ask the owner to open and save a document in the board.
+**A surface test is also required when the release changes packaging** — anything in `plugin.json` beyond the `version` bump, `.mcp.json`, `hooks/`, the plugin-root `package.json` / `package-lock.json`, `ui/vite.config.ts` or `server/tsconfig.json`. Run it yourself, headless, in an empty scratch project outside the repo: `claude --plugin-dir <repo>/plugins/specmanager -p "<call specmanager_init, create_feature and board_url, then curl the board>" --output-format stream-json --verbose`. When launching it from inside a Claude Code session, run the child under `env -i HOME=$HOME PATH=$PATH USER=$USER LOGNAME=$LOGNAME …` (an inherited `ANTHROPIC_API_KEY` overrides the CLI login; on macOS the login lives in the Keychain, which needs `USER`/`LOGNAME` and is tied to the config dir, so a scratch `CLAUDE_CONFIG_DIR` is not logged in — see `docs/verification/init-onboarding-surface.md`) and pass `--settings '{"enabledPlugins":{"specmanager@specmanager":false}}'` so only the checkout's plugin loads. It passes when the init event shows the `specmanager` MCP server `connected`, the tools succeed, the scratch project gains `.claude/specs/`, and the board answers 200. If the release touched `ui/`, also ask the owner to open and save a document in the board.
 
 **Cowork is not supported** (tested 2026-09-30; findings in `docs/directory-submission.md` section 3b): the desktop app drops an MCP server whose config references `${user_config.*}`, does not install Node dependencies, and starts the server once per app with no `CLAUDE_PROJECT_DIR` and cwd `/`. Do not claim Cowork support in the plugin README until a feature addresses all three.
 
