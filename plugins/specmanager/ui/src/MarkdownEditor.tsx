@@ -22,6 +22,7 @@ import { listener, listenerCtx } from "@milkdown/plugin-listener";
 import { $prose, callCommand, replaceAll } from "@milkdown/utils";
 import { Plugin } from "@milkdown/prose/state";
 import type { EditorState } from "@milkdown/prose/state";
+import { Decoration, DecorationSet } from "@milkdown/prose/view";
 import MarkdownToolbar, { ToolbarAction } from "./MarkdownToolbar";
 
 // Reads which toolbar actions are "on" for the current selection so the bar can
@@ -55,8 +56,28 @@ function activeActions(state: EditorState): Set<ToolbarAction> {
 interface MarkdownEditorProps {
   value: string;
   readOnly: boolean;
+  /** Tag table cells reading exactly `missing` with `.miss` (research findings tables). */
+  markMissing?: boolean;
   onChange: (next: string) => void;
 }
+
+// Decoration only: the class never reaches the serialized markdown.
+const missingCells = $prose(
+  () =>
+    new Plugin({
+      props: {
+        decorations: (state) => {
+          const decos: Decoration[] = [];
+          state.doc.descendants((node, pos) => {
+            if (node.type.name === "table_cell" && node.textContent.trim() === "missing") {
+              decos.push(Decoration.node(pos, pos + node.nodeSize, { class: "miss" }));
+            }
+          });
+          return DecorationSet.create(state.doc, decos);
+        },
+      },
+    })
+);
 
 // Maps a toolbar action to the Milkdown command it dispatches. Secondary
 // actions (bulletList/link/table/codeBlock) are wired in task-008.
@@ -97,7 +118,7 @@ function runAction(editor: Editor, action: ToolbarAction, payload?: unknown): vo
  * byte-clean markdown matching the corpus conventions (`-` bullets, fenced
  * code, GFM tables), which is what selftest-roundtrip guards.
  */
-export default function MarkdownEditor({ value, readOnly, onChange }: MarkdownEditorProps) {
+export default function MarkdownEditor({ value, readOnly, markMissing, onChange }: MarkdownEditorProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<Editor | null>(null);
   const onChangeRef = useRef(onChange);
@@ -121,7 +142,7 @@ export default function MarkdownEditor({ value, readOnly, onChange }: MarkdownEd
     let editor: Editor | null = null;
     let destroyed = false;
 
-    Editor.make()
+    const maker = Editor.make()
       .config((ctx) => {
         ctx.set(rootCtx, host);
         ctx.set(defaultValueCtx, value);
@@ -164,7 +185,9 @@ export default function MarkdownEditor({ value, readOnly, onChange }: MarkdownEd
               }),
             })
         )
-      )
+      );
+    if (markMissing) maker.use(missingCells);
+    maker
       .create()
       .then((made) => {
         if (destroyed) {

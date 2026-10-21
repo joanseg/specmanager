@@ -386,14 +386,15 @@ export default function App() {
   const [board, setBoard] = useState<Board | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [lastEvent, setLastEvent] = useState<string | null>(null);
-  const [openDocId, setOpenDocId] = useState<string | null>(null);
+  const [openDoc, setOpenDoc] = useState<{ id: string; source: "feature" | "research" } | null>(null);
   const [openBuild, setOpenBuild] = useState<{ featureId: string; title: string } | null>(null);
   const [mode, setMode] = useMode();
   const [studies, setStudies] = useState<StudySummary[] | null>(null);
   const [tick, setTick] = useState(0);
 
-  const openDoc = useCallback((id: string) => setOpenDocId(id), []);
-  const closeDoc = useCallback(() => setOpenDocId(null), []);
+  const openFeatureDoc = useCallback((id: string) => setOpenDoc({ id, source: "feature" }), []);
+  const openResearchDoc = useCallback((id: string) => setOpenDoc({ id, source: "research" }), []);
+  const closeDoc = useCallback(() => setOpenDoc(null), []);
   const openBuildFor = useCallback((featureId: string, title: string) => {
     setOpenBuild({ featureId, title });
   }, []);
@@ -464,7 +465,7 @@ export default function App() {
       </header>
 
       {mode === "researcher" ? (
-        studies && <ResearchBoard studies={studies} />
+        studies && <ResearchBoard studies={studies} onOpenDoc={openResearchDoc} />
       ) : board.features.length === 0 ? (
         <section className="empty">
           <p>No features yet.</p>
@@ -502,11 +503,11 @@ export default function App() {
                       WALKTHROUGHS, not iterated as a stage column. */}
                   {c === "walkthrough" && (
                     <div className="row__cell row__cell--build">
-                      <Cell row={row} column="build" onOpenDoc={openDoc} onOpenBuild={openBuildFor} />
+                      <Cell row={row} column="build" onOpenDoc={openFeatureDoc} onOpenBuild={openBuildFor} />
                     </div>
                   )}
                   <div className="row__cell">
-                    <Cell row={row} column={c} onOpenDoc={openDoc} onOpenBuild={openBuildFor} />
+                    <Cell row={row} column={c} onOpenDoc={openFeatureDoc} onOpenBuild={openBuildFor} />
                   </div>
                 </Fragment>
               ))}
@@ -515,8 +516,14 @@ export default function App() {
         </section>
       )}
 
-      {openDocId && (
-        <DocPanel docId={openDocId} onClose={closeDoc} onJumpTo={openDoc} />
+      {openDoc && (
+        <DocPanel
+          key={openDoc.source}
+          docId={openDoc.id}
+          source={openDoc.source}
+          onClose={closeDoc}
+          onJumpTo={openDoc.source === "research" ? openResearchDoc : openFeatureDoc}
+        />
       )}
       {openBuild && (
         <BuildPanel

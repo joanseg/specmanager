@@ -1,20 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import MarkdownEditor from "./MarkdownEditor";
 import { fetchDoc, fetchGate, postDocStatus, putDoc } from "./api";
+import { HtmlPreview, PanelMessage, SaveBanners, SaveState, useEscClose } from "./panelParts";
+import ResearchDocPanel from "./ResearchDocPanel";
 import { DocFull, Stage } from "./types";
 
 interface DocPanelProps {
   docId: string;
+  /** "research" opens a study doc (no lifecycle); default "feature". */
+  source?: "feature" | "research";
   onClose: () => void;
   onJumpTo: (docId: string) => void;
 }
-
-type SaveState =
-  | { kind: "idle" }
-  | { kind: "saving" }
-  | { kind: "saved"; at: number }
-  | { kind: "conflict"; serverVersion: number }
-  | { kind: "error"; message: string };
 
 // DocFull carries no feature title, only the id. Derive a human label by
 // stripping the `feat-` prefix and title-casing the slug (e.g.
@@ -27,23 +24,6 @@ function featureTitle(featureId: string): string {
     .join(" ");
 }
 
-// The design brief renders verbatim HTML in a sandboxed iframe; parent CSS
-// (tokens.css / styles.css) cannot reach inside it, so the reset + custom
-// scrollbar must be injected. Prepend (not onLoad-write) so it lands before
-// the body paints. html,body{margin:0} removes the default 8px margin that
-// fights the canvas; the scrollbar rules mirror .md-surface for parity, with
-// the thumb border tracking the iframe's own surface (--surface-container-lowest
-// = #0e0e10). Values are inlined literals because the iframe document has no
-// access to the parent ':root' custom properties.
-const PREVIEW_STYLE = `<style>
-  html, body { margin: 0; }
-  html { scrollbar-width: thin; scrollbar-color: #464554 transparent; }
-  ::-webkit-scrollbar { width: 10px; height: 10px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #464554; border-radius: 999px; border: 2px solid #0e0e10; }
-  ::-webkit-scrollbar-thumb:hover { background: #908fa0; }
-</style>`;
-
 const STAGE_LABEL: Record<Stage, string> = {
   prd: "PRD",
   architecture: "Architecture",
@@ -52,7 +32,11 @@ const STAGE_LABEL: Record<Stage, string> = {
   walkthrough: "Walkthrough",
 };
 
-export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
+export default function DocPanel({ source = "feature", ...props }: DocPanelProps) {
+  return source === "research" ? <ResearchDocPanel {...props} /> : <FeatureDocPanel {...props} />;
+}
+
+function FeatureDocPanel({ docId, onClose, onJumpTo }: Omit<DocPanelProps, "source">) {
   const [doc, setDoc] = useState<DocFull | null>(null);
   const [body, setBody] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
@@ -97,14 +81,7 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
     };
   }, [doc?.id, doc?.dependsOn.join(",")]);
 
-  // Esc closes
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent): void => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  useEscClose(onClose);
 
   const dirty = useMemo(() => doc !== null && body !== doc.body, [doc, body]);
   // Interviews have no lifecycle: stay editable forever (status is frozen at
@@ -164,29 +141,7 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
     alert(gate.ok ? "Gate is open." : `Gate closed: ${gate.reason}`);
   };
 
-  if (error) {
-    return (
-      <div className="panel-backdrop" onClick={onClose}>
-        <aside className="panel" onClick={(e) => e.stopPropagation()}>
-          <header className="panel__header">
-            <button className="panel__close" onClick={onClose}>×</button>
-            <h2>Could not load document</h2>
-          </header>
-          <p className="panel__error">{error}</p>
-        </aside>
-      </div>
-    );
-  }
-
-  if (!doc) {
-    return (
-      <div className="panel-backdrop" onClick={onClose}>
-        <aside className="panel" onClick={(e) => e.stopPropagation()}>
-          <p style={{ padding: "2rem", color: "var(--text-dim)" }}>Loading…</p>
-        </aside>
-      </div>
-    );
-  }
+  if (error || !doc) return <PanelMessage error={error} onClose={onClose} />;
 
   return (
     <div className="panel-backdrop" onClick={onClose}>
@@ -277,32 +232,16 @@ export default function DocPanel({ docId, onClose, onJumpTo }: DocPanelProps) {
           </section>
         )}
 
-        {save.kind === "conflict" && (
-          <div className="banner banner--warn">
-            File changed on disk (now v{save.serverVersion}). Your edits weren't saved.
-            <button className="link" onClick={reload}>Reload from disk</button> to merge by hand.
-          </div>
-        )}
-        {save.kind === "error" && (
-          <div className="banner banner--error">
-            {save.message}
-            <button className="link" onClick={() => setSave({ kind: "idle" })}>dismiss</button>
-          </div>
-        )}
-        {save.kind === "saved" && (
-          <div className="banner banner--ok">
-            Saved · now v{doc.version}
-          </div>
-        )}
+        <SaveBanners
+          save={save}
+          version={doc.version}
+          onReload={reload}
+          onDismiss={() => setSave({ kind: "idle" })}
+        />
 
         <div className="panel__body panel__body--cols-1">
           {isDesign ? (
-            <iframe
-              className="panel__preview panel__preview--iframe"
-              title="design brief preview"
-              sandbox="allow-same-origin"
-              srcDoc={PREVIEW_STYLE + body}
-            />
+            <HtmlPreview title="design brief preview" body={body} />
           ) : (
             <div className="panel__editor">
               <MarkdownEditor

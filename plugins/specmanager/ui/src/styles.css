@@ -1713,3 +1713,17 @@ label.handoff-item { cursor: pointer; }
     backdrop-filter: none;
   }
 }
+
+/* Research doc drawer (design Screens 3-4). */
+.banner--notes { flex-wrap: wrap; }
+.banner__files { font-family: var(--font-mono); font-size: 0.74rem; }
+.banner__cmd { margin-left: auto; font-family: var(--font-mono); color: inherit; text-decoration: none; }
+.banner__note { flex-basis: 100%; opacity: 0.85; }
+.stale-cmd { font-family: var(--font-mono); font-size: 0.78rem; text-decoration: none; }
+.banner__cmd:hover, .stale-cmd:hover { text-decoration: underline; }
+.prose td.miss {
+  color: var(--on-surface-variant);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-style: italic;
+}

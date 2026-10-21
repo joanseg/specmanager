@@ -20,12 +20,17 @@ const COLUMNS: { kind: ResearchKind; label: string }[] = [
   { kind: "strategy", label: "Strategy" },
 ];
 
+/** Display label of a research doc kind (column header, drawer crumb). */
+export function kindLabel(kind: ResearchKind): string {
+  return COLUMNS.find((c) => c.kind === kind)?.label ?? kind;
+}
+
 /** Step name as `/specmanager-research` takes it (`plan` is the user-research plan). */
 function stepArg(step: ResearchStep): string {
   return step === "user-research" ? "plan" : step;
 }
 
-function stepCommand(slug: string, step: ResearchStep): string {
+export function stepCommand(slug: string, step: ResearchStep): string {
   return `/specmanager-research ${slug} ${stepArg(step)}`;
 }
 
