@@ -1,0 +1,544 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-researcher-mode",
+      "title": "Add research types and paths",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:06:44.377Z",
+      "updatedAt": "2026-10-21T13:06:44.377Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-researcher-mode",
+      "title": "Let readDoc/writeDoc take a Zod schema",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:06:45.271Z",
+      "updatedAt": "2026-10-21T13:06:45.271Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-researcher-mode",
+      "title": "Study CRUD in core/research.ts",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001",
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:06:48.242Z",
+      "updatedAt": "2026-10-21T13:06:48.242Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-researcher-mode",
+      "title": "Research doc CRUD in core/research.ts",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 3,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:06:49.203Z",
+      "updatedAt": "2026-10-21T13:06:49.203Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-researcher-mode",
+      "title": "Gates and computed flags",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 3,
+      "dependsOn": [
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:06:52.239Z",
+      "updatedAt": "2026-10-21T13:06:52.239Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-researcher-mode",
+      "title": "parseBuildList, feature origin and handoff",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 3,
+      "dependsOn": [
+        "task-005"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:06:53.340Z",
+      "updatedAt": "2026-10-21T13:06:53.340Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-researcher-mode",
+      "title": "Events, manifest studies and re-export",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 2,
+      "dependsOn": [
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:06:54.494Z",
+      "updatedAt": "2026-10-21T13:06:54.494Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-researcher-mode",
+      "title": "Research studies line in managed CLAUDE.md block",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 1,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:06:55.492Z",
+      "updatedAt": "2026-10-21T13:06:55.492Z"
+    },
+    {
+      "id": "task-009",
+      "featureId": "feat-researcher-mode",
+      "title": "Register the six research MCP tools",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 3,
+      "dependsOn": [
+        "task-006",
+        "task-007",
+        "task-008"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:06:58.250Z",
+      "updatedAt": "2026-10-21T13:06:58.250Z"
+    },
+    {
+      "id": "task-010",
+      "featureId": "feat-researcher-mode",
+      "title": "Write selftest-research",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 3,
+      "dependsOn": [
+        "task-006",
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:06:59.391Z",
+      "updatedAt": "2026-10-21T13:06:59.391Z"
+    },
+    {
+      "id": "task-011",
+      "featureId": "feat-researcher-mode",
+      "title": "Draft agents/researcher.md: market and concepts jobs",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 3,
+      "dependsOn": [
+        "task-009"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:07:00.639Z",
+      "updatedAt": "2026-10-21T13:07:00.639Z"
+    },
+    {
+      "id": "task-012",
+      "featureId": "feat-researcher-mode",
+      "title": "Add user-research, marketing, findings and strategy jobs to researcher.md",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 3,
+      "dependsOn": [
+        "task-011"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:07:01.580Z",
+      "updatedAt": "2026-10-21T13:07:01.580Z"
+    },
+    {
+      "id": "task-013",
+      "featureId": "feat-researcher-mode",
+      "title": "Write commands/specmanager-research.md",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 3,
+      "dependsOn": [
+        "task-012"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:07:04.601Z",
+      "updatedAt": "2026-10-21T13:07:04.601Z"
+    },
+    {
+      "id": "task-014",
+      "featureId": "feat-researcher-mode",
+      "title": "Add origin grounding step to prd-writer",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 1,
+      "dependsOn": [
+        "task-009"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:07:05.768Z",
+      "updatedAt": "2026-10-21T13:07:05.768Z"
+    },
+    {
+      "id": "task-015",
+      "featureId": "feat-researcher-mode",
+      "title": "Make researcher.md the fifth lossless-carryover carrier",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 1,
+      "dependsOn": [
+        "task-011"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:07:06.961Z",
+      "updatedAt": "2026-10-21T13:07:06.961Z"
+    },
+    {
+      "id": "task-016",
+      "featureId": "feat-researcher-mode",
+      "title": "Add research prompt invariants to selftest-prompts",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 3,
+      "dependsOn": [
+        "task-012",
+        "task-013",
+        "task-014",
+        "task-015"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:07:08.099Z",
+      "updatedAt": "2026-10-21T13:07:08.099Z"
+    },
+    {
+      "id": "task-017",
+      "featureId": "feat-researcher-mode",
+      "title": "Add research REST routes to board-server",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 2,
+      "dependsOn": [
+        "task-006",
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:07:10.982Z",
+      "updatedAt": "2026-10-21T13:07:10.982Z"
+    },
+    {
+      "id": "task-018",
+      "featureId": "feat-researcher-mode",
+      "title": "Cover research routes in selftest-board",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 2,
+      "dependsOn": [
+        "task-017"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:07:12.172Z",
+      "updatedAt": "2026-10-21T13:07:12.172Z"
+    },
+    {
+      "id": "task-019",
+      "featureId": "feat-researcher-mode",
+      "title": "Add study and research UI types and fetchers",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 1,
+      "dependsOn": [
+        "task-017"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:07:13.211Z",
+      "updatedAt": "2026-10-21T13:07:13.211Z"
+    },
+    {
+      "id": "task-020",
+      "featureId": "feat-researcher-mode",
+      "title": "Add the Builder / Researcher toggle",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 2,
+      "dependsOn": [
+        "task-019"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:07:14.261Z",
+      "updatedAt": "2026-10-21T13:07:14.261Z"
+    },
+    {
+      "id": "task-021",
+      "featureId": "feat-researcher-mode",
+      "title": "Build the ResearchBoard grid",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 3,
+      "dependsOn": [
+        "task-020"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:07:17.065Z",
+      "updatedAt": "2026-10-21T13:07:17.065Z"
+    },
+    {
+      "id": "task-022",
+      "featureId": "feat-researcher-mode",
+      "title": "Build the handoff cell",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 3,
+      "dependsOn": [
+        "task-021"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:07:18.225Z",
+      "updatedAt": "2026-10-21T13:07:18.225Z"
+    },
+    {
+      "id": "task-023",
+      "featureId": "feat-researcher-mode",
+      "title": "Build the Researcher empty state and start-study form",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 2,
+      "dependsOn": [
+        "task-021"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:07:19.381Z",
+      "updatedAt": "2026-10-21T13:07:19.381Z"
+    },
+    {
+      "id": "task-024",
+      "featureId": "feat-researcher-mode",
+      "title": "Open research docs in DocPanel",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 3,
+      "dependsOn": [
+        "task-021"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:07:20.566Z",
+      "updatedAt": "2026-10-21T13:07:20.566Z"
+    },
+    {
+      "id": "task-025",
+      "featureId": "feat-researcher-mode",
+      "title": "Show the origin chip on Builder rows",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 2,
+      "dependsOn": [
+        "task-024"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:07:21.598Z",
+      "updatedAt": "2026-10-21T13:07:21.598Z"
+    },
+    {
+      "id": "task-026",
+      "featureId": "feat-researcher-mode",
+      "title": "Update repo CLAUDE.md for researcher mode",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 1,
+      "dependsOn": [
+        "task-010",
+        "task-013"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:07:24.507Z",
+      "updatedAt": "2026-10-21T13:07:24.507Z"
+    },
+    {
+      "id": "task-027",
+      "featureId": "feat-researcher-mode",
+      "title": "Bump minor version and rebuild dists",
+      "status": "todo",
+      "phase": "research",
+      "complexity": 2,
+      "dependsOn": [
+        "task-016",
+        "task-018",
+        "task-022",
+        "task-023",
+        "task-025",
+        "task-026"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:07:25.640Z",
+      "updatedAt": "2026-10-21T13:07:25.640Z"
+    },
+    {
+      "id": "task-028",
+      "featureId": "feat-researcher-mode",
+      "title": "Parallel market section jobs and merge job in researcher.md",
+      "status": "todo",
+      "stageRef": "plan-researcher-mode-025",
+      "phase": "research",
+      "complexity": 2,
+      "dependsOn": [
+        "task-012"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-21T13:16:22.377Z",
+      "updatedAt": "2026-10-21T13:16:22.377Z"
+    }
+  ],
+  "meta": {
+    "phases": {
+      "research": {
+        "testCommand": "cd plugins/specmanager/server && npm run build && npm run selftest-research && npm run selftest-board && npm run selftest-prompts && npm run smoke-mcp && npm run selftest && cd ../ui && npm run build",
+        "architectureRefs": [
+          "affected-components",
+          "study-storage-and-schema",
+          "research-doc-shapes",
+          "ordering-gates-and-computed-flags",
+          "findings-intake",
+          "researcher-agent-and-command",
+          "handoff-to-builder",
+          "mcp-tools",
+          "board-rest-api",
+          "board-mode-toggle-and-researcher-view",
+          "failure-and-edge-cases",
+          "conventions-used",
+          "prompt-invariants"
+        ],
+        "kind": "build",
+        "prerequisites": []
+      }
+    },
+    "blocked": {}
+  }
+}
