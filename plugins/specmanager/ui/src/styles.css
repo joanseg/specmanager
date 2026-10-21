@@ -335,7 +335,8 @@ html, body, #root {
 }
 .badge--draft    { color: var(--status-draft); }
 .badge--approved { color: var(--status-approved); }
-.badge--stale    {
+.badge--stale,
+.badge--outdated {
   color: var(--error);
   background: color-mix(in srgb, var(--error) 14%, transparent);
 }
@@ -1334,6 +1335,84 @@ html, body, #root {
   cursor: pointer;
 }
 .card__build-exec:hover { opacity: 1; text-decoration: underline; }
+
+/* Researcher grid ----------------------------------------------------
+ * Same grid as Builder; Handoff takes Build's reserved right-hand track
+ * (.row__cell--build), so the breakpoints below wrap it at tablet. */
+.grid--research {
+  --grid-cols: 15rem repeat(5, minmax(8.5rem, 1fr)) 16rem;
+}
+.grid--research .row__label { min-width: 0; }
+/* Outdated research cards keep the stale error edge over .card--button's border. */
+.grid--research .card--button.card--stale {
+  border-color: var(--error);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--error) 18%, transparent);
+}
+.study__idea {
+  font-size: 0.76rem;
+  color: var(--on-surface-variant);
+  line-height: 1.35;
+  margin-top: 0.4rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.study-rail {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  margin-top: 0.6rem;
+}
+.study-rail i {
+  display: block;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface-container-highest);
+}
+.study-rail i.done { background: var(--primary); }
+.study-rail i.next {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--primary);
+  height: 6px;
+  margin-top: -1px;
+}
+.study-rail i.flag { background: var(--error); }
+.study-rail__caption {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.02em;
+  color: var(--on-surface-variant);
+  margin-top: 0.3rem;
+}
+.study-rail__caption b { color: var(--primary); font-weight: 500; }
+.study__next {
+  all: unset;
+  cursor: pointer;
+  margin-top: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--primary);
+  opacity: 0.75;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.study__next:hover { opacity: 1; text-decoration: underline; }
+.study__next:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.card__empty-cmd--dim { color: var(--on-surface-variant); opacity: 0.8; }
+.badge--notes {
+  color: var(--tertiary);
+  background: color-mix(in srgb, var(--tertiary) 14%, transparent);
+}
+.badge--kind {
+  background: transparent;
+  border: 1px solid var(--outline-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
 
 /* ===================================================================
  * Responsive — three Obsidian Flux breakpoints (Architecture §6).

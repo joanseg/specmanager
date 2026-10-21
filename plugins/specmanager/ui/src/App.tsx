@@ -3,6 +3,7 @@ import { fetchBoard, fetchStudies, openWebSocket } from "./api";
 import DocPanel from "./DocPanel";
 import BuildPanel from "./BuildPanel";
 import ModeToggle, { useMode } from "./ModeToggle";
+import ResearchBoard from "./ResearchBoard";
 import { Board, Column, DocCard, FeatureRow, PhaseRollup, Stage, STAGES, StudySummary, TaskCounts } from "./types";
 
 const DEFAULT_PHASE = "default";
@@ -381,25 +382,6 @@ function plural(n: number, one: string, many: string): string {
   return `${n} ${n === 1 ? one : many}`;
 }
 
-/** Placeholder until the Researcher grid lands (task-021). */
-function ResearcherView({ studies }: { studies: StudySummary[] }) {
-  if (studies.length === 0) {
-    return (
-      <section className="empty">
-        <p>No studies yet.</p>
-        <pre>/specmanager-research &lt;idea&gt;</pre>
-      </section>
-    );
-  }
-  return (
-    <section className="empty">
-      {studies.map((s) => (
-        <p key={s.id}>{s.title}</p>
-      ))}
-    </section>
-  );
-}
-
 export default function App() {
   const [board, setBoard] = useState<Board | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -482,7 +464,7 @@ export default function App() {
       </header>
 
       {mode === "researcher" ? (
-        studies && <ResearcherView studies={studies} />
+        studies && <ResearchBoard studies={studies} />
       ) : board.features.length === 0 ? (
         <section className="empty">
           <p>No features yet.</p>
