@@ -105,6 +105,37 @@ html, body, #root {
 }
 @keyframes fade { from { opacity: 1; } to { opacity: 0.5; } }
 
+/* Mode toggle: two-segment control; active segment reuses the toolbar active-state token. */
+.mode-toggle {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  background: var(--surface-container-low);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+}
+.mode-toggle__seg {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0.38rem 0.95rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+}
+.mode-toggle__seg .glyph { font-family: var(--font-mono); font-size: 0.7rem; opacity: 0.7; }
+.mode-toggle__seg--active {
+  color: var(--primary);
+  background: var(--tb-active-bg);
+  border-color: color-mix(in srgb, var(--primary) 55%, var(--outline-variant));
+}
+.mode-toggle__seg:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+
 .empty {
   border: 1px dashed var(--outline-variant);
   border-radius: var(--radius-md);

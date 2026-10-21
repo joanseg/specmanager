@@ -1,8 +1,9 @@
 import { Fragment, useCallback, useEffect, useState } from "react";
-import { fetchBoard, openWebSocket } from "./api";
+import { fetchBoard, fetchStudies, openWebSocket } from "./api";
 import DocPanel from "./DocPanel";
 import BuildPanel from "./BuildPanel";
-import { Board, Column, DocCard, FeatureRow, PhaseRollup, Stage, STAGES, TaskCounts } from "./types";
+import ModeToggle, { useMode } from "./ModeToggle";
+import { Board, Column, DocCard, FeatureRow, PhaseRollup, Stage, STAGES, StudySummary, TaskCounts } from "./types";
 
 const DEFAULT_PHASE = "default";
 const FINAL_PHASE = "final";
@@ -376,12 +377,38 @@ function Cell({
   return <EmptyCell stage={stage} ready />;
 }
 
+function plural(n: number, one: string, many: string): string {
+  return `${n} ${n === 1 ? one : many}`;
+}
+
+/** Placeholder until the Researcher grid lands (task-021). */
+function ResearcherView({ studies }: { studies: StudySummary[] }) {
+  if (studies.length === 0) {
+    return (
+      <section className="empty">
+        <p>No studies yet.</p>
+        <pre>/specmanager-research &lt;idea&gt;</pre>
+      </section>
+    );
+  }
+  return (
+    <section className="empty">
+      {studies.map((s) => (
+        <p key={s.id}>{s.title}</p>
+      ))}
+    </section>
+  );
+}
+
 export default function App() {
   const [board, setBoard] = useState<Board | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [lastEvent, setLastEvent] = useState<string | null>(null);
   const [openDocId, setOpenDocId] = useState<string | null>(null);
   const [openBuild, setOpenBuild] = useState<{ featureId: string; title: string } | null>(null);
+  const [mode, setMode] = useMode();
+  const [studies, setStudies] = useState<StudySummary[] | null>(null);
+  const [tick, setTick] = useState(0);
 
   const openDoc = useCallback((id: string) => setOpenDocId(id), []);
   const closeDoc = useCallback(() => setOpenDocId(null), []);
@@ -406,13 +433,23 @@ export default function App() {
       setLastEvent(event.type);
       // Coalesce bursts of events into a single reload.
       window.clearTimeout(pending);
-      pending = window.setTimeout(reload, 100);
+      pending = window.setTimeout(() => {
+        reload();
+        setTick((t) => t + 1);
+      }, 100);
     });
     return () => {
       window.clearTimeout(pending);
       close();
     };
   }, []);
+
+  useEffect(() => {
+    if (mode !== "researcher") return;
+    fetchStudies()
+      .then(setStudies)
+      .catch((err: Error) => setError(err.message));
+  }, [mode, tick]);
 
   if (error) {
     return (
@@ -431,15 +468,22 @@ export default function App() {
           <h1 className="board__title">{board.projectName}</h1>
           <p className="board__subtitle">SpecManager</p>
         </div>
+        <ModeToggle mode={mode} onChange={setMode} />
         <div className="board__meta">
           <span className="board__count">
-            {board.features.length} feature{board.features.length === 1 ? "" : "s"}
+            {mode === "builder"
+              ? plural(board.features.length, "feature", "features")
+              : studies
+              ? plural(studies.length, "study", "studies")
+              : "…"}
           </span>
           {lastEvent && <span className="board__pulse">· {lastEvent}</span>}
         </div>
       </header>
 
-      {board.features.length === 0 ? (
+      {mode === "researcher" ? (
+        studies && <ResearcherView studies={studies} />
+      ) : board.features.length === 0 ? (
         <section className="empty">
           <p>No features yet.</p>
           <pre>/specmanager-prd &lt;title&gt;</pre>
