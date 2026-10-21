@@ -21,3 +21,4 @@ export * from "./claude-md.js";
 export * from "./design-md.js";
 export * from "./init.js";
 export * from "./repos.js";
+export * from "./research.js";

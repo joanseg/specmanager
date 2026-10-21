@@ -15,6 +15,7 @@ import { createFeature, ensureSpecsRoot, listFeatures, uniqueSlug } from "./feat
 import { indexHeadings } from "./spec-slice.js";
 import { events } from "./events.js";
 import { readDoc, writeDoc } from "./frontmatter.js";
+import type { GateResult } from "./dependencies.js";
 import { DESIGN_BRIEF_MAX_BYTES, sanitizeDesignBriefBody } from "./documents.js";
 
 /** Study id for a research slug. */
@@ -352,11 +353,6 @@ export async function readStudyState(studyId: string, root = projectRoot()): Pro
     buildList: strategy ? parseBuildList(strategy.body) : [],
     handedOff: features.filter((f) => f.origin?.studyId === study.id).map((f) => f.id),
   };
-}
-
-export interface GateResult {
-  ok: boolean;
-  reason?: string;
 }
 
 /** Gate for one step against an already-read study state. */
