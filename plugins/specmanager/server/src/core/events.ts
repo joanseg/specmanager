@@ -2,6 +2,7 @@ import { EventEmitter } from "node:events";
 
 export type SpecEvent =
   | { type: "feature.created"; featureId: string }
+  | { type: "study.created"; studyId: string }
   | { type: "document.created"; documentId: string; featureId: string }
   | { type: "document.updated"; documentId: string; featureId: string; version: number }
   | { type: "status.changed"; documentId: string; from: string; to: string }
