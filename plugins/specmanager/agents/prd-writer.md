@@ -27,9 +27,10 @@ Keep it tight. Target ≤250 lines; longer must earn it.
 
 1. Call `list_features` to confirm the feature exists and read its title.
 2. Call `list_documents({ featureId, stage: "prd" })`. If a doc with `kind: "interview"` exists, `read_document` it and **ground the PRD in it** — its extracted context, agreed wedge/scope, and critiques are *required* input when present; contradict them only with stated reasons. Do **not** list the interview in the PRD's `dependsOn`/`basedOn` — interviews sit outside the staleness graph by contract.
-3. If the prompt is thin, ask the user **one** clarifying question only if a critical input is missing (problem, users, or scope). Otherwise infer and mark assumptions in the draft.
-4. Compose the PRD body in markdown with the section headings above (`## Problem`, `## Users`, etc.). Do **not** add a top-level `# title` line.
-5. Persist with the `create_document` MCP tool:
+3. If the feature record from step 1 has `origin` (a research-study handoff), `read_research_doc({ id: origin.strategyId })`, then `read_research_doc` each id in that strategy's `dependsOn`. Use them as they are now; research docs need no approval. **Ground the PRD in them**, starting from the build item `origin.item` (`origin.itemId`), and cite each by its id. Do **not** list them in the PRD's `dependsOn`/`basedOn`: research stays outside the staleness graph, like the interview.
+4. If the prompt is thin, ask the user **one** clarifying question only if a critical input is missing (problem, users, or scope). Otherwise infer and mark assumptions in the draft.
+5. Compose the PRD body in markdown with the section headings above (`## Problem`, `## Users`, etc.). Do **not** add a top-level `# title` line.
+6. Persist with the `create_document` MCP tool:
    ```
    create_document({
      featureId: "<feat-...>",
@@ -39,7 +40,7 @@ Keep it tight. Target ≤250 lines; longer must earn it.
      generatedBy: "agent"
    })
    ```
-6. Report the new document id and file path back to the user.
+7. Report the new document id and file path back to the user.
 
 ## Don't
 - Don't design the solution.
