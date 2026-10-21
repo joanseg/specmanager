@@ -480,3 +480,45 @@ export async function handoffStudyItems(
   }
   return result;
 }
+
+// ---- list_studies payload (shared by the MCP tool and GET /api/studies) ----
+
+export interface StudySummary extends Study {
+  docs: { id: string; kind: ResearchKind; title: string; version: number; filePath: string; outdated: string[] }[];
+  newNotes: string[];
+  nextStep: ResearchStep | null;
+  steps: StepStatus[];
+  buildList: BuildItem[];
+  handedOff: string[];
+}
+
+/** One study's docs, flags, rail steps, build list and handed-off features. */
+export async function studySummary(studyId: string, root = projectRoot()): Promise<StudySummary> {
+  const state = await readStudyState(studyId, root);
+  const steps = researchSteps(state);
+  return {
+    ...state.study,
+    docs: state.docs.map((d) => ({
+      id: d.frontmatter.id,
+      kind: d.frontmatter.kind,
+      title: d.frontmatter.title,
+      version: d.frontmatter.version,
+      filePath: d.filePath,
+      outdated: outdatedUpstreams(d, state.docs),
+    })),
+    newNotes: state.newNotes,
+    nextStep: nextResearchStep(steps),
+    steps,
+    buildList: state.buildList,
+    handedOff: state.handedOff,
+  };
+}
+
+/** Summaries for every study, or only `studyId` when given. */
+export async function listStudySummaries(
+  studyId?: string,
+  root = projectRoot()
+): Promise<StudySummary[]> {
+  const ids = studyId ? [studyId] : (await listStudies(root)).map((s) => s.id);
+  return Promise.all(ids.map((id) => studySummary(id, root)));
+}
