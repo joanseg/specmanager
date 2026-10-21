@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { Feature, FeatureSchema, Stage } from "./types.js";
+import { Feature, FeatureOrigin, FeatureSchema, Stage } from "./types.js";
 import { featureDir, featuresDir, projectRoot, specsDir, stageDir, STAGES } from "./paths.js";
 import { featureId, nowIso, slugify } from "./ids.js";
 import { events } from "./events.js";
@@ -62,7 +62,12 @@ export async function uniqueSlug(base: string, parentDir: string): Promise<strin
   }
 }
 
-export async function createFeature(title: string, root = projectRoot()): Promise<Feature> {
+/** Create a feature folder; `origin` records a research-study handoff on `feature.json`. */
+export async function createFeature(
+  title: string,
+  root = projectRoot(),
+  opts: { origin?: FeatureOrigin } = {}
+): Promise<Feature> {
   await ensureSpecsRoot(root);
   const base = slugify(title);
   const slug = await uniqueSlug(base, featuresDir(root));
@@ -74,6 +79,7 @@ export async function createFeature(title: string, root = projectRoot()): Promis
     slug,
     title,
     currentStage: "prd",
+    ...(opts.origin ? { origin: opts.origin } : {}),
     createdAt: nowIso(),
   };
   await fs.writeFile(path.join(dir, "feature.json"), JSON.stringify(feature, null, 2), "utf8");

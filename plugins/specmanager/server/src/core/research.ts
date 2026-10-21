@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import {
+  Feature,
   ResearchDocFrontmatter,
   ResearchDocFrontmatterSchema,
   ResearchDocRecord,
@@ -10,7 +11,7 @@ import {
 } from "./types.js";
 import { projectRoot, researchDir, studyDir, studyNotesDir } from "./paths.js";
 import { nowIso, slugify } from "./ids.js";
-import { ensureSpecsRoot, listFeatures, uniqueSlug } from "./features.js";
+import { createFeature, ensureSpecsRoot, listFeatures, uniqueSlug } from "./features.js";
 import { indexHeadings } from "./spec-slice.js";
 import { events } from "./events.js";
 import { readDoc, writeDoc } from "./frontmatter.js";
@@ -434,4 +435,52 @@ export function researchSteps(state: StudyState): StepStatus[] {
 /** First unfinished step in rail order, or null when every step is done; derived from `researchSteps`. */
 export function nextResearchStep(steps: StepStatus[]): ResearchStep | null {
   return steps.find((s) => s.state !== "done" && s.state !== "flag")?.step ?? null;
+}
+
+// ---- Handoff to Builder (Arch §handoff-to-builder) ----
+
+export interface HandoffResult {
+  created: Feature[];
+  skipped: { itemId: string; featureId: string }[];
+}
+
+/**
+ * Create one Builder feature per requested build item, recording `origin` on `feature.json`.
+ * Idempotent per `(origin.studyId, origin.itemId)`: an item already handed off is skipped.
+ */
+export async function handoffStudyItems(
+  input: { studyId: string; itemIds: string[] },
+  root = projectRoot()
+): Promise<HandoffResult> {
+  const state = await readStudyState(input.studyId, root);
+  const gate = gateFor("handoff", state);
+  if (!gate.ok) throw new Error(`gate closed for handoff on ${input.studyId}: ${gate.reason}`);
+  const strategy = state.docs.find((d) => d.frontmatter.kind === "strategy")!;
+  const unknown = input.itemIds.filter((id) => !state.buildList.some((b) => b.itemId === id));
+  if (unknown.length > 0) throw new Error(`unknown build item id(s): ${unknown.join(", ")}`);
+  const features = await listFeatures(root);
+  const result: HandoffResult = { created: [], skipped: [] };
+  for (const itemId of input.itemIds) {
+    const existing = features.find(
+      (f) => f.origin?.studyId === state.study.id && f.origin.itemId === itemId
+    );
+    if (existing) {
+      result.skipped.push({ itemId, featureId: existing.id });
+      continue;
+    }
+    const item = state.buildList.find((b) => b.itemId === itemId)!;
+    const feature = await createFeature(item.title, root, {
+      origin: {
+        studyId: state.study.id,
+        strategyId: strategy.frontmatter.id,
+        strategyVersion: strategy.frontmatter.version,
+        rank: item.rank,
+        itemId,
+        item: item.title,
+      },
+    });
+    features.push(feature);
+    result.created.push(feature);
+  }
+  return result;
 }
