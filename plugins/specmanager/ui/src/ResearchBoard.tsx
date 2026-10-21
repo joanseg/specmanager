@@ -1,4 +1,15 @@
-import { ResearchKind, ResearchStep, StepStatus, StudyDocCard, StudySummary } from "./types";
+import { useState } from "react";
+import { postHandoff } from "./api";
+import {
+  BuildItem,
+  Handoff,
+  HandoffResult,
+  ResearchKind,
+  ResearchStep,
+  StepStatus,
+  StudyDocCard,
+  StudySummary,
+} from "./types";
 
 const COLUMNS: { kind: ResearchKind; label: string }[] = [
   { kind: "market", label: "Market research" },
@@ -146,20 +157,134 @@ function EmptyCell({ study, kind, label }: { study: StudySummary; kind: Research
   );
 }
 
-/** Placeholder until the handoff cell lands (task-022): gate state and build-list counts. */
-function HandoffCell({ study }: { study: StudySummary }) {
-  const status = stepOf(study, "handoff");
-  if (status?.state === "locked") return <LockedCell label="Handoff" reason={status.reason} />;
-  const cmd = stepCommand(study.slug, "handoff");
+function openBuilder(): void {
+  window.location.hash = "#builder";
+}
+
+/** Success or neutral strip for the last handoff; component state, so a reload clears it. */
+function HandoffStrips({ result, study }: { result: HandoffResult; study: StudySummary }) {
+  const slugOf = (featureId: string) => study.handoffs.find((h) => h.featureId === featureId)?.slug ?? featureId;
   return (
-    <div className={`card card--build${status?.state === "next" ? " card--ready" : ""}`}>
-      <span className="card__title">Build list</span>
-      <span className="card__build-counts">
-        {plural(study.buildList.length, "item", "items")} · {study.handedOff.length} handed off
-      </span>
-      <span className="card__build-exec" onClick={copy(cmd)} title={`copy ${cmd}`}>
-        ▶ … handoff
-      </span>
+    <>
+      {result.created.length > 0 && (
+        <div className="handoff__result" role="status">
+          Created {plural(result.created.length, "Builder feature", "Builder features")}.{" "}
+          <button type="button" className="link handoff__open" onClick={openBuilder}>Open in Builder</button>
+        </div>
+      )}
+      {result.skipped.length > 0 && (
+        <div className="handoff__result handoff__result--skip" role="status">
+          {result.skipped.length} already handed off, skipped:{" "}
+          <span className="mono">{result.skipped.map((s) => slugOf(s.featureId)).join(", ")}</span>
+        </div>
+      )}
+    </>
+  );
+}
+
+function HandoffRow({
+  item,
+  handoff,
+  checked,
+  onToggle,
+}: {
+  item: BuildItem;
+  handoff?: Handoff;
+  checked: boolean;
+  onToggle: () => void;
+}) {
+  if (handoff) {
+    return (
+      <div className="handoff-item handoff-item--handed" title={item.rationale}>
+        <span className="handoff-item__rank">{item.rank}</span>
+        <span className="handoff-item__done" aria-label="handed off" />
+        <span className="handoff-item__title">
+          <span>{item.title}</span>
+          <a className="handoff-item__feat" href="#builder" title={handoff.featureId}>→ {handoff.slug}</a>
+        </span>
+      </div>
+    );
+  }
+  return (
+    <label className={`handoff-item${checked ? " handoff-item--checked" : ""}`} title={`${item.itemId} · ${item.rationale}`}>
+      <span className="handoff-item__rank">{item.rank}</span>
+      <input type="checkbox" className="handoff-item__check" checked={checked} onChange={onToggle} />
+      <span className="handoff-item__title">{item.title}</span>
+    </label>
+  );
+}
+
+/** Handoff: pick ranked build items (keyed by `S<n>`) and create one Builder feature each. */
+function HandoffCell({ study }: { study: StudySummary }) {
+  const [selected, setSelected] = useState<string[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<HandoffResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const strategy = study.docs.find((d) => d.kind === "strategy");
+  const status = stepOf(study, "handoff");
+
+  if (strategy && study.buildList.length === 0) {
+    return (
+      <div className="card card--locked card--no-items">
+        <span className="card__locked-label">No build items</span>
+        <span className="card__locked-sub">
+          strategy has no ordered list under <span className="mono">## What to build</span>
+        </span>
+      </div>
+    );
+  }
+  if (!strategy || status?.state === "locked") return <LockedCell label="Handoff" reason={status?.reason} />;
+
+  const toggle = (itemId: string) =>
+    setSelected((cur) => (cur.includes(itemId) ? cur.filter((id) => id !== itemId) : [...cur, itemId]));
+  const create = async (): Promise<void> => {
+    setBusy(true);
+    setError(null);
+    try {
+      setResult(await postHandoff(study.id, selected));
+      setSelected([]);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  const nextSlug = result?.created[0]?.slug;
+  const n = selected.length;
+  return (
+    <div className="card card--build card--handoff">
+      <div className="handoff__head">
+        <span>Build list</span>
+        <span>strategy v{strategy.version}</span>
+      </div>
+      {result && <HandoffStrips result={result} study={study} />}
+      {error && <div className="handoff__result handoff__result--error" role="alert">{error}</div>}
+      {study.buildList.map((item) => (
+        <HandoffRow
+          key={item.itemId}
+          item={item}
+          handoff={study.handoffs.find((h) => h.itemId === item.itemId)}
+          checked={selected.includes(item.itemId)}
+          onToggle={() => toggle(item.itemId)}
+        />
+      ))}
+      <div className="handoff__actions">
+        {n === 0 && nextSlug ? (
+          <button
+            type="button"
+            className="handoff__next"
+            onClick={copy(`/specmanager-prd ${nextSlug}`)}
+            title="copy to clipboard"
+          >
+            next: /specmanager-prd {nextSlug}
+          </button>
+        ) : (
+          <small>{n} selected</small>
+        )}
+        <button type="button" className="btn btn--sm btn--primary" disabled={n === 0 || busy} onClick={create}>
+          {n === 0 ? "Create" : `Create ${plural(n, "feature", "features")}`}
+        </button>
+      </div>
     </div>
   );
 }

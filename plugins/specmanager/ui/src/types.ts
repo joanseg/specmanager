@@ -158,6 +158,14 @@ export interface StudySummary extends Study {
   steps: StepStatus[];
   buildList: BuildItem[];
   handedOff: string[];
+  handoffs: Handoff[];
+}
+
+/** One handed-off build item and the Builder feature it became. */
+export interface Handoff {
+  itemId: string;
+  featureId: string;
+  slug: string;
 }
 
 // GET/PUT /api/research/:id — frontmatter plus body; no status or stale.

@@ -1348,6 +1348,112 @@ html, body, #root {
   border-color: var(--error);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--error) 18%, transparent);
 }
+
+/* Handoff cell: opts out of the 5.5rem cap so the row grows with the build list. */
+.row__cell--build > .card--handoff { height: auto; }
+.card--handoff { gap: 0.25rem; padding: 0.55rem 0.6rem 0.6rem; }
+.card--handoff:hover { transform: none; }
+.handoff__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--on-surface-variant);
+  margin-bottom: 0.15rem;
+}
+.handoff__head span:last-child { text-transform: none; letter-spacing: 0.02em; opacity: 0.7; }
+.handoff-item {
+  display: grid;
+  grid-template-columns: 1rem 1.1rem 1fr;
+  align-items: start;
+  gap: 0.35rem;
+  padding: 0.28rem 0.25rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+label.handoff-item { cursor: pointer; }
+.handoff-item__rank { font-family: var(--font-mono); font-size: 0.66rem; color: var(--on-surface-variant); padding-top: 0.12rem; }
+.handoff-item__check {
+  appearance: none;
+  width: 0.85rem;
+  height: 0.85rem;
+  margin: 0.1rem 0 0;
+  border: 1.5px solid var(--outline);
+  border-radius: var(--radius-sm);
+  position: relative;
+  cursor: pointer;
+}
+.handoff-item__check:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.handoff-item--checked { background: var(--tb-active-bg); }
+.handoff-item__check:checked { background: var(--primary); border-color: var(--primary); }
+.handoff-item__check:checked::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 0;
+  width: 3px;
+  height: 7px;
+  border: solid var(--surface);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.handoff-item__done {
+  width: 0.85rem;
+  height: 0.85rem;
+  margin-top: 0.1rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--success);
+  position: relative;
+  box-sizing: border-box;
+}
+.handoff-item__done::after { content: ""; position: absolute; inset: 2px; border-radius: 50%; background: var(--success); }
+.handoff-item__title { min-width: 0; }
+.handoff-item__feat {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: var(--primary);
+  margin-top: 0.1rem;
+  text-decoration: none;
+}
+.handoff-item__feat:hover { text-decoration: underline; }
+.handoff-item--handed .handoff-item__title > span:first-child { color: var(--on-surface-variant); }
+.handoff__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid var(--outline-variant);
+}
+.handoff__actions small {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: var(--on-surface-variant);
+}
+.handoff__next { all: unset; font-family: var(--font-mono); font-size: 0.64rem; color: var(--on-surface-variant); cursor: pointer; overflow-wrap: anywhere; }
+.handoff__next:hover { color: var(--primary); }
+.handoff__actions .btn { padding: 0.22rem 0.6rem; font-size: 0.74rem; white-space: nowrap; }
+.handoff__result {
+  font-size: 0.72rem;
+  line-height: 1.4;
+  padding: 0.4rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--success) 14%, transparent);
+  color: var(--success);
+  margin-bottom: 0.2rem;
+}
+.handoff__result .link { color: var(--success); padding: 0; font-size: inherit; text-decoration: underline; }
+.handoff__result .mono { font-family: var(--font-mono); font-size: 0.66rem; }
+.handoff__result--skip { background: var(--surface-container-highest); color: var(--on-surface-variant); }
+.handoff__result--error { background: color-mix(in srgb, var(--error) 12%, transparent); color: var(--error); }
+.card--no-items { border-color: color-mix(in srgb, var(--error) 45%, var(--outline-variant)); }
+.card--no-items .mono { font-family: var(--font-mono); }
 .study__idea {
   font-size: 0.76rem;
   color: var(--on-surface-variant);

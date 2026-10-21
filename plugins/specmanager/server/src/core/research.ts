@@ -338,6 +338,14 @@ export interface StudyState {
   newNotes: string[];
   buildList: BuildItem[];
   handedOff: string[];
+  handoffs: Handoff[];
+}
+
+/** One handed-off build item and the Builder feature it became. */
+export interface Handoff {
+  itemId: string;
+  featureId: string;
+  slug: string;
 }
 
 /** Read a study's docs, notes, build list and handed-off feature ids. */
@@ -346,12 +354,16 @@ export async function readStudyState(studyId: string, root = projectRoot()): Pro
   const docs = await listResearchDocs(study.id, root);
   const strategy = docs.find((d) => d.frontmatter.kind === "strategy");
   const features = await listFeatures(root);
+  const handoffs = features
+    .filter((f) => f.origin?.studyId === study.id)
+    .map((f) => ({ itemId: f.origin!.itemId, featureId: f.id, slug: f.slug }));
   return {
     study,
     docs,
     newNotes: await newNotes(study, docs, root),
     buildList: strategy ? parseBuildList(strategy.body) : [],
-    handedOff: features.filter((f) => f.origin?.studyId === study.id).map((f) => f.id),
+    handedOff: handoffs.map((h) => h.featureId),
+    handoffs,
   };
 }
 
@@ -490,6 +502,7 @@ export interface StudySummary extends Study {
   steps: StepStatus[];
   buildList: BuildItem[];
   handedOff: string[];
+  handoffs: Handoff[];
 }
 
 /** One study's docs, flags, rail steps, build list and handed-off features. */
@@ -511,6 +524,7 @@ export async function studySummary(studyId: string, root = projectRoot()): Promi
     steps,
     buildList: state.buildList,
     handedOff: state.handedOff,
+    handoffs: state.handoffs,
   };
 }
 

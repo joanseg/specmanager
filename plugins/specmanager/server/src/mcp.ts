@@ -666,7 +666,7 @@ server.registerTool(
     title: "List research studies",
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description:
-      "List research studies (or one, by studyId) with doc summaries (id, kind, version, outdated[]), newNotes[], nextStep, steps[] (per-step done/next/flag/open/locked + gate reason), buildList[] and handedOff[] feature ids.",
+      "List research studies (or one, by studyId) with doc summaries (id, kind, version, outdated[]), newNotes[], nextStep, steps[] (per-step done/next/flag/open/locked + gate reason), buildList[], handedOff[] feature ids and handoffs[] ({ itemId, featureId, slug }).",
     inputSchema: z.object({ studyId: z.string().optional() }),
   },
   async ({ studyId }) => {

@@ -285,6 +285,11 @@ async function main(): Promise<void> {
   // 15. Final summaries.
   sa = await studySummary(a.id, root);
   assert(sa.handedOff.length === 2, "summary lists both handed-off features");
+  const s1 = sa.handoffs.find((h) => h.itemId === "S1");
+  assert(
+    s1?.featureId === first.created[0]!.id && s1.slug === first.created[0]!.slug,
+    "summary maps S1 to its feature id and slug"
+  );
   assert(rail(sa).handoff === "done", "handoff step is done");
   assert(sa.nextStep === null, "no next step once everything is done (flags aside)");
   sb = await studySummary(b.id, root);
