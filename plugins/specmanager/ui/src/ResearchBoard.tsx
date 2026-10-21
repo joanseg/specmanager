@@ -193,11 +193,13 @@ function HandoffRow({
   handoff,
   checked,
   onToggle,
+  onShowFeature,
 }: {
   item: BuildItem;
   handoff?: Handoff;
   checked: boolean;
   onToggle: () => void;
+  onShowFeature?: (featureId: string) => void;
 }) {
   if (handoff) {
     return (
@@ -206,7 +208,18 @@ function HandoffRow({
         <span className="handoff-item__done" aria-label="handed off" />
         <span className="handoff-item__title">
           <span>{item.title}</span>
-          <a className="handoff-item__feat" href="#builder" title={handoff.featureId}>→ {handoff.slug}</a>
+          <a
+            className="handoff-item__feat"
+            href="#builder"
+            title={handoff.featureId}
+            onClick={(e) => {
+              if (!onShowFeature) return;
+              e.preventDefault();
+              onShowFeature(handoff.featureId);
+            }}
+          >
+            → {handoff.slug}
+          </a>
         </span>
       </div>
     );
@@ -221,7 +234,13 @@ function HandoffRow({
 }
 
 /** Handoff: pick ranked build items (keyed by `S<n>`) and create one Builder feature each. */
-function HandoffCell({ study }: { study: StudySummary }) {
+function HandoffCell({
+  study,
+  onShowFeature,
+}: {
+  study: StudySummary;
+  onShowFeature?: (featureId: string) => void;
+}) {
   const [selected, setSelected] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<HandoffResult | null>(null);
@@ -272,6 +291,7 @@ function HandoffCell({ study }: { study: StudySummary }) {
           handoff={study.handoffs.find((h) => h.itemId === item.itemId)}
           checked={selected.includes(item.itemId)}
           onToggle={() => toggle(item.itemId)}
+          onShowFeature={onShowFeature}
         />
       ))}
       <div className="handoff__actions">
@@ -299,9 +319,11 @@ function HandoffCell({ study }: { study: StudySummary }) {
 export default function ResearchBoard({
   studies,
   onOpenDoc,
+  onShowFeature,
 }: {
   studies: StudySummary[];
   onOpenDoc?: (docId: string) => void;
+  onShowFeature?: (featureId: string) => void;
 }) {
   if (studies.length === 0) return <EmptyResearch />;
   return (
@@ -327,7 +349,7 @@ export default function ResearchBoard({
             );
           })}
           <div className="row__cell row__cell--build">
-            <HandoffCell study={study} />
+            <HandoffCell study={study} onShowFeature={onShowFeature} />
           </div>
         </div>
       ))}

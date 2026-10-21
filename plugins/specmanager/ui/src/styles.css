@@ -404,6 +404,52 @@ html, body, #root {
 }
 .chip-interview:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
 
+/* Research origin pill on the Builder row label (sibling of .chip-interview).
+ * Hollow ring = reference; the --updated variant fills it in --error. */
+.chip-origin {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  align-self: flex-start;
+  margin-top: 0.45rem;
+  padding: 0.22rem 0.55rem;
+  max-width: 100%;
+  background: var(--surface-container-low);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.02em;
+  color: var(--on-surface-variant);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 0.14s ease, color 0.14s ease;
+}
+.chip-origin__text { overflow: hidden; text-overflow: ellipsis; }
+.chip-origin .ring {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--primary);
+  flex-shrink: 0;
+}
+.chip-origin .meta { opacity: 0.55; flex-shrink: 0; margin-left: -0.15rem; }
+.chip-origin:hover { border-color: var(--card-border-hover); color: var(--on-surface); }
+.chip-origin:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.chip-origin--updated {
+  border-color: color-mix(in srgb, var(--error) 55%, var(--outline-variant));
+  color: var(--error);
+  background: color-mix(in srgb, var(--error) 8%, var(--surface-container-low));
+}
+.chip-origin--updated:hover { border-color: var(--error); color: var(--error); }
+.chip-origin--updated .ring { border-color: var(--error); background: var(--error); }
+.chip-origin--updated .meta { opacity: 0.8; }
+/* Brief highlight when a Researcher handoff link jumps to this row. */
+.row__label--focus {
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
 /* BUILD region — reserved right-hand track per row (Architecture §6, A).
  * A read-only progress glance that opens the existing BuildPanel overlay. */
 .row__cell--build {

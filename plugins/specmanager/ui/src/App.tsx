@@ -3,6 +3,7 @@ import { fetchBoard, fetchStudies, openWebSocket } from "./api";
 import DocPanel from "./DocPanel";
 import BuildPanel from "./BuildPanel";
 import ModeToggle, { useMode } from "./ModeToggle";
+import OriginChip from "./OriginChip";
 import ResearchBoard from "./ResearchBoard";
 import { Board, Column, DocCard, FeatureRow, PhaseRollup, Stage, STAGES, StudySummary, TaskCounts } from "./types";
 
@@ -391,6 +392,7 @@ export default function App() {
   const [mode, setMode] = useMode();
   const [studies, setStudies] = useState<StudySummary[] | null>(null);
   const [tick, setTick] = useState(0);
+  const [focusFeature, setFocusFeature] = useState<string | null>(null);
 
   const openFeatureDoc = useCallback((id: string) => setOpenDoc({ id, source: "feature" }), []);
   const openResearchDoc = useCallback((id: string) => setOpenDoc({ id, source: "research" }), []);
@@ -399,6 +401,10 @@ export default function App() {
     setOpenBuild({ featureId, title });
   }, []);
   const closeBuild = useCallback(() => setOpenBuild(null), []);
+  const showFeature = useCallback((featureId: string) => {
+    setMode("builder");
+    setFocusFeature(featureId);
+  }, [setMode]);
 
   const reload = (): void => {
     fetchBoard()
@@ -427,12 +433,21 @@ export default function App() {
     };
   }, []);
 
+  // Builder needs studies only for origin chips, so it fetches them only when a feature has an origin.
+  const needsStudies = mode === "researcher" || !!board?.features.some((f) => f.origin);
   useEffect(() => {
-    if (mode !== "researcher") return;
+    if (!needsStudies) return;
     fetchStudies()
       .then(setStudies)
       .catch((err: Error) => setError(err.message));
-  }, [mode, tick]);
+  }, [needsStudies, tick]);
+
+  useEffect(() => {
+    if (mode !== "builder" || !focusFeature) return;
+    document.getElementById(`feature-${focusFeature}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    const timer = window.setTimeout(() => setFocusFeature(null), 2000);
+    return () => window.clearTimeout(timer);
+  }, [mode, focusFeature]);
 
   if (error) {
     return (
@@ -465,7 +480,7 @@ export default function App() {
       </header>
 
       {mode === "researcher" ? (
-        studies && <ResearchBoard studies={studies} onOpenDoc={openResearchDoc} />
+        studies && <ResearchBoard studies={studies} onOpenDoc={openResearchDoc} onShowFeature={showFeature} />
       ) : board.features.length === 0 ? (
         <section className="empty">
           <p>No features yet.</p>
@@ -493,9 +508,19 @@ export default function App() {
           ))}
           {board.features.map((row) => (
             <div key={row.id} className="row" style={{ display: "contents" }}>
-              <div className="row__label">
+              <div
+                id={`feature-${row.id}`}
+                className={`row__label${focusFeature === row.id ? " row__label--focus" : ""}`}
+              >
                 <strong>{row.title}</strong>
                 <small>{row.slug}</small>
+                {row.origin && (
+                  <OriginChip
+                    origin={row.origin}
+                    study={studies?.find((s) => s.id === row.origin!.studyId)}
+                    onOpen={openResearchDoc}
+                  />
+                )}
               </div>
               {STAGES.map((c) => (
                 <Fragment key={c}>
