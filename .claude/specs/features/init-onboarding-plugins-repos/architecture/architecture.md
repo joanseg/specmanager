@@ -10,9 +10,9 @@ dependsOn:
 basedOn:
   prd-init-onboarding-plugins-repos-045: 2
 generatedBy: agent
-version: 2
+version: 3
 createdAt: '2026-10-20T15:43:48.376Z'
-updatedAt: '2026-10-20T18:18:24.731Z'
+updatedAt: '2026-10-20T19:19:28.154Z'
 ---
 ## Summary
 
@@ -122,7 +122,7 @@ Stage label: no user flow; every `syncClaudeMd` (init, auto-sync listeners in `m
 - **`claude` CLI unavailable** (Bash `command not found`, or a non-Claude-Code host): list the recommendations as "not installable here" with their ids, install nothing (C8/Q3). Note: no Cursor/Codex/Antigravity plugin directory exists in `plugins/` today — only `plugins/specmanager/` — so this branch is defensive wording only.
 - **`plugin list --json` fails or is unparseable:** report it once and skip the plugin step; init still completes.
 - **Install fails** (marketplace not added, network, a marketplace-declared command needing confirmation): report the CLI message per plugin; never retry with `-y`; never add hooks or workarounds (C2).
-- **Plugin installed in several scopes** (e.g. `context7` on the owner's machine): any enabled entry counts as present.
+- **Plugin installed in several scopes** (e.g. `context7` on the owner's machine): any enabled entry **that applies to this project** counts as present. An entry with a `projectPath` (project or local scope) counts only when that path equals this project's root; an entry without one (`user`, `synced`) applies everywhere. `claude plugin list --json` lists project-scope installs from every project, so without this filter a plugin enabled only in another project would count as present here (found by task-008, reviewer advisory). The same filter applies to the installed-but-disabled report.
 - **Disabled plugin:** reported with the enable command, not installed.
 - **Repo path rejected** (`notFound`, `notADirectory`, `conflict`): reported from `rejectedRepos`; others proceed (unchanged).
 - **Feature with only an interview doc:** label stays `PRD` (interview excluded) — keeps selftest 11.4 green.

@@ -8,11 +8,11 @@ title: 'Init onboarding: plugins & repos plan'
 dependsOn:
   - arch-init-onboarding-plugins-repos-030
 basedOn:
-  arch-init-onboarding-plugins-repos-030: 2
+  arch-init-onboarding-plugins-repos-030: 3
 generatedBy: agent
-version: 3
+version: 4
 createdAt: '2026-10-20T15:46:09.026Z'
-updatedAt: '2026-10-20T18:18:24.790Z'
+updatedAt: '2026-10-20T19:19:34.543Z'
 ---
 ## Overview
 
@@ -24,8 +24,8 @@ Implements `arch-init-onboarding-plugins-repos-030` (v1) for `prd-init-onboardin
 
 | Phase | Theme | Points |
 |---|---|---|
-| onboarding | Stage-label fix, known repos, plugin and repo onboarding in init | 20 |
-| **Total** | | **20** |
+| onboarding | Stage-label fix, known repos, plugin and repo onboarding in init | 22 |
+| **Total** | | **22** |
 
 ---
 
@@ -44,6 +44,7 @@ Implements `arch-init-onboarding-plugins-repos-030` (v1) for `prd-init-onboardin
 | 1.7 | Release prep: bump `plugin.json` `version` 1.2.0 → 1.3.0, `npm ci` at the plugin root and `npm ci && npm run build` in `server/` and `ui/`, commit any `dist/` change, run `selftest-directory` and `claude plugin validate plugins/specmanager` | 2 | C3, following the repo release rule (no `ui/dist` diff expected, since `ui/` source is untouched). 1.3.0 on the current branch stack (owner-confirmed); the base is set at build step 6a. Never push. |
 | 1.8 | Automated headless surface test for M1 and M2 in an isolated `CLAUDE_CONFIG_DIR`, results in `docs/verification/init-onboarding-surface.md` | 3 | The owner already has all four plugins installed, so the child runs with `CLAUDE_CONFIG_DIR=<scratch dir>` (plus `env -i HOME=$HOME PATH=$PATH`, `--plugin-dir <repo>/plugins/specmanager`, `-p "…" --output-format stream-json --verbose`) in an empty scratch project outside the repo, so it sees no installed plugins and installs into the scratch config only; the owner's real config is never touched. State the plugin pick in the `-p` prompt. Record which plugins were listed and what was installed (`claude plugin list --json` against the scratch config before and after), whether MCP `specmanager` shows `connected`, and whether `.claude/specs/` was created. If the login does not carry over to the scratch config, record that and fall back to the M2 check only: a re-run against the real config reports "all recommended plugins present" and asks nothing. If it fails, report it and add no workaround (C2). |
 | 1.9 | Automated M4/M5 check, results in `docs/verification/init-onboarding-checks.md` | 1 | M4: run `sync_claude_md` on this repo and record the labels and Build notes of features with an approved Plan. M5: grep `server/src` for new `fetch`, `child_process` or network use and record the result (none expected). |
+| 1.11 | Scope filter: in `commands/specmanager-init.md` step 2, count (and report as disabled) only plugin entries that apply to this project — no `projectPath` (`user`, `synced`), or `projectPath` equal to this project's root — with an INV-55 row in `selftest-prompts.ts` | 2 | Follow-up from the reviewer advisory and task-008: `claude plugin list --json` includes project-scope entries from every project, so "any enabled entry, in any scope" counted a plugin enabled only in another project as present (falls short of PRD G1). Arch "Failure and edge cases" updated. INV-55 anchors on the `projectPath` rule, exact min/max. Rebuild and commit `server/dist/selftest-prompts.js`. No version bump (1.3.0 is unreleased). |
 | 1.10 | Docs: describe the plugin and repo onboarding in `plugins/specmanager/README.md`, and refresh the init line in the repo `CLAUDE.md` | 1 | Keep it short. Name the four recommended plugins and the rule that init never installs anything you did not pick. |
 
 ---
