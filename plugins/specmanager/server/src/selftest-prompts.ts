@@ -193,17 +193,18 @@ const INVARIANTS: PromptInvariant[] = [
   },
   {
     id: "INV-13",
-    what: "density contract — lossless carry-over, byte-identical at all 4 drafting agents (min == max)",
+    what: "density contract — lossless carry-over, byte-identical at all 5 drafting agents (min == max)",
     pattern:
       "Every fact, number, constraint, decision, and open question from your inputs must survive into your output — merging duplicates is condensing; dropping information is a defect.",
     files: [
       "agents/architect.md",
       "agents/planner.md",
       "agents/prd-writer.md",
+      "agents/researcher.md",
       "agents/walkthrough-writer.md",
     ],
-    min: 4,
-    max: 4,
+    min: 5,
+    max: 5,
   },
   // INV-14 — the designer's distilled built-in fallback method. The
   // Architecture framed this as one block with `max: 1`; that is unsafe —
@@ -435,7 +436,7 @@ const INVARIANTS: PromptInvariant[] = [
   },
   {
     id: "INV-29",
-    what: "density contract — reference upstream docs by id, never restate their content (the token-budget rule, not a style preference); 4 sites, min == max",
+    what: "density contract — reference upstream docs by id, never restate their content (the token-budget rule, not a style preference); 5 sites, min == max",
     // Contingent per adjudication #2: the trim as currently planned drops
     // this sentence, which has no other statement site. `min: 4` failing
     // there is the designed signal to widen the survivor to two sentences.
@@ -444,10 +445,11 @@ const INVARIANTS: PromptInvariant[] = [
       "agents/architect.md",
       "agents/planner.md",
       "agents/prd-writer.md",
+      "agents/researcher.md",
       "agents/walkthrough-writer.md",
     ],
-    min: 4,
-    max: 4,
+    min: 5,
+    max: 5,
   },
   {
     id: "INV-30",
