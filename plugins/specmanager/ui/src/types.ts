@@ -89,11 +89,22 @@ export interface PhaseRollup {
   walkthroughStale: boolean | null;
 }
 
+// Provenance of a feature handed off from a study's strategy build list.
+export interface FeatureOrigin {
+  studyId: string;
+  strategyId: string;
+  strategyVersion: number;
+  rank: number;
+  itemId: string;
+  item: string;
+}
+
 export interface FeatureRow {
   id: string;
   slug: string;
   title: string;
   currentStage: Stage;
+  origin?: FeatureOrigin;
   documents: DocCard[];
   tasks: TaskCounts;
   phases: PhaseRollup[];
@@ -105,8 +116,77 @@ export interface Board {
   features: FeatureRow[];
 }
 
+// Mirror of core/research.ts `StudySummary` (GET /api/studies).
+export type ResearchKind = "market" | "concepts" | "user-research" | "marketing" | "strategy";
+export type ResearchStep = ResearchKind | "findings" | "handoff";
+export type StepState = "done" | "next" | "flag" | "open" | "locked";
+
+export interface StepStatus {
+  step: ResearchStep;
+  state: StepState;
+  reason?: string;
+}
+
+export interface BuildItem {
+  rank: number;
+  itemId: string;
+  title: string;
+  rationale: string;
+}
+
+export interface Study {
+  id: string;
+  slug: string;
+  title: string;
+  idea: string;
+  createdAt: string;
+}
+
+export interface StudyDocCard {
+  id: string;
+  kind: ResearchKind;
+  title: string;
+  version: number;
+  filePath: string;
+  outdated: string[];
+}
+
+export interface StudySummary extends Study {
+  docs: StudyDocCard[];
+  newNotes: string[];
+  nextStep: ResearchStep | null;
+  steps: StepStatus[];
+  buildList: BuildItem[];
+  handedOff: string[];
+}
+
+// GET/PUT /api/research/:id — frontmatter plus body; no status or stale.
+export interface ResearchDocFull {
+  id: string;
+  studyId: string;
+  kind: ResearchKind;
+  title: string;
+  body: string;
+  version: number;
+  dependsOn: string[];
+  basedOn: Record<string, number>;
+  generatedBy: "agent" | "human";
+  findings?: string[];
+  createdAt: string;
+  updatedAt: string;
+  filePath: string;
+}
+
+export interface HandoffResult {
+  created: { id: string; slug: string; title: string; currentStage: Stage; origin?: FeatureOrigin; createdAt: string }[];
+  skipped: { itemId: string; featureId: string }[];
+}
+
 export type WsEvent =
   | { type: "feature.created"; featureId: string }
+  | { type: "study.created"; studyId: string }
+  | { type: "research.created"; documentId: string; studyId: string }
+  | { type: "research.updated"; documentId: string; studyId: string; version: number }
   | { type: "document.created"; documentId: string; featureId: string }
   | { type: "document.updated"; documentId: string; featureId: string; version: number }
   | { type: "status.changed"; documentId: string; from: string; to: string }

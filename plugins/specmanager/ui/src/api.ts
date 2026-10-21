@@ -1,4 +1,17 @@
-import { Board, DocFull, DocStatus, GateResult, Stage, Task, TaskStatus, WsEvent } from "./types";
+import {
+  Board,
+  DocFull,
+  DocStatus,
+  GateResult,
+  HandoffResult,
+  ResearchDocFull,
+  Stage,
+  Study,
+  StudySummary,
+  Task,
+  TaskStatus,
+  WsEvent,
+} from "./types";
 
 export async function fetchBoard(): Promise<Board> {
   const res = await fetch("/api/board");
@@ -90,6 +103,61 @@ export async function fetchGate(featureId: string, stage: Stage): Promise<GateRe
   );
   if (!res.ok) throw new Error(`gate check → ${res.status}`);
   return (await res.json()) as GateResult;
+}
+
+async function errorOf(res: Response): Promise<string> {
+  const data = (await res.json().catch(() => ({}))) as { error?: string };
+  return data.error ?? `HTTP ${res.status}`;
+}
+
+export async function fetchStudies(studyId?: string): Promise<StudySummary[]> {
+  const qs = studyId ? `?studyId=${encodeURIComponent(studyId)}` : "";
+  const res = await fetch(`/api/studies${qs}`);
+  if (!res.ok) throw new Error(`/api/studies → ${res.status}`);
+  return (await res.json()) as StudySummary[];
+}
+
+export async function createStudyApi(title: string, idea: string): Promise<Study> {
+  const res = await fetch("/api/studies", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ title, idea }),
+  });
+  if (!res.ok) throw new Error(await errorOf(res));
+  return (await res.json()) as Study;
+}
+
+export async function fetchResearchDoc(id: string): Promise<ResearchDocFull> {
+  const res = await fetch(`/api/research/${encodeURIComponent(id)}`);
+  if (!res.ok) throw new Error(`/api/research/${id} → ${res.status}`);
+  return (await res.json()) as ResearchDocFull;
+}
+
+export interface PutResearchOk { ok: true; doc: ResearchDocFull; }
+
+export async function putResearchDoc(
+  id: string,
+  body: string,
+  baseVersion: number,
+  title?: string
+): Promise<PutResearchOk | PutDocConflict> {
+  const res = await fetch(`/api/research/${encodeURIComponent(id)}`, {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ body, baseVersion, title }),
+  });
+  if (res.ok) return { ok: true, doc: (await res.json()) as ResearchDocFull };
+  return { ok: false, status: res.status, error: await errorOf(res) };
+}
+
+export async function postHandoff(studyId: string, itemIds: string[]): Promise<HandoffResult> {
+  const res = await fetch(`/api/studies/${encodeURIComponent(studyId)}/handoff`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ itemIds }),
+  });
+  if (!res.ok) throw new Error(await errorOf(res));
+  return (await res.json()) as HandoffResult;
 }
 
 export function openWebSocket(onEvent: (event: WsEvent) => void): () => void {
