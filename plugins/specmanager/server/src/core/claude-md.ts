@@ -156,6 +156,11 @@ export async function renderBlock(root = projectRoot()): Promise<string> {
       );
     }
   }
+  if (m.studies?.length) {
+    const links = m.studies.map((s) => `[${s.title}](./.claude/specs/research/${s.slug}/)`);
+    lines.push("");
+    lines.push(`**Research studies:** ${links.join(" · ")}`);
+  }
   const repos = await scanDeclaredRepos(root);
   if (repos.length > 0) {
     lines.push("");
