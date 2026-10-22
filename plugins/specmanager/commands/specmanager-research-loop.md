@@ -93,10 +93,68 @@ starts, the run never pauses until the review.
 8. **Docs.** One `docs` job per Doc confirmed in opening round 2, with the
    study id and its docType, or the existing doc id for an update. Different
    types go **in parallel**, in one message; same-type Docs run
-   **sequentially**, so each sees the one before it. No Doc is drafted
-   without the user confirming: none confirmed → skip the step and say so.
+   **sequentially**, so each sees the one before it.
+   No Doc is drafted without the user confirming: none confirmed → skip the
+   step and say so.
    Each Doc gets its own per-step check and progress line.
 9. **User-research plan.** One `user-research` job, naming `brief-<slug>`,
    `market-<slug>` and every wireframes Doc id.
 10. **Marketing plan.** One `marketing` job, naming `brief-<slug>` and
     `market-<slug>`. It runs after the user-research plan, in PRD order.
+11. **Cross-doc review — inline in the main session, no subagent.** Read
+    every doc of the study with `read_research_doc`; for HTML Docs, `Read` the
+    `filePath` it returns in offset/limit chunks. Check, in a single pass:
+    - contradictions between any doc and the brief;
+    - every doc but the brief lists `brief-<slug>` in `dependsOn`;
+    - every screen letter the user-research plan cites exists in the
+      wireframes Doc(s) (`<doc-slug> A` when there is more than one);
+    - every figure carries a source or reads `n/a (unsourced)` — presentations
+      and decks included;
+    - each doc keeps its pinned headings (the brief's, the market doc's, the
+      user-research plan's), in order;
+    - drift from the Original idea and the brief block.
+
+    Fix what is clear-cut; everything else becomes a step-12 question.
+    - **Writes:** `write_research_doc({ id, body, baseVersion, basedOn })` with
+      the version you read. A version conflict → do not retry; it becomes a
+      step-12 question.
+    - **HTML Docs:** only small textual edits; never restructure a Doc here.
+    - Single pass — no re-review.
+12. **End questions.** Gather the open questions: each doc's
+    `## Open questions`, unresolved review findings, and the brief's
+    `## Assumptions`. Ask them with `AskUserQuestion` in batches of ≤4,
+    recommended option first, labelled *(recommended)*. Apply the answers in
+    **one final update per affected doc**, the brief included, with the
+    step-11 write rules; answered entries are removed from, or marked resolved
+    in, that doc's `## Open questions`. Skipped questions and unresolved review
+    findings are recorded in the brief's `## Open questions`, in that same
+    final update. None → skip and say so.
+13. **Final report.**
+    - study id and slug;
+    - each doc: id, version, path;
+    - Docs drafted, and any skipped because none was confirmed;
+    - review fixes applied;
+    - questions answered vs still open;
+    - a note that nothing was approved — research docs have no approval;
+    - next step: run the interviews from the user-research plan, drop the
+      transcripts or notes in `notes/` (or paste them), then
+      `/specmanager-research <slug> findings`.
+14. **Failure stop.** Stop immediately on a locked step, a subagent error
+    after retries, a job that returned without its doc, or any tool
+    `ok: false`. Report: the last drafted step, the failed step, the reason
+    verbatim, and the command to resume with
+    (`/specmanager-research <slug> <step>`). Drafted docs stay as they are. A
+    write error in steps 11–12 (other than a version conflict) stops the
+    remaining fixes; report what was and was not applied.
+
+## Don't
+
+- Don't approve anything — research docs have no approval, and this loop
+  makes no status change.
+- Don't draft a doc inline — every doc goes to a `researcher` job.
+- Don't dispatch the builder, or a `findings`, `strategy` or handoff step —
+  the loop ends at the report, before findings.
+- Don't invent numbers, scores or quotes — never invent a figure; one without
+  a source is `n/a (unsourced)`.
+- Don't ask the user anything between the opening questions and the review —
+  the drafting run never pauses.
