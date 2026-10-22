@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { ResearchDocFrontmatterSchema, StudySchema, } from "./types.js";
-import { projectRoot, researchDir, studyDir, studyNotesDir } from "./paths.js";
+import { projectRoot, researchDir, studyDir, studyDocsDir, studyNotesDir } from "./paths.js";
 import { nowIso, slugify } from "./ids.js";
 import { createFeature, ensureSpecsRoot, listFeatures, uniqueSlug } from "./features.js";
 import { indexHeadings } from "./spec-slice.js";
@@ -57,41 +57,47 @@ export async function readStudy(slug, root = projectRoot()) {
     return StudySchema.parse(JSON.parse(raw));
 }
 const KIND_ID_PREFIX = {
+    brief: "brief",
     market: "market",
-    concepts: "concepts",
     "user-research": "ur",
     marketing: "mktg",
     strategy: "strategy",
 };
 const KIND_FILENAME = {
+    brief: "brief.md",
     market: "market-research.md",
-    concepts: "concepts.html",
     "user-research": "user-research.md",
     marketing: "marketing-plan.md",
     strategy: "strategy.md",
 };
-/** Deterministic research doc id: one doc per kind per study. */
+/** Pre-docs studies keep their wireframes in `concepts.html` (id `concepts-<slug>`), read as a `doc`. */
+const LEGACY_CONCEPTS_FILENAME = "concepts.html";
+/** Deterministic research doc id for a single kind: one doc per kind per study. */
 export function researchDocId(kind, slug) {
     return `${KIND_ID_PREFIX[kind]}-${slug}`;
+}
+/** Research doc id for a `doc`: `doc-<study-slug>-<doc-slug>`. */
+export function studyDocId(studySlug, docSlug) {
+    return `doc-${studySlug}-${docSlug}`;
 }
 function slugOfStudyId(id) {
     if (!id.startsWith("study-"))
         throw new Error(`not a study id: ${id}`);
     return id.slice("study-".length);
 }
-/** Concepts bodies are HTML: defang `---` lines and enforce the design-brief size cap. */
+/** Doc bodies are HTML: defang `---` lines and enforce the design-brief size cap. */
 function prepareBody(kind, body) {
-    if (kind !== "concepts")
+    if (kind !== "doc")
         return body;
     const bytes = Buffer.byteLength(body, "utf8");
     if (bytes > DESIGN_BRIEF_MAX_BYTES) {
-        throw new Error(`concepts body is ${bytes} bytes — cap is ${DESIGN_BRIEF_MAX_BYTES}. Refer to large images by repo-relative path instead of inlining them.`);
+        throw new Error(`doc body is ${bytes} bytes — cap is ${DESIGN_BRIEF_MAX_BYTES}. Refer to large images by repo-relative path instead of inlining them.`);
     }
     return sanitizeDesignBriefBody(body);
 }
-/** Reject `dependsOn` / `basedOn` ids that are not this study's research doc ids. */
-function assertSameStudy(slug, dependsOn, basedOn) {
-    const own = new Set(Object.keys(KIND_ID_PREFIX).map((k) => researchDocId(k, slug)));
+/** Reject `dependsOn` / `basedOn` ids that are not among the study's listed doc ids. */
+function assertSameStudy(slug, studyDocs, dependsOn, basedOn) {
+    const own = new Set(studyDocs.map((d) => d.frontmatter.id));
     const foreign = [...dependsOn, ...Object.keys(basedOn)].filter((id) => !own.has(id));
     if (foreign.length > 0) {
         throw new Error(`cross-study reference rejected: ${foreign.join(", ")} not in study-${slug}`);
@@ -102,12 +108,23 @@ function assertFindingsKind(kind, findings) {
         throw new Error(`findings is only valid on user-research docs (got kind "${kind}")`);
     }
 }
+/** Study doc files in listing order: single kinds, legacy `concepts.html`, then `docs/*.html` by doc slug. */
+async function studyDocFiles(slug, root) {
+    const dir = studyDir(slug, root);
+    const single = [...Object.values(KIND_FILENAME), LEGACY_CONCEPTS_FILENAME].map((n) => path.join(dir, n));
+    const docsDir = studyDocsDir(slug, root);
+    const htmls = (await fs.readdir(docsDir).catch(() => []))
+        .filter((f) => f.endsWith(".html"))
+        .map((f) => f.slice(0, -".html".length))
+        .sort()
+        .map((docSlug) => path.join(docsDir, `${docSlug}.html`));
+    return [...single, ...htmls];
+}
 /** All research docs of one study; a malformed doc is skipped with a stderr warning. */
 export async function listResearchDocs(studyId, root = projectRoot()) {
     const slug = slugOfStudyId(studyId);
     const docs = [];
-    for (const name of Object.values(KIND_FILENAME)) {
-        const file = path.join(studyDir(slug, root), name);
+    for (const file of await studyDocFiles(slug, root)) {
         try {
             docs.push(await readDoc(file, ResearchDocFrontmatterSchema));
         }
@@ -128,25 +145,49 @@ export async function readResearchDocById(id, root = projectRoot()) {
     }
     throw new Error(`research doc not found: ${id}`);
 }
-/** Create the study's single doc of `kind`; fails if one already exists. */
-export async function createResearchDoc(input, root = projectRoot()) {
-    const study = await readStudy(slugOfStudyId(input.studyId), root);
-    const dependsOn = input.dependsOn ?? [];
-    const basedOn = input.basedOn ?? {};
-    assertSameStudy(study.slug, dependsOn, basedOn);
-    assertFindingsKind(input.kind, input.findings);
-    const gate = await checkResearchStep(study.id, input.kind, root);
-    if (!gate.ok)
-        throw new Error(`gate closed for ${input.kind} on ${study.id}: ${gate.reason}`);
-    const filePath = path.join(studyDir(study.slug, root), KIND_FILENAME[input.kind]);
+/** Path and id for a new `doc`: requires `docType`; the id must be new project-wide. */
+async function newDocTarget(study, docType, root) {
+    if (!docType)
+        throw new Error("docType is required on doc");
+    const dir = studyDocsDir(study.slug, root);
+    const docSlug = await uniqueSlug(slugify(docType), dir, ".html");
+    const id = studyDocId(study.slug, docSlug);
+    const taken = await readResearchDocById(id, root).then(() => true, () => false);
+    if (taken)
+        throw new Error(`research doc id ${id} already exists in another study`);
+    await fs.mkdir(dir, { recursive: true });
+    return { filePath: path.join(dir, `${docSlug}.html`), id };
+}
+/** Path and id for a single-kind doc; fails if the study already has one. */
+async function newSingleTarget(study, kind, root) {
+    const filePath = path.join(studyDir(study.slug, root), KIND_FILENAME[kind]);
     const exists = await fs.stat(filePath).then(() => true, () => false);
     if (exists) {
-        throw new Error(`a ${input.kind} doc already exists for ${study.id} — use write_research_doc`);
+        throw new Error(`a ${kind} doc already exists for ${study.id} — use write_research_doc`);
     }
+    return { filePath, id: researchDocId(kind, study.slug) };
+}
+/** Create a research doc: a new `doc` under `docs/`, or the study's single doc of `kind`. */
+export async function createResearchDoc(input, root = projectRoot()) {
+    const state = await readStudyState(input.studyId, root);
+    const study = state.study;
+    const dependsOn = input.dependsOn ?? [];
+    const basedOn = input.basedOn ?? {};
+    assertSameStudy(study.slug, state.docs, dependsOn, basedOn);
+    assertFindingsKind(input.kind, input.findings);
+    if (input.docType !== undefined && input.kind !== "doc") {
+        throw new Error(`docType is only valid on doc (got kind "${input.kind}")`);
+    }
+    const gate = gateForKind(input.kind, state);
+    if (!gate.ok)
+        throw new Error(`gate closed for ${input.kind} on ${study.id}: ${gate.reason}`);
+    const { filePath, id } = input.kind === "doc"
+        ? await newDocTarget(study, input.docType, root)
+        : await newSingleTarget(study, input.kind, root);
     const body = prepareBody(input.kind, input.body ?? "");
     const now = nowIso();
     const frontmatter = ResearchDocFrontmatterSchema.parse({
-        id: researchDocId(input.kind, study.slug),
+        id,
         studyId: study.id,
         kind: input.kind,
         title: input.title,
@@ -155,6 +196,7 @@ export async function createResearchDoc(input, root = projectRoot()) {
         generatedBy: input.generatedBy ?? "human",
         version: 1,
         ...(input.findings !== undefined ? { findings: input.findings } : {}),
+        ...(input.kind === "doc" ? { docType: input.docType } : {}),
         createdAt: now,
         updatedAt: now,
     });
@@ -171,7 +213,8 @@ export async function writeResearchDoc(input, root = projectRoot()) {
     }
     const dependsOn = input.dependsOn ?? fm.dependsOn;
     const basedOn = input.basedOn ?? fm.basedOn;
-    assertSameStudy(slugOfStudyId(fm.studyId), dependsOn, basedOn);
+    const studyDocs = await listResearchDocs(fm.studyId, root);
+    assertSameStudy(slugOfStudyId(fm.studyId), studyDocs, dependsOn, basedOn);
     assertFindingsKind(fm.kind, input.findings);
     const updated = ResearchDocFrontmatterSchema.parse({
         ...fm,
@@ -193,10 +236,10 @@ export async function writeResearchDoc(input, root = projectRoot()) {
     });
     return { frontmatter: updated, body, filePath: current.filePath };
 }
-/** Step order shared by the step rail and `nextResearchStep`. */
+/** Step order shared by the step rail and `nextResearchStep`; the brief is not a step. */
 export const RESEARCH_STEPS = [
     "market",
-    "concepts",
+    "docs",
     "user-research",
     "marketing",
     "findings",
@@ -274,7 +317,7 @@ function gateFor(step, state) {
     switch (step) {
         case "market":
             return { ok: true };
-        case "concepts":
+        case "docs":
         case "user-research":
         case "marketing":
             return doc("market") ? { ok: true } : { ok: false, reason: "needs market research first" };
@@ -292,9 +335,22 @@ function gateFor(step, state) {
             return state.buildList.length > 0 ? { ok: true } : { ok: false, reason: "no build items" };
     }
 }
+/** Gate for creating a doc of `kind` (or the handoff); the brief is always open. */
+function gateForKind(kind, state) {
+    if (kind === "brief")
+        return { ok: true };
+    return gateFor(kind === "doc" ? "docs" : kind, state);
+}
 /** Core ordering gate called by `createResearchDoc` and the handoff. */
 export async function checkResearchStep(studyId, step, root = projectRoot()) {
-    return gateFor(step, await readStudyState(studyId, root));
+    return gateForKind(step, await readStudyState(studyId, root));
+}
+/** The docs a doc-producing step writes (`docs` → every `doc`); empty for findings and handoff. */
+function stepDocs(step, state) {
+    if (step === "findings" || step === "handoff")
+        return [];
+    const kind = step === "docs" ? "doc" : step;
+    return state.docs.filter((d) => d.frontmatter.kind === kind);
 }
 /** Whether a step's work exists (flags aside). */
 function isDone(step, state) {
@@ -304,7 +360,18 @@ function isDone(step, state) {
         const ur = state.docs.find((d) => d.frontmatter.kind === "user-research");
         return (ur?.frontmatter.findings?.length ?? 0) > 0 && state.newNotes.length === 0;
     }
-    return state.docs.some((d) => d.frontmatter.kind === step);
+    return stepDocs(step, state).length > 0;
+}
+/** Flag reason for a done step whose docs are behind their upstreams, or null. */
+function flagReason(step, state) {
+    const behind = stepDocs(step, state)
+        .map((d) => ({ id: d.frontmatter.id, ups: outdatedUpstreams(d, state.docs) }))
+        .filter((b) => b.ups.length > 0);
+    if (behind.length === 0)
+        return null;
+    if (step !== "docs")
+        return `behind ${behind[0].ups.join(", ")}`;
+    return behind.map((b) => `${b.id} behind ${b.ups.join(", ")}`).join("; ");
 }
 /**
  * Per-step rail state. The first unfinished step is `next` (or `locked` when its gate is
@@ -314,11 +381,8 @@ export function researchSteps(state) {
     let nextTaken = false;
     return RESEARCH_STEPS.map((step) => {
         if (isDone(step, state)) {
-            const doc = state.docs.find((d) => d.frontmatter.kind === step);
-            const outdated = doc ? outdatedUpstreams(doc, state.docs) : [];
-            return outdated.length > 0
-                ? { step, state: "flag", reason: `behind ${outdated.join(", ")}` }
-                : { step, state: "done" };
+            const reason = flagReason(step, state);
+            return reason ? { step, state: "flag", reason } : { step, state: "done" };
         }
         const gate = gateFor(step, state);
         const first = !nextTaken;
@@ -378,6 +442,7 @@ export async function studySummary(studyId, root = projectRoot()) {
         docs: state.docs.map((d) => ({
             id: d.frontmatter.id,
             kind: d.frontmatter.kind,
+            ...(d.frontmatter.docType !== undefined ? { docType: d.frontmatter.docType } : {}),
             title: d.frontmatter.title,
             version: d.frontmatter.version,
             filePath: d.filePath,

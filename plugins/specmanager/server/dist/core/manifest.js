@@ -74,6 +74,7 @@ async function buildStudyEntries(root) {
             documents: docs.map(({ frontmatter: d }) => ({
                 id: d.id,
                 kind: d.kind,
+                ...(d.docType !== undefined ? { docType: d.docType } : {}),
                 title: d.title,
                 version: d.version,
             })),

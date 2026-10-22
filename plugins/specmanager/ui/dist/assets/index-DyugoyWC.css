@@ -1548,7 +1548,7 @@ html, body, #root {
  * Same grid as Builder; Handoff takes Build's reserved right-hand track
  * (.row__cell--build), so the breakpoints below wrap it at tablet. */
 .grid--research {
-  --grid-cols: 15rem repeat(5, minmax(8.5rem, 1fr)) 16rem;
+  --grid-cols: 15rem minmax(8.5rem, 1fr) minmax(11.5rem, 1.35fr) repeat(3, minmax(8.5rem, 1fr)) 16rem;
 }
 .grid--research .row__label { min-width: 0; }
 /* Outdated research cards keep the stale error edge over .card--button's border. */
@@ -1769,15 +1769,6 @@ label.handoff-item { cursor: pointer; }
   background: var(--surface-container-highest);
   margin-bottom: 0.45rem;
 }
-.steps li:first-child { color: var(--primary); }
-.steps li:first-child i {
-  background: transparent;
-  box-shadow: inset 0 0 0 1.5px var(--primary);
-  height: 6px;
-  margin-top: -1px;
-  margin-bottom: 0.375rem;
-}
-.empty-research__lead { font-size: 0.78rem; color: var(--on-surface-variant); margin-bottom: 0.45rem; }
 .cmd {
   all: unset;
   cursor: pointer;
@@ -1830,6 +1821,192 @@ label.handoff-item { cursor: pointer; }
 }
 .empty-research__actions .mono { font-family: var(--font-mono); color: var(--primary); }
 .empty-research__error { font-size: 0.78rem; color: var(--error); }
+/* Research loop and docs (design-research-loop-and-docs-010) ---------
+ * Docs column: violet header, a stack of compact Doc cards. */
+.grid__header--docs { color: var(--secondary); }
+/* The stack opts out of the 5.5rem cap; empty states stay capped cards. */
+.row__cell--docs { min-width: 0; }
+.doc-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+.doc-stack > .card--button.doc-card {
+  position: relative;
+  box-sizing: border-box;
+  height: auto;
+  min-width: 0;
+  gap: 0.22rem;
+  padding: 0.45rem 0.6rem 0.5rem 0.8rem;
+}
+.doc-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  bottom: 7px;
+  width: 2px;
+  border-radius: 0 2px 2px 0;
+  background: color-mix(in srgb, var(--secondary) 70%, transparent);
+}
+.doc-card.card--stale::before { background: var(--error); }
+.doc-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  min-width: 0;
+}
+.doc-card__head .badge { flex-shrink: 0; }
+.doc-card__type {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.doc-card__type--custom { text-transform: none; letter-spacing: 0.02em; }
+.doc-card__type--custom i { font-style: normal; opacity: 0.6; margin-right: 0.3rem; }
+.doc-card .card__title { font-size: 0.8rem; -webkit-line-clamp: 1; }
+.doc-card .badge--outdated { align-self: flex-start; margin-top: 0.1rem; }
+.doc-add {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px dashed var(--outline-variant);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: var(--on-surface-variant);
+  white-space: nowrap;
+  transition: border-color 0.14s ease, color 0.14s ease;
+}
+.doc-add > span:first-child { opacity: 0.85; }
+.doc-add > span:last-child { opacity: 0.6; }
+.doc-add:hover { border-color: var(--card-border-hover); color: var(--on-surface); }
+.doc-add:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+/* Brief chip under the idea (matches .chip-origin). Filled page = brief
+ * exists; dashed hollow = no brief yet, never red. */
+.chip-brief {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  align-self: flex-start;
+  margin-top: 0.5rem;
+  padding: 0.22rem 0.6rem 0.22rem 0.5rem;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: var(--surface-container-low);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.02em;
+  color: var(--on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: border-color 0.14s ease, color 0.14s ease;
+}
+.chip-brief .page {
+  position: relative;
+  width: 0.5rem;
+  height: 0.62rem;
+  border-radius: 1px;
+  background: var(--primary);
+  flex-shrink: 0;
+}
+.chip-brief .page::after {
+  content: "";
+  position: absolute;
+  left: 1.5px;
+  right: 1.5px;
+  top: 2px;
+  height: 1px;
+  background: var(--surface);
+  box-shadow: 0 2px 0 var(--surface);
+}
+.chip-brief .meta { opacity: 0.55; }
+.chip-brief:hover { border-color: var(--card-border-hover); }
+.chip-brief:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.chip-brief--missing {
+  background: transparent;
+  border-style: dashed;
+  color: var(--on-surface-variant);
+}
+.chip-brief--missing:hover { color: var(--on-surface); }
+.chip-brief--missing .page { background: transparent; box-shadow: inset 0 0 0 1.5px var(--outline); }
+.chip-brief--missing .page::after { display: none; }
+/* Drawer: doc-type badge matches the Docs spine; HTML Docs are read-only;
+ * the footer hint sits on the right. */
+.badge--doctype {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--secondary) 45%, var(--outline-variant));
+  color: var(--secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.badge--doctype-custom { text-transform: none; letter-spacing: 0.02em; }
+.btn--readonly:disabled { cursor: default; }
+.panel__footer:has(.panel__hint) { display: flex; justify-content: space-between; gap: 1rem; }
+.panel__footer:has(.panel__hint) > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.panel__hint { opacity: 0.75; white-space: nowrap; flex-shrink: 0; }
+/* Empty state: the loop covers the first four rail steps. */
+.steps li.loop { color: var(--on-surface); }
+.steps li.loop i { background: color-mix(in srgb, var(--primary) 35%, var(--surface-container-highest)); }
+.steps-bracket {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin: -0.9rem 0 1.4rem;
+}
+.steps-bracket span {
+  grid-column: 1 / span 4;
+  position: relative;
+  padding-top: 10px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--primary);
+  white-space: nowrap;
+}
+.steps-bracket span::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 8px;
+  border: 1px solid color-mix(in srgb, var(--primary) 45%, transparent);
+  border-top: 0;
+  border-radius: 0 0 4px 4px;
+}
+.start-block { margin-top: 2.1rem; display: flex; flex-direction: column; gap: 0.45rem; }
+.start-block__lead { font-size: 0.78rem; color: var(--on-surface-variant); }
+.start-block__lead:not(:first-child) { margin-top: 0.7rem; }
+.start-block .cmd { align-self: flex-start; }
+.start-block__caption {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--on-surface-variant);
+  line-height: 1.6;
+}
+.start-block__caption b { color: var(--on-surface); font-weight: 500; }
+.cmd--loop {
+  border: 1px solid color-mix(in srgb, var(--primary) 45%, var(--outline-variant));
+  box-shadow: 0 0 0 3px var(--tb-active-bg);
+}
+.cmd--dim { color: var(--on-surface-variant); font-size: 0.76rem; }
 /* ===================================================================
  * Responsive — three Obsidian Flux breakpoints (Architecture §6).
  * CSS-only; no JS layout logic. The grid template is driven by the
@@ -1854,6 +2031,11 @@ label.handoff-item { cursor: pointer; }
     gap: 0.6rem;
   }
   .card--build .bar { flex: 1; min-width: 8rem; }
+  /* Docs keeps a wider track; labels drop the idea and next-step lines. */
+  .grid--research {
+    --grid-cols: 10rem minmax(7rem, 1fr) minmax(9rem, 1.3fr) repeat(3, minmax(7rem, 1fr));
+  }
+  .doc-add__more, .study__idea, .study__next { display: none; }
 }
 /* Mobile <640px: the grid linearizes — each feature stacks as a single column
  * of cards with a 16px margin; panels go full-width. */

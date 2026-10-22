@@ -44,13 +44,13 @@ export async function findFeatureById(id, root = projectRoot()) {
     const list = await listFeatures(root);
     return list.find((f) => f.id === id) ?? null;
 }
-/** First of `base`, `base-2`, `base-3`… with no entry under `parentDir`. */
-export async function uniqueSlug(base, parentDir) {
+/** First of `base`, `base-2`, `base-3`… with no entry `<slug><ext>` under `parentDir`. */
+export async function uniqueSlug(base, parentDir, ext = "") {
     let slug = base;
     let n = 2;
     while (true) {
         const exists = await fs
-            .stat(path.join(parentDir, slug))
+            .stat(path.join(parentDir, slug + ext))
             .then(() => true)
             .catch(() => false);
         if (!exists)

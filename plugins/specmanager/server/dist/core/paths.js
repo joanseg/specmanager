@@ -24,6 +24,9 @@ export function studyDir(slug, root = projectRoot()) {
 export function studyNotesDir(slug, root = projectRoot()) {
     return path.join(studyDir(slug, root), "notes");
 }
+export function studyDocsDir(slug, root = projectRoot()) {
+    return path.join(studyDir(slug, root), "docs");
+}
 export function reposDir(root = projectRoot()) {
     return path.join(root, "repos");
 }
