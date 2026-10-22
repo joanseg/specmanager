@@ -6,7 +6,8 @@
 // Covers: two independent studies, every gate's reason, duplicate kind, cross-study
 // rejection, findings-kind rule, version conflict, `outdated`, `newNotes`, `steps[]`,
 // build-list parsing, idempotent handoff by itemId (survives rename/re-rank) + origin,
-// Builder-only manifest unchanged, and the "Research studies" CLAUDE.md line.
+// Builder-only manifest unchanged, the "Research studies" CLAUDE.md line, and (in a
+// second temp root) the brief, multi-doc Docs, docType rules and project-wide doc ids.
 
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -23,7 +24,9 @@ import {
   listFeatures,
   listStudySummaries,
   parseBuildList,
+  readResearchDocById,
   renderBlock,
+  studyDocsDir,
   studyNotesDir,
   studySummary,
   writeResearchDoc,
@@ -304,7 +307,89 @@ async function main(): Promise<void> {
   );
   assert(m2.features.filter((f) => f.origin).length === 2, "manifest carries origin on handed-off features");
 
+  await briefAndDocs();
+
   console.log("\nAll researcher-mode assertions passed.");
+}
+
+/** Brief, docs gate, several Docs per study, docType rules, -2 doc slug, project-wide doc ids. */
+async function briefAndDocs(): Promise<void> {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "specmanager-research-docs-"));
+  console.log(`tmp root (docs): ${root}`);
+  await initProject(root);
+  const s = await createStudy({ title: "Probe", idea: "Docs per study" }, root);
+
+  // 16. The brief: always open, resolvable by id, not a rail step.
+  assert((await checkResearchStep(s.id, "brief", root)).ok, "the brief has no gate");
+  const brief = await createResearchDoc({ studyId: s.id, kind: "brief", title: "Brief", body: "## Idea\n" }, root);
+  assert(brief.frontmatter.id === "brief-probe", "brief id is brief-<slug>");
+  assert((await readResearchDocById("brief-probe", root)).frontmatter.kind === "brief", "brief-<slug> resolves by id");
+  let ss = await studySummary(s.id, root);
+  assert(!("brief" in rail(ss)) && ss.steps.length === 7, "the brief is absent from steps");
+  assert(ss.nextStep === "market", "a brief leaves market as the next step");
+
+  // 17. Docs gate, then docType rejections.
+  await rejects(
+    () => createResearchDoc({ studyId: s.id, kind: "doc", docType: "wireframes", title: "W" }, root),
+    "needs market research first",
+    "a doc before market fails the docs gate"
+  );
+  const fromBrief = { dependsOn: ["brief-probe"], basedOn: { "brief-probe": 1 } };
+  await createResearchDoc({ studyId: s.id, kind: "market", title: "Market", ...fromBrief }, root);
+  await rejects(
+    () => createResearchDoc({ studyId: s.id, kind: "doc", title: "No type" }, root),
+    "docType is required on doc",
+    "a doc without docType is rejected"
+  );
+  await rejects(
+    () => createResearchDoc({ studyId: s.id, kind: "market", docType: "wireframes", title: "M" }, root),
+    "docType is only valid on doc",
+    "docType on market is rejected"
+  );
+
+  // 18. Two presets, one custom, and the same type twice in one study.
+  const make = (docType: string) =>
+    createResearchDoc({ studyId: s.id, kind: "doc", docType, title: docType, body: "<p>x</p>", ...fromBrief }, root);
+  const wire = await make("wireframes");
+  const deck = await make("investor-deck");
+  const custom = await make("Pilot proposal for a school");
+  const wire2 = await make("wireframes");
+  const ids = [wire, deck, custom, wire2].map((d) => d.frontmatter.id);
+  assert(
+    JSON.stringify(ids) ===
+      JSON.stringify([
+        "doc-probe-wireframes",
+        "doc-probe-investor-deck",
+        "doc-probe-pilot-proposal-for-a-school",
+        "doc-probe-wireframes-2",
+      ]),
+    "each Doc gets a distinct doc-<study>-<doc> id; the second wireframes gets -2"
+  );
+  const docsDir = studyDocsDir(s.slug, root);
+  assert(
+    [wire, deck, custom, wire2].every((d) => path.dirname(d.filePath) === docsDir && d.filePath.endsWith(".html")),
+    "every Doc is its own .html file under docs/"
+  );
+  assert(custom.frontmatter.docType === "Pilot proposal for a school", "a custom docType is stored as typed");
+  ss = await studySummary(s.id, root);
+  const docCards = ss.docs.filter((d) => d.kind === "doc");
+  assert(
+    JSON.stringify(docCards.map((d) => d.docType)) ===
+      JSON.stringify(["investor-deck", "Pilot proposal for a school", "wireframes", "wireframes"]),
+    "summary lists every Doc with its docType, by doc slug"
+  );
+  assert(ss.docs[0]?.kind === "brief", "summary lists the brief as kind brief");
+
+  // 19. Doc ids are unique project-wide: study probe-x doc "y" vs study probe doc "x-y".
+  const other = await createStudy({ title: "Probe x", idea: "Collides" }, root);
+  await createResearchDoc({ studyId: other.id, kind: "market", title: "Market" }, root);
+  const y = await createResearchDoc({ studyId: other.id, kind: "doc", docType: "y", title: "Y" }, root);
+  assert(y.frontmatter.id === "doc-probe-x-y", "probe-x's doc y has id doc-probe-x-y");
+  await rejects(
+    () => createResearchDoc({ studyId: s.id, kind: "doc", docType: "x-y", title: "XY" }, root),
+    "already exists in another study",
+    "a doc id already used by another study is rejected"
+  );
 }
 
 main().catch((err) => {
