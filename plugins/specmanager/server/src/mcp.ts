@@ -666,7 +666,7 @@ server.registerTool(
     title: "List research studies",
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description:
-      "List research studies (or one, by studyId) with doc summaries (id, kind, version, outdated[]), newNotes[], nextStep, steps[] (per-step done/next/flag/open/locked + gate reason), buildList[], handedOff[] feature ids and handoffs[] ({ itemId, featureId, slug }).",
+      "List research studies (or one, by studyId) with doc summaries (id, kind, docType on doc, version, outdated[]; the brief is listed as kind brief), newNotes[], nextStep, steps[] (per-step done/next/flag/open/locked + gate reason), buildList[], handedOff[] feature ids and handoffs[] ({ itemId, featureId, slug }).",
     inputSchema: z.object({ studyId: z.string().optional() }),
   },
   async ({ studyId }) => {
@@ -702,10 +702,11 @@ server.registerTool(
     title: "Create a research doc",
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     description:
-      "Create the study's single doc of a kind (market, concepts, user-research, marketing, strategy). Enforces the research ordering gate; fails with \"use write_research_doc\" if the kind already exists. concepts bodies are HTML, sanitised and capped at 5MB.",
+      "Create a research doc. Single kinds (brief, market, user-research, marketing, strategy) are one per study and fail with \"use write_research_doc\" if the kind already exists. kind doc is many per study and requires docType (wireframes, client-presentation, partner-presentation, investor-deck, one-pager, or any custom string); its id is doc-<study-slug>-<doc-slug>. docType is rejected on other kinds. Enforces the research ordering gate (the brief is always open; doc needs market research). doc bodies are HTML, sanitised and capped at 5MB.",
     inputSchema: z.object({
       studyId: z.string(),
       kind: RESEARCH_KIND,
+      docType: z.string().min(1).optional(),
       title: z.string().min(1),
       body: z.string(),
       dependsOn: z.array(z.string()).optional(),

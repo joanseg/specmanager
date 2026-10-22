@@ -80,9 +80,19 @@ export const DocFrontmatterSchema = z.object({
 });
 export type DocFrontmatter = z.infer<typeof DocFrontmatterSchema>;
 
-// Researcher mode: one doc per kind per study, under .claude/specs/research/<slug>/.
-export const RESEARCH_KIND = z.enum(["market", "concepts", "user-research", "marketing", "strategy"]);
+// Researcher mode, under .claude/specs/research/<slug>/: one doc per single kind per study;
+// `doc` is the multi-per-study HTML kind and carries a `docType`.
+export const RESEARCH_KIND = z.enum(["brief", "market", "doc", "user-research", "marketing", "strategy"]);
 export type ResearchKind = z.infer<typeof RESEARCH_KIND>;
+
+// Preset doc types; any other non-empty `docType` string is a custom type (its own label).
+export const DOC_TYPE_PRESETS = [
+  "wireframes",
+  "client-presentation",
+  "partner-presentation",
+  "investor-deck",
+  "one-pager",
+] as const;
 
 export const StudySchema = z.object({
   id: z.string(),
@@ -93,10 +103,18 @@ export const StudySchema = z.object({
 });
 export type Study = z.infer<typeof StudySchema>;
 
+/** Legacy `kind: concepts` frontmatter reads as a wireframes doc; id and versions are untouched. */
+function normalizeLegacyConcepts(raw: unknown): unknown {
+  if (typeof raw !== "object" || raw === null) return raw;
+  const fm = raw as Record<string, unknown>;
+  return fm.kind === "concepts" ? { ...fm, kind: "doc", docType: "wireframes" } : fm;
+}
+
 // No status or stale: research docs are never approved; "outdated" is computed.
 // `findings` lists ingested note filenames and is valid only on user-research.
+// `docType` is required on `doc` and rejected on every other kind.
 export const ResearchDocFrontmatterSchema = z
-  .object({
+  .preprocess(normalizeLegacyConcepts, z.object({
     id: z.string(),
     studyId: z.string(),
     kind: RESEARCH_KIND,
@@ -106,12 +124,17 @@ export const ResearchDocFrontmatterSchema = z
     generatedBy: GENERATED_BY.default("human"),
     version: z.number().int().nonnegative().default(1),
     findings: z.array(z.string()).optional(),
+    docType: z.string().min(1).optional(),
     createdAt: z.string(),
     updatedAt: z.string(),
-  })
+  }))
   .refine((fm) => fm.findings === undefined || fm.kind === "user-research", {
     message: "findings is only valid on user-research docs",
     path: ["findings"],
+  })
+  .refine((fm) => (fm.docType !== undefined) === (fm.kind === "doc"), {
+    message: "docType is required on doc and only valid on doc",
+    path: ["docType"],
   });
 export type ResearchDocFrontmatter = z.infer<typeof ResearchDocFrontmatterSchema>;
 

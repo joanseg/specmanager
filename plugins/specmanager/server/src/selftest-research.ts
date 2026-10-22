@@ -94,9 +94,9 @@ async function main(): Promise<void> {
   // 3. Empty-study gates and rail.
   let sa = await studySummary(a.id, root);
   assert(sa.nextStep === "market", "empty study's next step is market");
-  assert(rail(sa).market === "next" && rail(sa).concepts === "locked", "rail: market next, concepts locked");
+  assert(rail(sa).market === "next" && rail(sa).docs === "locked", "rail: market next, docs locked");
   assert(reasonOf(sa, "findings") === "needs the user-research plan first", "findings locked reason");
-  for (const kind of ["concepts", "user-research", "marketing"] as const) {
+  for (const kind of ["doc", "user-research", "marketing"] as const) {
     const gate = await checkResearchStep(a.id, kind, root);
     assert(!gate.ok && gate.reason === "needs market research first", `${kind} gate needs market`);
   }
@@ -105,9 +105,9 @@ async function main(): Promise<void> {
   const handGate = await checkResearchStep(a.id, "handoff", root);
   assert(!handGate.ok && handGate.reason === "needs strategy first", "handoff gate needs strategy");
   await rejects(
-    () => createResearchDoc({ studyId: a.id, kind: "concepts", title: "Concepts" }, root),
+    () => createResearchDoc({ studyId: a.id, kind: "doc", docType: "wireframes", title: "Concepts" }, root),
     "needs market research first",
-    "createResearchDoc enforces the concepts gate"
+    "createResearchDoc enforces the docs gate"
   );
 
   // 4. Market in A only; B stays untouched.
@@ -115,7 +115,7 @@ async function main(): Promise<void> {
   let sb = await studySummary(b.id, root);
   assert(sb.docs.length === 0 && sb.nextStep === "market", "study B is independent of study A");
   sa = await studySummary(a.id, root);
-  assert(sa.nextStep === "concepts" && rail(sa).market === "done", "A's next step moves to concepts");
+  assert(sa.nextStep === "docs" && rail(sa).market === "done", "A's next step moves to docs");
 
   // 5. Manifest studies[] + CLAUDE.md line; Builder entries byte-identical.
   const m1 = await buildManifest(root);
@@ -142,7 +142,7 @@ async function main(): Promise<void> {
   await rejects(
     () =>
       createResearchDoc(
-        { studyId: a.id, kind: "concepts", title: "C", dependsOn: ["market-oposiciones-2"] },
+        { studyId: a.id, kind: "doc", docType: "wireframes", title: "C", dependsOn: ["market-oposiciones-2"] },
         root
       ),
     "cross-study reference rejected",
@@ -160,7 +160,7 @@ async function main(): Promise<void> {
 
   // 7. Concepts, user-research plan, marketing.
   const dep = { dependsOn: ["market-oposiciones"], basedOn: { "market-oposiciones": 1 } };
-  await createResearchDoc({ studyId: a.id, kind: "concepts", title: "Concepts", body: "<p>A</p>", ...dep }, root);
+  await createResearchDoc({ studyId: a.id, kind: "doc", docType: "wireframes", title: "Concepts", body: "<p>A</p>", ...dep }, root);
   await createResearchDoc({ studyId: a.id, kind: "user-research", title: "UR", ...dep }, root);
   await createResearchDoc({ studyId: a.id, kind: "marketing", title: "Marketing", ...dep }, root);
   sa = await studySummary(a.id, root);
@@ -198,12 +198,12 @@ async function main(): Promise<void> {
   // 10. outdated: market moves ahead of concepts' basedOn.
   await writeResearchDoc({ id: "market-oposiciones", body: "## Size\nrevised\n" }, root);
   sa = await studySummary(a.id, root);
-  const concepts = sa.docs.find((d) => d.kind === "concepts");
+  const concepts = sa.docs.find((d) => d.kind === "doc");
   assert(
     JSON.stringify(concepts?.outdated) === JSON.stringify(["market-oposiciones"]),
     "concepts is outdated behind market"
   );
-  assert(rail(sa).concepts === "flag", "rail flags the outdated concepts step");
+  assert(rail(sa).docs === "flag", "rail flags the outdated docs step");
 
   // 11. parseBuildList.
   const parsed = parseBuildList(

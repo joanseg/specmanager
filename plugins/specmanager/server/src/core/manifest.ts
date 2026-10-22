@@ -17,7 +17,7 @@ export interface StudyManifestEntry {
   id: string;
   slug: string;
   title: string;
-  documents: Array<{ id: string; kind: string; title: string; version: number }>;
+  documents: Array<{ id: string; kind: string; docType?: string; title: string; version: number }>;
 }
 
 export interface Manifest {
@@ -113,6 +113,7 @@ async function buildStudyEntries(root: string): Promise<StudyManifestEntry[]> {
       documents: docs.map(({ frontmatter: d }) => ({
         id: d.id,
         kind: d.kind,
+        ...(d.docType !== undefined ? { docType: d.docType } : {}),
         title: d.title,
         version: d.version,
       })),

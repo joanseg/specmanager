@@ -48,13 +48,13 @@ export async function findFeatureById(id: string, root = projectRoot()): Promise
   return list.find((f) => f.id === id) ?? null;
 }
 
-/** First of `base`, `base-2`, `base-3`… with no entry under `parentDir`. */
-export async function uniqueSlug(base: string, parentDir: string): Promise<string> {
+/** First of `base`, `base-2`, `base-3`… with no entry `<slug><ext>` under `parentDir`. */
+export async function uniqueSlug(base: string, parentDir: string, ext = ""): Promise<string> {
   let slug = base;
   let n = 2;
   while (true) {
     const exists = await fs
-      .stat(path.join(parentDir, slug))
+      .stat(path.join(parentDir, slug + ext))
       .then(() => true)
       .catch(() => false);
     if (!exists) return slug;
