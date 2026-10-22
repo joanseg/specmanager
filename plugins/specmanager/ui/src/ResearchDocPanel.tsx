@@ -2,13 +2,26 @@ import { useEffect, useMemo, useState } from "react";
 import MarkdownEditor from "./MarkdownEditor";
 import { fetchResearchDoc, fetchStudies, putResearchDoc } from "./api";
 import { HtmlPreview, PanelMessage, SaveBanners, SaveState, useEscClose } from "./panelParts";
-import { kindLabel, kindStep, stepCommand } from "./ResearchBoard";
+import { docTypeLabel, isPresetDocType, kindLabel, kindStep, stepCommand } from "./ResearchBoard";
 import { ResearchDocFull, StudySummary } from "./types";
 
 interface ResearchDocPanelProps {
   docId: string;
   onClose: () => void;
   onJumpTo: (docId: string) => void;
+}
+
+/** Crumb, meta and lowercase badge text for a doc; Docs use their doc type (design Screen 2). */
+function docLabels(doc: ResearchDocFull): { crumb: string; meta: string; docType: string | null } {
+  if (doc.kind !== "doc") {
+    const label = kindLabel(doc.kind);
+    return { crumb: label, meta: label, docType: null };
+  }
+  const label = docTypeLabel(doc.docType);
+  if (isPresetDocType(doc.docType)) {
+    return { crumb: label, meta: label, docType: doc.docType ?? "wireframes" };
+  }
+  return { crumb: label.charAt(0).toUpperCase() + label.slice(1), meta: "Custom", docType: label };
 }
 
 function plural(n: number, one: string, many: string): string {
@@ -111,7 +124,7 @@ export default function ResearchDocPanel({ docId, onClose, onJumpTo }: ResearchD
   useEscClose(onClose);
 
   const dirty = useMemo(() => doc !== null && body !== doc.body, [doc, body]);
-  const isConcepts = doc?.kind === "doc";
+  const isHtml = doc?.kind === "doc";
 
   const reload = async (): Promise<void> => {
     const d = await fetchResearchDoc(docId);
@@ -121,7 +134,7 @@ export default function ResearchDocPanel({ docId, onClose, onJumpTo }: ResearchD
   };
 
   const onSave = async (): Promise<void> => {
-    if (!doc || isConcepts) return;
+    if (!doc || isHtml) return;
     setSave({ kind: "saving" });
     const res = await putResearchDoc(doc.id, body, doc.version);
     if (res.ok) {
@@ -138,7 +151,7 @@ export default function ResearchDocPanel({ docId, onClose, onJumpTo }: ResearchD
 
   if (error || !doc) return <PanelMessage error={error} onClose={onClose} />;
 
-  const label = kindLabel(doc.kind);
+  const labels = docLabels(doc);
   const outdated = study?.docs.find((d) => d.id === doc.id)?.outdated ?? [];
   const newNotes = doc.kind === "user-research" ? study?.newNotes ?? [] : [];
 
@@ -148,16 +161,18 @@ export default function ResearchDocPanel({ docId, onClose, onJumpTo }: ResearchD
         <header className="panel__header">
           <div className="panel__header-main">
             <nav className="panel__crumb">
-              {study?.title ?? doc.studyId} <span className="panel__crumb-sep">›</span> {label}
+              {study?.title ?? doc.studyId} <span className="panel__crumb-sep">›</span> {labels.crumb}
             </nav>
             <div className="panel__title-row">
               <h2 className="panel__title">{doc.title}</h2>
               <span className="panel__meta">
-                {label} · <span className="panel__version">v{doc.version}</span>
+                {labels.meta} · <span className="panel__version">v{doc.version}</span>
               </span>
             </div>
             <div className="panel__badges">
               <span className="badge badge--interview">research</span>
+              {labels.docType && <span className="badge badge--doctype">{labels.docType}</span>}
+              {isHtml && <span className="badge badge--kind">html</span>}
               {outdated.length > 0 && <span className="badge badge--outdated">⚠ outdated</span>}
               {newNotes.length > 0 && (
                 <span className="badge badge--notes">● {plural(newNotes.length, "new note", "new notes")}</span>
@@ -177,9 +192,13 @@ export default function ResearchDocPanel({ docId, onClose, onJumpTo }: ResearchD
             </div>
           </div>
           <div className="panel__header-actions">
-            <button className="btn" disabled={!dirty || save.kind === "saving" || isConcepts} onClick={onSave}>
-              {save.kind === "saving" ? "Saving…" : dirty ? "Save" : "Saved"}
-            </button>
+            {isHtml ? (
+              <button className="btn btn--readonly" disabled>Read-only</button>
+            ) : (
+              <button className="btn" disabled={!dirty || save.kind === "saving"} onClick={onSave}>
+                {save.kind === "saving" ? "Saving…" : dirty ? "Save" : "Saved"}
+              </button>
+            )}
             <button className="panel__close" onClick={onClose}>×</button>
           </div>
         </header>
@@ -195,8 +214,8 @@ export default function ResearchDocPanel({ docId, onClose, onJumpTo }: ResearchD
         />
 
         <div className="panel__body panel__body--cols-1">
-          {isConcepts ? (
-            <HtmlPreview title="concepts preview" body={body} />
+          {isHtml ? (
+            <HtmlPreview title={`${labels.crumb} preview`} body={body} />
           ) : (
             <div className="panel__editor">
               <MarkdownEditor key={doc.id} value={body} readOnly={false} markMissing onChange={setBody} />
@@ -206,6 +225,10 @@ export default function ResearchDocPanel({ docId, onClose, onJumpTo }: ResearchD
 
         <footer className="panel__footer">
           <span>{doc.filePath}</span>
+          {isHtml && <span className="panel__hint">sandboxed · scripts off</span>}
+          {doc.kind === "brief" && (
+            <span className="panel__hint">saving marks docs that read the brief as outdated</span>
+          )}
         </footer>
       </aside>
     </div>
