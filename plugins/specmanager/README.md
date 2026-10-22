@@ -45,6 +45,12 @@ Init also helps you set up:
 | `/specmanager:specmanager-build` | Builds one phase, then stops for your review. |
 | `/specmanager:specmanager-walkthrough` | Writes up what a finished phase built. |
 | `/specmanager:specmanager-board` | Opens the board in your browser. |
+| `/specmanager:specmanager-research` | Runs one step of a research study (brief, market, Docs, research plan, marketing plan, findings, strategy, handoff), starting the study if needed. |
+| `/specmanager:specmanager-research-loop` | Asks all its questions up front, then drafts the brief, market research, Docs, research plan and marketing plan in one go. Approves nothing and stops before findings. |
+
+## Researcher mode
+
+The board's **Researcher** toggle shows research studies: work done before a feature exists. A study starts from an idea and a short business brief, then gathers market research, Docs (wireframes and other HTML documents), a user-research plan and a marketing plan; `/specmanager:specmanager-research-loop` drafts all of these in one go. After you run interviews, paste your notes: they are masked (participant codes, `[redacted]`) before Claude reads them for the findings. A strategy follows, and its build list hands off to Builder as new features. Studies are files under `.claude/specs/research/` in your repository; research runs in your own Claude session, and the plugin makes no model or API calls.
 
 ## Examples
 
@@ -62,7 +68,7 @@ Init also helps you set up:
 - **Edits code and commits during a build.** The build command has Claude change your code and make local git commits, under your normal permissions. It does not push.
 - **Opens your browser.** The board command launches your default browser at the board's address through the system opener (`open`, `xdg-open` or `cmd /c start`).
 - **Keeps small state files.** A pidfile with the board's process id, in the plugin's data directory (or the system temporary directory if there is none). Under the git-ignored `.claude/specs/.cache/`: `active-build.json`, naming the build in flight, and `stop-gate/`, the hook's retry counter.
-- **Sends no data anywhere.** The plugin makes no model or API calls of its own and has no telemetry or analytics. Its only network use is the npm registry at install and the board on the loopback address; the board loads nothing from the internet. Drafting and building run in your own Claude session, where the architecture agent may use the session's web tools to look up public library documentation. Plugins you pick during init are installed by Claude in your session with the `claude` CLI, not by the plugin's server.
+- **Sends no data anywhere.** The plugin makes no model or API calls of its own and has no telemetry or analytics. Its only network use is the npm registry at install and the board on the loopback address; the board loads nothing from the internet. Drafting and building run in your own Claude session, where the architecture agent may use the session's web tools to look up public library documentation and the research agent to research the market. Plugins you pick during init are installed by Claude in your session with the `claude` CLI, not by the plugin's server.
 
 ## Troubleshooting
 
