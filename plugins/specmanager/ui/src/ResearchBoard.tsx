@@ -22,7 +22,27 @@ const COLUMNS: { kind: ResearchKind; label: string }[] = [
 
 /** Display label of a research doc kind (column header, drawer crumb). */
 export function kindLabel(kind: ResearchKind): string {
+  if (kind === "brief") return "Brief";
   return COLUMNS.find((c) => c.kind === kind)?.label ?? kind;
+}
+
+const DOC_TYPE_LABELS: Record<string, string> = {
+  wireframes: "Wireframes",
+  "client-presentation": "Client presentation",
+  "partner-presentation": "Partner presentation",
+  "investor-deck": "Investor deck",
+  "one-pager": "One-pager",
+};
+
+/** True when a Doc's type is one of the presets (else it is a custom string). */
+export function isPresetDocType(docType: string | undefined): boolean {
+  return docType === undefined || docType in DOC_TYPE_LABELS;
+}
+
+/** Label of a Doc's type: the preset label, else the custom string verbatim (legacy docs read as wireframes). */
+export function docTypeLabel(docType: string | undefined): string {
+  if (docType === undefined) return "Wireframes";
+  return DOC_TYPE_LABELS[docType] ?? docType;
 }
 
 /** Step name as `/specmanager-research` takes it (`plan` is the user-research plan). */
@@ -119,13 +139,64 @@ function DocCell({
     >
       <span className="card__title">{doc.title}</span>
       <span className="card__badges">
-        {doc.kind === "doc" && <span className="badge badge--kind">html</span>}
         {notes > 0 && <span className="badge badge--notes">● {plural(notes, "new note", "new notes")}</span>}
         {noFindings && <span className="badge">0 findings</span>}
         {outdated && <span className="badge badge--outdated">⚠ outdated</span>}
         <span className="badge badge--meta">v{doc.version}</span>
       </span>
     </button>
+  );
+}
+
+function DocTypeHead({ doc }: { doc: StudyDocCard }) {
+  const label = docTypeLabel(doc.docType);
+  const custom = !isPresetDocType(doc.docType);
+  return (
+    <span className="doc-card__head">
+      <span className={`doc-card__type${custom ? " doc-card__type--custom" : ""}`} title={label}>
+        {custom && <i>custom</i>}
+        {label}
+      </span>
+      <span className="badge badge--meta">v{doc.version}</span>
+    </span>
+  );
+}
+
+/** One compact Doc card in the Docs stack: type head + vN, one-line title, per-card outdated. */
+function DocCard({ doc, onOpen }: { doc: StudyDocCard; onOpen?: (docId: string) => void }) {
+  const outdated = doc.outdated.length > 0;
+  return (
+    <button
+      type="button"
+      className={`card card--button doc-card${outdated ? " card--stale" : ""}`}
+      onClick={() => onOpen?.(doc.id)}
+      title={outdated ? `${doc.id} · behind ${doc.outdated.join(", ")}` : doc.id}
+    >
+      <DocTypeHead doc={doc} />
+      <span className="card__title">{doc.title}</span>
+      {outdated && <span className="badge badge--outdated">⚠ outdated</span>}
+    </button>
+  );
+}
+
+/** Docs cell: every Doc stacked in listing order, plus a dim add row while the step is open. */
+function DocsCell({ study, onOpen }: { study: StudySummary; onOpen?: (docId: string) => void }) {
+  const docs = study.docs.filter((d) => d.kind === "doc");
+  if (docs.length === 0) return <EmptyCell study={study} kind="doc" label="Docs" />;
+  const cmd = stepCommand(study.slug, "docs");
+  const open = stepOf(study, "docs")?.state !== "locked";
+  return (
+    <div className="doc-stack">
+      {docs.map((d) => (
+        <DocCard key={d.id} doc={d} onOpen={onOpen} />
+      ))}
+      {open && (
+        <button type="button" className="doc-add" onClick={copy(cmd)} title={`copy ${cmd}`}>
+          <span>+ add a doc</span>
+          <span>… docs</span>
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -336,13 +407,20 @@ export default function ResearchBoard({
     <section className="grid grid--research">
       <div className="grid__corner">Study</div>
       {COLUMNS.map((c) => (
-        <div key={c.kind} className="grid__header">{c.label}</div>
+        <div key={c.kind} className={`grid__header${c.kind === "doc" ? " grid__header--docs" : ""}`}>{c.label}</div>
       ))}
       <div className="grid__header grid__header--build">Handoff</div>
       {studies.map((study) => (
         <div key={study.id} className="row" style={{ display: "contents" }}>
           <StudyLabel study={study} />
           {COLUMNS.map((c) => {
+            if (c.kind === "doc") {
+              return (
+                <div key={c.kind} className="row__cell row__cell--docs">
+                  <DocsCell study={study} onOpen={onOpenDoc} />
+                </div>
+              );
+            }
             const doc = study.docs.find((d) => d.kind === c.kind);
             return (
               <div key={c.kind} className="row__cell">
