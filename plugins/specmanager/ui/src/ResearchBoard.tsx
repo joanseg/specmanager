@@ -45,12 +45,17 @@ export function docTypeLabel(docType: string | undefined): string {
   return DOC_TYPE_LABELS[docType] ?? docType;
 }
 
-/** Step name as `/specmanager-research` takes it (`plan` is the user-research plan). */
-function stepArg(step: ResearchStep | "brief"): string {
-  return step === "user-research" ? "plan" : step;
+const STEP_ARGS: Partial<Record<ResearchStep | ResearchKind, string>> = {
+  doc: "docs",
+  "user-research": "plan",
+};
+
+/** Step name as `/specmanager-research` takes it, from a step or a doc kind (`doc` → `docs`, `user-research` → `plan`). */
+function stepArg(step: ResearchStep | ResearchKind): string {
+  return STEP_ARGS[step] ?? step;
 }
 
-export function stepCommand(slug: string, step: ResearchStep | "brief"): string {
+export function stepCommand(slug: string, step: ResearchStep | ResearchKind): string {
   return `/specmanager-research ${slug} ${stepArg(step)}`;
 }
 
@@ -82,13 +87,34 @@ function railSummary(study: StudySummary): string {
   return `${done} / ${study.steps.length}`;
 }
 
-function StudyLabel({ study }: { study: StudySummary }) {
+/** Brief chip under the idea: opens the brief, or copies the brief command (dashed, never red). */
+function BriefChip({ study, onOpen }: { study: StudySummary; onOpen?: (docId: string) => void }) {
+  const brief = study.docs.find((d) => d.kind === "brief");
+  if (brief) {
+    return (
+      <button type="button" className="chip-brief" onClick={() => onOpen?.(brief.id)} title={`open ${brief.id}`}>
+        <span className="page" />
+        Brief <span className="meta">v{brief.version}</span>
+      </button>
+    );
+  }
+  const cmd = stepCommand(study.slug, "brief");
+  return (
+    <button type="button" className="chip-brief chip-brief--missing" onClick={copy(cmd)} title={`copy ${cmd}`}>
+      <span className="page" />
+      no brief · <span className="meta">… brief</span>
+    </button>
+  );
+}
+
+function StudyLabel({ study, onOpen }: { study: StudySummary; onOpen?: (docId: string) => void }) {
   const next = study.nextStep;
   return (
     <div className="row__label">
       <strong>{study.title}</strong>
       <small>{study.slug}</small>
       <span className="study__idea" title={study.idea}>{study.idea}</span>
+      <BriefChip study={study} onOpen={onOpen} />
       <div className="study-rail" title={study.steps.map((s) => stepArg(s.step)).join(" · ")}>
         {study.steps.map((s) => (
           <i
@@ -412,7 +438,7 @@ export default function ResearchBoard({
       <div className="grid__header grid__header--build">Handoff</div>
       {studies.map((study) => (
         <div key={study.id} className="row" style={{ display: "contents" }}>
-          <StudyLabel study={study} />
+          <StudyLabel study={study} onOpen={onOpenDoc} />
           {COLUMNS.map((c) => {
             if (c.kind === "doc") {
               return (
