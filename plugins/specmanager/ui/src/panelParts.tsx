@@ -25,7 +25,7 @@ export const PREVIEW_STYLE = `<style>
   ::-webkit-scrollbar-thumb:hover { background: #908fa0; }
 </style>`;
 
-/** Read-only HTML preview (design brief, concepts canvas) in the sandboxed iframe. */
+/** Read-only HTML preview (design brief, research Docs) in the sandboxed iframe. */
 export function HtmlPreview({ title, body }: { title: string; body: string }) {
   return (
     <iframe

@@ -117,8 +117,15 @@ export interface Board {
 }
 
 // Mirror of core/research.ts `StudySummary` (GET /api/studies).
-export type ResearchKind = "market" | "concepts" | "user-research" | "marketing" | "strategy";
-export type ResearchStep = ResearchKind | "findings" | "handoff";
+export type ResearchKind = "brief" | "market" | "doc" | "user-research" | "marketing" | "strategy";
+export type ResearchStep =
+  | "market"
+  | "docs"
+  | "user-research"
+  | "marketing"
+  | "findings"
+  | "strategy"
+  | "handoff";
 export type StepState = "done" | "next" | "flag" | "open" | "locked";
 
 export interface StepStatus {
@@ -145,6 +152,7 @@ export interface Study {
 export interface StudyDocCard {
   id: string;
   kind: ResearchKind;
+  docType?: string;
   title: string;
   version: number;
   filePath: string;
@@ -173,6 +181,7 @@ export interface ResearchDocFull {
   id: string;
   studyId: string;
   kind: ResearchKind;
+  docType?: string;
   title: string;
   body: string;
   version: number;

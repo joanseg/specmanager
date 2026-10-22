@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import MarkdownEditor from "./MarkdownEditor";
 import { fetchResearchDoc, fetchStudies, putResearchDoc } from "./api";
 import { HtmlPreview, PanelMessage, SaveBanners, SaveState, useEscClose } from "./panelParts";
-import { kindLabel, stepCommand } from "./ResearchBoard";
+import { kindLabel, kindStep, stepCommand } from "./ResearchBoard";
 import { ResearchDocFull, StudySummary } from "./types";
 
 interface ResearchDocPanelProps {
@@ -61,7 +61,7 @@ function OutdatedBlock({
     <section className="panel__stale">
       <strong>This {isStrategy ? "strategy" : "doc"} is behind its sources.</strong>{" "}
       {isStrategy ? "Re-run synthesis" : "Re-run this step"} to fold in what changed:{" "}
-      <Cmd text={stepCommand(study.slug, doc.kind)} className="stale-cmd" />
+      <Cmd text={stepCommand(study.slug, kindStep(doc.kind))} className="stale-cmd" />
       <ul className="stale-list">
         {doc.dependsOn.map((depId) => {
           const based = doc.basedOn[depId];
@@ -111,7 +111,7 @@ export default function ResearchDocPanel({ docId, onClose, onJumpTo }: ResearchD
   useEscClose(onClose);
 
   const dirty = useMemo(() => doc !== null && body !== doc.body, [doc, body]);
-  const isConcepts = doc?.kind === "concepts";
+  const isConcepts = doc?.kind === "doc";
 
   const reload = async (): Promise<void> => {
     const d = await fetchResearchDoc(docId);

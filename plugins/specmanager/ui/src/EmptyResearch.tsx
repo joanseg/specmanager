@@ -1,7 +1,7 @@
 import { FormEvent, useState } from "react";
 import { createStudyApi } from "./api";
 
-const STEPS = ["market", "concepts", "plan", "marketing", "findings", "strategy", "handoff"];
+const STEPS = ["market", "docs", "plan", "marketing", "findings", "strategy", "handoff"];
 const CLI_CMD = '/specmanager-research "<idea>" new';
 
 /** Display-only mirror of the server's `slugify`; the server's `uniqueSlug` wins. */

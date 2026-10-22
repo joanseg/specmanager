@@ -14,7 +14,7 @@ import {
 
 const COLUMNS: { kind: ResearchKind; label: string }[] = [
   { kind: "market", label: "Market research" },
-  { kind: "concepts", label: "Concepts" },
+  { kind: "doc", label: "Docs" },
   { kind: "user-research", label: "User research" },
   { kind: "marketing", label: "Marketing plan" },
   { kind: "strategy", label: "Strategy" },
@@ -26,11 +26,11 @@ export function kindLabel(kind: ResearchKind): string {
 }
 
 /** Step name as `/specmanager-research` takes it (`plan` is the user-research plan). */
-function stepArg(step: ResearchStep): string {
+function stepArg(step: ResearchStep | "brief"): string {
   return step === "user-research" ? "plan" : step;
 }
 
-export function stepCommand(slug: string, step: ResearchStep): string {
+export function stepCommand(slug: string, step: ResearchStep | "brief"): string {
   return `/specmanager-research ${slug} ${stepArg(step)}`;
 }
 
@@ -41,7 +41,12 @@ function copy(text: string) {
   };
 }
 
-function stepOf(study: StudySummary, step: ResearchStep): StepStatus | undefined {
+/** Step a doc kind belongs to (`doc` files under `docs`; the brief is not a rail step). */
+export function kindStep(kind: ResearchKind): ResearchStep | "brief" {
+  return kind === "doc" ? "docs" : kind;
+}
+
+function stepOf(study: StudySummary, step: ResearchStep | "brief"): StepStatus | undefined {
   return study.steps.find((s) => s.step === step);
 }
 
@@ -114,7 +119,7 @@ function DocCell({
     >
       <span className="card__title">{doc.title}</span>
       <span className="card__badges">
-        {doc.kind === "concepts" && <span className="badge badge--kind">html</span>}
+        {doc.kind === "doc" && <span className="badge badge--kind">html</span>}
         {notes > 0 && <span className="badge badge--notes">● {plural(notes, "new note", "new notes")}</span>}
         {noFindings && <span className="badge">0 findings</span>}
         {outdated && <span className="badge badge--outdated">⚠ outdated</span>}
@@ -135,9 +140,10 @@ function LockedCell({ label, reason }: { label: string; reason?: string }) {
 
 /** A missing doc: `next` is the one call to action, `open` stays neutral, `locked` names its gate. */
 function EmptyCell({ study, kind, label }: { study: StudySummary; kind: ResearchKind; label: string }) {
-  const status = stepOf(study, kind);
+  const step = kindStep(kind);
+  const status = stepOf(study, step);
   if (status?.state === "locked") return <LockedCell label={label} reason={status.reason} />;
-  const cmd = stepCommand(study.slug, kind);
+  const cmd = stepCommand(study.slug, step);
   if (status?.state === "next") {
     return (
       <div className="card card--empty card--ready">
@@ -157,7 +163,7 @@ function EmptyCell({ study, kind, label }: { study: StudySummary; kind: Research
         onClick={copy(cmd)}
         title={`copy ${cmd}`}
       >
-        … {stepArg(kind)}
+        … {stepArg(step)}
       </button>
     </div>
   );
