@@ -187,7 +187,7 @@ export async function renderBlock(root = projectRoot()): Promise<string> {
   lines.push("");
   lines.push("**Commands:**");
   lines.push(
-    "`/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD) · `/specmanager-loop` (auto-approves, stops before Build)"
+    "`/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD) · `/specmanager-loop` (auto-approves, stops before Build) · `/specmanager-research` · `/specmanager-research-loop` (approves nothing, stops before findings)"
   );
   lines.push("");
   lines.push(`_Last synced: ${m.generatedAt}_`);
