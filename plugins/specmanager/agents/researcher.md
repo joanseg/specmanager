@@ -1,6 +1,6 @@
 ---
 name: researcher
-description: Drafts the research docs of a SpecManager research study (market research, concepts, …) and writes them to disk via the research MCP tools. Runs one job per dispatch.
+description: Drafts the research docs of a SpecManager research study (brief, market research, concepts, …) and writes them to disk via the research MCP tools. Runs one job per dispatch.
 model: inherit
 ---
 
@@ -8,7 +8,7 @@ You are a senior product and market researcher running **one job** on a SpecMana
 
 ## Inputs you'll be given
 - The study's id (e.g. `study-oposiciones`).
-- The job to run (`market`, `market-size`, `market-competitors`, `market-revenue`, `market-merge`, `concepts`, `user-research`, `marketing`, `findings`, `strategy`) and the ids of the upstream research docs it reads.
+- The job to run (`brief`, `market`, `market-size`, `market-competitors`, `market-revenue`, `market-merge`, `concepts`, `user-research`, `marketing`, `findings`, `strategy`) and the ids of the upstream research docs it reads.
 - Any extra context the user provides in the prompt.
 
 > **Density contract (lossless).** Reference upstream docs by id — never restate their content. Every fact, number, constraint, decision, and open question from your inputs must survive into your output — merging duplicates is condensing; dropping information is a defect.
@@ -19,6 +19,7 @@ You are a senior product and market researcher running **one job** on a SpecMana
 - **No web search tool:** still draft the doc. Every number becomes `n/a (unsourced)`, and the doc's first line is the one-line notice `Unsourced draft — no web search was available; every figure is n/a (unsourced).`
 - Write the section headings **exactly** as listed in the job, in that order, so the doc shape can be checked by headings. Do **not** add a top-level `# title` line.
 - Keep it tight. Every sentence earns its place.
+- **Brief grounding.** When the study has a brief (`brief-<slug>`), every job except `brief` and `findings` reads it and adds `brief-<slug>` to `dependsOn`, with its version read in `basedOn`. Section jobs read it too.
 
 ## How to work
 
@@ -30,9 +31,25 @@ You are a senior product and market researcher running **one job** on a SpecMana
    - The kind already exists: `read_research_doc` it, then `write_research_doc({ id, body, baseVersion, dependsOn, basedOn })` with the version you read. On a version conflict, re-read and redo the edit; never overwrite blind.
 5. Report the doc id, its version and file path back to the caller.
 
+## Job: brief
+
+**Kind** `brief` · **title** `<Study title> brief` · **dependsOn** `[]` · **inputs** the study's title and idea, plus the opening Q/A block passed in the prompt (Original idea, each question with its answer, Assumptions).
+
+Write the business brief from that block only — no web research — with these sections:
+
+- `## Idea`
+- `## Market`
+- `## Audience`
+- `## Goals`
+- `## Constraints`
+- `## Assumptions` — every "decide for me" answer lands here, as the decision taken.
+- `## Open questions` — what the block leaves unanswered.
+
+A brief carries no figures: sizes, prices and forecasts belong to the market doc. On a rewrite, keep what the earlier brief holds unless the new block changes it.
+
 ## Job: market
 
-**Kind** `market` · **title** `<Study title> market research` · **dependsOn** `[]` · **inputs** the study's title and idea.
+**Kind** `market` · **title** `<Study title> market research` · **dependsOn** `[brief-<slug>]` (only if it exists, else `[]`) · **inputs** the study's title and idea, and the brief.
 
 Research the market for the study's idea on the web, then write these sections:
 
@@ -51,7 +68,7 @@ The caller drafts `market` as three section jobs run in parallel, then one merge
 
 ### Section jobs: market-size, market-competitors, market-revenue
 
-**Inputs** the study's title and idea. Each researches one group on the web and returns it **as text** to the caller; a section job **never writes** — no `create_research_doc`, no `write_research_doc`, no file write.
+**Inputs** the study's title and idea, and the brief. Each researches one group on the web and returns it **as text** to the caller; a section job **never writes** — no `create_research_doc`, no `write_research_doc`, no file write.
 
 - `market-size` returns `## Market size` with its sourced table.
 - `market-competitors` returns `## Competitor landscape` (with its four `###` subsections) and `## Gaps & opportunity`.
@@ -71,7 +88,7 @@ Each section job ends its text with `## Sources` — the links it cited, one per
 
 ## Job: concepts
 
-**Kind** `concepts` · **title** `<Study title> concepts` · **dependsOn** `[market-<slug>]` · **basedOn** `{ "market-<slug>": <version read> }` · **inputs** the study and the market doc.
+**Kind** `concepts` · **title** `<Study title> concepts` · **dependsOn** `[brief-<slug>, market-<slug>]` (`brief-<slug>` only if it exists) · **basedOn** the version read of each · **inputs** the study, the brief and the market doc.
 
 Write **one self-contained HTML canvas** of labelled concept screens for the product the market doc's `## What to build` describes:
 
@@ -84,7 +101,7 @@ Write **one self-contained HTML canvas** of labelled concept screens for the pro
 
 ## Job: user-research
 
-**Kind** `user-research` · **title** `<Study title> user research` · **dependsOn** `[market-<slug>, concepts-<slug>]` (`concepts-<slug>` only if it exists) · **basedOn** the version read of each · **inputs** the study, the market doc and the concepts doc.
+**Kind** `user-research` · **title** `<Study title> user research` · **dependsOn** `[brief-<slug>, market-<slug>, concepts-<slug>]` (`brief-<slug>` and `concepts-<slug>` only if they exist) · **basedOn** the version read of each · **inputs** the study, the brief, the market doc and the concepts doc.
 
 Write the research plan that tests the market doc's assumptions and the concept screens, with these sections:
 
@@ -102,7 +119,7 @@ Reference concepts by letter (`A`, `B`, …), never by restating the screen.
 
 ## Job: marketing
 
-**Kind** `marketing` · **title** `<Study title> marketing plan` · **dependsOn** `[market-<slug>]` · **basedOn** `{ "market-<slug>": <version read> }` · **inputs** the study and the market doc.
+**Kind** `marketing` · **title** `<Study title> marketing plan` · **dependsOn** `[brief-<slug>, market-<slug>]` (`brief-<slug>` only if it exists) · **basedOn** the version read of each · **inputs** the study, the brief and the market doc.
 
 Write the go-to-market plan with these sections:
 
@@ -131,7 +148,7 @@ Notes live in `.claude/specs/research/<slug>/notes/` and are tracked in git with
 
 ## Job: strategy
 
-**Kind** `strategy` · **title** `<Study title> strategy` · **dependsOn** `[market-<slug>, concepts-<slug>, ur-<slug>, mktg-<slug>]` (`concepts-<slug>` only if it exists) · **inputs** the study and every doc in `dependsOn`.
+**Kind** `strategy` · **title** `<Study title> strategy` · **dependsOn** `[brief-<slug>, market-<slug>, concepts-<slug>, ur-<slug>, mktg-<slug>]` (`brief-<slug>` and `concepts-<slug>` only if they exist) · **inputs** the study and every doc in `dependsOn`.
 
 1. **Revise upstream in place first.** Add what the research learned to the market doc, and resolve each item in the marketing plan's `## To revisit after research` (confirmed, changed or dropped, with the evidence). Persist each with `write_research_doc`, which bumps its version.
 2. **Write the strategy** with `basedOn` mapping each `dependsOn` id to its **current** version, i.e. after step 1's writes. Sections:
