@@ -2,6 +2,8 @@ import { FormEvent, useState } from "react";
 import { createStudyApi } from "./api";
 
 const STEPS = ["market", "docs", "plan", "marketing", "findings", "strategy", "handoff"];
+const LOOP_STEPS = new Set(["market", "docs", "plan", "marketing"]);
+const LOOP_CMD = '/specmanager-research-loop "<idea>"';
 const CLI_CMD = '/specmanager-research "<idea>" new';
 
 /** Display-only mirror of the server's `slugify`; the server's `uniqueSlug` wins. */
@@ -58,12 +60,12 @@ function StartStudyForm() {
           value={idea}
           onInput={(e) => setIdea(e.currentTarget.value)}
         />
-        <div className="hint">one line · the researcher uses this as its brief</div>
+        <div className="hint">one line · the loop's opening questions turn this into the brief</div>
       </div>
       <div className="empty-research__actions">
         <button type="submit" className="btn btn--primary" disabled={!ready || busy}>Start study</button>
         <span>
-          then run <span className="mono">/specmanager-research {title.trim() ? slug : "<slug>"} market</span>
+          then run <span className="mono">/specmanager-research-loop {title.trim() ? slug : "<slug>"}</span>
         </span>
       </div>
       {error && <div className="empty-research__error" role="alert">{error}</div>}
@@ -84,13 +86,26 @@ export default function EmptyResearch() {
         </p>
         <ol className="steps">
           {STEPS.map((s) => (
-            <li key={s}><i />{s}</li>
+            <li key={s} className={LOOP_STEPS.has(s) ? "loop" : undefined}><i />{s}</li>
           ))}
         </ol>
-        <div className="empty-research__lead">Start from Claude Code:</div>
-        <button type="button" className="cmd" onClick={() => copy(CLI_CMD)} title="copy to clipboard">
-          {CLI_CMD}
-        </button>
+        <div className="steps-bracket">
+          <span>covered by /specmanager-research-loop · brief first</span>
+        </div>
+        <div className="start-block">
+          <div className="start-block__lead">Run everything before the interviews in one go:</div>
+          <button type="button" className="cmd cmd--loop" onClick={() => copy(LOOP_CMD)} title="copy to clipboard">
+            {LOOP_CMD}
+          </button>
+          <div className="start-block__caption">
+            <b>asks first</b> · brief → market → docs → plan → marketing · <b>one review</b> · <b>asks again</b> ·
+            approves nothing
+          </div>
+          <div className="start-block__lead">Or one step at a time:</div>
+          <button type="button" className="cmd cmd--dim" onClick={() => copy(CLI_CMD)} title="copy to clipboard">
+            {CLI_CMD}
+          </button>
+        </div>
       </div>
       <StartStudyForm />
     </section>
