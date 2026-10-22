@@ -218,7 +218,7 @@ function DocsCell({ study, onOpen }: { study: StudySummary; onOpen?: (docId: str
       ))}
       {open && (
         <button type="button" className="doc-add" onClick={copy(cmd)} title={`copy ${cmd}`}>
-          <span>+ add a doc</span>
+          <span>+ add<span className="doc-add__more"> a doc</span></span>
           <span>… docs</span>
         </button>
       )}

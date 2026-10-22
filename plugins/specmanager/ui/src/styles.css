@@ -1732,8 +1732,8 @@ label.handoff-item { cursor: pointer; }
   white-space: nowrap;
   transition: border-color 0.14s ease, color 0.14s ease;
 }
-.doc-add span:first-child { opacity: 0.85; }
-.doc-add span:last-child { opacity: 0.6; }
+.doc-add > span:first-child { opacity: 0.85; }
+.doc-add > span:last-child { opacity: 0.6; }
 .doc-add:hover { border-color: var(--card-border-hover); color: var(--on-surface); }
 .doc-add:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
 
@@ -1877,6 +1877,11 @@ label.handoff-item { cursor: pointer; }
     gap: 0.6rem;
   }
   .card--build .bar { flex: 1; min-width: 8rem; }
+  /* Docs keeps a wider track; labels drop the idea and next-step lines. */
+  .grid--research {
+    --grid-cols: 10rem minmax(7rem, 1fr) minmax(9rem, 1.3fr) repeat(3, minmax(7rem, 1fr));
+  }
+  .doc-add__more, .study__idea, .study__next { display: none; }
 }
 
 /* Mobile <640px: the grid linearizes — each feature stacks as a single column
