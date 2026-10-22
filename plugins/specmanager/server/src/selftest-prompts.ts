@@ -16,7 +16,7 @@
 // build prerequisites, secrets, the reviewer's UI check and the walkthrough
 // sections, Part F's INV-51/52 for the build's git strategy, and Part G's
 // INV-53/54 for init's plugin-install consent plus INV-55 for its plugin
-// scope filter, and Part H's INV-56…INV-63 for researcher mode. A few are
+// scope filter, and Part H's INV-56…INV-65 for researcher mode and its loop. A few are
 // encoded as lettered rows (INV-14a…e, INV-27a…c,
 // INV-36a/b, INV-45a…c, INV-46a/b, INV-47a/b, INV-48a…c, INV-49a/b,
 // INV-50a…e, INV-51a…f, INV-52a/b, and the pre-existing INV-15a/b)
@@ -810,7 +810,7 @@ const INVARIANTS: PromptInvariant[] = [
     min: 1,
     max: 1,
   },
-  // ---- Part H — INV-56…INV-63: researcher mode (arch §prompt-invariants) ----
+  // ---- Part H — INV-56…INV-65: researcher mode and its loop (arch §prompt-invariants) ----
   // Each INV-56 row matches a kind's whole heading list as consecutive
   // lines, so cutting or reordering any one heading drops the count to 0.
   {
@@ -824,7 +824,7 @@ const INVARIANTS: PromptInvariant[] = [
   },
   {
     id: "INV-56b",
-    what: "researcher-shapes: concepts are labelled screens A, B, C, … and include a pricing screen",
+    what: "researcher-shapes: the docs job's wireframes bullets label screens A, B, C, … and include a pricing screen",
     pattern: /^- Label the screens `A`, `B`, `C`, ….*\n- Include a pricing screen.*$/gm,
     files: ["agents/researcher.md"],
     min: 1,
@@ -858,19 +858,28 @@ const INVARIANTS: PromptInvariant[] = [
     max: 1,
   },
   {
+    id: "INV-56f",
+    what: "researcher-shapes: the brief job's exact heading list, in order",
+    pattern:
+      /^- `## Idea`.*\n- `## Market`.*\n- `## Audience`.*\n- `## Goals`.*\n- `## Constraints`.*\n- `## Assumptions`.*\n- `## Open questions`.*$/gm,
+    files: ["agents/researcher.md"],
+    min: 1,
+    max: 1,
+  },
+  {
     id: "INV-57a",
     what: "no-invented-numbers: never invent numbers or scores — agent (rules + findings) and command each state it",
     pattern: /never invent/gi,
     files: ["agents/researcher.md", "commands/specmanager-research.md"],
     min: 3,
-    max: 4,
+    max: 3,
   },
   {
     id: "INV-57b",
     what: "no-invented-numbers: an unsourced figure becomes `n/a (unsourced)` — agent and command",
     pattern: "`n/a (unsourced)`",
     files: ["agents/researcher.md", "commands/specmanager-research.md"],
-    min: 5,
+    min: 6,
     max: 6,
   },
   {
@@ -1024,6 +1033,70 @@ const INVARIANTS: PromptInvariant[] = [
     files: ["agents/prd-writer.md"],
     min: 1,
     max: 1,
+  },
+  {
+    id: "INV-64a",
+    what: "the research loop never approves anything (own row; INV-25's list is unchanged)",
+    pattern: /Don'?t approve/gi,
+    files: ["commands/specmanager-research-loop.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-64b",
+    what: "the research loop calls no set_status (negative)",
+    pattern: "set_status(",
+    files: ["commands/specmanager-research-loop.md"],
+    min: 0,
+    max: 0,
+  },
+  {
+    id: "INV-64c",
+    what: "the research loop never dispatches the builder (negative)",
+    pattern: 'subagent_type: "builder"',
+    files: ["commands/specmanager-research-loop.md"],
+    min: 0,
+    max: 0,
+  },
+  {
+    id: "INV-64d",
+    what: "the research loop runs in the main session",
+    pattern: "Runs **in the main session**",
+    files: ["commands/specmanager-research-loop.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-64e",
+    what: "the research loop's opening turn comes before any write",
+    pattern: "**Opening turn — before any write.**",
+    files: ["commands/specmanager-research-loop.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-64f",
+    what: "the research loop's cross-doc review is a single pass",
+    pattern: "Check, in a single pass:",
+    files: ["commands/specmanager-research-loop.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-64g",
+    what: "the research loop never invents a figure; an unsourced one is `n/a (unsourced)`",
+    pattern: /never invent|`n\/a \(unsourced\)`/gi,
+    files: ["commands/specmanager-research-loop.md"],
+    min: 3,
+    max: 3,
+  },
+  {
+    id: "INV-65",
+    what: "both research commands state that no Doc is drafted without the user confirming",
+    pattern: "No Doc is drafted without the user confirming",
+    files: ["commands/specmanager-research.md", "commands/specmanager-research-loop.md"],
+    min: 2,
+    max: 2,
   },
 ];
 
