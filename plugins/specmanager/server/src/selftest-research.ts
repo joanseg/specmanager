@@ -7,7 +7,8 @@
 // rejection, findings-kind rule, version conflict, `outdated`, `newNotes`, `steps[]`,
 // build-list parsing, idempotent handoff by itemId (survives rename/re-rank) + origin,
 // Builder-only manifest unchanged, the "Research studies" CLAUDE.md line, and (in a
-// second temp root) the brief, multi-doc Docs, docType rules and project-wide doc ids.
+// second temp root) the brief, multi-doc Docs, docType rules, project-wide doc ids and a
+// legacy concepts.html read as a wireframes Doc.
 
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -26,6 +27,7 @@ import {
   parseBuildList,
   readResearchDocById,
   renderBlock,
+  studyDir,
   studyDocsDir,
   studyNotesDir,
   studySummary,
@@ -169,6 +171,7 @@ async function main(): Promise<void> {
   sa = await studySummary(a.id, root);
   assert(sa.nextStep === "findings", "next step is findings once the plan exists");
   assert(rail(sa).strategy === "locked", "strategy locked without findings");
+  assert(rail(sa).docs === "done", "rail: docs done once one Doc exists");
 
   // 8. newNotes: only .md/.txt/.pdf not yet in findings.
   const notes = studyNotesDir(a.slug, root);
@@ -231,6 +234,18 @@ async function main(): Promise<void> {
     { studyId: a.id, kind: "strategy", title: "Strategy", body: strategyBody(["1. Idea with no id"]), ...stratDep },
     root
   );
+  await createResearchDoc(
+    {
+      studyId: a.id,
+      kind: "doc",
+      docType: "investor-deck",
+      title: "Deck",
+      body: "<p>deck</p>",
+      dependsOn: ["strategy-oposiciones"],
+      basedOn: { "strategy-oposiciones": 1 },
+    },
+    root
+  );
   const noItems = await checkResearchStep(a.id, "handoff", root);
   assert(!noItems.ok && noItems.reason === "no build items", "empty build list → handoff reason 'no build items'");
   await rejects(
@@ -246,6 +261,16 @@ async function main(): Promise<void> {
       body: strategyBody(["1. [S1] **Mock exams** — core loop", "2. [S2] **Spaced repetition** — retention"]),
     },
     root
+  );
+  sa = await studySummary(a.id, root);
+  assert(
+    JSON.stringify(sa.docs.find((d) => d.id === "doc-oposiciones-investor-deck")?.outdated) ===
+      JSON.stringify(["strategy-oposiciones"]),
+    "a deck based on strategy is outdated after a strategy write"
+  );
+  assert(
+    reasonOf(sa, "docs")?.includes("doc-oposiciones-investor-deck behind strategy-oposiciones") === true,
+    "the docs flag reason names the outdated deck"
   );
   const before = (await listFeatures(root)).length;
   await rejects(
@@ -389,6 +414,75 @@ async function briefAndDocs(): Promise<void> {
     () => createResearchDoc({ studyId: s.id, kind: "doc", docType: "x-y", title: "XY" }, root),
     "already exists in another study",
     "a doc id already used by another study is rejected"
+  );
+
+  await legacyConcepts(root);
+}
+
+/** A pre-Docs study's `concepts.html` lists as a wireframes Doc and keeps its id. */
+async function legacyConcepts(root: string): Promise<void> {
+  const s = await createStudy({ title: "Legacy", idea: "Old study" }, root);
+  await createResearchDoc({ studyId: s.id, kind: "market", title: "Market" }, root);
+  const file = path.join(studyDir(s.slug, root), "concepts.html");
+  await fs.writeFile(
+    file,
+    [
+      "---",
+      "id: concepts-legacy",
+      "studyId: study-legacy",
+      "kind: concepts",
+      "title: Old concepts",
+      "dependsOn: [market-legacy]",
+      "basedOn: { market-legacy: 1 }",
+      "generatedBy: agent",
+      "version: 3",
+      "createdAt: '2026-01-01T00:00:00.000Z'",
+      "updatedAt: '2026-01-01T00:00:00.000Z'",
+      "---",
+      "<p>old</p>",
+      "",
+    ].join("\n"),
+    "utf8"
+  );
+
+  // 20. Read-time normalisation: kind doc, docType wireframes, id and version untouched.
+  let ls = await studySummary(s.id, root);
+  const legacy = ls.docs.find((d) => d.id === "concepts-legacy");
+  assert(
+    legacy?.kind === "doc" && legacy.docType === "wireframes" && legacy.version === 3,
+    "legacy concepts.html lists as kind doc, docType wireframes, id concepts-<slug>"
+  );
+  assert(rail(ls).docs === "done", "rail: a legacy concepts.html alone marks docs done");
+
+  // 21. Existing references to concepts-<slug> still validate.
+  const ur = await createResearchDoc(
+    {
+      studyId: s.id,
+      kind: "user-research",
+      title: "UR",
+      dependsOn: ["concepts-legacy"],
+      basedOn: { "concepts-legacy": 3 },
+    },
+    root
+  );
+  assert(ur.frontmatter.dependsOn[0] === "concepts-legacy", "user-research dependsOn concepts-<slug> validates");
+
+  // 22. A write persists the new frontmatter in place.
+  const written = await writeResearchDoc({ id: "concepts-legacy", body: "<p>new</p>", baseVersion: 3 }, root);
+  const raw = await fs.readFile(file, "utf8");
+  assert(
+    written.filePath === file && raw.includes("kind: doc") && raw.includes("docType: wireframes") &&
+      !raw.includes("kind: concepts") && raw.includes("id: concepts-legacy"),
+    "a write to concepts.html persists kind doc + docType wireframes in place, id kept"
+  );
+  assert(
+    !(await fs.stat(studyDocsDir(s.slug, root)).then(() => true, () => false)),
+    "the legacy doc is not moved under docs/"
+  );
+  ls = await studySummary(s.id, root);
+  assert(
+    JSON.stringify(ls.docs.find((d) => d.kind === "user-research")?.outdated) === JSON.stringify(["concepts-legacy"]),
+    "user-research is outdated behind the rewritten legacy doc"
   );
 }
 
