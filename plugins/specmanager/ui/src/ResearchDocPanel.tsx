@@ -171,7 +171,11 @@ export default function ResearchDocPanel({ docId, onClose, onJumpTo }: ResearchD
             </div>
             <div className="panel__badges">
               <span className="badge badge--interview">research</span>
-              {labels.docType && <span className="badge badge--doctype">{labels.docType}</span>}
+              {labels.docType && (
+                <span className={`badge badge--doctype${labels.meta === "Custom" ? " badge--doctype-custom" : ""}`}>
+                  {labels.docType}
+                </span>
+              )}
               {isHtml && <span className="badge badge--kind">html</span>}
               {outdated.length > 0 && <span className="badge badge--outdated">⚠ outdated</span>}
               {newNotes.length > 0 && (
