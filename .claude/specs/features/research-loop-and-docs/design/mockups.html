@@ -1,0 +1,938 @@
+---
+id: design-research-loop-and-docs-010
+featureId: feat-research-loop-and-docs
+stage: design
+status: approved
+stale: false
+title: Research loop and docs mockups
+dependsOn:
+  - prd-research-loop-and-docs-047
+  - arch-research-loop-and-docs-032
+basedOn:
+  prd-research-loop-and-docs-047: 2
+  arch-research-loop-and-docs-032: 3
+generatedBy: agent
+version: 1
+createdAt: '2026-10-22T14:59:46.376Z'
+updatedAt: '2026-10-22T17:34:43.838Z'
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research loop and docs mockups</title>
+<style>
+/* Tokens copied verbatim from plugins/specmanager/ui/src/tokens.css (Obsidian Flux). */
+:root {
+  --surface: #131315;
+  --surface-container-lowest: #0e0e10;
+  --surface-container-low: #1b1b1d;
+  --surface-container: #201f21;
+  --surface-container-high: #2a2a2c;
+  --surface-container-highest: #353437;
+  --on-surface: #e5e1e4;
+  --on-surface-variant: #c7c4d7;
+  --outline: #908fa0;
+  --outline-variant: #464554;
+  --primary: #c0c1ff;
+  --primary-container: #8083ff;
+  --secondary: #ddb7ff;
+  --secondary-container: #6f00be;
+  --tertiary: #ffb783;
+  --error: #ffb4ab;
+  --on-error: #690005;
+  --success: #10b981;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 40px;
+  --margin: 24px;
+  --font-display: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --shadow-overlay: 0px 20px 50px rgba(0,0,0,0.5);
+  --glass-bg: rgba(24,24,27,0.8);
+  --card-gradient: linear-gradient(135deg, var(--surface-container), var(--surface-container-low));
+  --card-border: color-mix(in srgb, var(--outline-variant) 80%, transparent);
+  --card-border-hover: color-mix(in srgb, var(--primary) 55%, var(--outline-variant));
+  --shadow-card: 0 6px 20px rgba(0,0,0,0.35), 0 0 0 1px color-mix(in srgb, var(--primary) 12%, transparent);
+  --glass-edge: color-mix(in srgb, var(--primary) 8%, var(--glass-bg));
+  --backdrop-dim: rgba(0,0,0,0.55);
+  --gradient-primary: linear-gradient(135deg, var(--primary-container), var(--secondary-container));
+  --tb-active-bg: color-mix(in srgb, var(--primary) 14%, transparent);
+  --table-header-bg: var(--surface-container-high);
+  --table-zebra-bg: color-mix(in srgb, var(--surface-container) 55%, transparent);
+  --design-preview-bg: #ffffff;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--surface-container-lowest); color: var(--on-surface); }
+
+/* ---------- Document scaffold (mockup page only) ---------- */
+.sm-cover { max-width: 1320px; margin: 0 auto; padding: 48px 24px 8px; }
+.sm-cover h1 { font-family: var(--font-display); font-weight: 600; font-size: 2.2rem; letter-spacing: -0.02em; margin: 0 0 6px; }
+.sm-cover p { margin: 0; color: var(--on-surface-variant); font-size: 0.95rem; max-width: 820px; line-height: 1.6; }
+.sm-cover code { font-family: var(--font-mono); font-size: 0.8rem; }
+.sm-cover .kicker { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
+.sm-screen { padding: 32px 24px 16px; overflow-x: auto; }
+.sm-label { max-width: 1320px; margin: 0 auto 10px; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--on-surface-variant); }
+.sm-label b { color: var(--primary); font-weight: 500; }
+.frame { width: 1320px; margin: 0 auto; border: 1px solid var(--outline-variant); border-radius: 12px; overflow: hidden; background: var(--surface); box-shadow: var(--shadow-overlay); }
+.frame--tablet { width: 900px; }
+.frame__chrome { height: 34px; display: flex; align-items: center; gap: 7px; padding: 0 14px; background: var(--surface-container-low); border-bottom: 1px solid var(--outline-variant); }
+.frame__chrome i { width: 10px; height: 10px; border-radius: 50%; background: var(--surface-container-highest); display: block; }
+.frame__url { margin-left: 14px; flex: 0 1 460px; height: 20px; border-radius: 999px; background: var(--surface-container); font-family: var(--font-mono); font-size: 0.68rem; color: var(--on-surface-variant); display: flex; align-items: center; padding: 0 12px; white-space: nowrap; overflow: hidden; }
+.frame__url b { color: var(--on-surface); font-weight: 500; }
+.viewport { position: relative; }
+.viewport--panel { height: 880px; overflow: hidden; }
+.sm-note { max-width: 860px; margin: 0 auto; padding: 20px 24px 40px; color: var(--on-surface-variant); line-height: 1.62; font-size: 0.95rem; }
+.sm-note h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; letter-spacing: -0.01em; color: var(--on-surface); margin: 0 0 8px; }
+.sm-note h3 { font-size: 0.95rem; color: var(--on-surface); margin: 18px 0 4px; }
+.sm-note ul { padding-left: 1.2rem; margin: 6px 0; }
+.sm-note li { margin: 4px 0; }
+.sm-note code { font-family: var(--font-mono); font-size: 0.8rem; background: var(--surface-container-high); padding: 1px 5px; border-radius: var(--radius-sm); color: var(--on-surface); }
+.sm-note strong { color: var(--on-surface); }
+.sm-divider { max-width: 1320px; margin: 0 auto; border: 0; border-top: 1px solid var(--outline-variant); opacity: 0.5; }
+.sm-open-questions { border-top: 1px solid var(--outline-variant); padding-top: 32px; }
+.sm-open-questions ol { padding-left: 1.3rem; }
+.sm-open-questions li { margin: 8px 0; }
+
+/* ---------- Existing board classes (copied from ui/src/styles.css + design-researcher-mode-009) ---------- */
+.board { padding: 0 var(--margin) var(--space-xl); }
+.board__header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); margin: 0 calc(var(--margin) * -1) var(--space-lg); padding: var(--space-md) var(--margin); background: var(--glass-bg); border-bottom: 1px solid var(--outline-variant); }
+.board__title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 3rem; line-height: 3.5rem; letter-spacing: -0.02em; }
+.board__subtitle { margin: 0; font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.02em; color: var(--on-surface-variant); }
+.board__meta { display: flex; align-items: center; gap: var(--space-sm); color: var(--on-surface-variant); font-size: 0.85rem; min-width: 12rem; justify-content: flex-end; }
+.board__count { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.02em; }
+.board__pulse { color: var(--primary); opacity: 0.6; font-family: var(--font-mono); font-size: 0.78rem; }
+.grid { display: grid; gap: var(--space-sm); align-items: stretch; }
+.grid__corner, .grid__header { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--on-surface-variant); padding: 0 0.5rem 0.4rem; }
+.grid__header--build { color: var(--primary); }
+.grid__header--docs { color: var(--secondary); }
+.row__label { display: flex; flex-direction: column; padding: 0.6rem 0.5rem; min-width: 0; }
+.row__label strong { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em; font-size: 1rem; }
+.row__label small { color: var(--on-surface-variant); font-family: var(--font-mono); font-size: 0.7rem; margin-top: 0.2rem; }
+.row__cell { display: flex; min-height: 5.5rem; align-items: flex-start; min-width: 0; }
+.row__cell > .card { flex: 1; height: 5.5rem; }
+.card { display: flex; flex-direction: column; gap: 0.35rem; background: var(--card-gradient); border: 1px solid var(--card-border); border-radius: var(--radius-md); padding: 0.6rem 0.7rem; min-width: 0; text-align: left; color: var(--on-surface); font: inherit; }
+.card--hover { border-color: var(--card-border-hover); box-shadow: var(--shadow-card); transform: translateY(-1px) scale(1.01); }
+.card--empty, .card--locked { background: transparent; border-style: dashed; color: var(--on-surface-variant); justify-content: center; align-items: center; font-size: 0.78rem; text-align: center; }
+.card--ready { border-color: var(--primary); color: var(--primary); }
+.card--stale { border-color: var(--error); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--error) 18%, transparent); }
+.card__title { font-weight: 500; font-size: 0.85rem; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card__badges { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: auto; }
+.card__empty-label, .card__locked-label { font-weight: 500; }
+.card__empty-sub, .card__locked-sub { font-size: 0.7rem; opacity: 0.7; margin-top: 0.15rem; }
+.card__locked-sub::before { content: "\1F512  "; }
+.card__empty-cmd { font-size: 0.7rem; color: var(--primary); font-family: var(--font-mono); margin-top: 0.15rem; word-break: break-all; }
+.card__empty-cmd--dim { color: var(--on-surface-variant); opacity: 0.8; }
+.card--build { background: var(--surface-container-low); }
+.badge { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.1rem 0.4rem; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.02em; background: var(--surface-container-highest); color: var(--on-surface-variant); white-space: nowrap; }
+.badge--meta { opacity: 0.6; }
+.badge--interview { background: transparent; border: 1px solid var(--outline-variant); text-transform: uppercase; letter-spacing: 0.06em; }
+.badge--outdated { color: var(--error); background: color-mix(in srgb, var(--error) 14%, transparent); }
+.badge--notes { color: var(--tertiary); background: color-mix(in srgb, var(--tertiary) 14%, transparent); }
+.badge--kind { background: transparent; border: 1px solid var(--outline-variant); text-transform: uppercase; letter-spacing: 0.06em; }
+.badge--doctype { background: transparent; border: 1px solid color-mix(in srgb, var(--secondary) 45%, var(--outline-variant)); color: var(--secondary); text-transform: uppercase; letter-spacing: 0.06em; }
+.btn { background: var(--surface-container-high); color: var(--on-surface); border: 1px solid var(--outline-variant); border-radius: var(--radius-md); padding: 0.32rem 0.75rem; font-family: var(--font-body); font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px; }
+.btn--disabled { opacity: 0.45; }
+.btn--primary { border-color: color-mix(in srgb, var(--primary-container) 70%, transparent); background: var(--gradient-primary); box-shadow: inset 0 1px 0 color-mix(in srgb, var(--primary) 55%, transparent); }
+.btn--sm { padding: 0.24rem 0.6rem; font-size: 0.74rem; }
+.link { color: var(--primary); text-decoration: underline; }
+.mono { font-family: var(--font-mono); }
+
+/* Mode toggle */
+.mode-toggle { display: inline-flex; padding: 3px; gap: 2px; background: var(--surface-container-low); border: 1px solid var(--card-border); border-radius: var(--radius-md); }
+.mode-toggle__seg { display: inline-flex; align-items: center; gap: 7px; padding: 0.38rem 0.95rem; border: 1px solid transparent; border-radius: 6px; font-size: 0.82rem; font-weight: 500; color: var(--on-surface-variant); }
+.mode-toggle__seg .glyph { font-family: var(--font-mono); font-size: 0.7rem; opacity: 0.7; }
+.mode-toggle__seg--active { color: var(--primary); background: var(--tb-active-bg); border-color: color-mix(in srgb, var(--primary) 55%, var(--outline-variant)); }
+
+/* Study label */
+.study__idea { font-size: 0.76rem; color: var(--on-surface-variant); line-height: 1.35; margin-top: 0.4rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.study-rail { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-top: 0.6rem; }
+.study-rail i { height: 4px; border-radius: 2px; background: var(--surface-container-highest); display: block; }
+.study-rail i.done { background: var(--primary); }
+.study-rail i.next { background: transparent; box-shadow: inset 0 0 0 1.5px var(--primary); height: 6px; margin-top: -1px; }
+.study-rail i.flag { background: var(--error); }
+.study-rail__caption { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.64rem; color: var(--on-surface-variant); margin-top: 0.3rem; letter-spacing: 0.02em; }
+.study-rail__caption b { color: var(--primary); font-weight: 500; }
+.study-rail__caption .warn { color: var(--error); }
+.study__next { margin-top: 0.35rem; font-family: var(--font-mono); font-size: 0.68rem; color: var(--primary); opacity: 0.75; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Handoff cell */
+.row__cell > .card--handoff { height: auto; }
+.card--handoff { background: var(--surface-container-low); gap: 0.25rem; padding: 0.55rem 0.6rem 0.6rem; }
+.handoff__head { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--font-mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--on-surface-variant); margin-bottom: 0.15rem; }
+.handoff__head span:last-child { text-transform: none; letter-spacing: 0.02em; opacity: 0.7; }
+.handoff-item { display: grid; grid-template-columns: 1rem 1.1rem 1fr; align-items: start; gap: 0.35rem; padding: 0.28rem 0.25rem; border-radius: var(--radius-sm); font-size: 0.78rem; line-height: 1.3; }
+.handoff-item__rank { font-family: var(--font-mono); font-size: 0.66rem; color: var(--on-surface-variant); padding-top: 0.12rem; }
+.handoff-item__check { width: 0.85rem; height: 0.85rem; margin-top: 0.1rem; border: 1.5px solid var(--outline); border-radius: var(--radius-sm); display: block; }
+.handoff-item__done { width: 0.85rem; height: 0.85rem; margin-top: 0.1rem; border-radius: 50%; border: 1.5px solid var(--success); display: block; position: relative; }
+.handoff-item__done::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--success); }
+.handoff-item__title { min-width: 0; }
+.handoff-item__feat { display: block; font-family: var(--font-mono); font-size: 0.64rem; color: var(--primary); margin-top: 0.1rem; }
+.handoff-item--handed .handoff-item__title > span:first-child { color: var(--on-surface-variant); }
+.handoff__actions { display: flex; justify-content: space-between; align-items: center; margin-top: 0.35rem; padding-top: 0.45rem; border-top: 1px solid var(--outline-variant); }
+.handoff__actions small { font-family: var(--font-mono); font-size: 0.64rem; color: var(--on-surface-variant); }
+
+/* Panel */
+.panel-backdrop { position: absolute; inset: 0; background: var(--backdrop-dim); display: flex; justify-content: flex-end; }
+.panel { width: 68%; height: 100%; background: var(--surface); border-left: 1px solid var(--glass-edge); border-top-left-radius: var(--radius-lg); border-bottom-left-radius: var(--radius-lg); box-shadow: var(--shadow-overlay), inset 1px 0 0 color-mix(in srgb, var(--primary) 14%, transparent); display: flex; flex-direction: column; overflow: hidden; }
+.panel__header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-md); padding: 1rem 1.25rem 0.75rem; border-bottom: 1px solid var(--outline-variant); }
+.panel__header-actions { display: flex; align-items: center; gap: 0.5rem; }
+.panel__close { color: var(--on-surface-variant); font-size: 1.4rem; line-height: 1; padding: 0 0.4rem; }
+.panel__crumb { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.02em; color: var(--on-surface-variant); margin-bottom: 0.3rem; }
+.panel__crumb-sep { color: var(--outline); margin: 0 0.1rem; }
+.panel__title-row { display: flex; align-items: baseline; gap: 0.75rem; }
+.panel__title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; letter-spacing: -0.01em; }
+.panel__meta { color: var(--on-surface-variant); font-size: 0.8rem; }
+.panel__badges { display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.5rem; }
+.panel__stale { background: color-mix(in srgb, var(--error) 9%, transparent); border-bottom: 1px solid var(--outline-variant); padding: 0.75rem 1.25rem; font-size: 0.85rem; }
+.stale-list { margin: 0.5rem 0 0; padding: 0; list-style: none; font-family: var(--font-mono); font-size: 0.78rem; color: var(--on-surface-variant); }
+.stale-list li { padding: 0.15rem 0; }
+.stale-list .drift-row { color: var(--on-surface); }
+.drift-tag { background: var(--error); color: var(--on-error); padding: 0 0.3rem; border-radius: var(--radius-sm); margin-left: 0.4rem; font-size: 0.65rem; }
+.md-toolbar { display: flex; align-items: center; gap: 0.25rem; padding: 0.45rem 1.25rem; border-bottom: 1px solid var(--outline-variant); background: var(--surface-container); }
+.tb-btn { min-width: 1.85rem; height: 1.85rem; padding: 0 0.45rem; display: inline-flex; align-items: center; justify-content: center; color: var(--on-surface-variant); border-radius: var(--radius-sm); font-size: 0.82rem; }
+.tb-sep { width: 1px; align-self: stretch; margin: 0.25rem 0.4rem; background: var(--outline-variant); }
+.md-surface { flex: 1; overflow: hidden; }
+.prose { width: 90%; margin: 0 auto; padding: var(--space-lg) var(--space-md) var(--space-xl); }
+.prose h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; margin: 1.3rem 0 0.5rem; letter-spacing: -0.01em; }
+.prose h2:first-child { margin-top: 0; }
+.prose p, .prose li { font-size: 0.95rem; line-height: 1.62; }
+.prose p { margin: 0.55rem 0; }
+.prose ul { margin: 0.5rem 0; padding-left: 1.3rem; }
+.prose li { margin: 0.28rem 0; }
+.prose strong { font-weight: 700; }
+.prose em { color: var(--on-surface-variant); }
+.caret { display: inline-block; width: 1px; height: 1em; background: var(--primary); vertical-align: -2px; margin-left: 1px; }
+.panel__footer { display: flex; justify-content: space-between; gap: 1rem; padding: 0.4rem 1.25rem; border-top: 1px solid var(--outline-variant); font-family: var(--font-mono); font-size: 0.72rem; color: var(--on-surface-variant); }
+.panel__footer .hint { opacity: 0.75; }
+.ghost-grid { display: grid; grid-template-columns: 15rem 1fr 1.35fr 1fr 1fr 1fr 16rem; gap: 8px; padding: 0 24px; }
+.ghost-grid span { height: 5.5rem; border-radius: var(--radius-md); background: var(--card-gradient); border: 1px solid var(--card-border); }
+.ghost-grid span.l { background: transparent; border: 0; }
+.ghost-grid span.tall { height: 15rem; }
+
+/* ---------- NEW: research loop and docs ---------- */
+/* Researcher grid track: Docs gets a wider track than the single-doc columns. */
+.grid--research { grid-template-columns: 15rem minmax(8.5rem, 1fr) minmax(11.5rem, 1.35fr) repeat(3, minmax(8.5rem, 1fr)) 16rem; }
+
+/* Brief chip under the idea: filled page glyph = brief exists, hollow dashed = no brief yet. */
+.chip-brief { display: inline-flex; align-items: center; gap: 0.42rem; align-self: flex-start; margin-top: 0.5rem; padding: 0.22rem 0.6rem 0.22rem 0.5rem; background: var(--surface-container-low); border: 1px solid var(--card-border); border-radius: 999px; font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.02em; color: var(--on-surface); white-space: nowrap; max-width: 100%; }
+.chip-brief .page { width: 0.5rem; height: 0.62rem; border-radius: 1px; background: var(--primary); flex-shrink: 0; position: relative; }
+.chip-brief .page::after { content: ""; position: absolute; left: 1.5px; right: 1.5px; top: 2px; height: 1px; background: var(--surface); box-shadow: 0 2px 0 var(--surface); }
+.chip-brief .meta { opacity: 0.55; }
+.chip-brief--hover { border-color: var(--card-border-hover); }
+.chip-brief--missing { background: transparent; border-style: dashed; color: var(--on-surface-variant); }
+.chip-brief--missing .page { background: transparent; box-shadow: inset 0 0 0 1.5px var(--outline); }
+.chip-brief--missing .page::after { display: none; }
+
+/* Docs cell: a stack of compact Doc cards, opting out of the 5.5rem cap. */
+.doc-stack { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+.doc-card { position: relative; height: auto; gap: 0.22rem; padding: 0.45rem 0.6rem 0.5rem 0.8rem; }
+.doc-card::before { content: ""; position: absolute; left: 0; top: 7px; bottom: 7px; width: 2px; border-radius: 0 2px 2px 0; background: color-mix(in srgb, var(--secondary) 70%, transparent); }
+.doc-card.card--stale::before { background: var(--error); }
+.doc-card__head { display: flex; align-items: center; justify-content: space-between; gap: 0.4rem; min-width: 0; }
+.doc-card__type { font-family: var(--font-mono); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.doc-card__type--custom { text-transform: none; letter-spacing: 0.02em; }
+.doc-card__type--custom i { font-style: normal; opacity: 0.6; margin-right: 0.3rem; }
+.doc-card .card__title { font-size: 0.8rem; -webkit-line-clamp: 1; }
+.doc-card .badge--outdated { align-self: flex-start; margin-top: 0.1rem; }
+.doc-add { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.3rem 0.6rem; border: 1px dashed var(--outline-variant); border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 0.64rem; color: var(--on-surface-variant); }
+.doc-add span:first-child { opacity: 0.85; }
+.doc-add span:last-child { opacity: 0.6; }
+
+/* Docs-cell compare sheet */
+.compare { display: grid; grid-template-columns: repeat(5, 1fr); gap: 22px; padding: 28px 28px 32px; align-items: start; }
+.compare--3 { grid-template-columns: repeat(3, 1fr); padding-top: 4px; }
+.compare__col h4 { margin: 0 0 10px; font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--on-surface-variant); font-weight: 500; line-height: 1.5; }
+.compare__col h4 b { color: var(--primary); font-weight: 500; }
+.cell-w { width: 11.5rem; display: flex; }
+.cell-w > .card { flex: 1; height: 5.5rem; }
+.compare__rule { margin: 0 28px; border: 0; border-top: 1px dashed var(--outline-variant); }
+.mini-head { border: 1px solid var(--card-border); border-radius: var(--radius-md); background: var(--surface); padding: 0.8rem 1rem 0.75rem; }
+.mini-head .panel__title { font-size: 1.05rem; }
+
+/* Sandboxed iframe canvas (Doc preview) */
+.iframe-canvas { flex: 1; overflow: hidden; background: var(--design-preview-bg); border-top: 0; position: relative; }
+.iframe-canvas::after { content: ""; position: absolute; right: 3px; top: 12px; width: 6px; height: 120px; border-radius: 3px; background: var(--outline-variant); opacity: 0.5; }
+
+/* The Doc's OWN styles. These live inside the Doc's HTML, not the board, so they
+   are not board tokens (see Open questions). Scoped under .deck. */
+.deck { --ink: #0f172a; --muted: #64748b; --accent: #0f766e; --rule: #e2e8f0; --tint: #f0fdfa; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--ink); padding: 28px 0 40px; }
+.deck__slide { width: 680px; height: 382px; margin: 0 auto 22px; border: 1px solid var(--rule); border-radius: 6px; padding: 36px 44px; position: relative; background: #fff; box-shadow: 0 1px 2px rgba(15,23,42,0.06); }
+.deck__n { position: absolute; right: 22px; bottom: 16px; font-size: 11px; color: var(--muted); }
+.deck__eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); font-weight: 600; margin-bottom: 14px; }
+.deck h1 { font-size: 34px; line-height: 1.12; letter-spacing: -0.02em; margin: 0 0 14px; max-width: 520px; }
+.deck h2 { font-size: 24px; line-height: 1.2; letter-spacing: -0.01em; margin: 0 0 18px; }
+.deck p { font-size: 14px; line-height: 1.55; color: var(--muted); margin: 0; max-width: 500px; }
+.deck__bar { width: 48px; height: 4px; background: var(--accent); border-radius: 2px; margin-top: 48px; }
+.deck__stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 8px; }
+.deck__stat { border-top: 3px solid var(--accent); background: var(--tint); padding: 14px 14px 12px; border-radius: 0 0 4px 4px; }
+.deck__stat b { display: block; font-size: 26px; letter-spacing: -0.02em; }
+.deck__stat span { display: block; font-size: 12px; color: var(--ink); margin-top: 4px; }
+.deck__stat small { display: block; font-size: 10px; color: var(--muted); margin-top: 8px; }
+.deck__stat--na { border-top-color: var(--rule); background: #f8fafc; }
+.deck__stat--na b { font-size: 15px; color: var(--muted); font-weight: 500; padding: 7px 0 4px; }
+.deck__quote { font-size: 17px; line-height: 1.45; border-left: 3px solid var(--accent); padding-left: 16px; margin: 6px 0 14px; color: var(--ink); max-width: 520px; }
+.deck__src { font-size: 10px; color: var(--muted); margin-top: 18px; }
+
+/* Empty state (extends .empty-research) */
+.empty-research { display: grid; grid-template-columns: 1.15fr 1fr; border: 1px dashed var(--outline-variant); border-radius: var(--radius-md); overflow: hidden; }
+.empty-research__intro { padding: 2.2rem 2.2rem 2rem; }
+.empty-research__intro h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; letter-spacing: -0.01em; margin: 0 0 0.4rem; }
+.empty-research__intro p { margin: 0 0 1.2rem; color: var(--on-surface-variant); line-height: 1.6; max-width: 34rem; }
+.steps { list-style: none; margin: 0 0 1.4rem; padding: 0; display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.steps li { font-family: var(--font-mono); font-size: 0.64rem; color: var(--on-surface-variant); letter-spacing: 0.02em; }
+.steps li i { display: block; height: 4px; border-radius: 2px; background: var(--surface-container-highest); margin-bottom: 0.45rem; }
+.steps li.loop i { background: color-mix(in srgb, var(--primary) 35%, var(--surface-container-highest)); }
+.steps li.loop { color: var(--on-surface); }
+.steps-bracket { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin: -0.9rem 0 1.4rem; }
+.steps-bracket span { grid-column: 1 / span 4; border: 1px solid color-mix(in srgb, var(--primary) 45%, transparent); border-top: 0; height: 8px; border-radius: 0 0 4px 4px; position: relative; }
+.steps-bracket span::after { content: "covered by /specmanager-research-loop · brief first"; position: absolute; left: 50%; top: 10px; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.6rem; color: var(--primary); white-space: nowrap; }
+.start-block { margin-top: 2.1rem; display: flex; flex-direction: column; gap: 0.45rem; }
+.start-block__lead { font-size: 0.78rem; color: var(--on-surface-variant); }
+.cmd { display: inline-block; align-self: flex-start; background: var(--surface-container); padding: 0.4rem 0.8rem; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.82rem; color: var(--primary); }
+.cmd--loop { border: 1px solid color-mix(in srgb, var(--primary) 45%, var(--outline-variant)); box-shadow: 0 0 0 3px var(--tb-active-bg); }
+.cmd--dim { color: var(--on-surface-variant); font-size: 0.76rem; }
+.start-block__caption { font-family: var(--font-mono); font-size: 0.66rem; color: var(--on-surface-variant); line-height: 1.6; }
+.start-block__caption b { color: var(--on-surface); font-weight: 500; }
+.empty-research__form { padding: 2.2rem; background: var(--surface-container-low); border-left: 1px dashed var(--outline-variant); display: flex; flex-direction: column; gap: 0.9rem; }
+.empty-research__form h3 { margin: 0; font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--on-surface-variant); font-weight: 500; }
+.field label { display: block; font-size: 0.78rem; font-weight: 500; margin-bottom: 0.35rem; }
+.field .input { background: var(--surface-container); border: 1px solid var(--outline-variant); border-radius: var(--radius-md); padding: 0.5rem 0.65rem; font-size: 0.85rem; color: var(--on-surface); }
+.field .input--focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--tb-active-bg); }
+.field .input--area { min-height: 4.6rem; line-height: 1.5; }
+.field .hint { font-size: 0.7rem; color: var(--on-surface-variant); margin-top: 0.3rem; font-family: var(--font-mono); }
+
+/* Tablet frame: mirrors the styles.css 640–1024px breakpoint */
+.grid--tablet { grid-template-columns: 10rem minmax(7rem, 1fr) minmax(9rem, 1.3fr) repeat(3, minmax(7rem, 1fr)); }
+.grid--tablet .row__wrap { grid-column: 1 / -1; display: flex; }
+.grid--tablet .row__wrap > .card { flex: 1; height: auto; }
+.handoff-strip { flex-direction: row; align-items: center; gap: 0.8rem; flex-wrap: wrap; padding: 0.5rem 0.7rem; }
+.handoff-strip .handoff__head { margin: 0; }
+.handoff-strip .pill { font-size: 0.74rem; padding: 0.15rem 0.5rem; border-radius: 999px; background: var(--surface-container-high); color: var(--on-surface-variant); }
+.handoff-strip .pill--done { color: var(--success); background: color-mix(in srgb, var(--success) 12%, transparent); }
+.grid--tablet .card--locked.row-strip { height: auto; flex-direction: row; gap: 0.6rem; padding: 0.45rem 0.7rem; justify-content: flex-start; }
+</style>
+</head>
+<body>
+
+<header class="sm-cover">
+  <div class="kicker">feat-research-loop-and-docs · design</div>
+  <h1>Research loop and docs</h1>
+  <p>Six screens that extend the Researcher board from <code>design-researcher-mode-009</code>. Concepts becomes a multi-doc <strong>Docs</strong> column, each study shows its <strong>brief</strong>, the brief and a Doc open in the drawer, the empty state points at <code>/specmanager-research-loop</code>, and the Docs column holds up at tablet width. Builder mode does not change. Every board color, radius, typeface and spacing value comes from <code>ui/src/tokens.css</code>, and existing classes are reused wherever they exist. The example content continues the earlier oposiciones and B2B tutor studies.</p>
+</header>
+
+<!-- ============ SCREEN 1: Researcher grid with Docs column ============ -->
+<section class="sm-screen">
+  <div class="sm-label"><b>Screen 1</b> · Researcher grid · Docs column with several Docs per study · brief chip</div>
+  <div class="frame">
+    <div class="frame__chrome"><i></i><i></i><i></i><div class="frame__url">127.0.0.1:4317/<b>#researcher</b></div></div>
+    <div class="viewport">
+      <main class="board">
+        <header class="board__header">
+          <div>
+            <h1 class="board__title">opos-app</h1>
+            <p class="board__subtitle">SpecManager</p>
+          </div>
+          <div class="mode-toggle" role="tablist" aria-label="Board mode">
+            <span class="mode-toggle__seg" role="tab" aria-selected="false"><span class="glyph">▦</span>Builder</span>
+            <span class="mode-toggle__seg mode-toggle__seg--active" role="tab" aria-selected="true"><span class="glyph">◎</span>Researcher</span>
+          </div>
+          <div class="board__meta">
+            <span class="board__count">3 studies</span>
+            <span class="board__pulse">· research.doc.created</span>
+          </div>
+        </header>
+
+        <section class="grid grid--research">
+          <div class="grid__corner">Study</div>
+          <div class="grid__header">Market research</div>
+          <div class="grid__header grid__header--docs">Docs</div>
+          <div class="grid__header">User research</div>
+          <div class="grid__header">Marketing plan</div>
+          <div class="grid__header">Strategy</div>
+          <div class="grid__header grid__header--build">Handoff</div>
+
+          <!-- Study 1: legacy study (concepts.html), no brief, investor deck outdated -->
+          <div class="row__label">
+            <strong>Oposiciones Spain</strong>
+            <small>oposiciones-spain</small>
+            <span class="study__idea">Exam-prep app for Spanish public-service exams: timed mocks, syllabus tracking, cut-off scores.</span>
+            <span class="chip-brief chip-brief--missing" title="copy /specmanager-research oposiciones-spain brief"><span class="page"></span>no brief · <span class="meta">… brief</span></span>
+            <div class="study-rail" title="market · docs · plan · marketing · findings · strategy · handoff">
+              <i class="done"></i><i class="flag"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i>
+            </div>
+            <div class="study-rail__caption"><span>complete</span><span class="warn">outdated</span></div>
+          </div>
+          <div class="row__cell"><div class="card"><span class="card__title">Oposiciones market research</span><span class="card__badges"><span class="badge badge--meta">v3</span></span></div></div>
+          <div class="row__cell">
+            <div class="doc-stack">
+              <div class="card doc-card" title="concepts-oposiciones-spain">
+                <span class="doc-card__head"><span class="doc-card__type">Wireframes</span><span class="badge badge--meta">v1</span></span>
+                <span class="card__title">Concept screens A–F</span>
+              </div>
+              <div class="card doc-card card--stale card--hover" title="doc-oposiciones-spain-investor-deck · behind strategy-oposiciones-spain">
+                <span class="doc-card__head"><span class="doc-card__type">Investor deck</span><span class="badge badge--meta">v1</span></span>
+                <span class="card__title">Seed deck: pass-today readiness</span>
+                <span class="badge badge--outdated">⚠ outdated</span>
+              </div>
+              <div class="card doc-card" title="doc-oposiciones-spain-one-pager">
+                <span class="doc-card__head"><span class="doc-card__type">One-pager</span><span class="badge badge--meta">v2</span></span>
+                <span class="card__title">Oposiciones in one page</span>
+              </div>
+              <div class="doc-add" title="copy /specmanager-research oposiciones-spain docs"><span>+ add a doc</span><span>… docs</span></div>
+            </div>
+          </div>
+          <div class="row__cell"><div class="card"><span class="card__title">User research plan</span><span class="card__badges"><span class="badge badge--meta">v4</span></span></div></div>
+          <div class="row__cell"><div class="card"><span class="card__title">Launch marketing plan</span><span class="card__badges"><span class="badge badge--meta">v2</span></span></div></div>
+          <div class="row__cell"><div class="card"><span class="card__title">Strategy: what to build first</span><span class="card__badges"><span class="badge badge--meta">v3</span></span></div></div>
+          <div class="row__cell">
+            <div class="card card--handoff">
+              <div class="handoff__head"><span>Build list</span><span>strategy v3</span></div>
+              <div class="handoff-item handoff-item--handed"><span class="handoff-item__rank">1</span><span class="handoff-item__done"></span><span class="handoff-item__title"><span>Timed mock exams</span><span class="handoff-item__feat">→ timed-mock-exams</span></span></div>
+              <div class="handoff-item handoff-item--handed"><span class="handoff-item__rank">2</span><span class="handoff-item__done"></span><span class="handoff-item__title"><span>Spaced-repetition flashcards</span><span class="handoff-item__feat">→ spaced-repetition-flashcards</span></span></div>
+              <div class="handoff-item"><span class="handoff-item__rank">3</span><span class="handoff-item__check"></span><span class="handoff-item__title">Cut-off score tracker</span></div>
+              <div class="handoff__actions"><small>2 of 3 handed off</small><span class="btn btn--sm btn--disabled">Create</span></div>
+            </div>
+          </div>
+
+          <!-- Study 2: drafted by the research loop: brief + 3 docs incl. custom, waiting on interviews -->
+          <div class="row__label">
+            <strong>B2B language tutor</strong>
+            <small>b2b-language-tutor</small>
+            <span class="study__idea">AI conversation coach sold per seat to Spanish SMEs that need staff English at B2.</span>
+            <span class="chip-brief chip-brief--hover" title="open brief-b2b-language-tutor"><span class="page"></span>Brief <span class="meta">v2</span></span>
+            <div class="study-rail">
+              <i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="next"></i><i></i><i></i>
+            </div>
+            <div class="study-rail__caption"><span>next <b>findings</b></span><span>4 / 7</span></div>
+            <span class="study__next">▶ /specmanager-research b2b-language-tutor findings</span>
+          </div>
+          <div class="row__cell"><div class="card"><span class="card__title">B2B language tutor market research</span><span class="card__badges"><span class="badge badge--meta">v1</span></span></div></div>
+          <div class="row__cell">
+            <div class="doc-stack">
+              <div class="card doc-card" title="doc-b2b-language-tutor-one-pager">
+                <span class="doc-card__head"><span class="doc-card__type">One-pager</span><span class="badge badge--meta">v1</span></span>
+                <span class="card__title">Per-seat English coach for SMEs</span>
+              </div>
+              <div class="card doc-card" title="doc-b2b-language-tutor-pilot-proposal-for-hr-leads">
+                <span class="doc-card__head"><span class="doc-card__type doc-card__type--custom"><i>custom</i>pilot proposal for HR leads</span><span class="badge badge--meta">v1</span></span>
+                <span class="card__title">30-day pilot: 20 seats</span>
+              </div>
+              <div class="card doc-card" title="doc-b2b-language-tutor-wireframes">
+                <span class="doc-card__head"><span class="doc-card__type">Wireframes</span><span class="badge badge--meta">v2</span></span>
+                <span class="card__title">Tutor screens A–F</span>
+              </div>
+              <div class="doc-add"><span>+ add a doc</span><span>… docs</span></div>
+            </div>
+          </div>
+          <div class="row__cell"><div class="card"><span class="card__title">User research plan</span><span class="card__badges"><span class="badge">0 findings</span><span class="badge badge--meta">v1</span></span></div></div>
+          <div class="row__cell"><div class="card"><span class="card__title">Per-seat launch plan</span><span class="card__badges"><span class="badge badge--meta">v1</span></span></div></div>
+          <div class="row__cell"><div class="card card--locked"><span class="card__locked-label">Strategy locked</span><span class="card__locked-sub">needs interview findings</span></div></div>
+          <div class="row__cell"><div class="card card--locked" style="height:5.5rem"><span class="card__locked-label">Handoff locked</span><span class="card__locked-sub">needs a strategy</span></div></div>
+
+          <!-- Study 3: brief + market, Docs is next -->
+          <div class="row__label">
+            <strong>Driving theory app</strong>
+            <small>driving-theory-app</small>
+            <span class="study__idea">DGT theory-test practice with explanations in Spanish, English and Arabic.</span>
+            <span class="chip-brief"><span class="page"></span>Brief <span class="meta">v1</span></span>
+            <div class="study-rail">
+              <i class="done"></i><i class="next"></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <div class="study-rail__caption"><span>next <b>docs</b></span><span>1 / 7</span></div>
+            <span class="study__next">▶ /specmanager-research driving-theory-app docs</span>
+          </div>
+          <div class="row__cell"><div class="card"><span class="card__title">Driving theory market research</span><span class="card__badges"><span class="badge badge--meta">v1</span></span></div></div>
+          <div class="row__cell"><div class="card card--empty card--ready"><span class="card__empty-label">Draft docs</span><span class="card__empty-cmd">/specmanager-research driving-theory-app docs</span></div></div>
+          <div class="row__cell"><div class="card card--empty"><span class="card__empty-label">User research</span><span class="card__empty-cmd card__empty-cmd--dim">… plan</span></div></div>
+          <div class="row__cell"><div class="card card--empty"><span class="card__empty-label">Marketing plan</span><span class="card__empty-cmd card__empty-cmd--dim">… marketing</span></div></div>
+          <div class="row__cell"><div class="card card--locked"><span class="card__locked-label">Strategy locked</span><span class="card__locked-sub">needs interview findings</span></div></div>
+          <div class="row__cell"><div class="card card--locked" style="height:5.5rem"><span class="card__locked-label">Handoff locked</span><span class="card__locked-sub">needs a strategy</span></div></div>
+        </section>
+      </main>
+    </div>
+  </div>
+</section>
+<section class="sm-note">
+  <h2>Screen 1: the Researcher grid with a Docs column</h2>
+  <p>The grid keeps its structure from <code>design-researcher-mode-009</code>: one row per study, the 5.5rem card cap, and Handoff in the reserved right-hand track. Three things change: the Concepts column becomes <strong>Docs</strong>, the Docs cell holds a stack of Doc cards, and the study label gains a <strong>brief chip</strong>. Builder mode does not change at all.</p>
+  <h3>Docs column</h3>
+  <ul>
+    <li><strong>Header and track.</strong> The header reads <code>Docs</code> in <code>--secondary</code> (violet), the color Builder already uses for its Design stage, because Docs are the visual HTML artifacts. The track is wider than its neighbours (<code>minmax(11.5rem, 1.35fr)</code> against <code>minmax(8.5rem, 1fr)</code>) so a doc-type label and a one-line title fit. This replaces <code>--grid-cols</code> on <code>.grid--research</code>.</li>
+    <li><strong>Stack.</strong> The cell renders <em>every</em> doc of kind <code>doc</code> as a compact <code>.doc-card</code> inside a <code>.doc-stack</code> (6px gap). The stack opts out of the 5.5rem cap, as the walkthroughs stack and the Handoff cell already do. The row grows, and the single-doc cards next to it stay pinned to the top.</li>
+    <li><strong>Doc card (signature element).</strong> Each card has a 2px <code>--secondary</code> spine on its left edge, which marks it as an HTML Doc. The head line shows the doc type in mono uppercase <code>--secondary</code> 0.6rem, with <code>vN</code> on the right. Below it is the title, clamped to one line. The <code>html</code> kind badge is dropped inside this column because every Doc is HTML. It still shows in the drawer.</li>
+    <li><strong>Doc type label.</strong> Presets map to <em>Wireframes</em>, <em>Client presentation</em>, <em>Partner presentation</em>, <em>Investor deck</em> and <em>One-pager</em>. A custom type shows its string verbatim in sentence case with a dim <code>custom</code> prefix, for example <code>custom pilot proposal for HR leads</code>, truncated with an ellipsis and with the full string in the tooltip.</li>
+    <li><strong>Outdated.</strong> An outdated Doc gets the existing <code>card--stale</code> edge, an <code>--error</code> spine, and the <code>⚠ outdated</code> badge on a third line. Here the investor deck recorded <code>strategy</code> v2 and the strategy is now v3. Following Architecture, any outdated Doc flags the rail's <em>docs</em> segment red.</li>
+    <li><strong>Migrated wireframes.</strong> Oposiciones Spain's legacy <code>concepts.html</code> shows as a normal <em>Wireframes</em> card with its original title and the id <code>concepts-oposiciones-spain</code> (tooltip). It has no "legacy" badge, because nothing about it behaves differently.</li>
+    <li><strong>Order.</strong> Cards follow <code>listResearchDocs</code> order: the legacy <code>concepts.html</code> first, then <code>docs/*.html</code> by file name. That is why <em>One-pager</em> comes before <em>Wireframes</em> in the B2B row.</li>
+    <li><strong>Add another.</strong> When the study has at least one Doc and the docs step is open, a dashed <code>.doc-add</code> row closes the stack. Click copies <code>/specmanager-research &lt;slug&gt; docs</code>. The row stays dim, so the study's one loud call to action is still the next step (findings for B2B).</li>
+    <li><strong>No Docs yet.</strong> The existing <code>EmptyCell</code> runs for step <code>docs</code>. When docs is <code>nextStep</code> (Driving theory) it shows <code>card--ready</code>, "Draft docs" and the full command. Screen 2 shows every cell state.</li>
+    <li><strong>Click.</strong> Clicking a Doc card opens it read-only in the drawer (Screen 4).</li>
+  </ul>
+  <h3>Brief chip</h3>
+  <ul>
+    <li>The chip sits under the idea and above the rail. It is a pill that matches <code>.chip-origin</code> in size and type (mono 0.66rem, hairline, 999px radius).</li>
+    <li><strong>Brief exists:</strong> a filled <code>--primary</code> page glyph, <code>Brief</code> and a dim <code>vN</code>. Click opens the brief in the drawer, where it can be edited (Screen 3). Hover brightens the border to <code>--card-border-hover</code>.</li>
+    <li><strong>No brief</strong> (legacy studies, or studies started from the board form before any step ran): a dashed, transparent chip with a hollow glyph, reading <code>no brief · … brief</code>. Click copies <code>/specmanager-research &lt;slug&gt; brief</code>. It never turns red, because the brief gates nothing.</li>
+    <li>The brief is <strong>not on the rail</strong>. The rail stays seven segments: market, <strong>docs</strong>, plan, marketing, findings, strategy, handoff. A brief-less study's rail and <code>nextStep</code> are the same as before.</li>
+  </ul>
+</section>
+<hr class="sm-divider">
+
+<!-- ============ SCREEN 2: Docs cell states ============ -->
+<section class="sm-screen">
+  <div class="sm-label"><b>Screen 2</b> · Docs cell states at actual width (11.5rem) · drawer header variants</div>
+  <div class="frame">
+    <div class="frame__chrome"><i></i><i></i><i></i><div class="frame__url">127.0.0.1:4317/<b>#researcher</b> · Docs column, zoomed</div></div>
+    <div class="compare">
+      <div class="compare__col">
+        <h4><b>A</b> · locked<br>no market research yet</h4>
+        <div class="cell-w"><div class="card card--locked"><span class="card__locked-label">Docs locked</span><span class="card__locked-sub">needs market research</span></div></div>
+      </div>
+      <div class="compare__col">
+        <h4><b>B</b> · next step<br>the study's call to action</h4>
+        <div class="cell-w"><div class="card card--empty card--ready"><span class="card__empty-label">Draft docs</span><span class="card__empty-cmd">/specmanager-research driving-theory-app docs</span></div></div>
+      </div>
+      <div class="compare__col">
+        <h4><b>C</b> · open, not next<br>neutral, short command</h4>
+        <div class="cell-w"><div class="card card--empty"><span class="card__empty-label">Docs</span><span class="card__empty-cmd card__empty-cmd--dim">… docs</span></div></div>
+      </div>
+      <div class="compare__col">
+        <h4><b>D</b> · one Doc<br>migrated wireframes</h4>
+        <div class="cell-w">
+          <div class="doc-stack">
+            <div class="card doc-card">
+              <span class="doc-card__head"><span class="doc-card__type">Wireframes</span><span class="badge badge--meta">v1</span></span>
+              <span class="card__title">Concept screens A–E</span>
+            </div>
+            <div class="doc-add"><span>+ add a doc</span><span>… docs</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="compare__col">
+        <h4><b>E</b> · many Docs<br>custom + outdated + 2nd wireframes</h4>
+        <div class="cell-w">
+          <div class="doc-stack">
+            <div class="card doc-card card--stale">
+              <span class="doc-card__head"><span class="doc-card__type">Client presentation</span><span class="badge badge--meta">v1</span></span>
+              <span class="card__title">Academies partner pitch</span>
+              <span class="badge badge--outdated">⚠ outdated</span>
+            </div>
+            <div class="card doc-card">
+              <span class="doc-card__head"><span class="doc-card__type doc-card__type--custom"><i>custom</i>convocatoria calendar email</span><span class="badge badge--meta">v1</span></span>
+              <span class="card__title">Exam calendar newsletter</span>
+            </div>
+            <div class="card doc-card">
+              <span class="doc-card__head"><span class="doc-card__type">Wireframes</span><span class="badge badge--meta">v3</span></span>
+              <span class="card__title">Mock exam flow A–F</span>
+            </div>
+            <div class="card doc-card">
+              <span class="doc-card__head"><span class="doc-card__type">Wireframes</span><span class="badge badge--meta">v1</span></span>
+              <span class="card__title">Teacher dashboard A–D</span>
+            </div>
+            <div class="doc-add"><span>+ add a doc</span><span>… docs</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr class="compare__rule">
+    <div class="compare compare--3" style="padding-top:22px">
+      <div class="compare__col">
+        <h4><b>Preset</b> · drawer header</h4>
+        <div class="mini-head">
+          <nav class="panel__crumb">Oposiciones Spain <span class="panel__crumb-sep">›</span> One-pager</nav>
+          <div class="panel__title-row"><h2 class="panel__title">Oposiciones in one page</h2><span class="panel__meta">One-pager · <span class="mono">v2</span></span></div>
+          <div class="panel__badges"><span class="badge badge--interview">research</span><span class="badge badge--doctype">one-pager</span><span class="badge badge--meta">doc-oposiciones-spain-one-pager</span></div>
+        </div>
+      </div>
+      <div class="compare__col">
+        <h4><b>Custom</b> · string is the label</h4>
+        <div class="mini-head">
+          <nav class="panel__crumb">B2B language tutor <span class="panel__crumb-sep">›</span> Pilot proposal for HR leads</nav>
+          <div class="panel__title-row"><h2 class="panel__title">30-day pilot: 20 seats</h2><span class="panel__meta">Custom · <span class="mono">v1</span></span></div>
+          <div class="panel__badges"><span class="badge badge--interview">research</span><span class="badge badge--doctype" style="text-transform:none;letter-spacing:.02em">pilot proposal for HR leads</span><span class="badge badge--meta">doc-b2b-language-tutor-pilot-…</span></div>
+        </div>
+      </div>
+      <div class="compare__col">
+        <h4><b>Legacy</b> · concepts.html read as wireframes</h4>
+        <div class="mini-head">
+          <nav class="panel__crumb">Oposiciones Spain <span class="panel__crumb-sep">›</span> Wireframes</nav>
+          <div class="panel__title-row"><h2 class="panel__title">Concept screens A–F</h2><span class="panel__meta">Wireframes · <span class="mono">v1</span></span></div>
+          <div class="panel__badges"><span class="badge badge--interview">research</span><span class="badge badge--doctype">wireframes</span><span class="badge badge--meta">concepts-oposiciones-spain</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="sm-note">
+  <h2>Screen 2: every state of the Docs cell</h2>
+  <ul>
+    <li><strong>A, locked:</strong> <code>gateFor("docs")</code> needs market research. This reuses <code>LockedCell</code>, with the reason from <code>checkResearchStep</code>.</li>
+    <li><strong>B, next:</strong> when <code>nextStep === "docs"</code>, the cell shows <code>card--ready</code> with the label "Draft docs" and the full command. This is the only primary-bordered cell in the row.</li>
+    <li><strong>C, open but not next:</strong> this can happen when a study skipped Docs and moved on. The cell is dashed and neutral with a dim <code>… docs</code>, the same rule as the other columns, so one study shows one call to action.</li>
+    <li><strong>D, one Doc:</strong> one compact card plus the add row. The pair is about as tall as a normal 5.5rem cell, so a study with one Doc does not grow its row.</li>
+    <li><strong>E, many Docs:</strong> every Doc shows, with no "+N more" collapse. Two wireframes Docs are allowed (Architecture Q5), and each shows on its own. Their slugs (<code>wireframes</code>, <code>wireframes-2</code>) are in the tooltip ids. The outdated card keeps its error edge wherever it sits in the stack.</li>
+  </ul>
+  <h3>Drawer header per doc type</h3>
+  <ul>
+    <li><strong>Crumb:</strong> <code>&lt;study&gt; › &lt;doc-type label&gt;</code>. A preset uses its label. A custom type uses its string with the first letter capitalised.</li>
+    <li><strong>Meta:</strong> <code>&lt;label&gt; · vN</code>. For a custom type, the meta reads <code>Custom · vN</code> so a long string is not repeated twice in the header.</li>
+    <li><strong>Badges:</strong> the ghost <code>research</code> tag, then a new <code>.badge--doctype</code> (a <code>--secondary</code> outline that matches the column spine, lowercase type), then the id and <code>generatedBy</code>. The legacy doc keeps its <code>concepts-&lt;slug&gt;</code> id, and its crumb says Wireframes.</li>
+    <li><code>kindLabel</code> grows a <code>docTypeLabel(docType)</code> helper so the column, crumb and meta all use one mapping.</li>
+  </ul>
+</section>
+<hr class="sm-divider">
+
+<!-- ============ SCREEN 3: Brief in the drawer ============ -->
+<section class="sm-screen">
+  <div class="sm-label"><b>Screen 3</b> · Brief open in the drawer · editable markdown, unsaved edit</div>
+  <div class="frame">
+    <div class="frame__chrome"><i></i><i></i><i></i><div class="frame__url">127.0.0.1:4317/<b>#researcher</b></div></div>
+    <div class="viewport viewport--panel">
+      <div style="padding:24px 0 0">
+        <div class="ghost-grid"><span class="l"></span><span></span><span class="tall"></span><span></span><span></span><span></span><span class="tall"></span><span class="l"></span><span></span><span class="tall"></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="panel-backdrop">
+        <aside class="panel">
+          <header class="panel__header">
+            <div>
+              <nav class="panel__crumb">B2B language tutor <span class="panel__crumb-sep">›</span> Brief</nav>
+              <div class="panel__title-row">
+                <h2 class="panel__title">B2B language tutor brief</h2>
+                <span class="panel__meta">Brief · <span class="mono">v2</span></span>
+              </div>
+              <div class="panel__badges">
+                <span class="badge badge--interview">research</span>
+                <span class="badge badge--meta">brief-b2b-language-tutor</span>
+                <span class="badge badge--meta">agent</span>
+              </div>
+            </div>
+            <div class="panel__header-actions">
+              <span class="btn">Save</span>
+              <span class="panel__close">×</span>
+            </div>
+          </header>
+          <div class="md-toolbar">
+            <span class="tb-btn">H<span style="font-size:.6rem;margin-left:3px;opacity:.7">▾</span></span><span class="tb-sep"></span>
+            <span class="tb-btn"><b>B</b></span><span class="tb-btn"><i>I</i></span><span class="tb-btn mono" style="font-size:.74rem">&lt;/&gt;</span><span class="tb-sep"></span>
+            <span class="tb-btn">• ≡</span><span class="tb-btn">1. ≡</span><span class="tb-btn">❝</span><span class="tb-btn">⊞</span>
+          </div>
+          <div class="md-surface">
+            <div class="prose">
+              <h2>Idea</h2>
+              <p>An AI conversation coach that Spanish SMEs buy per seat, so staff who deal with export clients reach B2 English without booking live tutors.</p>
+              <h2>Market</h2>
+              <p>Spain, companies with 10–250 employees in export-led sectors: agrifood, industrial machinery, hospitality groups. Training is usually paid from FUNDAE credits.</p>
+              <h2>Audience</h2>
+              <ul>
+                <li><strong>Buyer:</strong> HR or People lead who owns the training budget.</li>
+                <li><strong>Learner:</strong> sales, logistics and front-desk staff aged 25–50, at A2–B1 today, practising on their phone in short slots.</li>
+              </ul>
+              <h2>Goals</h2>
+              <ul>
+                <li>Learn whether HR leads would pay per seat for an app-only course.</li>
+                <li>Find the moments where staff need English most (calls, email, trade fairs).</li>
+                <li>Get to interview-ready wireframes and a pilot offer in two weeks.<span class="caret"></span></li>
+              </ul>
+              <h2>Constraints</h2>
+              <ul>
+                <li>Solo founder; no live-tutor layer in v1.</li>
+                <li>Learner audio stays in the EU (GDPR).</li>
+              </ul>
+              <h2>Assumptions</h2>
+              <ul>
+                <li><em>Decided for you:</em> app-based courses can be paid from FUNDAE credits. Unverified, so market research should check it.</li>
+              </ul>
+              <h2>Open questions</h2>
+              <ul>
+                <li>Is the first buyer the HR lead or the export manager?</li>
+              </ul>
+            </div>
+          </div>
+          <footer class="panel__footer"><span>.claude/specs/research/b2b-language-tutor/brief.md</span><span class="hint">saving marks docs that read the brief as outdated</span></footer>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="sm-note">
+  <h2>Screen 3: the brief in the drawer</h2>
+  <p>Clicking the brief chip opens <code>ResearchDocPanel</code> on <code>brief-&lt;slug&gt;</code>. The brief is markdown, so it gets the same Milkdown editor, toolbar, Save button and 409 conflict banner as the other markdown research docs. Nothing new is built for the editor.</p>
+  <ul>
+    <li><strong>Header:</strong> the crumb is <code>&lt;study&gt; › Brief</code> and the meta is <code>Brief · vN</code>. Badges are the ghost <code>research</code> tag, the id and <code>generatedBy</code>. The brief never gets an outdated badge, because its <code>dependsOn</code> is always empty.</li>
+    <li><strong>Body:</strong> the seven pinned headings, in order: Idea, Market, Audience, Goals, Constraints, Assumptions, Open questions (INV-56f). Answers the user left to "decide for me" appear under Assumptions in italic <code>--on-surface-variant</code>. The board does not enforce the headings. The user may edit freely, and the loop's review pass checks their shape.</li>
+    <li><strong>Save:</strong> <code>PUT /api/research/:id</code> with <code>baseVersion</code>, which is already wired for markdown research docs. The mockup shows the dirty state (<code>Save</code> enabled, caret in Goals).</li>
+    <li><strong>Downstream hint:</strong> a dim right-aligned line in <code>panel__footer</code> says that saving marks the docs that read the brief as outdated. It is static text, not a computed list, so it needs no new data. After the save, the watcher reloads the grid and those cards show <code>⚠ outdated</code> through the existing <code>outdatedUpstreams</code>.</li>
+    <li>The drawer is still 68% wide on desktop and full width under 640px, as today.</li>
+  </ul>
+</section>
+<hr class="sm-divider">
+
+<!-- ============ SCREEN 4: Investor deck in the drawer ============ -->
+<section class="sm-screen">
+  <div class="sm-label"><b>Screen 4</b> · A Doc open in the drawer · investor deck, read-only sandboxed iframe, outdated</div>
+  <div class="frame">
+    <div class="frame__chrome"><i></i><i></i><i></i><div class="frame__url">127.0.0.1:4317/<b>#researcher</b></div></div>
+    <div class="viewport viewport--panel">
+      <div style="padding:24px 0 0">
+        <div class="ghost-grid"><span class="l"></span><span></span><span class="tall"></span><span></span><span></span><span></span><span class="tall"></span><span class="l"></span><span></span><span class="tall"></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="panel-backdrop">
+        <aside class="panel">
+          <header class="panel__header">
+            <div>
+              <nav class="panel__crumb">Oposiciones Spain <span class="panel__crumb-sep">›</span> Investor deck</nav>
+              <div class="panel__title-row">
+                <h2 class="panel__title">Seed deck: pass-today readiness</h2>
+                <span class="panel__meta">Investor deck · <span class="mono">v1</span></span>
+              </div>
+              <div class="panel__badges">
+                <span class="badge badge--interview">research</span>
+                <span class="badge badge--doctype">investor-deck</span>
+                <span class="badge badge--kind">html</span>
+                <span class="badge badge--outdated">⚠ outdated</span>
+                <span class="badge badge--meta">doc-oposiciones-spain-investor-deck</span>
+                <span class="badge badge--meta">agent</span>
+              </div>
+            </div>
+            <div class="panel__header-actions">
+              <span class="btn btn--disabled">Read-only</span>
+              <span class="panel__close">×</span>
+            </div>
+          </header>
+          <section class="panel__stale">
+            <strong>This doc is behind its sources.</strong> Re-run this step to fold in what changed: <span class="mono" style="font-size:.78rem;color:var(--primary)">/specmanager-research oposiciones-spain docs</span>
+            <ul class="stale-list">
+              <li><span class="link">market-oposiciones-spain</span> · based on v3 · now v3</li>
+              <li><span class="link">mktg-oposiciones-spain</span> · based on v2 · now v2</li>
+              <li class="drift-row"><span class="link">strategy-oposiciones-spain</span> · based on v2 · now v3<span class="drift-tag">drift</span></li>
+            </ul>
+          </section>
+          <div class="iframe-canvas">
+            <div class="deck">
+              <div class="deck__slide">
+                <div class="deck__eyebrow">Oposiciones · seed round</div>
+                <h1>Would you pass today? Readiness for Spain's public-service exams.</h1>
+                <p>Timed mocks by topic, a pass-today score and BOE syllabus alerts, for candidates who already have too many questions and no idea where they stand.</p>
+                <div class="deck__bar"></div>
+                <span class="deck__n">1 / 9</span>
+              </div>
+              <div class="deck__slide">
+                <div class="deck__eyebrow">Market</div>
+                <h2>Candidates prepare for years and pay every month</h2>
+                <div class="deck__stats">
+                  <div class="deck__stat"><b>9,99 €</b><span>median monthly price of app-based prep</span><small>Source: market-oposiciones-spain · Revenue models</small></div>
+                  <div class="deck__stat"><b>120 €</b><span>monthly fee at a classroom academy</span><small>Source: market-oposiciones-spain · Competitors</small></div>
+                  <div class="deck__stat deck__stat--na"><b>n/a (unsourced)</b><span>serviceable market in candidates per year</span><small>No source in upstream docs</small></div>
+                </div>
+                <p class="deck__src">Figures come only from this study's docs. A figure with no source is shown as n/a (unsourced), never estimated.</p>
+                <span class="deck__n">2 / 9</span>
+              </div>
+              <div class="deck__slide">
+                <div class="deck__eyebrow">What we heard</div>
+                <div class="deck__quote">"I don't need more questions, I need to know if I'd pass today."</div>
+                <p>P4, Correos candidate, first attempt</p>
+                <span class="deck__n">3 / 9</span>
+              </div>
+            </div>
+          </div>
+          <footer class="panel__footer"><span>.claude/specs/research/oposiciones-spain/docs/investor-deck.html</span><span class="hint">sandboxed · scripts off</span></footer>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="sm-note">
+  <h2>Screen 4: a Doc in the drawer</h2>
+  <p>Any Doc card opens <code>ResearchDocPanel</code>, which now branches on <code>isHtml</code> (<code>kind === "doc"</code>) instead of <code>isConcepts</code>. The body is the existing <code>HtmlPreview</code>: the sanitised HTML rendered verbatim in the sandboxed iframe on <code>--design-preview-bg</code>, the same as a design brief or the old concepts canvas. It has no toolbar.</p>
+  <ul>
+    <li><strong>Header:</strong> the crumb uses the doc-type label (<code>Oposiciones Spain › Investor deck</code>). The badges are <code>research</code>, <code>.badge--doctype</code>, the <code>html</code> kind tag, outdated if it applies, the id and <code>generatedBy</code>.</li>
+    <li><strong>Read-only:</strong> the action button reads <strong>Read-only</strong> and is disabled. Today it says "Saved" for concepts, which suggests the doc could be edited. Docs are not edited in the board (PRD non-goal). They are redrafted with the docs step.</li>
+    <li><strong>Outdated block:</strong> this reuses <code>panel__stale</code> and <code>stale-list</code>. Every <code>dependsOn</code> id is listed with based-on against now, and the one that moved carries the <code>drift</code> tag. The command is the docs step (<code>stepCommand</code> maps <code>doc → docs</code>). When the docs step runs, it offers "update <em>this doc</em>", so the user does not end up with a second deck.</li>
+    <li><strong>Inside the iframe:</strong> the deck is the Doc's own HTML and styling: 16:9 slides stacked vertically, with figures carrying a source line and the unsourced one shown as <code>n/a (unsourced)</code>. The board does not style it. Its colors are the agent's choice for the study's product, not board tokens.</li>
+    <li><strong>Footer:</strong> the file path (<code>docs/&lt;doc-slug&gt;.html</code>, or <code>concepts.html</code> for a legacy doc), plus a dim reminder that the preview runs sandboxed with scripts off.</li>
+  </ul>
+</section>
+<hr class="sm-divider">
+
+<!-- ============ SCREEN 5: Empty state ============ -->
+<section class="sm-screen">
+  <div class="sm-label"><b>Screen 5</b> · Researcher mode · no studies yet · leads with the research loop</div>
+  <div class="frame">
+    <div class="frame__chrome"><i></i><i></i><i></i><div class="frame__url">127.0.0.1:4317/<b>#researcher</b></div></div>
+    <div class="viewport">
+      <main class="board">
+        <header class="board__header">
+          <div>
+            <h1 class="board__title">opos-app</h1>
+            <p class="board__subtitle">SpecManager</p>
+          </div>
+          <div class="mode-toggle" role="tablist" aria-label="Board mode">
+            <span class="mode-toggle__seg" role="tab" aria-selected="false"><span class="glyph">▦</span>Builder</span>
+            <span class="mode-toggle__seg mode-toggle__seg--active" role="tab" aria-selected="true"><span class="glyph">◎</span>Researcher</span>
+          </div>
+          <div class="board__meta"><span class="board__count">0 studies</span></div>
+        </header>
+        <section class="empty-research">
+          <div class="empty-research__intro">
+            <h2>No studies yet</h2>
+            <p>A study takes one product idea or market from desk research to an ordered build list. Claude drafts each doc in your session. You run the interviews and drop the notes in. Each study is independent, so you can run several at once.</p>
+            <ol class="steps">
+              <li class="loop"><i></i>market</li><li class="loop"><i></i>docs</li><li class="loop"><i></i>plan</li><li class="loop"><i></i>marketing</li><li><i></i>findings</li><li><i></i>strategy</li><li><i></i>handoff</li>
+            </ol>
+            <div class="steps-bracket"><span></span></div>
+            <div class="start-block">
+              <div class="start-block__lead">Run everything before the interviews in one go:</div>
+              <span class="cmd cmd--loop">/specmanager-research-loop "&lt;idea&gt;"</span>
+              <div class="start-block__caption"><b>asks first</b> · brief → market → docs → plan → marketing · <b>one review</b> · <b>asks again</b> · approves nothing</div>
+              <div class="start-block__lead" style="margin-top:.7rem">Or one step at a time:</div>
+              <span class="cmd cmd--dim">/specmanager-research "&lt;idea&gt;" new</span>
+            </div>
+          </div>
+          <div class="empty-research__form">
+            <h3>Or start one here</h3>
+            <div class="field">
+              <label>Study name</label>
+              <div class="input input--focus">Driving theory app<span class="caret"></span></div>
+              <div class="hint">slug: driving-theory-app</div>
+            </div>
+            <div class="field">
+              <label>Idea or market</label>
+              <div class="input input--area">DGT theory-test practice with explanations in Spanish, English and Arabic.</div>
+              <div class="hint">one line · the loop's opening questions turn this into the brief</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;margin-top:.2rem;flex-wrap:wrap">
+              <span class="btn btn--primary">Start study</span>
+              <span style="font-size:.72rem;color:var(--on-surface-variant)">then run <span class="mono" style="color:var(--primary)">/specmanager-research-loop driving-theory-app</span></span>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+</section>
+<section class="sm-note">
+  <h2>Screen 5: empty state</h2>
+  <p>This is the existing two-pane <code>.empty-research</code> from <code>EmptyResearch.tsx</code>. The changes are in the copy and the commands, and the layout stays as it is.</p>
+  <ul>
+    <li><strong>Steps rail:</strong> <code>STEPS</code> reads market, <strong>docs</strong>, plan, marketing, findings, strategy, handoff. The four steps the loop covers get a faint <code>--primary</code> fill, and a thin bracket under them is labelled "covered by /specmanager-research-loop · brief first". The brief is named in the label rather than added as an eighth segment, because it is not a rail step.</li>
+    <li><strong>Commands:</strong> the loop is the primary path. <code>/specmanager-research-loop "&lt;idea&gt;"</code> sits in a <code>.cmd</code> with a primary hairline and the <code>--tb-active-bg</code> focus halo. A mono caption under it gives the loop's shape (asks first, one review, asks again, approves nothing). The single-step <code>/specmanager-research "&lt;idea&gt;" new</code> stays below as a dim secondary block. Both copy on click.</li>
+    <li><strong>Form:</strong> unchanged (<code>POST /api/studies</code>). The idea hint now says the loop's opening questions turn the idea into the brief. The "then run" line suggests <code>/specmanager-research-loop &lt;slug&gt;</code>, which works on an existing study because the loop resolves the study by slug first. A study made here has no brief, so its row shows the dashed brief chip until the loop or the brief step runs.</li>
+    <li>Under 640px the panes stack, as they do today.</li>
+  </ul>
+</section>
+<hr class="sm-divider">
+
+<!-- ============ SCREEN 6: Tablet ============ -->
+<section class="sm-screen">
+  <div class="sm-label"><b>Screen 6</b> · Tablet (900px) · Docs column under the 640–1024px breakpoint</div>
+  <div class="frame frame--tablet">
+    <div class="frame__chrome"><i></i><i></i><i></i><div class="frame__url">127.0.0.1:4317/<b>#researcher</b> · 900px</div></div>
+    <div class="viewport">
+      <main class="board" style="padding:0 20px 32px">
+        <header class="board__header" style="margin:0 -20px 20px;padding:12px 20px">
+          <div>
+            <h1 class="board__title" style="font-size:2rem;line-height:2.4rem">opos-app</h1>
+            <p class="board__subtitle">SpecManager</p>
+          </div>
+          <div class="mode-toggle"><span class="mode-toggle__seg"><span class="glyph">▦</span>Builder</span><span class="mode-toggle__seg mode-toggle__seg--active"><span class="glyph">◎</span>Researcher</span></div>
+        </header>
+        <section class="grid grid--tablet">
+          <div class="grid__corner">Study</div>
+          <div class="grid__header">Market</div>
+          <div class="grid__header grid__header--docs">Docs</div>
+          <div class="grid__header">User res.</div>
+          <div class="grid__header">Marketing</div>
+          <div class="grid__header">Strategy</div>
+
+          <div class="row__label">
+            <strong>B2B language tutor</strong>
+            <small>b2b-language-tutor</small>
+            <span class="chip-brief"><span class="page"></span>Brief <span class="meta">v2</span></span>
+            <div class="study-rail"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="next"></i><i></i><i></i></div>
+            <div class="study-rail__caption"><span>next <b>findings</b></span><span>4 / 7</span></div>
+          </div>
+          <div class="row__cell"><div class="card"><span class="card__title">B2B language tutor market research</span><span class="card__badges"><span class="badge badge--meta">v1</span></span></div></div>
+          <div class="row__cell">
+            <div class="doc-stack">
+              <div class="card doc-card"><span class="doc-card__head"><span class="doc-card__type">One-pager</span><span class="badge badge--meta">v1</span></span><span class="card__title">Per-seat English coach for SMEs</span></div>
+              <div class="card doc-card"><span class="doc-card__head"><span class="doc-card__type doc-card__type--custom"><i>custom</i>pilot proposal for HR leads</span><span class="badge badge--meta">v1</span></span><span class="card__title">30-day pilot: 20 seats</span></div>
+              <div class="card doc-card"><span class="doc-card__head"><span class="doc-card__type">Wireframes</span><span class="badge badge--meta">v2</span></span><span class="card__title">Tutor screens A–F</span></div>
+              <div class="doc-add"><span>+ add</span><span>… docs</span></div>
+            </div>
+          </div>
+          <div class="row__cell"><div class="card"><span class="card__title">User research plan</span><span class="card__badges"><span class="badge">0 findings</span></span></div></div>
+          <div class="row__cell"><div class="card"><span class="card__title">Per-seat launch plan</span><span class="card__badges"><span class="badge badge--meta">v1</span></span></div></div>
+          <div class="row__cell"><div class="card card--locked"><span class="card__locked-label">Strategy locked</span><span class="card__locked-sub">needs findings</span></div></div>
+          <div class="row__wrap"><div class="card card--locked row-strip"><span class="card__locked-label">Handoff locked</span><span class="card__locked-sub" style="margin:0">needs a strategy</span></div></div>
+
+          <div class="row__label">
+            <strong>Oposiciones Spain</strong>
+            <small>oposiciones-spain</small>
+            <span class="chip-brief chip-brief--missing"><span class="page"></span>no brief</span>
+            <div class="study-rail"><i class="done"></i><i class="flag"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i></div>
+            <div class="study-rail__caption"><span>complete</span><span class="warn">outdated</span></div>
+          </div>
+          <div class="row__cell"><div class="card"><span class="card__title">Oposiciones market research</span><span class="card__badges"><span class="badge badge--meta">v3</span></span></div></div>
+          <div class="row__cell">
+            <div class="doc-stack">
+              <div class="card doc-card"><span class="doc-card__head"><span class="doc-card__type">Wireframes</span><span class="badge badge--meta">v1</span></span><span class="card__title">Concept screens A–F</span></div>
+              <div class="card doc-card card--stale"><span class="doc-card__head"><span class="doc-card__type">Investor deck</span><span class="badge badge--meta">v1</span></span><span class="card__title">Seed deck: pass-today readiness</span><span class="badge badge--outdated">⚠ outdated</span></div>
+              <div class="card doc-card"><span class="doc-card__head"><span class="doc-card__type">One-pager</span><span class="badge badge--meta">v2</span></span><span class="card__title">Oposiciones in one page</span></div>
+              <div class="doc-add"><span>+ add</span><span>… docs</span></div>
+            </div>
+          </div>
+          <div class="row__cell"><div class="card"><span class="card__title">User research plan</span><span class="card__badges"><span class="badge badge--meta">v4</span></span></div></div>
+          <div class="row__cell"><div class="card"><span class="card__title">Launch marketing plan</span><span class="card__badges"><span class="badge badge--meta">v2</span></span></div></div>
+          <div class="row__cell"><div class="card"><span class="card__title">Strategy: what to build first</span><span class="card__badges"><span class="badge badge--meta">v3</span></span></div></div>
+          <div class="row__wrap">
+            <div class="card card--build card--handoff handoff-strip">
+              <div class="handoff__head"><span>Build list · strategy v3</span></div>
+              <span class="pill pill--done">1 Timed mock exams → timed-mock-exams</span>
+              <span class="pill pill--done">2 Flashcards → spaced-repetition-flashcards</span>
+              <span class="pill">3 Cut-off score tracker</span>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+</section>
+<section class="sm-note">
+  <h2>Screen 6: tablet layout</h2>
+  <p>This follows the existing <code>@media (max-width: 1024px)</code> rules in <code>styles.css</code>. The label column drops to 10rem, the Handoff header hides, and <code>.row__cell--build</code> wraps below the row at full width. Docs adds one override to that breakpoint.</p>
+  <ul>
+    <li><strong>Docs track:</strong> it stays wider than its neighbours, at <code>minmax(9rem, 1.3fr)</code> against <code>minmax(7rem, 1fr)</code>. It is about 9.5rem at 900px. Doc-type labels truncate with an ellipsis, and titles keep their one-line clamp. The tooltip carries the full type and title.</li>
+    <li><strong>Add row:</strong> shortens to <code>+ add</code> so it still fits on one line next to <code>… docs</code>.</li>
+    <li><strong>Brief chip:</strong> stays in the label. The idea line and the next-step command hide at this width to save height. The rail caption still names the next step, and the chip keeps its click target.</li>
+    <li><strong>Handoff strip:</strong> the wrapped Handoff cell lays its items out as a row of pills. This shows how the existing strip pattern applies to research rows. It is not new behaviour in this feature.</li>
+    <li><strong>Mobile (&lt;640px):</strong> not mocked, because the existing linearization applies. Each study becomes one column, so the Docs stack takes the full width and the type labels stop truncating.</li>
+  </ul>
+</section>
+
+<section class="sm-note sm-open-questions">
+  <h2>Open questions for the planner</h2>
+  <ol>
+    <li><strong>DESIGN.md is thin, but the tokens are real.</strong> The frontmatter in <code>docs/DESIGN.md</code> holds <code>var(--…)</code> references and one placeholder type role. The real values live in <code>ui/src/tokens.css</code>, and every board value here comes from that file, so no tokens were synthesized and <code>bootstrap_design_tokens</code> was not called (same as <code>design-researcher-mode-009</code>).</li>
+    <li><strong>No new color tokens.</strong> The new classes (<code>.doc-stack</code>, <code>.doc-card</code> and its spine, <code>.doc-card__type</code>, <code>.doc-add</code>, <code>.chip-brief</code>, <code>.badge--doctype</code>, <code>.grid__header--docs</code>, <code>.steps-bracket</code>, <code>.cmd--loop</code>) use existing tokens plus <code>color-mix</code> only. Using <code>--secondary</code> for Docs reuses Builder's Design-stage accent for "visual HTML artifacts". Confirm that this cross-mode meaning is wanted, or use <code>--primary</code>.</li>
+    <li><strong>Iframe content colors.</strong> The deck in Screen 4 uses its own hex values (a teal accent, slate text). They are part of the Doc's HTML, which the researcher agent writes for the study's product, so they are outside the token system on purpose. Architecture open question 1 (a shared deck style per study) is still open and would decide where those values come from.</li>
+    <li><strong>Docs track width.</strong> This design widens the Docs column (<code>1.35fr</code> on desktop, <code>1.3fr</code> on tablet), which slightly narrows the other doc columns. Confirm, or keep equal tracks and accept heavier truncation.</li>
+    <li><strong>Stack length.</strong> Every Doc shows, and the row grows (Screen 2 E). Should more than four Docs collapse into "+N more"? This design says no, because studies are expected to hold a few Docs each.</li>
+    <li><strong>Stack order.</strong> Cards follow <code>listResearchDocs</code> order (legacy first, then by file name). Ordering by doc type (wireframes first) or by most recently updated would read better, but it needs a sort rule in core or the UI. Pick one.</li>
+    <li><strong>Docs flag on the rail.</strong> Following Architecture, one outdated Doc turns the whole <em>docs</em> segment red, even when the study is otherwise complete (Oposiciones). Acceptable, or should an outdated deck not flag the rail?</li>
+    <li><strong>"Read-only" label.</strong> The HTML drawer button changes from "Saved" (disabled) to "Read-only" (disabled). This is a small copy change to the existing concepts behaviour. Confirm.</li>
+    <li><strong>Brief "used by" count.</strong> The brief drawer shows a static footer hint instead of "read by N docs", because <code>StudyDocCard</code> does not carry <code>dependsOn</code>. Add it to the study summary if a count is wanted.</li>
+    <li><strong>Custom type casing.</strong> Custom strings show verbatim in the column (lowercase as typed) and capitalised in the crumb. Should the docs step normalise the casing when it stores <code>docType</code>?</li>
+    <li><strong>Loop progress on the board.</strong> The loop writes docs one by one, and the board updates live through the watcher. No "loop running" indicator is designed, because the plugin does not track an in-flight loop. Confirm that none is wanted.</li>
+    <li><strong>Hidden idea line at tablet.</strong> Screen 6 hides <code>.study__idea</code> and <code>.study__next</code> under 1024px to keep rows short. Today they still show at tablet. Confirm the change, or keep them and accept taller rows.</li>
+  </ol>
+</section>
+
+</body>
+</html>
