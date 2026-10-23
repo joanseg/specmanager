@@ -90,6 +90,10 @@ const PLAN = [
   "## Phase spec — Fallback tier two",
   "",
   "Spec phase body.",
+  "## Phase loop-docs — Hyphenated name",
+  "",
+  "Loop-docs phase body.",
+  "",
   "## Phase orphan — No name match",
   "",
   "Orphan phase body.",
@@ -153,6 +157,11 @@ async function main(): Promise<void> {
   assert(matchPhaseHeading("## Phase core — Anchors") === "core", "matchPhaseHeading tolerates the `— <theme>` suffix");
   assert(matchPhaseHeading("## Phase A") === "A", "matchPhaseHeading returns the name as written");
   assert(matchPhaseHeading("### Phase core") === null, "matchPhaseHeading ignores non-`##` lines");
+  assert(matchPhaseHeading("## Phase loop-docs — X") === "loop-docs", "matchPhaseHeading keeps inner hyphens in the name");
+  assert(matchPhaseHeading("## Phase core — X") === "core", "matchPhaseHeading stops at the spaced em dash");
+  assert(matchPhaseHeading("## Phase core - X") === "core", "matchPhaseHeading stops at whitespace before a spaced hyphen");
+  assert(matchPhaseHeading("## Phase core—X") === "core", "matchPhaseHeading stops at an unspaced em dash");
+  assert(matchPhaseHeading("## Phase - X") === null, "matchPhaseHeading returns null for an empty name");
 
   // 12. Heading indexing is deliberately NOT fence-aware. The Architecture's
   //     rule 2 specifies a bare `/^(#{2,6})\s+(.+)$/m` index, so a `##` line
@@ -259,6 +268,7 @@ async function main(): Promise<void> {
   await createTask({ featureId: fb.id, title: "Core work", phase: "core", complexity: 3 }, root);
   await createTask({ featureId: fb.id, title: "Spec work", phase: "spec", complexity: 2 }, root);
   await createTask({ featureId: fb.id, title: "Orphan work", phase: "orphan", complexity: 1 }, root);
+  await createTask({ featureId: fb.id, title: "Loop-docs work", phase: "loop-docs", complexity: 1 }, root);
   // `core` gets no meta at all (case 11); the other two get an explicit empty list.
   await setPhaseMeta(fb.id, "spec", { testCommand: "none", architectureRefs: [] }, root);
   await setPhaseMeta(fb.id, "orphan", { testCommand: "none", architectureRefs: [] }, root);
@@ -294,6 +304,12 @@ async function main(): Promise<void> {
   assert(spec.planSection!.includes("Spec phase body."), "planSection resolves a phase that follows a `---`");
   assert(!spec.planSection!.includes("Orphan phase body."), "planSection stops at the next `## Phase` heading");
   assert(!orphan.planSection!.includes("Tail body."), "planSection stops at an ordinary `##` heading too");
+  const hyphenated = (await getSpecSlice(fb.id, "loop-docs", root))!;
+  assert(
+    hyphenated.planSection !== null && hyphenated.planSection.includes("Loop-docs phase body."),
+    "planSection resolves a hyphenated phase name"
+  );
+  assert(!hyphenated.planSection!.includes("Orphan phase body."), "a hyphenated phase's planSection stops at the next `## Phase`");
 
   // 9. Unknown phase → null (mirrors getPhaseCompletion's phase-not-found branch).
   assert((await getSpecSlice(fb.id, "nope", root)) === null, "an unknown phase returns null, not an empty slice");
