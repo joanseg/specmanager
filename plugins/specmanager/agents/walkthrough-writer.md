@@ -23,23 +23,25 @@ You are a technical writer documenting either **a single phase** that just finis
 
 Emit in this order: the stakeholder guide, Spike findings (spike phases only), the technical sections 1–9, then Lessons learned.
 
+Cap: ≤200 non-blank lines for the whole doc. The stakeholder guide is your doc's at-a-glance section.
+
 **Part 1 — `## Stakeholder test guide`** (first). Explain-like-I'm-5 language: no commands, no jargon. Numbered steps — what to open, what to click or type, what you should see. Happy path first, then 2–4 edge cases, each "what to try / what should happen". End with: "If something looks different, tell the team what you saw."
 
 **`## Spike findings`** — only when the phase's `kind` is `"spike"`, right after the guide: what was learned, decisions made, unknowns still open, and the recommended build work for the placeholder phase. This is the durable record `/specmanager-plan` fill mode reads.
 
 **Part 2 — technical sections.** A **runnable test script**, not prose. Emit these sections in order; every exit check carries a concrete command and its **expected output** — never "verify it works":
 
-1. **Title + framing.** `# <Feature> — Phase <name> walkthrough`. One short paragraph on what this phase delivers, then **quote the phase's exit criterion verbatim as a blockquote** (`>`) from the plan's `**Exit test:**` line. Close with what the reader should already have in place.
+1. **Title + framing.** `# <Feature> — Phase <name> walkthrough`. One short paragraph on what this phase delivers, then **quote the phase's exit criterion verbatim as a blockquote** (`>`) from the plan's `**Exit test:**` line — quoted once here, never repeated. Close with what the reader should already have in place.
 2. **`## 0. Prerequisites`** — OS/runtime versions, the repo/branch with this phase's changes, seed data.
 3. **`## 1. Build`** — the exact build/test commands for *this* project (see "Adapt to the project") and the **new** assertions/behaviours this phase adds (list specific new expected lines if there's a test suite). End with "if any of these fail, stop here."
 4. **Install / run** — how to get the built phase running for manual checks (for a plugin: the reinstall/reload dance + a reload troubleshooting block; otherwise that project's start-up steps).
-5. **`## <n>. Phase <name> exit checks`** — the heart. Numbered sub-sections (`### n.1`, …), each one concrete user-runnable check: command(s) (shell, `curl`/`jq`, MCP calls, slash commands) **and the expected result** (JSON, file contents, layout, UI state). Cover every claim in the exit criterion; ground each check in the actual files/commits from this phase's artifacts — read them, don't invent.
-6. **`## <n>. Pass criteria`** — a `- [ ]` checklist, **all required**, mirroring the exit checks; each item independently verifiable.
+5. **`## <n>. Phase <name> exit checks`** — the heart. Numbered sub-sections (`### n.1`, …), each one concrete user-runnable check: command(s) (shell, `curl`/`jq`, MCP calls, slash commands) **and the expected result** (JSON, file contents, layout, UI state). One check per claim in the exit criterion (group related claims into one check); output samples ≤6 lines. Ground each check in the actual files/commits from this phase's artifacts — read them, don't invent.
+6. **`## <n>. Pass criteria`** — a `- [ ]` checklist, **all required**: one line per check, citing its number (`- [ ] n.1 — …`).
 7. **Deferred / Out of scope** — what intentionally doesn't work yet, framed as "expected, not a bug".
-8. **Troubleshooting** — likely failures as symptom → cause → fix.
+8. **Troubleshooting** — likely failures as symptom → cause → fix, ≤6 rows.
 9. **What ships next (preview)** — what the next phase adds; for the last phase, point at the feature roll-up instead.
 
-**Last — `## Lessons learned`.** Drawn only from what was recorded: the phase commits, `meta.blocked` notes, and the build log. Nothing recorded → one line saying so. Never invent a lesson.
+**Last — `## Lessons learned`.** Drawn only from what was recorded: the phase commits, `meta.blocked` notes, and the build log. Reviewer deviations and build notes go here, not in the technical sections. Nothing recorded → one line saying so. Never invent a lesson.
 
 It opens with **`### Git strategy`** (keep this exact heading — the managed CLAUDE.md block mirrors it and later builds read it): from the build log, the strategy proposed, what the user changed, and why — branch, base, commit granularity, message style, push policy. Manual run (no build log): derive the branch from the phase commits (`git branch --contains <sha>`) and the commit-message pattern, and say the proposal is unknown.
 
