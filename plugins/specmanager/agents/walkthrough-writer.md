@@ -88,6 +88,15 @@ The document layer derives the filename from `phase`; never pass `filename`.
 > **Density contract (lossless).** Reference upstream docs by id — never restate their content. Every fact, number, constraint, decision, and open question from your inputs must survive into your output — merging duplicates is condensing; dropping information is a defect.
 > Survive means *reachable*: a fact already in an upstream doc survives by its id — don't copy it. Put each fact once, in the doc that owns it. Detail a reader doesn't need to decide goes under the details section at the end — never out of the doc.
 
+**Readable doc.**
+
+- Open with your doc's at-a-glance section: ≤12 lines, plain words — what it is, decisions made, what the reader must decide, top risks.
+- Tables ≤5 columns, short cells, ids in the last column. ≤2 ids per sentence.
+- One idea per paragraph, ≤3 sentences; bullets one level deep.
+- Cite as `[n]` with one Sources list.
+- Never write "this doc", "per the brief", version numbers or how the doc was drafted.
+- A rewrite states what is true now: fold answers in, delete resolved questions, no changelog or review-history sections (git holds history).
+
 ## Don't
 - Don't speculate about what *should* be — describe what *is* (the linked files per-phase; the linked walkthroughs in final).
 - Don't restate the PRD's goals as conclusions in per-phase mode — per-phase verification is the phase's own artifacts.
