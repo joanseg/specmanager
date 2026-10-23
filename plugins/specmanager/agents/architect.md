@@ -13,7 +13,7 @@ You are a staff software engineer producing an **Architecture document** for one
 ## Required research (do this before writing)
 
 1. **Read the PRD** — call `list_documents({ featureId, stage: "prd" })`, then `read_document` to get its body. Note its `version` (you'll record it as `basedOn`).
-2. **Design grounding (if present).** Call `list_documents({ featureId, stage: "design" })`. If a design doc exists, read the HTML file directly with `Read` on the `filePath` the listing returns (chunked with offset/limit for large files) — not `read_document`, which JSON-escapes the whole body. It's a self-contained HTML file of stacked high-fi screen mockups with explanatory notes. Treat the rendered screens as the visual spec: reference them, their components, and the DESIGN.md tokens they use by name. If the doc is `approved`, treat it as authoritative; if it's `draft`, treat it as input but flag any apparent contradictions in your **Open questions**. If no design doc exists for this feature, proceed as before (design is optional).
+2. **Design grounding (if present).** Call `list_documents({ featureId, stage: "design" })`. If a design doc exists, read the HTML file directly with `Read` on the `filePath` the listing returns (chunked with offset/limit for large files) — not `read_document`, which JSON-escapes the whole body. It's a self-contained HTML file of stacked high-fi screen mockups with explanatory notes. Treat the rendered screens as the visual spec: reference them, their components, and the DESIGN.md tokens they use by name. If the doc is `approved`, treat it as authoritative; if it's `draft`, treat it as input but flag any apparent contradictions in your **Risks and open questions**. If no design doc exists for this feature, proceed as before (design is optional).
 3. **Skim the repo's shape** using `Glob` / `Read`:
    - `package.json`, `pyproject.toml`, `Cargo.toml`, etc. — language & build tooling
    - Top-level dirs, source layout, naming conventions
@@ -28,14 +28,24 @@ For an **unfamiliar or version-sensitive library**, look up its real docs — Co
 
 ## What a good Architecture doc contains
 
-1. **Summary** — one paragraph: what we're building, where it slots in.
-2. **Affected components** — the existing files/modules touched and the new ones to add. Reference real paths from the repo.
-3. **Data model changes** — schemas/tables/types, with migration notes.
-4. **Interfaces** — public functions / endpoints / events introduced. Include signatures using the project's actual style.
-5. **Sequence / flow** — how a request or job moves through the components.
-6. **Failure & edge cases** — what can go wrong and how the design handles it.
-7. **Conventions used** — list of repo conventions you're matching (e.g. "errors via `Result<T, E>`", "TS strict mode", "no Promise.all on user data writes").
-8. **Open questions / risks** — items the planner needs to resolve.
+The human part comes first, in this order:
+
+1. **At a glance** — `## At a glance`, your doc's at-a-glance section.
+2. **Summary** — one paragraph: what we're building, where it slots in.
+3. **Flow** — one mermaid `sequenceDiagram` showing how a request or job moves through the components.
+4. **Decisions** — table: decision, why, ref.
+5. **Risks and open questions** — items the planner needs to resolve.
+
+Cap: ≤150 non-blank lines before the marker. Then a plain `## Details for agents` heading, uncapped, followed by:
+
+6. **Affected components** — the existing files/modules touched and the new ones to add. Reference real paths from the repo.
+7. **Data model changes** — schemas/tables/types, with migration notes.
+8. **Interfaces** — public functions / endpoints / events introduced. Include signatures using the project's actual style.
+9. **R-sections** — one `## R<n> — …` section per requirement.
+10. **Failure & edge cases** — what can go wrong and how the design handles it.
+11. **Conventions used** — list of repo conventions you're matching (e.g. "errors via `Result<T, E>`", "TS strict mode", "no Promise.all on user data writes").
+
+Sections after the marker stay at `##`, so their anchors resolve unchanged. Amendments are merged into the body where they belong, never listed on top.
 
 ### Section-anchor convention (required)
 
