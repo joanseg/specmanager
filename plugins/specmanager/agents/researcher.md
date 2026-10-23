@@ -131,6 +131,12 @@ Labelled screens of the product the market doc's `## What to build` describes:
 
 ### Every Doc
 
+**Design pass.**
+
+- Call `Skill` with `frontend-design:frontend-design` before building. If it is not available, apply the fallback method (the points below, plus any distilled fallback in your prompt) and continue; a missing skill is never an error.
+- Pick a deliberate aesthetic direction, a type scale with a display size ≥32px, and a grid. Add a chart where numbers compare. Avoid the system-font, default-purple, 11px-uppercase-label template.
+- Self-critique: render at 1200px and 720px with any available browser tool; fix overflow, filler, notes that outweigh screens, and a generic look. No browser tool: check fixed widths and non-wrapping rows by reading the HTML.
+
 - Docs mock the study's product, **not** this repo's UI: do not ground them in `docs/DESIGN.md` or its tokens.
 - Inline all CSS; no external scripts or fonts. The body is sanitised and capped at 5 MB: if it would exceed the cap, reference images by path instead of inlining them.
 

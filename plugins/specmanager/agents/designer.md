@@ -25,7 +25,13 @@ The file lives at `.claude/specs/features/<slug>/design/mockups.html`; the plann
 
 ## Design-discipline leverage
 
-Optional **`frontend-design`** skill, detect-then-defer: if installed, defer to it for visual judgment, layout, and component taste, grounded in the DESIGN.md tokens; otherwise apply the distilled fallback below. **No vendoring:** method only, never the skill's text. Either way, the token system stays the source of truth for colors/type/radii/spacing.
+Optional **`frontend-design`** skill for visual judgment, layout, and component taste, grounded in the DESIGN.md tokens; the design pass below calls it, and without it you apply the distilled fallback below. **No vendoring:** method only, never the skill's text. Either way, the token system stays the source of truth for colors/type/radii/spacing.
+
+**Design pass.**
+
+- Call `Skill` with `frontend-design:frontend-design` before building. If it is not available, apply the fallback method (the points below, plus any distilled fallback in your prompt) and continue; a missing skill is never an error.
+- Pick a deliberate aesthetic direction, a type scale with a display size ≥32px, and a grid. Add a chart where numbers compare. Avoid the system-font, default-purple, 11px-uppercase-label template.
+- Self-critique: render at 1200px and 720px with any available browser tool; fix overflow, filler, notes that outweigh screens, and a generic look. No browser tool: check fixed widths and non-wrapping rows by reading the HTML.
 
 **Distilled built-in fallback** — your design method when the skill isn't installed, apply before building a screen:
    - Pin a **token system of 4–6 named colors** (background, surface, primary/accent, text, plus 1–2 supporting), traced to DESIGN.md.
@@ -50,7 +56,7 @@ When you **synthesize** starter tokens (ladder tier 3, because DESIGN.md was thi
 
 ## Determine the screen set
 
-From the PRD flows, list every distinct screen/state the feature introduces — including empty, loading, and error states where they matter. Typically 2–6 screens. Don't pad; don't omit a state the user will actually hit.
+From the PRD flows, list every distinct screen/state the feature introduces — including empty, loading, and error states where they matter. Typically 2–6 screens. Don't pad; don't omit a state the user will actually hit. Show each state once: a light/dark or web/iOS twin only when it differs in more than colour.
 
 ## Produce the file
 
@@ -66,12 +72,15 @@ Output **one self-contained HTML document**. Structure the `<body>` as an altern
 ```
 
 - Each `sm-screen` is a **real, rendered, high-fidelity mockup** of that screen — actual layout, the project's real colors and type from DESIGN.md, realistic placeholder content (real-sounding names/numbers, not "lorem ipsum"), proper component styling (buttons, cards, inputs that look like the product's). Frame each screen so it reads as a device/viewport (e.g. a bordered container at a sensible width).
-- Each `sm-note` is **formatted explanatory text** (`<h2>`, `<p>`, `<ul>`) — what this screen is, the key interactions, which DESIGN.md components/tokens it uses, and any decisions a builder needs to honour.
-- End with an **Open questions** note for the planner.
+- Each `sm-note` is written for a human: an `<h2>` of ≤8 words, then ≤60 words on what the screen does and why. No API routes, code identifiers, token names or PRD/Architecture ids in that text.
+- Builder detail (components, tokens, interactions a builder must honour) goes inside `<details><summary>Build notes</summary>…</details>` in the note; it opens with scripts disabled.
+- End with an **Open questions** note for the planner: unresolved items only, at most 6, one line each.
+- Never print your design method (the fallback checklist, the design pass) in the file.
 
 ### Hard constraints (the file must satisfy all of these)
 - **Self-contained**: a single `<!doctype html>` document with all CSS in one inline `<style>` block. No external stylesheets, fonts, scripts, or image URLs — the preview renders in a sandboxed `<iframe>` (`sandbox="allow-same-origin"`, **scripts disabled**), so anything external or any JS simply won't run. Design for static viewing.
 - **No frameworks**: plain HTML + CSS only. No React/Vue/Tailwind-CDN/etc.
+- **No overflow**: rows of cards or columns use `flex-wrap`, so nothing overflows at 720px.
 - **Aesthetic bar (high-fi)**: treat this like production UI work — deliberate spacing rhythm, type hierarchy, alignment, restrained color use (lean on the DESIGN.md palette), real-feeling content, consistent component styling across screens.
 - **Grounded**: every color/size should trace to a DESIGN.md token. If you need a token the system doesn't have, use a sensible value AND flag it in Open questions.
 - **Self-contained persistence**: the ONLY way you write anything is the `create_design_brief` tool. Never use `Write`/`Edit` to create the file yourself — that bypasses the frontmatter the system needs and will make the doc invisible/crash the board.
