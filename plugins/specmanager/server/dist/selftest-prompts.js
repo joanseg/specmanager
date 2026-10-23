@@ -16,8 +16,11 @@
 // build prerequisites, secrets, the reviewer's UI check and the walkthrough
 // sections, Part F's INV-51/52 for the build's git strategy, and Part G's
 // INV-53/54 for init's plugin-install consent plus INV-55 for its plugin
-// scope filter, and Part H's INV-56…INV-65 for researcher mode and its loop. A few are
-// encoded as lettered rows (INV-14a…e, INV-27a…c,
+// scope filter, Part H's INV-56…INV-65 for researcher mode and its loop, and
+// Part I's INV-66…INV-73 for readable docs (density, readable-doc and
+// design-pass snippet parity, the researcher's optional Appendix, the loops'
+// cap check and folded answers, designer Build notes, planner Task details).
+// A few are encoded as lettered rows (INV-14a…e, INV-27a…c,
 // INV-36a/b, INV-45a…c, INV-46a/b, INV-47a/b, INV-48a…c, INV-49a/b,
 // INV-50a…e, INV-51a…f, INV-52a/b, and the pre-existing INV-15a/b)
 // because the reconciliation calls for one pattern per independently
@@ -1060,6 +1063,134 @@ const INVARIANTS = [
         files: ["commands/specmanager-research.md", "commands/specmanager-research-loop.md"],
         min: 2,
         max: 2,
+    },
+    // ---- Part I — INV-66…INV-73: readable docs (arch §prompt-invariants) ----
+    // Each pinned sentence is copied verbatim from its canonical snippet in
+    // `docs/agent-snippets/` (lossless-carryover.md, readable-doc.md,
+    // design-pass.md), so these rows double as snippet parity: a carrier that
+    // drifts from the snippet drops out of the count. min == max == carriers,
+    // so losing any one carrier turns the row red.
+    {
+        id: "INV-66",
+        what: "density contract — the \"Survive means *reachable*\" line, verbatim from lossless-carryover.md at all 5 drafting agents",
+        pattern: "Survive means *reachable*: a fact already in an upstream doc survives by its id — don't copy it. Put each fact once, in the doc that owns it. Detail a reader doesn't need to decide goes under the details section at the end — never out of the doc.",
+        files: [
+            "agents/architect.md",
+            "agents/planner.md",
+            "agents/prd-writer.md",
+            "agents/researcher.md",
+            "agents/walkthrough-writer.md",
+        ],
+        min: 5,
+        max: 5,
+    },
+    {
+        id: "INV-67a",
+        what: "readable-doc — open with the at-a-glance section, ≤12 lines, at all 5 markdown writers",
+        pattern: "Open with your doc's at-a-glance section: ≤12 lines, plain words — what it is, decisions made, what the reader must decide, top risks.",
+        files: [
+            "agents/architect.md",
+            "agents/planner.md",
+            "agents/prd-writer.md",
+            "agents/researcher.md",
+            "agents/walkthrough-writer.md",
+        ],
+        min: 5,
+        max: 5,
+    },
+    {
+        id: "INV-67b",
+        what: "readable-doc — a rewrite folds answers in and keeps no changelog, at all 5 markdown writers",
+        pattern: "A rewrite states what is true now: fold answers in, delete resolved questions, no changelog or review-history sections (git holds history).",
+        files: [
+            "agents/architect.md",
+            "agents/planner.md",
+            "agents/prd-writer.md",
+            "agents/researcher.md",
+            "agents/walkthrough-writer.md",
+        ],
+        min: 5,
+        max: 5,
+    },
+    {
+        id: "INV-67c",
+        what: "readable-doc — tables ≤5 columns and ≤2 ids per sentence, at all 5 markdown writers",
+        pattern: "Tables ≤5 columns, short cells, ids in the last column. ≤2 ids per sentence.",
+        files: [
+            "agents/architect.md",
+            "agents/planner.md",
+            "agents/prd-writer.md",
+            "agents/researcher.md",
+            "agents/walkthrough-writer.md",
+        ],
+        min: 5,
+        max: 5,
+    },
+    {
+        id: "INV-68a",
+        what: "design-pass — call `Skill` with frontend-design before building, at designer and researcher",
+        pattern: "Call `Skill` with `frontend-design:frontend-design` before building.",
+        files: ["agents/designer.md", "agents/researcher.md"],
+        min: 2,
+        max: 2,
+    },
+    {
+        id: "INV-68b",
+        what: "design-pass — self-critique renders at 1200px and 720px, at designer and researcher",
+        pattern: "Self-critique: render at 1200px and 720px with any available browser tool;",
+        files: ["agents/designer.md", "agents/researcher.md"],
+        min: 2,
+        max: 2,
+    },
+    {
+        id: "INV-69",
+        what: "researcher — the optional `## Appendix` line in the market, marketing and user-research heading lists",
+        pattern: "- `## Appendix` — optional: detail a reader doesn't need to decide (alternate figures with their source, the evidence-tag legend, long tables).",
+        files: ["agents/researcher.md"],
+        min: 3,
+        max: 3,
+    },
+    {
+        id: "INV-70a",
+        what: "specmanager-loop's review has exactly one cap-check bullet",
+        pattern: /^\s*- cap check:/gm,
+        files: ["commands/specmanager-loop.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-70b",
+        what: "specmanager-research-loop's review has exactly one cap-check bullet",
+        pattern: /^\s*- cap check:/gm,
+        files: ["commands/specmanager-research-loop.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-71",
+        what: "neither loop marks answered questions \"resolved\" in place — answers fold into the body (negative)",
+        // Whitespace-tolerant: the old research-loop wording wrapped across lines.
+        pattern: /marked\s+resolved\s+in/gi,
+        files: ["commands/specmanager-loop.md", "commands/specmanager-research-loop.md"],
+        min: 0,
+        max: 0,
+        negativeSample: "keep each answered question, marked resolved in the doc",
+    },
+    {
+        id: "INV-72",
+        what: "designer puts builder detail inside a collapsed Build notes block",
+        pattern: "<details><summary>Build notes</summary>",
+        files: ["agents/designer.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-73",
+        what: "planner's optional `### Task details` holds no `---` line and no `##` heading, so the reviewer's phase slice survives",
+        pattern: /`### Task details` \(optional\).*It must contain no `---` line and no `##` heading/g,
+        files: ["agents/planner.md"],
+        min: 1,
+        max: 1,
     },
 ];
 const fileCache = new Map();

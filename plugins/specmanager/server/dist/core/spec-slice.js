@@ -13,13 +13,16 @@ import { listDocuments } from "./documents.js";
  * Match a plan.md phase heading and return the phase name it declares.
  *
  * Recognises `## Phase <name>`, case-insensitively, where `<name>` is the first
- * run of characters up to whitespace or a dash — so `## Phase core — theme` and
- * `## Phase core` both yield `core`. Returns the name **as written**; callers
- * compare case-insensitively. Any other line ⇒ `null`.
+ * run of characters up to whitespace or an em dash, with any trailing hyphen
+ * stripped — so `## Phase core — theme`, `## Phase core—theme` and
+ * `## Phase core` yield `core`, and `## Phase loop-docs — theme` yields
+ * `loop-docs` (inner hyphens are kept). Returns the name **as written**; callers
+ * compare case-insensitively. Any other line, or an empty name ⇒ `null`.
  */
 export function matchPhaseHeading(line) {
-    const m = line.match(/^##\s+Phase\s+([^\s—-]+)/i);
-    return m ? m[1] : null;
+    const m = line.match(/^##\s+Phase\s+([^\s—]+)/i);
+    const name = m ? m[1].replace(/-+$/, "") : "";
+    return name || null;
 }
 const HEADING_RE = /^(#{2,6})[ \t]+(.+)$/gm;
 /** First whitespace-delimited token of a heading, trailing punctuation stripped. */
