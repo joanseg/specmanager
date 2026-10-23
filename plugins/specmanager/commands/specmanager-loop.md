@@ -135,8 +135,9 @@ automatically**; invoking it is the opt-in.
     - After any fix, `link_documents` to re-stamp `basedOn`. Single pass — no
       re-review.
 11. **End questions.** Gather the open questions: each doc's
-    `Open questions` and `## Decisions` (the planner's loop-mode decisions
-    included), unresolved review findings and refinement Assumptions. Ask them
+    `Open questions`, the planner's loop-mode `## Decisions` list in plan.md
+    (not the architect's Decisions table — that is settled design), unresolved
+    review findings and refinement Assumptions. Ask them
     with `AskUserQuestion` in batches of ≤4, recommended option first, labelled
     *(recommended)*. Apply answers with the step-10 write rules; answered
     entries are deleted and the answer is folded into the body. Skipped
