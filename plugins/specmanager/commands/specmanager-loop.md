@@ -97,7 +97,7 @@ automatically**; invoking it is the opt-in.
    - **Not UI-facing** → create nothing; the plan gate is satisfied by absence.
 9. **Plan.** `Agent({ subagent_type: "planner", prompt })` with the feature
    id/title/slug, the Architecture id, the PRD id, the Design id + version (or
-   `null`), and the loop-mode rule: `Loop mode: do not call AskUserQuestion for any planner question (size split, spike, human setup, test account) — apply your recommended choice and record each decision and the alternative under Open questions.`
+   `null`), and the loop-mode rule: `Loop mode: do not call AskUserQuestion for any planner question (size split, spike, human setup, test account) — apply your recommended choice and record each decision and the alternative under `## Decisions`, one line each; Open questions holds only items still open.`
    Before approving, also check `plan.md` (`read_document`) has a `## Phase`
    heading and `list_tasks({ featureId })` is non-empty; a flat plan or no
    tasks → stop (step 13). The loop does not send it back.
@@ -112,9 +112,19 @@ automatically**; invoking it is the opt-in.
       approving or eyeballing) — verification belongs to the reviewer and
       walkthrough;
     - a multi-phase plan names its trigger (spike or size) in the Overview;
+    - cap check: each doc's human part is within its cap — PRD ≤120 and
+      Architecture ≤150 non-blank lines before `## Details for agents`
+      (whole doc if absent); plan Overview ≤5 lines, each exit test ≤3 lines,
+      each Notes cell ≤25 words; walkthrough ≤200 non-blank lines. Count lines
+      with one `awk` over the doc's `filePath`, skipping frontmatter:
+      `awk '/^---$/&&n<2{n++;next} n<2{next} /^## Details for agents/{exit} NF{c++} END{print c+0}' <filePath>`;
     - drift from the Original intent and the refined-intent block.
 
     Fix what is clear-cut; everything else becomes a step-11 question.
+    - **Over cap:** move clear-cut overflow under the doc's marker with the
+      write rules below — `## Details for agents` for PRD and Architecture, the
+      phase's `### Task details` for a plan Notes cell; anything else becomes a
+      step-11 question.
     - **Docs:** `write_document({ id, body, baseVersion })` with the version you
       read — docs stay `approved` (only `version` bumps). A version conflict →
       do not retry; it becomes a step-11 question.
@@ -125,14 +135,14 @@ automatically**; invoking it is the opt-in.
     - After any fix, `link_documents` to re-stamp `basedOn`. Single pass — no
       re-review.
 11. **End questions.** Gather the open questions: each doc's
-    `Open questions`, unresolved review findings, refinement Assumptions, and
-    the planner's loop-mode decisions. Ask them with `AskUserQuestion` in
-    batches of ≤4, recommended option first, labelled *(recommended)*. Apply
-    answers with the step-10 write rules; answered entries are removed from, or
-    marked resolved in, that doc's `Open questions`. Skipped questions stay in
-    the affected doc's `Open questions` — skipped refinement Assumptions
-    and unresolved review findings are added there, same write rules.
-    None → skip and say so.
+    `Open questions` and `## Decisions` (the planner's loop-mode decisions
+    included), unresolved review findings and refinement Assumptions. Ask them
+    with `AskUserQuestion` in batches of ≤4, recommended option first, labelled
+    *(recommended)*. Apply answers with the step-10 write rules; answered
+    entries are deleted and the answer is folded into the body. Skipped
+    questions stay in the affected doc's `Open questions` — skipped refinement
+    Assumptions and unresolved review findings are added there, same write
+    rules. None → skip and say so.
 12. **Final report.**
     - feature id and slug;
     - each doc: id, path, status, version;
