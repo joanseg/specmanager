@@ -111,24 +111,33 @@ starts, the run never pauses until the review.
     - every figure carries a source or reads `n/a (unsourced)` — presentations
       and decks included;
     - each doc keeps its pinned headings (the brief's, the market doc's, the
-      user-research plan's), in order;
+      user-research plan's), in order, with an optional trailing `## Appendix`;
+    - cap check: each markdown doc's human part is within its cap — words
+      before `## Appendix`, `## Sources` excluded: brief 600, market 1,500,
+      marketing 1,500, user-research 2,000. Count with one `awk` over the
+      doc's `filePath`, skipping frontmatter:
+      `awk '/^---$/&&n<2{n++;next} n<2{next} /^## Appendix/{a=1} /^## /{s=($0~/^## Sources/)} !a&&!s{w+=NF} END{print w+0}' <filePath>`;
     - drift from the Original idea and the brief block.
 
     Fix what is clear-cut; everything else becomes a step-12 question.
+    - **Over cap:** move clear-cut overflow under `## Appendix` (add the
+      heading if missing) with the write rules below; anything else becomes a
+      step-12 question.
     - **Writes:** `write_research_doc({ id, body, baseVersion, basedOn })` with
       the version you read. A version conflict → do not retry; it becomes a
       step-12 question.
-    - **HTML Docs:** only small textual edits; never restructure a Doc here.
+    - **HTML Docs:** only small textual edits; never restructure a Doc here,
+      so an over-long Doc becomes a step-12 question.
     - Single pass — no re-review.
 12. **End questions.** Gather the open questions: each doc's
     `## Open questions`, unresolved review findings, and the brief's
     `## Assumptions`. Ask them with `AskUserQuestion` in batches of ≤4,
     recommended option first, labelled *(recommended)*. Apply the answers in
     **one final update per affected doc**, the brief included, with the
-    step-11 write rules; answered entries are removed from, or marked resolved
-    in, that doc's `## Open questions`. Skipped questions and unresolved review
-    findings are recorded in the brief's `## Open questions`, in that same
-    final update. None → skip and say so.
+    step-11 write rules; answered entries are deleted from that doc's
+    `## Open questions` and the answer is folded into the body. Skipped
+    questions and unresolved review findings are recorded in the brief's
+    `## Open questions`, in that same final update. None → skip and say so.
 13. **Final report.**
     - study id and slug;
     - each doc: id, version, path;
