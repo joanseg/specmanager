@@ -1,0 +1,344 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-readable-docs",
+      "title": "Fix `matchPhaseHeading` hyphen cut and add selftest-specslice cases",
+      "status": "todo",
+      "phase": "readable",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-23T20:19:09.909Z",
+      "updatedAt": "2026-10-23T20:19:09.909Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-readable-docs",
+      "title": "Add the \"Survive means *reachable*\" line to lossless-carryover and its 5 carriers",
+      "status": "todo",
+      "phase": "readable",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-23T20:19:10.768Z",
+      "updatedAt": "2026-10-23T20:19:10.768Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-readable-docs",
+      "title": "Create `readable-doc.md` snippet and carry it verbatim in the 5 markdown writers",
+      "status": "todo",
+      "phase": "readable",
+      "complexity": 3,
+      "dependsOn": [
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-23T20:19:13.644Z",
+      "updatedAt": "2026-10-23T20:19:13.644Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-readable-docs",
+      "title": "Add the adapted-framing sentence to the design-grounding snippet header",
+      "status": "todo",
+      "phase": "readable",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-23T20:19:14.483Z",
+      "updatedAt": "2026-10-23T20:19:14.483Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-readable-docs",
+      "title": "prd-writer: `## At a glance`, ≤120-line cap, optional details marker",
+      "status": "todo",
+      "phase": "readable",
+      "complexity": 2,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-23T20:19:17.381Z",
+      "updatedAt": "2026-10-23T20:19:17.381Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-readable-docs",
+      "title": "architect: new section order, ≤150-line cap, one sequence diagram, merged amendments",
+      "status": "todo",
+      "phase": "readable",
+      "complexity": 2,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-23T20:19:18.578Z",
+      "updatedAt": "2026-10-23T20:19:18.578Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-readable-docs",
+      "title": "planner: Overview/exit/Notes caps, `### Task details` rule, `## Decisions` list",
+      "status": "todo",
+      "phase": "readable",
+      "complexity": 3,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-23T20:19:19.860Z",
+      "updatedAt": "2026-10-23T20:19:19.860Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-readable-docs",
+      "title": "walkthrough-writer: ≤200-line cap and rewrite lines 32, 36, 37",
+      "status": "todo",
+      "phase": "readable",
+      "complexity": 2,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-23T20:19:21.083Z",
+      "updatedAt": "2026-10-23T20:19:21.083Z"
+    },
+    {
+      "id": "task-009",
+      "featureId": "feat-readable-docs",
+      "title": "researcher study docs: TL;DR, \"So what:\", word caps, Appendix lines, one-figure merge",
+      "status": "todo",
+      "phase": "readable",
+      "complexity": 3,
+      "dependsOn": [
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-23T20:19:22.176Z",
+      "updatedAt": "2026-10-23T20:19:22.176Z"
+    },
+    {
+      "id": "task-010",
+      "featureId": "feat-readable-docs",
+      "title": "Create `design-pass.md` snippet; designer carries it and gets the notes rules",
+      "status": "todo",
+      "phase": "readable",
+      "complexity": 3,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-23T20:19:24.906Z",
+      "updatedAt": "2026-10-23T20:19:24.906Z"
+    },
+    {
+      "id": "task-011",
+      "featureId": "feat-readable-docs",
+      "title": "specmanager-loop: cap-check bullet, fold answered questions, gather `## Decisions`",
+      "status": "todo",
+      "phase": "readable",
+      "complexity": 2,
+      "dependsOn": [
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-23T20:19:26.142Z",
+      "updatedAt": "2026-10-23T20:19:26.142Z"
+    },
+    {
+      "id": "task-012",
+      "featureId": "feat-readable-docs",
+      "title": "specmanager-research-loop: cap-check bullet, optional `## Appendix`, fold answers",
+      "status": "todo",
+      "phase": "readable",
+      "complexity": 2,
+      "dependsOn": [
+        "task-009"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-23T20:19:27.235Z",
+      "updatedAt": "2026-10-23T20:19:27.235Z"
+    },
+    {
+      "id": "task-013",
+      "featureId": "feat-readable-docs",
+      "title": "researcher Docs job: carry design-pass, copy rules, deck shape, human title",
+      "status": "todo",
+      "phase": "readable",
+      "complexity": 2,
+      "dependsOn": [
+        "task-009",
+        "task-010"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-23T20:19:33.195Z",
+      "updatedAt": "2026-10-23T20:19:33.195Z"
+    },
+    {
+      "id": "task-014",
+      "featureId": "feat-readable-docs",
+      "title": "selftest-prompts Part I: INV-66, INV-67a–c, INV-68a/b, INV-69",
+      "status": "todo",
+      "phase": "readable",
+      "complexity": 3,
+      "dependsOn": [
+        "task-002",
+        "task-003",
+        "task-005",
+        "task-006",
+        "task-007",
+        "task-008",
+        "task-009",
+        "task-010",
+        "task-013"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-23T20:19:36.066Z",
+      "updatedAt": "2026-10-23T20:19:36.066Z"
+    },
+    {
+      "id": "task-015",
+      "featureId": "feat-readable-docs",
+      "title": "selftest-prompts Part I: INV-70a/b, INV-71, INV-72, INV-73, header comment",
+      "status": "todo",
+      "phase": "readable",
+      "complexity": 2,
+      "dependsOn": [
+        "task-007",
+        "task-010",
+        "task-011",
+        "task-012",
+        "task-014"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-23T20:19:39.157Z",
+      "updatedAt": "2026-10-23T20:19:39.157Z"
+    },
+    {
+      "id": "task-016",
+      "featureId": "feat-readable-docs",
+      "title": "Repo CLAUDE.md: name the two new snippets and their carriers",
+      "status": "todo",
+      "phase": "readable",
+      "complexity": 1,
+      "dependsOn": [
+        "task-003",
+        "task-010"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-23T20:19:40.184Z",
+      "updatedAt": "2026-10-23T20:19:40.184Z"
+    },
+    {
+      "id": "task-017",
+      "featureId": "feat-readable-docs",
+      "title": "Release: bump 1.5.0 → 1.6.0, rebuild `server/dist`, directory checks",
+      "status": "todo",
+      "phase": "readable",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001",
+        "task-004",
+        "task-015",
+        "task-016"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-23T20:19:43.278Z",
+      "updatedAt": "2026-10-23T20:19:43.278Z"
+    }
+  ],
+  "meta": {
+    "phases": {
+      "readable": {
+        "testCommand": "cd plugins/specmanager/server && npm run build && npm run selftest-prompts && npm run selftest-specslice && npm run selftest-stopgate && npm run selftest-directory",
+        "architectureRefs": [
+          "R1",
+          "R2",
+          "R3",
+          "R4",
+          "R5",
+          "R6",
+          "R7",
+          "R8",
+          "decisions",
+          "prompt-invariants",
+          "failure-edge-cases",
+          "conventions-used",
+          "affected-components"
+        ],
+        "kind": "build",
+        "prerequisites": []
+      }
+    },
+    "blocked": {}
+  }
+}
