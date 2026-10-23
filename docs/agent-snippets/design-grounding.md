@@ -1,6 +1,6 @@
 # Design grounding snippet
 
-Shared prompt fragment referenced inline by `architect.md`, `planner.md`, and `builder.md`. The text below is the canonical source — it is also copy-pasted into each agent prompt (no preprocessor at install time, so the install ships the resolved text). If you change the fragment here, also update the three agent prompts.
+Shared prompt fragment referenced inline by `architect.md`, `planner.md`, and `builder.md`. The text below is the canonical source — it is also copy-pasted into each agent prompt (no preprocessor at install time, so the install ships the resolved text). If you change the fragment here, also update the three agent prompts. Carriers may adapt the framing around the pinned method clause (the `Read`-on-`filePath`, not-`read_document` sentence), as the planner does with its "Ground phases/tasks in it" framing; only the method clause must stay verbatim.
 
 ---
 
