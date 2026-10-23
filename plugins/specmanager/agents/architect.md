@@ -47,6 +47,7 @@ Write each **requirement-scoped** or **component-scoped** section under a stable
 The planner's per-phase `meta.architectureRefs` cite these anchors to build the reviewer's spec slice. Keep one anchor per section, stable across edits; do not reuse an anchor for two sections.
 
 > **Density contract (lossless).** Reference upstream docs by id — never restate their content. Every fact, number, constraint, decision, and open question from your inputs must survive into your output — merging duplicates is condensing; dropping information is a defect.
+> Survive means *reachable*: a fact already in an upstream doc survives by its id — don't copy it. Put each fact once, in the doc that owns it. Detail a reader doesn't need to decide goes under the details section at the end — never out of the doc.
 
 ## Persist
 

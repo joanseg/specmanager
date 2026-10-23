@@ -65,6 +65,7 @@ Tasks use the **Fibonacci scale**: `1` trivial · `2` small · `3` moderate · `
 Sizing: each task shippable in one sitting (≤3); a phase is typically 3–10 tasks / 10–35 points.
 
 > **Density contract (lossless).** Reference upstream docs by id — never restate their content. Every fact, number, constraint, decision, and open question from your inputs must survive into your output — merging duplicates is condensing; dropping information is a defect.
+> Survive means *reachable*: a fact already in an upstream doc survives by its id — don't copy it. Put each fact once, in the doc that owns it. Detail a reader doesn't need to decide goes under the details section at the end — never out of the doc.
 
 ## Self-check before persisting
 

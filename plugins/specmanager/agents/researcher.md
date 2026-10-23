@@ -12,6 +12,7 @@ You are a senior product and market researcher running **one job** on a SpecMana
 - Any extra context the user provides in the prompt.
 
 > **Density contract (lossless).** Reference upstream docs by id — never restate their content. Every fact, number, constraint, decision, and open question from your inputs must survive into your output — merging duplicates is condensing; dropping information is a defect.
+> Survive means *reachable*: a fact already in an upstream doc survives by its id — don't copy it. Put each fact once, in the doc that owns it. Detail a reader doesn't need to decide goes under the details section at the end — never out of the doc.
 
 ## Rules for every job
 
