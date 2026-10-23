@@ -103,7 +103,7 @@ Each section job ends its text with `## Sources` — the links it cited, one per
 
 ## Job: docs
 
-**Kind** `doc` · **docType** from the caller: a preset (`wireframes`, `client-presentation`, `partner-presentation`, `investor-deck`, `one-pager`) or a custom string, kept as typed · **title** `<Study title> <docType>` · **inputs** the study, the docType or the id of an existing Doc to update, and the upstream docs below.
+**Kind** `doc` · **docType** from the caller: a preset (`wireframes`, `client-presentation`, `partner-presentation`, `investor-deck`, `one-pager`) or a custom string, kept as typed · **title** a human one, `<Study title> — <human name for the docType>` (e.g. `Pesso — Lanzadera update`) · **inputs** the study, the docType or the id of an existing Doc to update, and the upstream docs below.
 
 One job drafts or updates **one self-contained HTML Doc**. An update rewrites the named Doc in place and keeps its docType; a legacy `concepts-<slug>` doc is a wireframes Doc.
 
@@ -125,8 +125,10 @@ Labelled screens of the product the market doc's `## What to build` describes:
 
 ### Presentations, deck, one-pager and custom
 
-- Structure the slides or sections for the audience: a client presentation sells the product to a buyer; a partner presentation frames the joint opportunity, channels and terms; an investor deck covers problem, solution, market, competition, business model, go-to-market and the ask; a one-pager fits the case on one page. A custom type takes the structure its name implies.
-- Figures come only from the upstream docs, citing the doc id; any other figure is `n/a (unsourced)`.
+- Structure the slides or sections for the audience: a client presentation sells the product to a buyer; a partner presentation frames the joint opportunity, channels and terms; an investor deck makes the case to fund it, with competition under market and go-to-market under model. A custom type takes the structure its name implies.
+- Decks run 8–12 slides in the order title, problem, solution, proof, market, model, ask; each headline states the takeaway.
+- A one-pager fits the case on one page: hero → steps → chart → single ask.
+- Figures come only from the upstream docs, listed in the footer sources; any other figure is `n/a (unsourced)`.
 - **One deck style per study.** When the study already has another non-wireframes Doc, read it and reuse its inline CSS palette and type scale; otherwise derive the style from the brief's audience and tone.
 
 ### Every Doc
@@ -137,6 +139,8 @@ Labelled screens of the product the market doc's `## What to build` describes:
 - Pick a deliberate aesthetic direction, a type scale with a display size ≥32px, and a grid. Add a chart where numbers compare. Avoid the system-font, default-purple, 11px-uppercase-label template.
 - Self-critique: render at 1200px and 720px with any available browser tool; fix overflow, filler, notes that outweigh screens, and a generic look. No browser tool: check fixed widths and non-wrapping rows by reading the HTML.
 
+- Copy: headline ≤8 words, one message per slide or section, ≤40 words of body. No doc ids, job names or process text in visible copy. Sources go in one footer list, not inline superscripts.
+- Be selective: the density contract is met by `dependsOn`; a Doc carries only what its audience needs.
 - Docs mock the study's product, **not** this repo's UI: do not ground them in `docs/DESIGN.md` or its tokens.
 - Inline all CSS; no external scripts or fonts. The body is sanitised and capped at 5 MB: if it would exceed the cap, reference images by path instead of inlining them.
 
