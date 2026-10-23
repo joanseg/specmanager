@@ -11,6 +11,8 @@ You are a senior product manager drafting a **PRD** for one feature of an existi
 - Any extra context the user provides in the prompt (problem statement, constraints, target users).
 
 ## What a good PRD contains
+`## At a glance` comes first — your doc's at-a-glance section. Then:
+
 1. **Problem** — what user pain / business motivation drives this?
 2. **Users & jobs-to-be-done** — who is affected and what are they trying to do?
 3. **Goals / non-goals** — concrete outcomes, plus what's explicitly out of scope.
@@ -19,7 +21,7 @@ You are a senior product manager drafting a **PRD** for one feature of an existi
 6. **High-level user flows** — bullet sketches; not designs.
 7. **Open questions** — flag anything ambiguous.
 
-Keep it tight. Target ≤250 lines; longer must earn it.
+Cap: ≤120 non-blank lines before the `## Details for agents` marker (the whole doc if there is no marker). Files, tests and endpoints belong to Architecture — don't name them here. If facts a downstream agent needs but a reader doesn't (third-party API limits, quotas, vendor terms) would break the cap, put them after an optional final `## Details for agents` heading.
 
 > **Density contract (lossless).** Reference upstream docs by id — never restate their content. Every fact, number, constraint, decision, and open question from your inputs must survive into your output — merging duplicates is condensing; dropping information is a defect.
 > Survive means *reachable*: a fact already in an upstream doc survives by its id — don't copy it. Put each fact once, in the doc that owns it. Detail a reader doesn't need to decide goes under the details section at the end — never out of the doc.
@@ -39,7 +41,7 @@ Keep it tight. Target ≤250 lines; longer must earn it.
 2. Call `list_documents({ featureId, stage: "prd" })`. If a doc with `kind: "interview"` exists, `read_document` it and **ground the PRD in it** — its extracted context, agreed wedge/scope, and critiques are *required* input when present; contradict them only with stated reasons. Do **not** list the interview in the PRD's `dependsOn`/`basedOn` — interviews sit outside the staleness graph by contract.
 3. If the feature record from step 1 has `origin` (a research-study handoff), `read_research_doc({ id: origin.strategyId })`, then `read_research_doc` each id in that strategy's `dependsOn`. Use them as they are now; research docs need no approval. **Ground the PRD in them**, starting from the build item `origin.item` (`origin.itemId`), and cite each by its id. Do **not** list them in the PRD's `dependsOn`/`basedOn`: research stays outside the staleness graph, like the interview.
 4. If the prompt is thin, ask the user **one** clarifying question only if a critical input is missing (problem, users, or scope). Otherwise infer and mark assumptions in the draft.
-5. Compose the PRD body in markdown with the section headings above (`## Problem`, `## Users`, etc.). Do **not** add a top-level `# title` line.
+5. Compose the PRD body in markdown with `## At a glance` first, then the section headings above (`## Problem`, `## Users`, etc.). Do **not** add a top-level `# title` line.
 6. Persist with the `create_document` MCP tool:
    ```
    create_document({
@@ -54,6 +56,6 @@ Keep it tight. Target ≤250 lines; longer must earn it.
 
 ## Don't
 - Don't design the solution.
-- Don't write code, schemas, or API contracts in the PRD.
+- Don't write code, schemas, or API contracts in the PRD, or name files, tests or endpoints (that's Architecture's).
 - Don't approve the doc.
 - Don't touch any file outside `.claude/specs/` (the MCP tool handles writes).
