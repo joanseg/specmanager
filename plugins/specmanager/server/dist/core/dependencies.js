@@ -3,7 +3,7 @@ import { listDocuments, readDocumentById } from "./documents.js";
 import { writeDoc } from "./frontmatter.js";
 import { nowIso } from "./ids.js";
 import { projectRoot } from "./paths.js";
-import { listTasks } from "./tasks.js";
+import { listTasks, readTasksMeta } from "./tasks.js";
 import { rollupPhases } from "./phases.js";
 export async function linkDocuments(downstreamId, upstreamId, root = projectRoot()) {
     const downstream = await readDocumentById(downstreamId, root);
@@ -48,7 +48,8 @@ export async function checkGate(featureId, stage, rootOrOpts, optsArg) {
         // only when every phase has an `approved` walkthrough.
         if (targetPhase === "final") {
             const allTasks = await listTasks(featureId, resolvedRoot);
-            const phases = rollupPhases(allTasks);
+            const meta = await readTasksMeta(featureId, resolvedRoot);
+            const phases = rollupPhases(allTasks, meta.phases);
             if (phases.length === 0) {
                 return { ok: false, reason: "no phases discovered — Build hasn't started" };
             }

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-31T14:49:25.741Z",
+  "generatedAt": "2026-10-21T11:07:39.584Z",
   "features": [
     {
       "id": "feat-redesign",
@@ -84,6 +84,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": "wt-redesign-001",
           "walkthroughStatus": "approved",
           "walkthroughStale": false
@@ -96,6 +98,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": "wt-redesign-002",
           "walkthroughStatus": "approved",
           "walkthroughStale": false
@@ -108,6 +112,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": "wt-redesign-003",
           "walkthroughStatus": "approved",
           "walkthroughStale": false
@@ -120,6 +126,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": "wt-redesign-004",
           "walkthroughStatus": "approved",
           "walkthroughStale": false
@@ -197,6 +205,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": "wt-rename-execute-command-to-build-006",
           "walkthroughStatus": "approved",
           "walkthroughStale": true
@@ -259,6 +269,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": "wt-planner-output-matches-phase-tasks-md-style-005",
           "walkthroughStatus": "approved",
           "walkthroughStale": false
@@ -344,6 +356,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": null,
           "walkthroughStatus": null,
           "walkthroughStale": null
@@ -356,6 +370,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": null,
           "walkthroughStatus": null,
           "walkthroughStale": null
@@ -368,6 +384,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": null,
           "walkthroughStatus": null,
           "walkthroughStale": null
@@ -380,6 +398,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": null,
           "walkthroughStatus": null,
           "walkthroughStale": null
@@ -433,6 +453,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": null,
           "walkthroughStatus": null,
           "walkthroughStale": null
@@ -445,6 +467,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": null,
           "walkthroughStatus": null,
           "walkthroughStale": null
@@ -457,6 +481,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": null,
           "walkthroughStatus": null,
           "walkthroughStale": null
@@ -519,6 +545,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": "wt-plan-and-walkthrough-optimisations-007",
           "walkthroughStatus": "approved",
           "walkthroughStale": false
@@ -589,6 +617,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": "wt-html-viewer-scroll-fix-008",
           "walkthroughStatus": "approved",
           "walkthroughStale": false
@@ -651,6 +681,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": "wt-post-phase-doc-sync-claude-md-design-md-009",
           "walkthroughStatus": "approved",
           "walkthroughStale": false
@@ -730,6 +762,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": "wt-interview-command-010",
           "walkthroughStatus": "approved",
           "walkthroughStale": false
@@ -742,6 +776,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": "wt-interview-command-011",
           "walkthroughStatus": "draft",
           "walkthroughStale": false
@@ -812,6 +848,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "todo",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": null,
           "walkthroughStatus": null,
           "walkthroughStale": null
@@ -824,6 +862,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "todo",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": null,
           "walkthroughStatus": null,
           "walkthroughStale": null
@@ -836,6 +876,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "todo",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": null,
           "walkthroughStatus": null,
           "walkthroughStale": null
@@ -1052,6 +1094,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "in_progress",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": null,
           "walkthroughStatus": null,
           "walkthroughStale": null
@@ -1198,6 +1242,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": "wt-build-leverage-primitives-013",
           "walkthroughStatus": "approved",
           "walkthroughStale": false
@@ -1210,6 +1256,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": "wt-build-leverage-primitives-012",
           "walkthroughStatus": "approved",
           "walkthroughStale": false
@@ -1304,6 +1352,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": "wt-stop-gate-active-card-scoping-fix-015",
           "walkthroughStatus": "approved",
           "walkthroughStale": false
@@ -1381,6 +1431,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": "wt-build-pipeline-resilience-016",
           "walkthroughStatus": "approved",
           "walkthroughStale": false
@@ -1485,6 +1537,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": "wt-multi-repo-nested-docs-claude-md-design-md-018",
           "walkthroughStatus": "draft",
           "walkthroughStale": false
@@ -1547,6 +1601,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": "wt-multi-session-boards-auto-port-017",
           "walkthroughStatus": "draft",
           "walkthroughStale": false
@@ -1626,20 +1682,73 @@
         {
           "id": "prd-marketing-phase-035",
           "stage": "prd",
-          "status": "draft",
+          "status": "approved",
           "stale": false,
-          "version": 1,
+          "version": 3,
           "title": "Marketing phase PRD"
+        },
+        {
+          "id": "arch-marketing-phase-025",
+          "stage": "architecture",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Marketing phase architecture"
+        },
+        {
+          "id": "design-marketing-phase-008",
+          "stage": "design",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Marketing phase mockups"
+        },
+        {
+          "id": "plan-marketing-phase-019",
+          "stage": "plan",
+          "status": "draft",
+          "stale": true,
+          "version": 1,
+          "title": "Marketing phase plan"
         }
       ],
       "tasks": {
-        "todo": 0,
+        "todo": 25,
         "in_progress": 0,
         "done": 0,
         "blocked": 0,
-        "total": 0
+        "total": 25
       },
-      "phases": []
+      "phases": [
+        {
+          "name": "keywords",
+          "order": 0,
+          "taskCount": 11,
+          "doneCount": 0,
+          "inProgressCount": 0,
+          "blockedCount": 0,
+          "status": "todo",
+          "kind": "build",
+          "prerequisites": [],
+          "walkthroughId": null,
+          "walkthroughStatus": null,
+          "walkthroughStale": null
+        },
+        {
+          "name": "stage",
+          "order": 1,
+          "taskCount": 14,
+          "doneCount": 0,
+          "inProgressCount": 0,
+          "blockedCount": 0,
+          "status": "todo",
+          "kind": "build",
+          "prerequisites": [],
+          "walkthroughId": null,
+          "walkthroughStatus": null,
+          "walkthroughStale": null
+        }
+      ]
     },
     {
       "id": "feat-opus-5-readiness",
@@ -1724,6 +1833,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": "wt-opus-5-readiness-019",
           "walkthroughStatus": "approved",
           "walkthroughStale": false
@@ -1736,6 +1847,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": "wt-opus-5-readiness-020",
           "walkthroughStatus": "approved",
           "walkthroughStale": false
@@ -1748,6 +1861,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "done",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": "wt-opus-5-readiness-021",
           "walkthroughStatus": "approved",
           "walkthroughStale": false
@@ -1834,6 +1949,8 @@
           "inProgressCount": 0,
           "blockedCount": 0,
           "status": "todo",
+          "kind": "build",
+          "prerequisites": [],
           "walkthroughId": null,
           "walkthroughStatus": null,
           "walkthroughStale": null
@@ -1854,6 +1971,362 @@
         "total": 0
       },
       "phases": []
+    },
+    {
+      "id": "feat-anthropic-directory-submission-readiness",
+      "slug": "anthropic-directory-submission-readiness",
+      "title": "Anthropic directory submission readiness",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-anthropic-directory-submission-readiness-040",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 3,
+          "title": "Anthropic directory submission readiness PRD"
+        },
+        {
+          "id": "arch-anthropic-directory-submission-readiness-026",
+          "stage": "architecture",
+          "status": "approved",
+          "stale": true,
+          "version": 3,
+          "title": "Anthropic directory submission readiness architecture"
+        },
+        {
+          "id": "plan-anthropic-directory-submission-readiness-020",
+          "stage": "plan",
+          "status": "approved",
+          "stale": true,
+          "version": 2,
+          "title": "Anthropic directory submission readiness plan"
+        },
+        {
+          "id": "wt-anthropic-directory-submission-readiness-023",
+          "stage": "walkthrough",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Anthropic directory submission readiness — Phase conformance walkthrough",
+          "phase": "conformance"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 13,
+        "blocked": 0,
+        "total": 13
+      },
+      "phases": [
+        {
+          "name": "conformance",
+          "order": 0,
+          "taskCount": 13,
+          "doneCount": 13,
+          "inProgressCount": 0,
+          "blockedCount": 0,
+          "status": "done",
+          "kind": "build",
+          "prerequisites": [],
+          "walkthroughId": "wt-anthropic-directory-submission-readiness-023",
+          "walkthroughStatus": "approved",
+          "walkthroughStale": false
+        }
+      ]
+    },
+    {
+      "id": "feat-cowork-support",
+      "slug": "cowork-support",
+      "title": "Cowork support",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-cowork-support-041",
+          "stage": "prd",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Cowork support PRD"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 0,
+        "blocked": 0,
+        "total": 0
+      },
+      "phases": []
+    },
+    {
+      "id": "feat-loop-command-specmanager-loop",
+      "slug": "loop-command-specmanager-loop",
+      "title": "Loop command (/specmanager-loop)",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-loop-command-specmanager-loop-042",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Loop command (/specmanager-loop) PRD"
+        },
+        {
+          "id": "arch-loop-command-specmanager-loop-027",
+          "stage": "architecture",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Loop command (/specmanager-loop) architecture"
+        },
+        {
+          "id": "plan-loop-command-specmanager-loop-021",
+          "stage": "plan",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Loop command (/specmanager-loop) plan"
+        },
+        {
+          "id": "wt-loop-command-specmanager-loop-024",
+          "stage": "walkthrough",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Loop command (/specmanager-loop) — Phase loop walkthrough",
+          "phase": "loop"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 8,
+        "blocked": 0,
+        "total": 8
+      },
+      "phases": [
+        {
+          "name": "loop",
+          "order": 0,
+          "taskCount": 8,
+          "doneCount": 8,
+          "inProgressCount": 0,
+          "blockedCount": 0,
+          "status": "done",
+          "kind": "build",
+          "prerequisites": [],
+          "walkthroughId": "wt-loop-command-specmanager-loop-024",
+          "walkthroughStatus": "draft",
+          "walkthroughStale": false
+        }
+      ]
+    },
+    {
+      "id": "feat-planner-rewrite",
+      "slug": "planner-rewrite",
+      "title": "Planner rewrite",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-planner-rewrite-043",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 4,
+          "title": "Planner rewrite PRD"
+        },
+        {
+          "id": "arch-planner-rewrite-028",
+          "stage": "architecture",
+          "status": "approved",
+          "stale": false,
+          "version": 4,
+          "title": "Planner rewrite architecture"
+        },
+        {
+          "id": "plan-planner-rewrite-022",
+          "stage": "plan",
+          "status": "approved",
+          "stale": false,
+          "version": 4,
+          "title": "Planner rewrite plan"
+        },
+        {
+          "id": "wt-planner-rewrite-025",
+          "stage": "walkthrough",
+          "status": "approved",
+          "stale": false,
+          "version": 1,
+          "title": "Planner rewrite — Phase rewrite walkthrough",
+          "phase": "rewrite"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 26,
+        "blocked": 0,
+        "total": 26
+      },
+      "phases": [
+        {
+          "name": "rewrite",
+          "order": 0,
+          "taskCount": 26,
+          "doneCount": 26,
+          "inProgressCount": 0,
+          "blockedCount": 0,
+          "status": "done",
+          "kind": "build",
+          "prerequisites": [],
+          "walkthroughId": "wt-planner-rewrite-025",
+          "walkthroughStatus": "approved",
+          "walkthroughStale": false
+        }
+      ]
+    },
+    {
+      "id": "feat-agent-prompt-simplification-opus-5-5",
+      "slug": "agent-prompt-simplification-opus-5-5",
+      "title": "Agent prompt simplification (Opus 5.5)",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-agent-prompt-simplification-opus-5-5-044",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Agent prompt simplification (Opus 5.5) PRD"
+        },
+        {
+          "id": "arch-agent-prompt-simplification-opus-5-5-029",
+          "stage": "architecture",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Agent prompt simplification (Opus 5.5) architecture"
+        },
+        {
+          "id": "plan-agent-prompt-simplification-opus-5-5-023",
+          "stage": "plan",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Agent prompt simplification (Opus 5.5) plan"
+        },
+        {
+          "id": "wt-agent-prompt-simplification-opus-5-5-026",
+          "stage": "walkthrough",
+          "status": "draft",
+          "stale": false,
+          "version": 1,
+          "title": "Agent prompt simplification (Opus 5.5) — Phase trim walkthrough",
+          "phase": "trim"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 22,
+        "blocked": 0,
+        "total": 22
+      },
+      "phases": [
+        {
+          "name": "trim",
+          "order": 0,
+          "taskCount": 22,
+          "doneCount": 22,
+          "inProgressCount": 0,
+          "blockedCount": 0,
+          "status": "done",
+          "kind": "build",
+          "prerequisites": [
+            {
+              "id": "pre-1",
+              "title": "Claude Code CLI logged in for headless claude -p runs (dogfood runs and Skill probe)",
+              "kind": "credential",
+              "neededBy": [
+                "task-002",
+                "task-020",
+                "task-022"
+              ],
+              "grantVia": "CLI: claude (already logged in, or /login)"
+            }
+          ],
+          "walkthroughId": "wt-agent-prompt-simplification-opus-5-5-026",
+          "walkthroughStatus": "draft",
+          "walkthroughStale": false
+        }
+      ]
+    },
+    {
+      "id": "feat-init-onboarding-plugins-repos",
+      "slug": "init-onboarding-plugins-repos",
+      "title": "Init onboarding: plugins & repos",
+      "currentStage": "prd",
+      "documents": [
+        {
+          "id": "prd-init-onboarding-plugins-repos-045",
+          "stage": "prd",
+          "status": "approved",
+          "stale": false,
+          "version": 2,
+          "title": "Init onboarding: plugins & repos PRD"
+        },
+        {
+          "id": "arch-init-onboarding-plugins-repos-030",
+          "stage": "architecture",
+          "status": "approved",
+          "stale": false,
+          "version": 3,
+          "title": "Init onboarding: plugins & repos architecture"
+        },
+        {
+          "id": "plan-init-onboarding-plugins-repos-024",
+          "stage": "plan",
+          "status": "approved",
+          "stale": false,
+          "version": 4,
+          "title": "Init onboarding: plugins & repos plan"
+        },
+        {
+          "id": "wt-init-onboarding-plugins-repos-027",
+          "stage": "walkthrough",
+          "status": "draft",
+          "stale": false,
+          "version": 2,
+          "title": "Init onboarding: plugins & repos — Phase onboarding walkthrough",
+          "phase": "onboarding"
+        }
+      ],
+      "tasks": {
+        "todo": 0,
+        "in_progress": 0,
+        "done": 11,
+        "blocked": 0,
+        "total": 11
+      },
+      "phases": [
+        {
+          "name": "onboarding",
+          "order": 0,
+          "taskCount": 11,
+          "doneCount": 11,
+          "inProgressCount": 0,
+          "blockedCount": 0,
+          "status": "done",
+          "kind": "build",
+          "prerequisites": [],
+          "walkthroughId": "wt-init-onboarding-plugins-repos-027",
+          "walkthroughStatus": "draft",
+          "walkthroughStale": false
+        }
+      ]
     }
   ]
 }

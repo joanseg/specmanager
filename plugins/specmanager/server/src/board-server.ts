@@ -2,7 +2,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { existsSync, readFileSync } from "node:fs";
 import type { AddressInfo } from "node:net";
-import Fastify, { FastifyInstance } from "fastify";
+import Fastify, { FastifyInstance, FastifyReply } from "fastify";
 import fastifyStatic from "@fastify/static";
 import { WebSocketServer, WebSocket } from "ws";
 import chokidar from "chokidar";
@@ -10,6 +10,11 @@ import chokidar from "chokidar";
 import {
   buildManifest,
   checkGate,
+  createStudy,
+  handoffStudyItems,
+  listStudySummaries,
+  readResearchDocById,
+  writeResearchDoc,
   createTask,
   events,
   listDocuments,
@@ -35,6 +40,17 @@ import {
 const here = path.dirname(fileURLToPath(import.meta.url));
 // dist/board-server.js → plugin root → ui/dist
 const UI_DIST = path.resolve(here, "..", "..", "ui", "dist");
+
+/** Map a research core error to 409 (version conflict), 404 (not found) or 400. */
+function researchError(reply: FastifyReply, err: unknown): { error: string } {
+  const message = (err as Error).message;
+  const notFound =
+    (err as NodeJS.ErrnoException).code === "ENOENT" ||
+    message.includes("not found") ||
+    message.startsWith("not a study id");
+  reply.code(message.startsWith("version conflict") ? 409 : notFound ? 404 : 400);
+  return { error: message };
+}
 
 export interface BoardServer {
   url: string;
@@ -86,7 +102,10 @@ export async function startBoardServer(opts: {
   const app: FastifyInstance = Fastify({ logger: false });
 
   // REST -------------------------------------------------------------------
-  app.get("/api/board", async () => buildManifest(root));
+  app.get("/api/board", async () => ({
+    ...(await buildManifest(root)),
+    projectName: path.basename(root),
+  }));
 
   app.get("/api/features", async () => listFeatures(root));
 
@@ -231,6 +250,74 @@ export async function startBoardServer(opts: {
       return { error: (err as Error).message };
     }
   });
+
+  // Research studies — same core calls (and so the same events) as the MCP tools.
+  app.get<{ Querystring: { studyId?: string } }>("/api/studies", async (req, reply) => {
+    try {
+      return await listStudySummaries(req.query.studyId, root);
+    } catch (err) {
+      return researchError(reply, err);
+    }
+  });
+
+  app.post<{ Body: { title?: string; idea?: string } }>("/api/studies", async (req, reply) => {
+    const { title, idea } = req.body ?? {};
+    if (!title || !idea) {
+      reply.code(400);
+      return { error: "title and idea are required" };
+    }
+    try {
+      return await createStudy({ title, idea }, root);
+    } catch (err) {
+      return researchError(reply, err);
+    }
+  });
+
+  app.get<{ Params: { id: string } }>("/api/research/:id", async (req, reply) => {
+    try {
+      const doc = await readResearchDocById(req.params.id, root);
+      return { ...doc.frontmatter, body: doc.body, filePath: doc.filePath };
+    } catch (err) {
+      return researchError(reply, err);
+    }
+  });
+
+  app.put<{
+    Params: { id: string };
+    Body: { body?: string; title?: string; baseVersion?: number };
+  }>("/api/research/:id", async (req, reply) => {
+    try {
+      const updated = await writeResearchDoc(
+        {
+          id: req.params.id,
+          body: req.body?.body,
+          title: req.body?.title,
+          baseVersion: req.body?.baseVersion,
+          generatedBy: "human",
+        },
+        root
+      );
+      return { ...updated.frontmatter, body: updated.body, filePath: updated.filePath };
+    } catch (err) {
+      return researchError(reply, err);
+    }
+  });
+
+  app.post<{ Params: { id: string }; Body: { itemIds?: string[] } }>(
+    "/api/studies/:id/handoff",
+    async (req, reply) => {
+      const itemIds = req.body?.itemIds;
+      if (!Array.isArray(itemIds) || itemIds.length === 0) {
+        reply.code(400);
+        return { error: "itemIds must be a non-empty array" };
+      }
+      try {
+        return await handoffStudyItems({ studyId: req.params.id, itemIds }, root);
+      } catch (err) {
+        return researchError(reply, err);
+      }
+    }
+  );
 
   app.post<{ Body: { mode?: "init" | "refresh" } }>(
     "/api/design/sync",

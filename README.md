@@ -26,7 +26,7 @@ Each role is its own specialised agent — not one mega-prompt wearing different
 - **Reviewer** — read-only; checks each finished phase against the spec and returns a plain pass/fail verdict. It can't change anything.
 - **Tech writer** — documents what actually shipped, per phase, so you always have a record.
 
-The agents hand off to each other through approved documents, not a hidden shared memory — and **none of them approves its own work. That's your call.** You stay in the loop by design: an agent can't move to the next stage until you've approved the current one. Claude can't start the Architecture until you've approved the PRD, because that rule lives in the software itself, not in instructions the AI could talk its way around.
+The agents hand off to each other through approved documents, not a hidden shared memory — and **none of them approves its own work. That's your call.** You stay in the loop by design: an agent can't move to the next stage until you've approved the current one. Claude can't start the Architecture until you've approved the PRD, because that rule lives in the software itself, not in instructions the AI could talk its way around. The one exception is opt-in: `/specmanager:specmanager-loop` approves each planning document for you when you ask it to, still going through the same gates, and stops before any code is built.
 
 **"Approved" is a commitment, not a freeze.** Reopen an earlier document and every later one that depended on it gets a gentle "stale — worth a re-read" badge that follows the chain of dependencies. And because edits are tracked carefully, a late agent write can never overwrite a change you made by hand.
 
@@ -77,6 +77,7 @@ Each **feature** is a row on the board that flows left to right through the life
 
 ```text
 /specmanager:specmanager-interview "Checkout corridor" # OPTIONAL pre-PRD interview — extracts & stress-tests the idea
+/specmanager:specmanager-loop "Checkout corridor"      # OPTIONAL intent → approved Plan in one go (auto-approves, stops before Build)
 /specmanager:specmanager-prd "Checkout corridor"       # create the feature + draft its PRD → approve in board
 /specmanager:specmanager-architecture   <feature>       # draft the Architecture   → approve in board
 /specmanager:specmanager-design         <feature>       # OPTIONAL high-fi HTML mockups → approve
@@ -90,6 +91,8 @@ Each **feature** is a row on the board that flows left to right through the life
 `<feature>` is the feature's slug or id (reported by `/specmanager:specmanager-prd` when it creates the feature).
 
 `/specmanager:specmanager-interview` is optional: a multi-turn interview in your Claude session that pulls the idea out of your head and challenges it (using the [gstack office-hours](https://github.com/garrytan/gstack/tree/main/office-hours) forcing-question method) before any PRD exists. The result can be stored as `interview.md` in the feature's PRD folder — shown as a chip on the board, never gating anything — and the PRD drafter grounds itself in it when present.
+
+`/specmanager:specmanager-loop` is optional too: it takes a one-line intent, asks a few questions, drafts each stage through its subagent and **approves each stage's document automatically**, reviews across the docs, asks any open questions, and stops before Build.
 
 ### Stages and gates
 

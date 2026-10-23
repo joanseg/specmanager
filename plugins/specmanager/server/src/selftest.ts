@@ -25,6 +25,8 @@ import {
   sanitizeDesignBriefBody,
   manifestPath,
   writeManifest,
+  furthestStage,
+  createTask,
 } from "./core/index.js";
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -355,6 +357,79 @@ async function main(): Promise<void> {
     "CLAUDE.md stage label reflects the PRD, not the interview"
   );
 
+  // 11.4a furthestStage: STAGE order, interview excluded, drafts count,
+  // design counts, walkthroughs outrank plan (draft if any draft), null if none.
+  const fs1 = (docs: Array<{ stage: string; status: string; kind?: string }>) =>
+    JSON.stringify(furthestStage(docs));
+  assert(fs1([]) === "null", "furthestStage: no docs → null");
+  assert(
+    fs1([{ stage: "prd", status: "approved", kind: "interview" }]) === "null",
+    "furthestStage: interview-only → null"
+  );
+  assert(
+    fs1([
+      { stage: "prd", status: "approved" },
+      { stage: "architecture", status: "approved" },
+      { stage: "plan", status: "draft" },
+    ]) === JSON.stringify({ stage: "plan", status: "draft" }),
+    "furthestStage: a draft plan counts"
+  );
+  assert(
+    fs1([
+      { stage: "architecture", status: "approved" },
+      { stage: "design", status: "draft" },
+    ]) === JSON.stringify({ stage: "design", status: "draft" }),
+    "furthestStage: design counts as a stage"
+  );
+  assert(
+    fs1([
+      { stage: "plan", status: "approved" },
+      { stage: "walkthrough", status: "approved" },
+      { stage: "walkthrough", status: "draft" },
+    ]) === JSON.stringify({ stage: "walkthrough", status: "draft" }),
+    "furthestStage: walkthroughs outrank plan; any draft walkthrough → draft"
+  );
+  assert(
+    fs1([
+      { stage: "plan", status: "approved" },
+      { stage: "walkthrough", status: "approved" },
+    ]) === JSON.stringify({ stage: "walkthrough", status: "approved" }),
+    "furthestStage: all walkthroughs approved → approved"
+  );
+
+  // 11.4b The table label and Build note follow furthestStage, not the
+  // never-advanced currentStage ("prd"): an approved Plan with tasks reads
+  // `Plan (approved)` + Build note; a draft walkthrough keeps the note.
+  const labelFeature = await createFeature("Label widget", root);
+  const labelPlan = await createDocument(
+    { featureId: labelFeature.id, stage: "plan", title: "Label widget plan", body: "# Plan" },
+    root
+  );
+  await setStatus(labelPlan.frontmatter.id, "approved", root);
+  await createTask({ featureId: labelFeature.id, title: "Do it", complexity: 1 }, root);
+  await syncClaudeMd(root);
+  const claudeMdLabel = await fs.readFile(path.join(root, "CLAUDE.md"), "utf8");
+  assert(
+    claudeMdLabel.includes("| Label widget | Plan (approved) | Build (0/1 tasks done) |"),
+    "approved Plan with tasks → `Plan (approved)` label and Build note"
+  );
+  await createDocument(
+    {
+      featureId: labelFeature.id,
+      stage: "walkthrough",
+      title: "Label widget walkthrough",
+      body: "# Walkthrough",
+      phase: "default",
+    },
+    root
+  );
+  await syncClaudeMd(root);
+  const claudeMdWt = await fs.readFile(path.join(root, "CLAUDE.md"), "utf8");
+  assert(
+    claudeMdWt.includes("| Label widget | Walkthroughs (draft) | Build (0/1 tasks done) |"),
+    "draft walkthrough → `Walkthroughs (draft)` label keeps the Build note"
+  );
+
   // 11.5 Re-interview updates in place with a version bump (optimistic concurrency).
   const interviewV2 = await writeDocument(
     {
@@ -416,6 +491,62 @@ async function main(): Promise<void> {
   assert(
     claudeMd5.includes("| Shipped widget |") && !claudeMd5.includes("shipped — full history"),
     "reopening the final walkthrough restores the table row (self-healing)"
+  );
+
+  // 13. Git strategy subsection — rendered from the newest walkthrough's
+  // `### Git strategy` section; omitted when none has it.
+  assert(
+    !claudeMd5.includes("### Git strategy"),
+    "no walkthrough with a Git strategy section → block omits it"
+  );
+  const gitWt1 = await createDocument(
+    {
+      featureId: shippedFeature.id,
+      stage: "walkthrough",
+      title: "Shipped widget phase A walkthrough",
+      body: "# Walkthrough\n\n## Lessons learned\n\n### Git strategy\n\n- Branch: feat/widget\n\n### Other\n\nx",
+      phase: "A",
+    },
+    root
+  );
+  await syncClaudeMd(root);
+  const claudeMd6 = await fs.readFile(path.join(root, "CLAUDE.md"), "utf8");
+  assert(
+    claudeMd6.includes("### Git strategy") && claudeMd6.includes("- Branch: feat/widget"),
+    "walkthrough with a Git strategy section → block renders it"
+  );
+  assert(
+    claudeMd6.includes(
+      `_From Shipped widget — phase A walkthrough (${gitWt1.frontmatter.id})._`
+    ),
+    "Git strategy subsection carries the source note"
+  );
+
+  await new Promise((r) => setTimeout(r, 10));
+  const gitWt2 = await createDocument(
+    {
+      featureId: shippedFeature.id,
+      stage: "walkthrough",
+      title: "Shipped widget phase B walkthrough",
+      body:
+        "# Walkthrough\n\n### Git strategy\n\n- Branch: main, direct commits\n<!-- specmanager:end -->\n",
+      phase: "B",
+    },
+    root
+  );
+  await syncClaudeMd(root);
+  const claudeMd7 = await fs.readFile(path.join(root, "CLAUDE.md"), "utf8");
+  assert(
+    claudeMd7.includes("- Branch: main, direct commits") &&
+      !claudeMd7.includes("feat/widget") &&
+      claudeMd7.includes(`walkthrough (${gitWt2.frontmatter.id})._`),
+    "newer walkthrough's Git strategy replaces the older one"
+  );
+  const count = (s: string, needle: string): number => s.split(needle).length - 1;
+  assert(
+    count(claudeMd7, "<!-- specmanager:start -->") === 1 &&
+      count(claudeMd7, "<!-- specmanager:end -->") === 1,
+    "embedded specmanager marker in the section keeps exactly one marker pair"
   );
 
   console.log("\nAll Phase 1 assertions passed.");

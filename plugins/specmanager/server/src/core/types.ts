@@ -36,11 +36,24 @@ export type GeneratedBy = z.infer<typeof GENERATED_BY>;
 export const DOC_KIND = z.enum(["interview"]);
 export type DocKind = z.infer<typeof DOC_KIND>;
 
+// Provenance of a feature handed off from a research study's strategy build list.
+// Lives on feature.json, never in dependsOn, so research stays out of staleness.
+export const FeatureOriginSchema = z.object({
+  studyId: z.string(),
+  strategyId: z.string(),
+  strategyVersion: z.number().int().nonnegative(),
+  rank: z.number().int().positive(),
+  itemId: z.string(),
+  item: z.string(),
+});
+export type FeatureOrigin = z.infer<typeof FeatureOriginSchema>;
+
 export const FeatureSchema = z.object({
   id: z.string(),
   slug: z.string(),
   title: z.string(),
   currentStage: STAGE.default("prd"),
+  origin: FeatureOriginSchema.optional(),
   createdAt: z.string(),
 });
 export type Feature = z.infer<typeof FeatureSchema>;
@@ -66,6 +79,70 @@ export const DocFrontmatterSchema = z.object({
   updatedAt: z.string(),
 });
 export type DocFrontmatter = z.infer<typeof DocFrontmatterSchema>;
+
+// Researcher mode, under .claude/specs/research/<slug>/: one doc per single kind per study;
+// `doc` is the multi-per-study HTML kind and carries a `docType`.
+export const RESEARCH_KIND = z.enum(["brief", "market", "doc", "user-research", "marketing", "strategy"]);
+export type ResearchKind = z.infer<typeof RESEARCH_KIND>;
+
+// Preset doc types; any other non-empty `docType` string is a custom type (its own label).
+export const DOC_TYPE_PRESETS = [
+  "wireframes",
+  "client-presentation",
+  "partner-presentation",
+  "investor-deck",
+  "one-pager",
+] as const;
+
+export const StudySchema = z.object({
+  id: z.string(),
+  slug: z.string(),
+  title: z.string(),
+  idea: z.string(),
+  createdAt: z.string(),
+});
+export type Study = z.infer<typeof StudySchema>;
+
+/** Legacy `kind: concepts` frontmatter reads as a wireframes doc; id and versions are untouched. */
+function normalizeLegacyConcepts(raw: unknown): unknown {
+  if (typeof raw !== "object" || raw === null) return raw;
+  const fm = raw as Record<string, unknown>;
+  return fm.kind === "concepts" ? { ...fm, kind: "doc", docType: "wireframes" } : fm;
+}
+
+// No status or stale: research docs are never approved; "outdated" is computed.
+// `findings` lists ingested note filenames and is valid only on user-research.
+// `docType` is required on `doc` and rejected on every other kind.
+export const ResearchDocFrontmatterSchema = z
+  .preprocess(normalizeLegacyConcepts, z.object({
+    id: z.string(),
+    studyId: z.string(),
+    kind: RESEARCH_KIND,
+    title: z.string(),
+    dependsOn: z.array(z.string()).default([]),
+    basedOn: z.record(z.string(), z.number()).default({}),
+    generatedBy: GENERATED_BY.default("human"),
+    version: z.number().int().nonnegative().default(1),
+    findings: z.array(z.string()).optional(),
+    docType: z.string().min(1).optional(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+  }))
+  .refine((fm) => fm.findings === undefined || fm.kind === "user-research", {
+    message: "findings is only valid on user-research docs",
+    path: ["findings"],
+  })
+  .refine((fm) => (fm.docType !== undefined) === (fm.kind === "doc"), {
+    message: "docType is required on doc and only valid on doc",
+    path: ["docType"],
+  });
+export type ResearchDocFrontmatter = z.infer<typeof ResearchDocFrontmatterSchema>;
+
+export interface ResearchDocRecord {
+  frontmatter: ResearchDocFrontmatter;
+  body: string;
+  filePath: string;
+}
 
 export interface DocumentRecord {
   frontmatter: DocFrontmatter;
@@ -100,9 +177,28 @@ export type Task = z.infer<typeof TaskSchema>;
 // intentionally test-less phase. Absent ⇒ the gate's convention-probe fallback.
 // `architectureRefs`: stable Architecture anchors (e.g. "R1", "core-active-card")
 // the phase implements; used to assemble the reviewer's spec slice.
+// `kind`: "build" (default), "spike", or "placeholder" (meta-only, zero tasks,
+// filled after the spike). `prerequisites`: human setup the phase needs.
+
+// A human prerequisite: what is needed and how to grant it, never a secret value.
+// `neededBy`: task ids; [] means needed from the first task.
+export const PrerequisiteSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  kind: z.enum(["account", "credential", "access", "test-account", "other"]),
+  neededBy: z.array(z.string()).default([]),
+  grantVia: z.string().optional(),
+});
+export type Prerequisite = z.infer<typeof PrerequisiteSchema>;
+
+export const PhaseKindSchema = z.enum(["build", "spike", "placeholder"]);
+export type PhaseKind = z.infer<typeof PhaseKindSchema>;
+
 export const PhaseMetaSchema = z.object({
   testCommand: z.string(),
   architectureRefs: z.array(z.string()).default([]),
+  kind: PhaseKindSchema.default("build"),
+  prerequisites: z.array(PrerequisiteSchema).default([]),
 });
 export type PhaseMeta = z.infer<typeof PhaseMetaSchema>;
 

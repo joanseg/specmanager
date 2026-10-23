@@ -1,8 +1,11 @@
 import { Fragment, useCallback, useEffect, useState } from "react";
-import { fetchBoard, openWebSocket } from "./api";
+import { fetchBoard, fetchStudies, openWebSocket } from "./api";
 import DocPanel from "./DocPanel";
 import BuildPanel from "./BuildPanel";
-import { Board, Column, DocCard, FeatureRow, PhaseRollup, Stage, STAGES, TaskCounts } from "./types";
+import ModeToggle, { useMode } from "./ModeToggle";
+import OriginChip from "./OriginChip";
+import ResearchBoard from "./ResearchBoard";
+import { Board, Column, DocCard, FeatureRow, PhaseRollup, Stage, STAGES, StudySummary, TaskCounts } from "./types";
 
 const DEFAULT_PHASE = "default";
 const FINAL_PHASE = "final";
@@ -376,19 +379,32 @@ function Cell({
   return <EmptyCell stage={stage} ready />;
 }
 
+function plural(n: number, one: string, many: string): string {
+  return `${n} ${n === 1 ? one : many}`;
+}
+
 export default function App() {
   const [board, setBoard] = useState<Board | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [lastEvent, setLastEvent] = useState<string | null>(null);
-  const [openDocId, setOpenDocId] = useState<string | null>(null);
+  const [openDoc, setOpenDoc] = useState<{ id: string; source: "feature" | "research" } | null>(null);
   const [openBuild, setOpenBuild] = useState<{ featureId: string; title: string } | null>(null);
+  const [mode, setMode] = useMode();
+  const [studies, setStudies] = useState<StudySummary[] | null>(null);
+  const [tick, setTick] = useState(0);
+  const [focusFeature, setFocusFeature] = useState<string | null>(null);
 
-  const openDoc = useCallback((id: string) => setOpenDocId(id), []);
-  const closeDoc = useCallback(() => setOpenDocId(null), []);
+  const openFeatureDoc = useCallback((id: string) => setOpenDoc({ id, source: "feature" }), []);
+  const openResearchDoc = useCallback((id: string) => setOpenDoc({ id, source: "research" }), []);
+  const closeDoc = useCallback(() => setOpenDoc(null), []);
   const openBuildFor = useCallback((featureId: string, title: string) => {
     setOpenBuild({ featureId, title });
   }, []);
   const closeBuild = useCallback(() => setOpenBuild(null), []);
+  const showFeature = useCallback((featureId: string) => {
+    setMode("builder");
+    setFocusFeature(featureId);
+  }, [setMode]);
 
   const reload = (): void => {
     fetchBoard()
@@ -406,13 +422,32 @@ export default function App() {
       setLastEvent(event.type);
       // Coalesce bursts of events into a single reload.
       window.clearTimeout(pending);
-      pending = window.setTimeout(reload, 100);
+      pending = window.setTimeout(() => {
+        reload();
+        setTick((t) => t + 1);
+      }, 100);
     });
     return () => {
       window.clearTimeout(pending);
       close();
     };
   }, []);
+
+  // Builder needs studies only for origin chips, so it fetches them only when a feature has an origin.
+  const needsStudies = mode === "researcher" || !!board?.features.some((f) => f.origin);
+  useEffect(() => {
+    if (!needsStudies) return;
+    fetchStudies()
+      .then(setStudies)
+      .catch((err: Error) => setError(err.message));
+  }, [needsStudies, tick]);
+
+  useEffect(() => {
+    if (mode !== "builder" || !focusFeature) return;
+    document.getElementById(`feature-${focusFeature}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    const timer = window.setTimeout(() => setFocusFeature(null), 2000);
+    return () => window.clearTimeout(timer);
+  }, [mode, focusFeature]);
 
   if (error) {
     return (
@@ -427,16 +462,26 @@ export default function App() {
   return (
     <main className="board">
       <header className="board__header">
-        <h1 className="board__title">SpecManager</h1>
+        <div>
+          <h1 className="board__title">{board.projectName}</h1>
+          <p className="board__subtitle">SpecManager</p>
+        </div>
+        <ModeToggle mode={mode} onChange={setMode} />
         <div className="board__meta">
           <span className="board__count">
-            {board.features.length} feature{board.features.length === 1 ? "" : "s"}
+            {mode === "builder"
+              ? plural(board.features.length, "feature", "features")
+              : studies
+              ? plural(studies.length, "study", "studies")
+              : "…"}
           </span>
           {lastEvent && <span className="board__pulse">· {lastEvent}</span>}
         </div>
       </header>
 
-      {board.features.length === 0 ? (
+      {mode === "researcher" ? (
+        studies && <ResearchBoard studies={studies} onOpenDoc={openResearchDoc} onShowFeature={showFeature} />
+      ) : board.features.length === 0 ? (
         <section className="empty">
           <p>No features yet.</p>
           <pre>/specmanager-prd &lt;title&gt;</pre>
@@ -463,9 +508,19 @@ export default function App() {
           ))}
           {board.features.map((row) => (
             <div key={row.id} className="row" style={{ display: "contents" }}>
-              <div className="row__label">
+              <div
+                id={`feature-${row.id}`}
+                className={`row__label${focusFeature === row.id ? " row__label--focus" : ""}`}
+              >
                 <strong>{row.title}</strong>
                 <small>{row.slug}</small>
+                {row.origin && (
+                  <OriginChip
+                    origin={row.origin}
+                    study={studies?.find((s) => s.id === row.origin!.studyId)}
+                    onOpen={openResearchDoc}
+                  />
+                )}
               </div>
               {STAGES.map((c) => (
                 <Fragment key={c}>
@@ -473,11 +528,11 @@ export default function App() {
                       WALKTHROUGHS, not iterated as a stage column. */}
                   {c === "walkthrough" && (
                     <div className="row__cell row__cell--build">
-                      <Cell row={row} column="build" onOpenDoc={openDoc} onOpenBuild={openBuildFor} />
+                      <Cell row={row} column="build" onOpenDoc={openFeatureDoc} onOpenBuild={openBuildFor} />
                     </div>
                   )}
                   <div className="row__cell">
-                    <Cell row={row} column={c} onOpenDoc={openDoc} onOpenBuild={openBuildFor} />
+                    <Cell row={row} column={c} onOpenDoc={openFeatureDoc} onOpenBuild={openBuildFor} />
                   </div>
                 </Fragment>
               ))}
@@ -486,8 +541,14 @@ export default function App() {
         </section>
       )}
 
-      {openDocId && (
-        <DocPanel docId={openDocId} onClose={closeDoc} onJumpTo={openDoc} />
+      {openDoc && (
+        <DocPanel
+          key={openDoc.source}
+          docId={openDoc.id}
+          source={openDoc.source}
+          onClose={closeDoc}
+          onJumpTo={openDoc.source === "research" ? openResearchDoc : openFeatureDoc}
+        />
       )}
       {openBuild && (
         <BuildPanel

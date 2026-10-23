@@ -2,14 +2,22 @@ import fs from "node:fs/promises";
 import { manifestPath, projectRoot } from "./paths.js";
 import { listFeatures } from "./features.js";
 import { listDocuments } from "./documents.js";
-import { listTasks } from "./tasks.js";
+import { listTasks, readTasksMeta } from "./tasks.js";
 import { PhaseDescriptor, rollupPhases } from "./phases.js";
-import { DEFAULT_PHASE } from "./types.js";
+import { DEFAULT_PHASE, FeatureOrigin } from "./types.js";
+import { listResearchDocs, listStudies } from "./research.js";
 
 export interface PhaseManifestEntry extends PhaseDescriptor {
   walkthroughId: string | null;
   walkthroughStatus: "draft" | "approved" | null;
   walkthroughStale: boolean | null;
+}
+
+export interface StudyManifestEntry {
+  id: string;
+  slug: string;
+  title: string;
+  documents: Array<{ id: string; kind: string; docType?: string; title: string; version: number }>;
 }
 
 export interface Manifest {
@@ -19,6 +27,7 @@ export interface Manifest {
     slug: string;
     title: string;
     currentStage: string;
+    origin?: FeatureOrigin;
     documents: Array<{
       id: string;
       stage: string;
@@ -32,6 +41,7 @@ export interface Manifest {
     tasks: { todo: number; in_progress: number; done: number; blocked: number; total: number };
     phases: PhaseManifestEntry[];
   }>;
+  studies?: StudyManifestEntry[];
 }
 
 export async function buildManifest(root = projectRoot()): Promise<Manifest> {
@@ -42,7 +52,7 @@ export async function buildManifest(root = projectRoot()): Promise<Manifest> {
     const tasks = await listTasks(f.id, root);
     const counts = { todo: 0, in_progress: 0, done: 0, blocked: 0, total: tasks.length };
     for (const t of tasks) counts[t.status]++;
-    const phaseRollup = rollupPhases(tasks);
+    const phaseRollup = rollupPhases(tasks, (await readTasksMeta(f.id, root)).phases);
     // Map phase-name → walkthrough doc (if one exists for that phase).
     const walkthroughByPhase = new Map<
       string,
@@ -71,6 +81,7 @@ export async function buildManifest(root = projectRoot()): Promise<Manifest> {
       slug: f.slug,
       title: f.title,
       currentStage: f.currentStage,
+      ...(f.origin ? { origin: f.origin } : {}),
       documents: docs.map((d) => ({
         id: d.frontmatter.id,
         stage: d.frontmatter.stage,
@@ -85,7 +96,30 @@ export async function buildManifest(root = projectRoot()): Promise<Manifest> {
       phases,
     });
   }
+  const studies = await buildStudyEntries(root);
+  if (studies.length > 0) out.studies = studies;
   return out;
+}
+
+/** Study summaries re-derived from study.json and research doc frontmatter. */
+async function buildStudyEntries(root: string): Promise<StudyManifestEntry[]> {
+  const entries: StudyManifestEntry[] = [];
+  for (const s of await listStudies(root)) {
+    const docs = await listResearchDocs(s.id, root);
+    entries.push({
+      id: s.id,
+      slug: s.slug,
+      title: s.title,
+      documents: docs.map(({ frontmatter: d }) => ({
+        id: d.id,
+        kind: d.kind,
+        ...(d.docType !== undefined ? { docType: d.docType } : {}),
+        title: d.title,
+        version: d.version,
+      })),
+    });
+  }
+  return entries;
 }
 
 export async function writeManifest(root = projectRoot()): Promise<Manifest> {

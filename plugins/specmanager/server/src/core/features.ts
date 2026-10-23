@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { Feature, FeatureSchema, Stage } from "./types.js";
+import { Feature, FeatureOrigin, FeatureSchema, Stage } from "./types.js";
 import { featureDir, featuresDir, projectRoot, specsDir, stageDir, STAGES } from "./paths.js";
 import { featureId, nowIso, slugify } from "./ids.js";
 import { events } from "./events.js";
@@ -48,12 +48,13 @@ export async function findFeatureById(id: string, root = projectRoot()): Promise
   return list.find((f) => f.id === id) ?? null;
 }
 
-async function uniqueSlug(base: string, root: string): Promise<string> {
+/** First of `base`, `base-2`, `base-3`… with no entry `<slug><ext>` under `parentDir`. */
+export async function uniqueSlug(base: string, parentDir: string, ext = ""): Promise<string> {
   let slug = base;
   let n = 2;
   while (true) {
     const exists = await fs
-      .stat(featureDir(slug, root))
+      .stat(path.join(parentDir, slug + ext))
       .then(() => true)
       .catch(() => false);
     if (!exists) return slug;
@@ -61,10 +62,15 @@ async function uniqueSlug(base: string, root: string): Promise<string> {
   }
 }
 
-export async function createFeature(title: string, root = projectRoot()): Promise<Feature> {
+/** Create a feature folder; `origin` records a research-study handoff on `feature.json`. */
+export async function createFeature(
+  title: string,
+  root = projectRoot(),
+  opts: { origin?: FeatureOrigin } = {}
+): Promise<Feature> {
   await ensureSpecsRoot(root);
   const base = slugify(title);
-  const slug = await uniqueSlug(base, root);
+  const slug = await uniqueSlug(base, featuresDir(root));
   const dir = featureDir(slug, root);
   await ensureDir(dir);
   for (const s of STAGES) await ensureDir(stageDir(slug, s as Stage, root));
@@ -73,6 +79,7 @@ export async function createFeature(title: string, root = projectRoot()): Promis
     slug,
     title,
     currentStage: "prd",
+    ...(opts.origin ? { origin: opts.origin } : {}),
     createdAt: nowIso(),
   };
   await fs.writeFile(path.join(dir, "feature.json"), JSON.stringify(feature, null, 2), "utf8");

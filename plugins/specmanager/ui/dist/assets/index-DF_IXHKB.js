@@ -1,10 +1,11 @@
-import { f as useState, e as useRef, b as useEffect, a as createVNode, d as useMemo, F as Fragment, u as useCallback, c as createRoot, R as React } from "./preact-BS8xTpBQ.js";
+import { f as useState, e as useRef, b as useEffect, a as createVNode, F as Fragment, d as useMemo, u as useCallback, c as createRoot, R as React } from "./preact-BS8xTpBQ.js";
 import { E as Editor, q as rootCtx, e as defaultValueCtx, o as remarkStringifyOptionsCtx, h as editorViewOptionsCtx, t as serializerCtx, g as editorViewCtx } from "./milkdown-core-DsBn0yRa.js";
 import { c as commonmark, a as createCodeBlockCommand, b as toggleLinkCommand, w as wrapInBulletListCommand, e as wrapInHeadingCommand, t as toggleEmphasisCommand, d as toggleStrongCommand } from "./milkdown-preset-commonmark-CpU54TZM.js";
 import { g as gfm, i as insertTableCommand } from "./milkdown-preset-gfm-CDmNGmtb.js";
 import { a as listenerCtx, l as listener } from "./milkdown-plugin-listener-Y8gP64VA.js";
 import { i as $prose, r as replaceAll, l as callCommand } from "./milkdown-utils-Dn8fge8U.js";
 import { P as Plugin } from "./prosemirror-state-DvBpuTqc.js";
+import { D as Decoration, a as DecorationSet } from "./prosemirror-view-DUWIvuYX.js";
 import "./milkdown-ctx-B6ZmVA8d.js";
 import "./milkdown-exception-EEjztD1-.js";
 import "./milkdown-prose-BA0s8Ct0.js";
@@ -13,7 +14,6 @@ import "./prosemirror-transform-BUwnoLrz.js";
 import "./prosemirror-model-CNXHVs9h.js";
 import "./orderedmap-DFuvvHIC.js";
 import "./prosemirror-tables-D3QqrMgz.js";
-import "./prosemirror-view-DUWIvuYX.js";
 import "./prosemirror-keymap-bzw026ae.js";
 import "./w3c-keyname-UlJ7zh8K.js";
 import "./milkdown-transformer-BqQ-j1sm.js";
@@ -186,6 +186,53 @@ async function fetchGate(featureId, stage) {
     throw new Error(`gate check → ${res.status}`);
   return await res.json();
 }
+async function errorOf(res) {
+  const data = await res.json().catch(() => ({}));
+  return data.error ?? `HTTP ${res.status}`;
+}
+async function fetchStudies(studyId) {
+  const qs = studyId ? `?studyId=${encodeURIComponent(studyId)}` : "";
+  const res = await fetch(`/api/studies${qs}`);
+  if (!res.ok)
+    throw new Error(`/api/studies → ${res.status}`);
+  return await res.json();
+}
+async function createStudyApi(title, idea) {
+  const res = await fetch("/api/studies", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ title, idea })
+  });
+  if (!res.ok)
+    throw new Error(await errorOf(res));
+  return await res.json();
+}
+async function fetchResearchDoc(id) {
+  const res = await fetch(`/api/research/${encodeURIComponent(id)}`);
+  if (!res.ok)
+    throw new Error(`/api/research/${id} → ${res.status}`);
+  return await res.json();
+}
+async function putResearchDoc(id, body, baseVersion, title) {
+  const res = await fetch(`/api/research/${encodeURIComponent(id)}`, {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ body, baseVersion, title })
+  });
+  if (res.ok)
+    return { ok: true, doc: await res.json() };
+  return { ok: false, status: res.status, error: await errorOf(res) };
+}
+async function postHandoff(studyId, itemIds) {
+  const res = await fetch(`/api/studies/${encodeURIComponent(studyId)}/handoff`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ itemIds })
+  });
+  if (!res.ok)
+    throw new Error(await errorOf(res));
+  return await res.json();
+}
 function openWebSocket(onEvent) {
   const proto = location.protocol === "https:" ? "wss:" : "ws:";
   const ws = new WebSocket(`${proto}//${location.host}/ws`);
@@ -348,6 +395,19 @@ function activeActions(state) {
   }
   return active;
 }
+const missingCells = $prose(() => new Plugin({
+  props: {
+    decorations: (state) => {
+      const decos = [];
+      state.doc.descendants((node, pos) => {
+        if (node.type.name === "table_cell" && node.textContent.trim() === "missing") {
+          decos.push(Decoration.node(pos, pos + node.nodeSize, { class: "miss" }));
+        }
+      });
+      return DecorationSet.create(state.doc, decos);
+    }
+  }
+}));
 function runAction(editor, action, payload) {
   editor.action((ctx) => {
     switch (action) {
@@ -377,7 +437,7 @@ function runAction(editor, action, payload) {
     }
   });
 }
-function MarkdownEditor({ value, readOnly, onChange }) {
+function MarkdownEditor({ value, readOnly, markMissing, onChange }) {
   const hostRef = useRef(null);
   const editorRef = useRef(null);
   const onChangeRef = useRef(onChange);
@@ -395,7 +455,7 @@ function MarkdownEditor({ value, readOnly, onChange }) {
     const host = hostRef.current;
     let editor = null;
     let destroyed = false;
-    Editor.make().config((ctx) => {
+    const maker = Editor.make().config((ctx) => {
       ctx.set(rootCtx, host);
       ctx.set(defaultValueCtx, value);
       ctx.set(remarkStringifyOptionsCtx, {
@@ -423,7 +483,10 @@ function MarkdownEditor({ value, readOnly, onChange }) {
       view: () => ({
         update: (view) => setActiveRef.current(activeActions(view.state))
       })
-    }))).create().then((made) => {
+    })));
+    if (markMissing)
+      maker.use(missingCells);
+    maker.create().then((made) => {
       if (destroyed) {
         made.destroy();
         return;
@@ -493,9 +556,6 @@ function MarkdownEditor({ value, readOnly, onChange }) {
     createVNode("div", { ref: hostRef, className: `md-surface${readOnly ? " md-surface--ro" : ""}` })
   ] });
 }
-function featureTitle(featureId) {
-  return featureId.replace(/^feat-/, "").split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
-}
 const PREVIEW_STYLE = `<style>
   html, body { margin: 0; }
   html { scrollbar-width: thin; scrollbar-color: #464554 transparent; }
@@ -504,6 +564,708 @@ const PREVIEW_STYLE = `<style>
   ::-webkit-scrollbar-thumb { background: #464554; border-radius: 999px; border: 2px solid #0e0e10; }
   ::-webkit-scrollbar-thumb:hover { background: #908fa0; }
 </style>`;
+function HtmlPreview({ title, body }) {
+  return createVNode("iframe", {
+    className: "panel__preview panel__preview--iframe",
+    title,
+    sandbox: "allow-same-origin",
+    srcDoc: PREVIEW_STYLE + body
+  });
+}
+function SaveBanners({ save, version, onReload, onDismiss }) {
+  if (save.kind === "conflict") {
+    return createVNode("div", { className: "banner banner--warn", children: [
+      "File changed on disk (now v",
+      save.serverVersion,
+      "). Your edits weren't saved.",
+      createVNode("button", { className: "link", onClick: onReload, children: "Reload from disk" }),
+      " to merge by hand."
+    ] });
+  }
+  if (save.kind === "error") {
+    return createVNode("div", { className: "banner banner--error", children: [
+      save.message,
+      createVNode("button", { className: "link", onClick: onDismiss, children: "dismiss" })
+    ] });
+  }
+  if (save.kind === "saved") {
+    return createVNode("div", { className: "banner banner--ok", children: [
+      "Saved · now v",
+      version
+    ] });
+  }
+  return null;
+}
+function PanelMessage({ error, onClose }) {
+  return createVNode("div", { className: "panel-backdrop", onClick: onClose, children: createVNode("aside", { className: "panel", onClick: (e) => e.stopPropagation(), children: error ? createVNode(Fragment, { children: [
+    createVNode("header", { className: "panel__header", children: [
+      createVNode("button", { className: "panel__close", onClick: onClose, children: "×" }),
+      createVNode("h2", { children: "Could not load document" })
+    ] }),
+    createVNode("p", { className: "panel__error", children: error })
+  ] }) : createVNode("p", { style: { padding: "2rem", color: "var(--text-dim)" }, children: "Loading…" }) }) });
+}
+function useEscClose(onClose) {
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape")
+        onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+}
+const STEPS = ["market", "docs", "plan", "marketing", "findings", "strategy", "handoff"];
+const LOOP_STEPS = /* @__PURE__ */ new Set(["market", "docs", "plan", "marketing"]);
+const LOOP_CMD = '/specmanager-research-loop "<idea>"';
+const CLI_CMD = '/specmanager-research "<idea>" new';
+function slugify(input) {
+  return input.toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60) || "feature";
+}
+function copy$1(text) {
+  var _a;
+  void ((_a = navigator.clipboard) == null ? void 0 : _a.writeText(text));
+}
+function StartStudyForm() {
+  const [title, setTitle] = useState("");
+  const [idea, setIdea] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null);
+  const slug = slugify(title);
+  const ready = title.trim() !== "" && idea.trim() !== "";
+  const submit = async (e) => {
+    e.preventDefault();
+    setBusy(true);
+    setError(null);
+    try {
+      await createStudyApi(title.trim(), idea.trim());
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  return createVNode("form", { className: "empty-research__form", onSubmit: submit, children: [
+    createVNode("h3", { children: "Or start one here" }),
+    createVNode("div", { className: "field", children: [
+      createVNode("label", { htmlFor: "study-title", children: "Study name" }),
+      createVNode("input", { id: "study-title", className: "input", value: title, onInput: (e) => setTitle(e.currentTarget.value) }),
+      createVNode("div", { className: "hint", children: [
+        "slug: ",
+        title.trim() ? slug : "…"
+      ] })
+    ] }),
+    createVNode("div", { className: "field", children: [
+      createVNode("label", { htmlFor: "study-idea", children: "Idea or market" }),
+      createVNode("textarea", {
+        id: "study-idea",
+        className: "input input--area",
+        value: idea,
+        onInput: (e) => setIdea(e.currentTarget.value)
+      }),
+      createVNode("div", { className: "hint", children: "one line · the loop's opening questions turn this into the brief" })
+    ] }),
+    createVNode("div", { className: "empty-research__actions", children: [
+      createVNode("button", { type: "submit", className: "btn btn--primary", disabled: !ready || busy, children: "Start study" }),
+      createVNode("span", { children: [
+        "then run ",
+        createVNode("span", { className: "mono", children: [
+          "/specmanager-research-loop ",
+          title.trim() ? slug : "<slug>"
+        ] })
+      ] })
+    ] }),
+    error && createVNode("div", { className: "empty-research__error", role: "alert", children: error })
+  ] });
+}
+function EmptyResearch() {
+  return createVNode("section", { className: "empty-research", children: [
+    createVNode("div", { className: "empty-research__intro", children: [
+      createVNode("h2", { children: "No studies yet" }),
+      createVNode("p", { children: "A study takes one product idea or market from desk research to an ordered build list. Claude drafts each doc in your session. You run the interviews and drop the notes in. Each study is independent, so you can run several at once." }),
+      createVNode("ol", { className: "steps", children: STEPS.map((s) => createVNode("li", { className: LOOP_STEPS.has(s) ? "loop" : void 0, children: [
+        createVNode("i", {}),
+        s
+      ] }, s)) }),
+      createVNode("div", { className: "steps-bracket", children: createVNode("span", { children: "covered by /specmanager-research-loop · brief first" }) }),
+      createVNode("div", { className: "start-block", children: [
+        createVNode("div", { className: "start-block__lead", children: "Run everything before the interviews in one go:" }),
+        createVNode("button", { type: "button", className: "cmd cmd--loop", onClick: () => copy$1(LOOP_CMD), title: "copy to clipboard", children: LOOP_CMD }),
+        createVNode("div", { className: "start-block__caption", children: [
+          createVNode("b", { children: "asks first" }),
+          " · brief → market → docs → plan → marketing · ",
+          createVNode("b", { children: "one review" }),
+          " · ",
+          createVNode("b", { children: "asks again" }),
+          " · approves nothing"
+        ] }),
+        createVNode("div", { className: "start-block__lead", children: "Or one step at a time:" }),
+        createVNode("button", { type: "button", className: "cmd cmd--dim", onClick: () => copy$1(CLI_CMD), title: "copy to clipboard", children: CLI_CMD })
+      ] })
+    ] }),
+    createVNode(StartStudyForm, {})
+  ] });
+}
+const COLUMNS = [
+  { kind: "market", label: "Market research" },
+  { kind: "doc", label: "Docs" },
+  { kind: "user-research", label: "User research" },
+  { kind: "marketing", label: "Marketing plan" },
+  { kind: "strategy", label: "Strategy" }
+];
+function kindLabel(kind) {
+  var _a;
+  if (kind === "brief")
+    return "Brief";
+  return ((_a = COLUMNS.find((c) => c.kind === kind)) == null ? void 0 : _a.label) ?? kind;
+}
+const DOC_TYPE_LABELS = {
+  wireframes: "Wireframes",
+  "client-presentation": "Client presentation",
+  "partner-presentation": "Partner presentation",
+  "investor-deck": "Investor deck",
+  "one-pager": "One-pager"
+};
+function isPresetDocType(docType) {
+  return docType === void 0 || docType in DOC_TYPE_LABELS;
+}
+function docTypeLabel(docType) {
+  if (docType === void 0)
+    return "Wireframes";
+  return DOC_TYPE_LABELS[docType] ?? docType;
+}
+const STEP_ARGS = {
+  doc: "docs",
+  "user-research": "plan"
+};
+function stepArg(step) {
+  return STEP_ARGS[step] ?? step;
+}
+function stepCommand(slug, step) {
+  return `/specmanager-research ${slug} ${stepArg(step)}`;
+}
+function copy(text) {
+  return (e) => {
+    var _a;
+    e.stopPropagation();
+    void ((_a = navigator.clipboard) == null ? void 0 : _a.writeText(text));
+  };
+}
+function kindStep(kind) {
+  return kind === "doc" ? "docs" : kind;
+}
+function stepOf(study, step) {
+  return study.steps.find((s) => s.step === step);
+}
+function plural$2(n, one, many) {
+  return `${n} ${n === 1 ? one : many}`;
+}
+function railSummary(study) {
+  if (study.newNotes.length > 0)
+    return plural$2(study.newNotes.length, "new note", "new notes");
+  if (study.steps.some((s) => s.state === "flag"))
+    return "outdated";
+  const done = study.steps.filter((s) => s.state === "done").length;
+  return `${done} / ${study.steps.length}`;
+}
+function BriefChip({ study, onOpen }) {
+  const brief = study.docs.find((d) => d.kind === "brief");
+  if (brief) {
+    return createVNode("button", { type: "button", className: "chip-brief", onClick: () => onOpen == null ? void 0 : onOpen(brief.id), title: `open ${brief.id}`, children: [
+      createVNode("span", { className: "page" }),
+      "Brief ",
+      createVNode("span", { className: "meta", children: [
+        "v",
+        brief.version
+      ] })
+    ] });
+  }
+  const cmd = stepCommand(study.slug, "brief");
+  return createVNode("button", { type: "button", className: "chip-brief chip-brief--missing", onClick: copy(cmd), title: `copy ${cmd}`, children: [
+    createVNode("span", { className: "page" }),
+    "no brief · ",
+    createVNode("span", { className: "meta", children: "… brief" })
+  ] });
+}
+function StudyLabel({ study, onOpen }) {
+  const next = study.nextStep;
+  return createVNode("div", { className: "row__label", children: [
+    createVNode("strong", { children: study.title }),
+    createVNode("small", { children: study.slug }),
+    createVNode("span", { className: "study__idea", title: study.idea, children: study.idea }),
+    createVNode(BriefChip, { study, onOpen }),
+    createVNode("div", { className: "study-rail", title: study.steps.map((s) => stepArg(s.step)).join(" · "), children: study.steps.map((s) => createVNode("i", {
+      className: s.state === "done" || s.state === "next" || s.state === "flag" ? s.state : "",
+      title: `${stepArg(s.step)}: ${s.state}${s.reason ? ` (${s.reason})` : ""}`
+    }, s.step)) }),
+    createVNode("div", { className: "study-rail__caption", children: [
+      createVNode("span", { children: next ? createVNode(Fragment, { children: [
+        "next ",
+        createVNode("b", { children: stepArg(next) })
+      ] }) : "complete" }),
+      createVNode("span", { children: railSummary(study) })
+    ] }),
+    next && createVNode("button", {
+      type: "button",
+      className: "study__next",
+      onClick: copy(stepCommand(study.slug, next)),
+      title: "copy to clipboard",
+      children: [
+        "▶ ",
+        stepCommand(study.slug, next)
+      ]
+    })
+  ] });
+}
+function DocCell({ doc, study, onOpen }) {
+  var _a;
+  const outdated = doc.outdated.length > 0;
+  const isUserResearch = doc.kind === "user-research";
+  const notes = isUserResearch ? study.newNotes.length : 0;
+  const findingsState = (_a = stepOf(study, "findings")) == null ? void 0 : _a.state;
+  const noFindings = isUserResearch && notes === 0 && findingsState !== "done" && findingsState !== "flag";
+  return createVNode("button", {
+    type: "button",
+    className: `card card--button${outdated ? " card--stale" : ""}`,
+    onClick: () => onOpen == null ? void 0 : onOpen(doc.id),
+    title: outdated ? `${doc.id} · behind ${doc.outdated.join(", ")}` : doc.id,
+    children: [
+      createVNode("span", { className: "card__title", children: doc.title }),
+      createVNode("span", { className: "card__badges", children: [
+        notes > 0 && createVNode("span", { className: "badge badge--notes", children: [
+          "● ",
+          plural$2(notes, "new note", "new notes")
+        ] }),
+        noFindings && createVNode("span", { className: "badge", children: "0 findings" }),
+        outdated && createVNode("span", { className: "badge badge--outdated", children: "⚠ outdated" }),
+        createVNode("span", { className: "badge badge--meta", children: [
+          "v",
+          doc.version
+        ] })
+      ] })
+    ]
+  });
+}
+function DocTypeHead({ doc }) {
+  const label = docTypeLabel(doc.docType);
+  const custom = !isPresetDocType(doc.docType);
+  return createVNode("span", { className: "doc-card__head", children: [
+    createVNode("span", { className: `doc-card__type${custom ? " doc-card__type--custom" : ""}`, title: label, children: [
+      custom && createVNode("i", { children: "custom" }),
+      label
+    ] }),
+    createVNode("span", { className: "badge badge--meta", children: [
+      "v",
+      doc.version
+    ] })
+  ] });
+}
+function DocCard({ doc, onOpen }) {
+  const outdated = doc.outdated.length > 0;
+  return createVNode("button", {
+    type: "button",
+    className: `card card--button doc-card${outdated ? " card--stale" : ""}`,
+    onClick: () => onOpen == null ? void 0 : onOpen(doc.id),
+    title: outdated ? `${doc.id} · behind ${doc.outdated.join(", ")}` : doc.id,
+    children: [
+      createVNode(DocTypeHead, { doc }),
+      createVNode("span", { className: "card__title", children: doc.title }),
+      outdated && createVNode("span", { className: "badge badge--outdated", children: "⚠ outdated" })
+    ]
+  });
+}
+function DocsCell({ study, onOpen }) {
+  var _a;
+  const docs = study.docs.filter((d) => d.kind === "doc");
+  if (docs.length === 0)
+    return createVNode(EmptyCell$1, { study, kind: "doc", label: "Docs" });
+  const cmd = stepCommand(study.slug, "docs");
+  const open = ((_a = stepOf(study, "docs")) == null ? void 0 : _a.state) !== "locked";
+  return createVNode("div", { className: "doc-stack", children: [
+    docs.map((d) => createVNode(DocCard, { doc: d, onOpen }, d.id)),
+    open && createVNode("button", { type: "button", className: "doc-add", onClick: copy(cmd), title: `copy ${cmd}`, children: [
+      createVNode("span", { children: [
+        "+ add",
+        createVNode("span", { className: "doc-add__more", children: " a doc" })
+      ] }),
+      createVNode("span", { children: "… docs" })
+    ] })
+  ] });
+}
+function LockedCell$1({ label, reason }) {
+  return createVNode("div", { className: "card card--locked", children: [
+    createVNode("span", { className: "card__locked-label", children: [
+      label,
+      " locked"
+    ] }),
+    reason && createVNode("span", { className: "card__locked-sub", children: reason })
+  ] });
+}
+function EmptyCell$1({ study, kind, label }) {
+  const step = kindStep(kind);
+  const status = stepOf(study, step);
+  if ((status == null ? void 0 : status.state) === "locked")
+    return createVNode(LockedCell$1, { label, reason: status.reason });
+  const cmd = stepCommand(study.slug, step);
+  if ((status == null ? void 0 : status.state) === "next") {
+    return createVNode("div", { className: "card card--empty card--ready", children: [
+      createVNode("span", { className: "card__empty-label", children: [
+        "Draft ",
+        label.toLowerCase()
+      ] }),
+      createVNode("button", { type: "button", className: "card__empty-cmd", onClick: copy(cmd), title: "copy to clipboard", children: cmd })
+    ] });
+  }
+  return createVNode("div", { className: "card card--empty", children: [
+    createVNode("span", { className: "card__empty-label", children: label }),
+    createVNode("button", {
+      type: "button",
+      className: "card__empty-cmd card__empty-cmd--dim",
+      onClick: copy(cmd),
+      title: `copy ${cmd}`,
+      children: [
+        "… ",
+        stepArg(step)
+      ]
+    })
+  ] });
+}
+function openBuilder() {
+  window.location.hash = "#builder";
+}
+function HandoffStrips({ result, study }) {
+  const slugOf = (featureId) => {
+    var _a;
+    return ((_a = study.handoffs.find((h) => h.featureId === featureId)) == null ? void 0 : _a.slug) ?? featureId;
+  };
+  return createVNode(Fragment, { children: [
+    result.created.length > 0 && createVNode("div", { className: "handoff__result", role: "status", children: [
+      "Created ",
+      plural$2(result.created.length, "Builder feature", "Builder features"),
+      ".",
+      " ",
+      createVNode("button", { type: "button", className: "link handoff__open", onClick: openBuilder, children: "Open in Builder" })
+    ] }),
+    result.skipped.length > 0 && createVNode("div", { className: "handoff__result handoff__result--skip", role: "status", children: [
+      result.skipped.length,
+      " already handed off, skipped:",
+      " ",
+      createVNode("span", { className: "mono", children: result.skipped.map((s) => slugOf(s.featureId)).join(", ") })
+    ] })
+  ] });
+}
+function HandoffRow({ item, handoff, checked, onToggle, onShowFeature }) {
+  if (handoff) {
+    return createVNode("div", { className: "handoff-item handoff-item--handed", title: item.rationale, children: [
+      createVNode("span", { className: "handoff-item__rank", children: item.rank }),
+      createVNode("span", { className: "handoff-item__done", "aria-label": "handed off" }),
+      createVNode("span", { className: "handoff-item__title", children: [
+        createVNode("span", { children: item.title }),
+        createVNode("a", {
+          className: "handoff-item__feat",
+          href: "#builder",
+          title: handoff.featureId,
+          onClick: (e) => {
+            if (!onShowFeature)
+              return;
+            e.preventDefault();
+            onShowFeature(handoff.featureId);
+          },
+          children: [
+            "→ ",
+            handoff.slug
+          ]
+        })
+      ] })
+    ] });
+  }
+  return createVNode("label", { className: `handoff-item${checked ? " handoff-item--checked" : ""}`, title: `${item.itemId} · ${item.rationale}`, children: [
+    createVNode("span", { className: "handoff-item__rank", children: item.rank }),
+    createVNode("input", { type: "checkbox", className: "handoff-item__check", checked, onChange: onToggle }),
+    createVNode("span", { className: "handoff-item__title", children: item.title })
+  ] });
+}
+function HandoffCell({ study, onShowFeature }) {
+  var _a;
+  const [selected, setSelected] = useState([]);
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  const strategy = study.docs.find((d) => d.kind === "strategy");
+  const status = stepOf(study, "handoff");
+  if (strategy && study.buildList.length === 0) {
+    return createVNode("div", { className: "card card--locked card--no-items", children: [
+      createVNode("span", { className: "card__locked-label", children: "No build items" }),
+      createVNode("span", { className: "card__locked-sub", children: [
+        "strategy has no ordered list under ",
+        createVNode("span", { className: "mono", children: "## What to build" })
+      ] })
+    ] });
+  }
+  if (!strategy || (status == null ? void 0 : status.state) === "locked")
+    return createVNode(LockedCell$1, { label: "Handoff", reason: status == null ? void 0 : status.reason });
+  const toggle = (itemId) => setSelected((cur) => cur.includes(itemId) ? cur.filter((id) => id !== itemId) : [...cur, itemId]);
+  const create = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      setResult(await postHandoff(study.id, selected));
+      setSelected([]);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  const nextSlug = (_a = result == null ? void 0 : result.created[0]) == null ? void 0 : _a.slug;
+  const n = selected.length;
+  return createVNode("div", { className: "card card--build card--handoff", children: [
+    createVNode("div", { className: "handoff__head", children: [
+      createVNode("span", { children: "Build list" }),
+      createVNode("span", { children: [
+        "strategy v",
+        strategy.version
+      ] })
+    ] }),
+    result && createVNode(HandoffStrips, { result, study }),
+    error && createVNode("div", { className: "handoff__result handoff__result--error", role: "alert", children: error }),
+    study.buildList.map((item) => createVNode(HandoffRow, {
+      item,
+      handoff: study.handoffs.find((h) => h.itemId === item.itemId),
+      checked: selected.includes(item.itemId),
+      onToggle: () => toggle(item.itemId),
+      onShowFeature
+    }, item.itemId)),
+    createVNode("div", { className: "handoff__actions", children: [
+      n === 0 && nextSlug ? createVNode("button", {
+        type: "button",
+        className: "handoff__next",
+        onClick: copy(`/specmanager-prd ${nextSlug}`),
+        title: "copy to clipboard",
+        children: [
+          "next: /specmanager-prd ",
+          nextSlug
+        ]
+      }) : createVNode("small", { children: [
+        n,
+        " selected"
+      ] }),
+      createVNode("button", { type: "button", className: "btn btn--sm btn--primary", disabled: n === 0 || busy, onClick: create, children: n === 0 ? "Create" : `Create ${plural$2(n, "feature", "features")}` })
+    ] })
+  ] });
+}
+function ResearchBoard({ studies, onOpenDoc, onShowFeature }) {
+  if (studies.length === 0)
+    return createVNode(EmptyResearch, {});
+  return createVNode("section", { className: "grid grid--research", children: [
+    createVNode("div", { className: "grid__corner", children: "Study" }),
+    COLUMNS.map((c) => createVNode("div", { className: `grid__header${c.kind === "doc" ? " grid__header--docs" : ""}`, children: c.label }, c.kind)),
+    createVNode("div", { className: "grid__header grid__header--build", children: "Handoff" }),
+    studies.map((study) => createVNode("div", { className: "row", style: { display: "contents" }, children: [
+      createVNode(StudyLabel, { study, onOpen: onOpenDoc }),
+      COLUMNS.map((c) => {
+        if (c.kind === "doc") {
+          return createVNode("div", { className: "row__cell row__cell--docs", children: createVNode(DocsCell, { study, onOpen: onOpenDoc }) }, c.kind);
+        }
+        const doc = study.docs.find((d) => d.kind === c.kind);
+        return createVNode("div", { className: "row__cell", children: doc ? createVNode(DocCell, { doc, study, onOpen: onOpenDoc }) : createVNode(EmptyCell$1, { study, kind: c.kind, label: c.label }) }, c.kind);
+      }),
+      createVNode("div", { className: "row__cell row__cell--build", children: createVNode(HandoffCell, { study, onShowFeature }) })
+    ] }, study.id))
+  ] });
+}
+function docLabels(doc) {
+  if (doc.kind !== "doc") {
+    const label2 = kindLabel(doc.kind);
+    return { crumb: label2, meta: label2, docType: null };
+  }
+  const label = docTypeLabel(doc.docType);
+  if (isPresetDocType(doc.docType)) {
+    return { crumb: label, meta: label, docType: doc.docType ?? "wireframes" };
+  }
+  return { crumb: label.charAt(0).toUpperCase() + label.slice(1), meta: "Custom", docType: label };
+}
+function plural$1(n, one, many) {
+  return `${n} ${n === 1 ? one : many}`;
+}
+function Cmd({ text, className }) {
+  return createVNode("button", {
+    type: "button",
+    className: `link ${className}`,
+    title: "copy to clipboard",
+    onClick: () => {
+      var _a;
+      return void ((_a = navigator.clipboard) == null ? void 0 : _a.writeText(text));
+    },
+    children: text
+  });
+}
+function NewNotesBanner({ study }) {
+  return createVNode("div", { className: "banner banner--warn banner--notes", children: [
+    createVNode("span", { children: [
+      createVNode("strong", { children: plural$1(study.newNotes.length, "new note", "new notes") }),
+      " ",
+      study.newNotes.length === 1 ? "is" : "are",
+      " not in Findings yet:"
+    ] }),
+    createVNode("span", { className: "banner__files", children: study.newNotes.join(" · ") }),
+    createVNode(Cmd, { text: stepCommand(study.slug, "findings"), className: "banner__cmd" }),
+    createVNode("span", { className: "banner__note", children: "They stay unmasked until findings runs, so don't commit them yet." })
+  ] });
+}
+function OutdatedBlock({ doc, study, onJumpTo }) {
+  const isStrategy = doc.kind === "strategy";
+  return createVNode("section", { className: "panel__stale", children: [
+    createVNode("strong", { children: [
+      "This ",
+      isStrategy ? "strategy" : "doc",
+      " is behind its sources."
+    ] }),
+    " ",
+    isStrategy ? "Re-run synthesis" : "Re-run this step",
+    " to fold in what changed:",
+    " ",
+    createVNode(Cmd, { text: stepCommand(study.slug, kindStep(doc.kind)), className: "stale-cmd" }),
+    createVNode("ul", { className: "stale-list", children: doc.dependsOn.map((depId) => {
+      var _a;
+      const based = doc.basedOn[depId];
+      const current = (_a = study.docs.find((d) => d.id === depId)) == null ? void 0 : _a.version;
+      const drift = current !== void 0 && current > (based ?? 0);
+      return createVNode("li", { className: drift ? "stale-list__item stale-list__item--drift" : "stale-list__item", children: [
+        createVNode("button", { className: "link", onClick: () => onJumpTo(depId), children: depId }),
+        based !== void 0 && createVNode("span", { children: [
+          " · based on v",
+          based
+        ] }),
+        current !== void 0 && createVNode("span", { children: [
+          " · now v",
+          current
+        ] }),
+        drift && createVNode("span", { className: "drift-tag", children: " drift" })
+      ] }, depId);
+    }) })
+  ] });
+}
+function ResearchDocPanel({ docId, onClose, onJumpTo }) {
+  var _a, _b;
+  const [doc, setDoc] = useState(null);
+  const [study, setStudy] = useState(null);
+  const [body, setBody] = useState("");
+  const [error, setError] = useState(null);
+  const [save, setSave] = useState({ kind: "idle" });
+  useEffect(() => {
+    let cancelled = false;
+    setDoc(null);
+    setError(null);
+    setSave({ kind: "idle" });
+    fetchResearchDoc(docId).then(async (d) => {
+      const [s] = await fetchStudies(d.studyId);
+      if (cancelled)
+        return;
+      setDoc(d);
+      setBody(d.body);
+      setStudy(s ?? null);
+    }).catch((e) => !cancelled && setError(e.message));
+    return () => {
+      cancelled = true;
+    };
+  }, [docId]);
+  useEscClose(onClose);
+  const dirty = useMemo(() => doc !== null && body !== doc.body, [doc, body]);
+  const isHtml = (doc == null ? void 0 : doc.kind) === "doc";
+  const reload = async () => {
+    const d = await fetchResearchDoc(docId);
+    setDoc(d);
+    setBody(d.body);
+    setSave({ kind: "idle" });
+  };
+  const onSave = async () => {
+    if (!doc || isHtml)
+      return;
+    setSave({ kind: "saving" });
+    const res = await putResearchDoc(doc.id, body, doc.version);
+    if (res.ok) {
+      setDoc(res.doc);
+      setBody(res.doc.body);
+      setSave({ kind: "saved", at: Date.now() });
+    } else if (res.status === 409) {
+      const current = await fetchResearchDoc(doc.id);
+      setSave({ kind: "conflict", serverVersion: current.version });
+    } else {
+      setSave({ kind: "error", message: res.error });
+    }
+  };
+  if (error || !doc)
+    return createVNode(PanelMessage, { error, onClose });
+  const labels = docLabels(doc);
+  const outdated = ((_a = study == null ? void 0 : study.docs.find((d) => d.id === doc.id)) == null ? void 0 : _a.outdated) ?? [];
+  const newNotes = doc.kind === "user-research" ? (study == null ? void 0 : study.newNotes) ?? [] : [];
+  return createVNode("div", { className: "panel-backdrop", onClick: onClose, children: createVNode("aside", { className: "panel", onClick: (e) => e.stopPropagation(), children: [
+    createVNode("header", { className: "panel__header", children: [
+      createVNode("div", { className: "panel__header-main", children: [
+        createVNode("nav", { className: "panel__crumb", children: [
+          (study == null ? void 0 : study.title) ?? doc.studyId,
+          " ",
+          createVNode("span", { className: "panel__crumb-sep", children: "›" }),
+          " ",
+          labels.crumb
+        ] }),
+        createVNode("div", { className: "panel__title-row", children: [
+          createVNode("h2", { className: "panel__title", children: doc.title }),
+          createVNode("span", { className: "panel__meta", children: [
+            labels.meta,
+            " · ",
+            createVNode("span", { className: "panel__version", children: [
+              "v",
+              doc.version
+            ] })
+          ] })
+        ] }),
+        createVNode("div", { className: "panel__badges", children: [
+          createVNode("span", { className: "badge badge--interview", children: "research" }),
+          labels.docType && createVNode("span", { className: `badge badge--doctype${labels.meta === "Custom" ? " badge--doctype-custom" : ""}`, children: labels.docType }),
+          isHtml && createVNode("span", { className: "badge badge--kind", children: "html" }),
+          outdated.length > 0 && createVNode("span", { className: "badge badge--outdated", children: "⚠ outdated" }),
+          newNotes.length > 0 && createVNode("span", { className: "badge badge--notes", children: [
+            "● ",
+            plural$1(newNotes.length, "new note", "new notes")
+          ] }),
+          createVNode("span", { className: "badge badge--meta", title: doc.id, children: doc.id }),
+          createVNode("span", { className: "badge badge--meta", children: doc.generatedBy }),
+          doc.kind === "user-research" && createVNode("span", { className: "badge badge--meta", children: [
+            plural$1(((_b = doc.findings) == null ? void 0 : _b.length) ?? 0, "note", "notes"),
+            " ingested"
+          ] }),
+          doc.kind === "strategy" && study && study.handedOff.length > 0 && createVNode("span", { className: "badge badge--meta", children: [
+            plural$1(study.handedOff.length, "feature", "features"),
+            " handed off"
+          ] })
+        ] })
+      ] }),
+      createVNode("div", { className: "panel__header-actions", children: [
+        isHtml ? createVNode("button", { className: "btn btn--readonly", disabled: true, children: "Read-only" }) : createVNode("button", { className: "btn", disabled: !dirty || save.kind === "saving", onClick: onSave, children: save.kind === "saving" ? "Saving…" : dirty ? "Save" : "Saved" }),
+        createVNode("button", { className: "panel__close", onClick: onClose, children: "×" })
+      ] })
+    ] }),
+    study && newNotes.length > 0 && createVNode(NewNotesBanner, { study }),
+    study && outdated.length > 0 && createVNode(OutdatedBlock, { doc, study, onJumpTo }),
+    createVNode(SaveBanners, {
+      save,
+      version: doc.version,
+      onReload: reload,
+      onDismiss: () => setSave({ kind: "idle" })
+    }),
+    createVNode("div", { className: "panel__body panel__body--cols-1", children: isHtml ? createVNode(HtmlPreview, { title: `${labels.crumb} preview`, body }) : createVNode("div", { className: "panel__editor", children: createVNode(MarkdownEditor, { value: body, readOnly: false, markMissing: true, onChange: setBody }, doc.id) }) }),
+    createVNode("footer", { className: "panel__footer", children: [
+      createVNode("span", { children: doc.filePath }),
+      isHtml && createVNode("span", { className: "panel__hint", children: "sandboxed · scripts off" }),
+      doc.kind === "brief" && createVNode("span", { className: "panel__hint", children: "saving marks docs that read the brief as outdated" })
+    ] })
+  ] }) });
+}
+function featureTitle(featureId) {
+  return featureId.replace(/^feat-/, "").split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+}
 const STAGE_LABEL$1 = {
   prd: "PRD",
   architecture: "Architecture",
@@ -511,7 +1273,10 @@ const STAGE_LABEL$1 = {
   plan: "Plan",
   walkthrough: "Walkthrough"
 };
-function DocPanel({ docId, onClose, onJumpTo }) {
+function DocPanel({ source = "feature", ...props }) {
+  return source === "research" ? createVNode(ResearchDocPanel, { ...props }) : createVNode(FeatureDocPanel, { ...props });
+}
+function FeatureDocPanel({ docId, onClose, onJumpTo }) {
   const [doc, setDoc] = useState(null);
   const [body, setBody] = useState("");
   const [error, setError] = useState(null);
@@ -545,14 +1310,7 @@ function DocPanel({ docId, onClose, onJumpTo }) {
       cancelled = true;
     };
   }, [doc == null ? void 0 : doc.id, doc == null ? void 0 : doc.dependsOn.join(",")]);
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "Escape")
-        onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  useEscClose(onClose);
   const dirty = useMemo(() => doc !== null && body !== doc.body, [doc, body]);
   const isInterview = (doc == null ? void 0 : doc.kind) === "interview";
   const readOnly = (doc == null ? void 0 : doc.status) === "approved" && !isInterview;
@@ -607,18 +1365,8 @@ function DocPanel({ docId, onClose, onJumpTo }) {
     const gate = await fetchGate(doc.featureId, doc.stage);
     alert(gate.ok ? "Gate is open." : `Gate closed: ${gate.reason}`);
   };
-  if (error) {
-    return createVNode("div", { className: "panel-backdrop", onClick: onClose, children: createVNode("aside", { className: "panel", onClick: (e) => e.stopPropagation(), children: [
-      createVNode("header", { className: "panel__header", children: [
-        createVNode("button", { className: "panel__close", onClick: onClose, children: "×" }),
-        createVNode("h2", { children: "Could not load document" })
-      ] }),
-      createVNode("p", { className: "panel__error", children: error })
-    ] }) });
-  }
-  if (!doc) {
-    return createVNode("div", { className: "panel-backdrop", onClick: onClose, children: createVNode("aside", { className: "panel", onClick: (e) => e.stopPropagation(), children: createVNode("p", { style: { padding: "2rem", color: "var(--text-dim)" }, children: "Loading…" }) }) });
-  }
+  if (error || !doc)
+    return createVNode(PanelMessage, { error, onClose });
   return createVNode("div", { className: "panel-backdrop", onClick: onClose, children: createVNode("aside", { className: "panel", onClick: (e) => e.stopPropagation(), children: [
     createVNode("header", { className: "panel__header", children: [
       createVNode("div", { className: "panel__header-main", children: [
@@ -693,27 +1441,13 @@ function DocPanel({ docId, onClose, onJumpTo }) {
         ] }, depId);
       }) })
     ] }),
-    save.kind === "conflict" && createVNode("div", { className: "banner banner--warn", children: [
-      "File changed on disk (now v",
-      save.serverVersion,
-      "). Your edits weren't saved.",
-      createVNode("button", { className: "link", onClick: reload, children: "Reload from disk" }),
-      " to merge by hand."
-    ] }),
-    save.kind === "error" && createVNode("div", { className: "banner banner--error", children: [
-      save.message,
-      createVNode("button", { className: "link", onClick: () => setSave({ kind: "idle" }), children: "dismiss" })
-    ] }),
-    save.kind === "saved" && createVNode("div", { className: "banner banner--ok", children: [
-      "Saved · now v",
-      doc.version
-    ] }),
-    createVNode("div", { className: "panel__body panel__body--cols-1", children: isDesign ? createVNode("iframe", {
-      className: "panel__preview panel__preview--iframe",
-      title: "design brief preview",
-      sandbox: "allow-same-origin",
-      srcDoc: PREVIEW_STYLE + body
-    }) : createVNode("div", { className: "panel__editor", children: createVNode(MarkdownEditor, {
+    createVNode(SaveBanners, {
+      save,
+      version: doc.version,
+      onReload: reload,
+      onDismiss: () => setSave({ kind: "idle" })
+    }),
+    createVNode("div", { className: "panel__body panel__body--cols-1", children: isDesign ? createVNode(HtmlPreview, { title: "design brief preview", body }) : createVNode("div", { className: "panel__editor", children: createVNode(MarkdownEditor, {
       value: body,
       readOnly: !!readOnly,
       onChange: setBody
@@ -1057,6 +1791,107 @@ function TaskRow({ task, busy, onStatus, onAddArtifact, onRemoveArtifact, onSetP
     ] })
   ] });
 }
+const MODES = [
+  { id: "builder", label: "Builder", glyph: "▦" },
+  { id: "researcher", label: "Researcher", glyph: "◎" }
+];
+const STORAGE_KEY = "specmanager.mode";
+function parseMode(value) {
+  return value === "builder" || value === "researcher" ? value : null;
+}
+function readStoredMode() {
+  try {
+    return parseMode(window.localStorage.getItem(STORAGE_KEY));
+  } catch {
+    return null;
+  }
+}
+function storeMode(mode) {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, mode);
+  } catch {
+  }
+}
+function initialMode() {
+  return parseMode(window.location.hash.slice(1)) ?? readStoredMode() ?? "builder";
+}
+function useMode() {
+  const [mode, setMode] = useState(initialMode);
+  useEffect(() => {
+    if (window.location.hash !== `#${mode}`) {
+      window.history.replaceState(null, "", `#${mode}`);
+    }
+    storeMode(mode);
+  }, [mode]);
+  useEffect(() => {
+    const onHash = () => {
+      const next = parseMode(window.location.hash.slice(1));
+      if (next)
+        setMode(next);
+    };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+  return [mode, setMode];
+}
+function ModeToggle({ mode, onChange }) {
+  const refs = useRef({ builder: null, researcher: null });
+  const onKeyDown = (e) => {
+    var _a;
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight")
+      return;
+    e.preventDefault();
+    const index = MODES.findIndex((m) => m.id === mode);
+    const step = e.key === "ArrowRight" ? 1 : -1;
+    const next = MODES[(index + step + MODES.length) % MODES.length].id;
+    onChange(next);
+    (_a = refs.current[next]) == null ? void 0 : _a.focus();
+  };
+  return createVNode("div", { className: "mode-toggle", role: "tablist", "aria-label": "Board mode", onKeyDown, children: MODES.map((m) => {
+    const active = m.id === mode;
+    return createVNode("button", {
+      ref: (el) => {
+        refs.current[m.id] = el;
+      },
+      type: "button",
+      role: "tab",
+      "aria-selected": active,
+      tabIndex: active ? 0 : -1,
+      className: `mode-toggle__seg${active ? " mode-toggle__seg--active" : ""}`,
+      onClick: () => onChange(m.id),
+      children: [
+        createVNode("span", { className: "glyph", "aria-hidden": "true", children: m.glyph }),
+        m.label
+      ]
+    }, m.id);
+  }) });
+}
+function OriginChip({ origin, study, onOpen }) {
+  var _a;
+  const studyTitle = (study == null ? void 0 : study.title) ?? origin.studyId;
+  const current = (_a = study == null ? void 0 : study.docs.find((d) => d.id === origin.strategyId)) == null ? void 0 : _a.version;
+  const updated = current !== void 0 && current > origin.strategyVersion;
+  const tooltip = [
+    `From ${studyTitle}, build list item ${origin.itemId} (${origin.item})`,
+    `Handed off from ${origin.strategyId} v${origin.strategyVersion}.`,
+    updated ? `The strategy is now v${current}. The PRD is not marked stale; review the strategy and update the PRD by hand if it matters.` : "Its PRD reads the strategy and research docs.",
+    "Click to open the strategy"
+  ].join("\n");
+  return createVNode("button", {
+    type: "button",
+    className: `chip-origin${updated ? " chip-origin--updated" : ""}`,
+    onClick: () => onOpen(origin.strategyId),
+    title: tooltip,
+    children: [
+      createVNode("span", { className: "ring" }),
+      createVNode("span", { className: "chip-origin__text", children: updated ? "strategy updated" : `from ${studyTitle}` }),
+      createVNode("span", { className: "meta", children: [
+        "· ",
+        updated ? `v${origin.strategyVersion}→v${current}` : origin.itemId
+      ] })
+    ]
+  });
+}
 const STAGES = ["prd", "architecture", "design", "plan", "walkthrough"];
 const DEFAULT_PHASE = "default";
 const FINAL_PHASE = "final";
@@ -1351,18 +2186,30 @@ function Cell({ row, column, onOpenDoc, onOpenBuild }) {
     return createVNode(LockedCell, { stage });
   return createVNode(EmptyCell, { stage, ready: true });
 }
+function plural(n, one, many) {
+  return `${n} ${n === 1 ? one : many}`;
+}
 function App() {
   const [board, setBoard] = useState(null);
   const [error, setError] = useState(null);
   const [lastEvent, setLastEvent] = useState(null);
-  const [openDocId, setOpenDocId] = useState(null);
+  const [openDoc, setOpenDoc] = useState(null);
   const [openBuild, setOpenBuild] = useState(null);
-  const openDoc = useCallback((id) => setOpenDocId(id), []);
-  const closeDoc = useCallback(() => setOpenDocId(null), []);
+  const [mode, setMode] = useMode();
+  const [studies, setStudies] = useState(null);
+  const [tick, setTick] = useState(0);
+  const [focusFeature, setFocusFeature] = useState(null);
+  const openFeatureDoc = useCallback((id) => setOpenDoc({ id, source: "feature" }), []);
+  const openResearchDoc = useCallback((id) => setOpenDoc({ id, source: "research" }), []);
+  const closeDoc = useCallback(() => setOpenDoc(null), []);
   const openBuildFor = useCallback((featureId, title) => {
     setOpenBuild({ featureId, title });
   }, []);
   const closeBuild = useCallback(() => setOpenBuild(null), []);
+  const showFeature = useCallback((featureId) => {
+    setMode("builder");
+    setFocusFeature(featureId);
+  }, [setMode]);
   const reload = () => {
     fetchBoard().then((b) => {
       setBoard(b);
@@ -1375,13 +2222,30 @@ function App() {
     const close = openWebSocket((event) => {
       setLastEvent(event.type);
       window.clearTimeout(pending);
-      pending = window.setTimeout(reload, 100);
+      pending = window.setTimeout(() => {
+        reload();
+        setTick((t) => t + 1);
+      }, 100);
     });
     return () => {
       window.clearTimeout(pending);
       close();
     };
   }, []);
+  const needsStudies = mode === "researcher" || !!(board == null ? void 0 : board.features.some((f) => f.origin));
+  useEffect(() => {
+    if (!needsStudies)
+      return;
+    fetchStudies().then(setStudies).catch((err) => setError(err.message));
+  }, [needsStudies, tick]);
+  useEffect(() => {
+    var _a;
+    if (mode !== "builder" || !focusFeature)
+      return;
+    (_a = document.getElementById(`feature-${focusFeature}`)) == null ? void 0 : _a.scrollIntoView({ behavior: "smooth", block: "center" });
+    const timer = window.setTimeout(() => setFocusFeature(null), 2e3);
+    return () => window.clearTimeout(timer);
+  }, [mode, focusFeature]);
   if (error) {
     return createVNode("main", { className: "state state--error", children: [
       createVNode("h1", { children: "SpecManager" }),
@@ -1395,20 +2259,20 @@ function App() {
     return createVNode("main", { className: "state", children: "Loading…" });
   return createVNode("main", { className: "board", children: [
     createVNode("header", { className: "board__header", children: [
-      createVNode("h1", { className: "board__title", children: "SpecManager" }),
+      createVNode("div", { children: [
+        createVNode("h1", { className: "board__title", children: board.projectName }),
+        createVNode("p", { className: "board__subtitle", children: "SpecManager" })
+      ] }),
+      createVNode(ModeToggle, { mode, onChange: setMode }),
       createVNode("div", { className: "board__meta", children: [
-        createVNode("span", { className: "board__count", children: [
-          board.features.length,
-          " feature",
-          board.features.length === 1 ? "" : "s"
-        ] }),
+        createVNode("span", { className: "board__count", children: mode === "builder" ? plural(board.features.length, "feature", "features") : studies ? plural(studies.length, "study", "studies") : "…" }),
         lastEvent && createVNode("span", { className: "board__pulse", children: [
           "· ",
           lastEvent
         ] })
       ] })
     ] }),
-    board.features.length === 0 ? createVNode("section", { className: "empty", children: [
+    mode === "researcher" ? studies && createVNode(ResearchBoard, { studies, onOpenDoc: openResearchDoc, onShowFeature: showFeature }) : board.features.length === 0 ? createVNode("section", { className: "empty", children: [
       createVNode("p", { children: "No features yet." }),
       createVNode("pre", { children: "/specmanager-prd <title>" })
     ] }) : createVNode("section", {
@@ -1423,18 +2287,32 @@ function App() {
           createVNode("div", { className: "grid__header", children: STAGE_LABEL[c] })
         ] }, c)),
         board.features.map((row) => createVNode("div", { className: "row", style: { display: "contents" }, children: [
-          createVNode("div", { className: "row__label", children: [
-            createVNode("strong", { children: row.title }),
-            createVNode("small", { children: row.slug })
-          ] }),
+          createVNode("div", {
+            id: `feature-${row.id}`,
+            className: `row__label${focusFeature === row.id ? " row__label--focus" : ""}`,
+            children: [
+              createVNode("strong", { children: row.title }),
+              createVNode("small", { children: row.slug }),
+              row.origin && createVNode(OriginChip, {
+                origin: row.origin,
+                study: studies == null ? void 0 : studies.find((s) => s.id === row.origin.studyId),
+                onOpen: openResearchDoc
+              })
+            ]
+          }),
           STAGES.map((c) => createVNode(Fragment, { children: [
-            c === "walkthrough" && createVNode("div", { className: "row__cell row__cell--build", children: createVNode(Cell, { row, column: "build", onOpenDoc: openDoc, onOpenBuild: openBuildFor }) }),
-            createVNode("div", { className: "row__cell", children: createVNode(Cell, { row, column: c, onOpenDoc: openDoc, onOpenBuild: openBuildFor }) })
+            c === "walkthrough" && createVNode("div", { className: "row__cell row__cell--build", children: createVNode(Cell, { row, column: "build", onOpenDoc: openFeatureDoc, onOpenBuild: openBuildFor }) }),
+            createVNode("div", { className: "row__cell", children: createVNode(Cell, { row, column: c, onOpenDoc: openFeatureDoc, onOpenBuild: openBuildFor }) })
           ] }, c))
         ] }, row.id))
       ]
     }),
-    openDocId && createVNode(DocPanel, { docId: openDocId, onClose: closeDoc, onJumpTo: openDoc }),
+    openDoc && createVNode(DocPanel, {
+      docId: openDoc.id,
+      source: openDoc.source,
+      onClose: closeDoc,
+      onJumpTo: openDoc.source === "research" ? openResearchDoc : openFeatureDoc
+    }, openDoc.source),
     openBuild && createVNode(BuildPanel, {
       featureId: openBuild.featureId,
       featureTitle: openBuild.title,

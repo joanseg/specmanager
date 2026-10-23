@@ -3,6 +3,9 @@ import { claudeMdPath, projectRoot } from "./paths.js";
 import { buildManifest } from "./manifest.js";
 import { isFeatureShipped } from "./shipped.js";
 import { scanDeclaredRepos } from "./repos.js";
+import { listDocuments } from "./documents.js";
+import { indexHeadings, resolveArchitectureRefs } from "./spec-slice.js";
+import { STAGE } from "./types.js";
 const START = "<!-- specmanager:start -->";
 const END = "<!-- specmanager:end -->";
 /** Match a marker only when it stands alone on its own line, so markers
@@ -27,9 +30,25 @@ function stageLabel(stage) {
             return stage;
     }
 }
+/**
+ * The furthest lifecycle stage a feature's documents reach, in `STAGE` order.
+ * Interview docs are excluded and drafts count. With several docs at that
+ * stage (e.g. walkthroughs) the status is `draft` if any is draft. Null when
+ * there is no non-interview doc.
+ */
+export function furthestStage(documents) {
+    const docs = documents.filter((d) => d.kind !== "interview");
+    const stage = [...STAGE.options].reverse().find((s) => docs.some((d) => d.stage === s));
+    if (!stage)
+        return null;
+    const atTop = docs.filter((d) => d.stage === stage);
+    const status = atTop.some((d) => d.status === "draft") ? "draft" : "approved";
+    return { stage, status };
+}
 function notesFor(f) {
     const stale = f.documents.filter((d) => d.stale).map((d) => stageLabel(d.stage));
-    if (f.currentStage === "plan" && f.tasks.total > 0) {
+    const stage = furthestStage(f.documents)?.stage;
+    if ((stage === "plan" || stage === "walkthrough") && f.tasks.total > 0) {
         const phaseSummary = f.phases && f.phases.length > 1
             ? ` · phases ${f.phases.filter((p) => p.status === "done").length}/${f.phases.length}`
             : "";
@@ -42,18 +61,48 @@ function notesFor(f) {
         return `${stale.join(", ")} ⚠️ stale`;
     return "—";
 }
+/** Table label from the furthest stage the docs reach; `PRD` with no doc. */
 function currentStageLabel(f) {
-    // Skip interview artifacts: readdir puts interview.md before prd.md, so
-    // without this the interview's status would shadow the PRD's in the table.
-    const doc = f.documents.find((d) => d.stage === f.currentStage && d.kind !== "interview");
-    if (!doc)
-        return stageLabel(f.currentStage);
-    return `${stageLabel(f.currentStage)} (${doc.status})`;
+    const top = furthestStage(f.documents);
+    if (!top)
+        return stageLabel("prd");
+    return `${stageLabel(top.stage)} (${top.status})`;
 }
 /** Shipped = the feature's terminal walkthrough is approved (same signal as
  * feature.shipped): a "final" roll-up, or a single-phase feature's only phase. */
 function isShipped(f) {
     return isFeatureShipped(f.documents, f.phases);
+}
+const GIT_STRATEGY_SLUG = "git-strategy";
+/** True when a body has a `### Git strategy` heading (via the spec-slice indexer). */
+function hasGitStrategy(body) {
+    return indexHeadings(body).some((h) => h.level === 3 && h.slug === GIT_STRATEGY_SLUG);
+}
+/**
+ * The newest walkthrough's (any feature, any status, by `updatedAt`) `### Git
+ * strategy` section, rendered for the managed block: own heading dropped and
+ * any line carrying a `specmanager:` marker removed so it cannot break the
+ * block. Sub-headings are already `####`+ because the slice stops at `###`.
+ * Null when no walkthrough has the section.
+ */
+async function gitStrategySection(root, titles) {
+    const docs = (await listDocuments({ stage: "walkthrough" }, root))
+        .filter((d) => hasGitStrategy(d.body))
+        .sort((a, b) => b.frontmatter.updatedAt.localeCompare(a.frontmatter.updatedAt));
+    const doc = docs[0];
+    if (!doc)
+        return null;
+    const { sections } = resolveArchitectureRefs(doc.body, [GIT_STRATEGY_SLUG]);
+    const body = (sections[0]?.body ?? "")
+        .split("\n")
+        .slice(1)
+        .filter((l) => !l.includes("<!-- specmanager:"))
+        .join("\n")
+        .trim();
+    const fm = doc.frontmatter;
+    const feature = titles.get(fm.featureId) ?? fm.featureId;
+    const note = `_From ${feature} — phase ${fm.phase ?? "default"} walkthrough (${fm.id})._`;
+    return body ? [note, "", body] : [note];
 }
 export async function renderBlock(root = projectRoot()) {
     const m = await buildManifest(root);
@@ -83,6 +132,11 @@ export async function renderBlock(root = projectRoot()) {
             lines.push(`_${shippedCount} feature${shippedCount === 1 ? "" : "s"} shipped — full history on the board._`);
         }
     }
+    if (m.studies?.length) {
+        const links = m.studies.map((s) => `[${s.title}](./.claude/specs/research/${s.slug}/)`);
+        lines.push("");
+        lines.push(`**Research studies:** ${links.join(" · ")}`);
+    }
     const repos = await scanDeclaredRepos(root);
     if (repos.length > 0) {
         lines.push("");
@@ -93,11 +147,18 @@ export async function renderBlock(root = projectRoot()) {
             lines.push(`- **${r.name}** — [CLAUDE.md](./repos/${r.name}/CLAUDE.md) · [DESIGN.md](./repos/${r.name}/DESIGN.md)${placeholder}`);
         }
     }
+    const git = await gitStrategySection(root, new Map(m.features.map((f) => [f.id, f.title])));
+    if (git) {
+        lines.push("");
+        lines.push("### Git strategy");
+        lines.push("");
+        lines.push(...git);
+    }
     lines.push("");
     lines.push("**Rules:** don't start a feature's tasks until its Plan is approved; treat ⚠️ stale docs as needing reconciliation.");
     lines.push("");
     lines.push("**Commands:**");
-    lines.push("`/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD)");
+    lines.push("`/specmanager-prd` · `/specmanager-architecture` · `/specmanager-design` (optional) · `/specmanager-plan` · `/specmanager-build` · `/specmanager-walkthrough` · `/specmanager-board` · `/specmanager-interview` (optional, pre-PRD) · `/specmanager-loop` (auto-approves, stops before Build) · `/specmanager-research` · `/specmanager-research-loop` (approves nothing, stops before findings)");
     lines.push("");
     lines.push(`_Last synced: ${m.generatedAt}_`);
     lines.push(END);

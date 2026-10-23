@@ -44,12 +44,13 @@ export async function findFeatureById(id, root = projectRoot()) {
     const list = await listFeatures(root);
     return list.find((f) => f.id === id) ?? null;
 }
-async function uniqueSlug(base, root) {
+/** First of `base`, `base-2`, `base-3`… with no entry `<slug><ext>` under `parentDir`. */
+export async function uniqueSlug(base, parentDir, ext = "") {
     let slug = base;
     let n = 2;
     while (true) {
         const exists = await fs
-            .stat(featureDir(slug, root))
+            .stat(path.join(parentDir, slug + ext))
             .then(() => true)
             .catch(() => false);
         if (!exists)
@@ -57,10 +58,11 @@ async function uniqueSlug(base, root) {
         slug = `${base}-${n++}`;
     }
 }
-export async function createFeature(title, root = projectRoot()) {
+/** Create a feature folder; `origin` records a research-study handoff on `feature.json`. */
+export async function createFeature(title, root = projectRoot(), opts = {}) {
     await ensureSpecsRoot(root);
     const base = slugify(title);
-    const slug = await uniqueSlug(base, root);
+    const slug = await uniqueSlug(base, featuresDir(root));
     const dir = featureDir(slug, root);
     await ensureDir(dir);
     for (const s of STAGES)
@@ -70,6 +72,7 @@ export async function createFeature(title, root = projectRoot()) {
         slug,
         title,
         currentStage: "prd",
+        ...(opts.origin ? { origin: opts.origin } : {}),
         createdAt: nowIso(),
     };
     await fs.writeFile(path.join(dir, "feature.json"), JSON.stringify(feature, null, 2), "utf8");

@@ -79,6 +79,13 @@ html, body, #root {
   letter-spacing: -0.02em;
   color: var(--on-surface);
 }
+.board__subtitle {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: var(--on-surface-variant);
+}
 .board__meta {
   display: flex;
   align-items: center;
@@ -97,6 +104,37 @@ html, body, #root {
   animation: fade 1.2s ease-out;
 }
 @keyframes fade { from { opacity: 1; } to { opacity: 0.5; } }
+
+/* Mode toggle: two-segment control; active segment reuses the toolbar active-state token. */
+.mode-toggle {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  background: var(--surface-container-low);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+}
+.mode-toggle__seg {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0.38rem 0.95rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+}
+.mode-toggle__seg .glyph { font-family: var(--font-mono); font-size: 0.7rem; opacity: 0.7; }
+.mode-toggle__seg--active {
+  color: var(--primary);
+  background: var(--tb-active-bg);
+  border-color: color-mix(in srgb, var(--primary) 55%, var(--outline-variant));
+}
+.mode-toggle__seg:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
 
 .empty {
   border: 1px dashed var(--outline-variant);
@@ -297,7 +335,8 @@ html, body, #root {
 }
 .badge--draft    { color: var(--status-draft); }
 .badge--approved { color: var(--status-approved); }
-.badge--stale    {
+.badge--stale,
+.badge--outdated {
   color: var(--error);
   background: color-mix(in srgb, var(--error) 14%, transparent);
 }
@@ -364,6 +403,52 @@ html, body, #root {
   color: var(--on-surface);
 }
 .chip-interview:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+
+/* Research origin pill on the Builder row label (sibling of .chip-interview).
+ * Hollow ring = reference; the --updated variant fills it in --error. */
+.chip-origin {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  align-self: flex-start;
+  margin-top: 0.45rem;
+  padding: 0.22rem 0.55rem;
+  max-width: 100%;
+  background: var(--surface-container-low);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.02em;
+  color: var(--on-surface-variant);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 0.14s ease, color 0.14s ease;
+}
+.chip-origin__text { overflow: hidden; text-overflow: ellipsis; }
+.chip-origin .ring {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--primary);
+  flex-shrink: 0;
+}
+.chip-origin .meta { opacity: 0.55; flex-shrink: 0; margin-left: -0.15rem; }
+.chip-origin:hover { border-color: var(--card-border-hover); color: var(--on-surface); }
+.chip-origin:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.chip-origin--updated {
+  border-color: color-mix(in srgb, var(--error) 55%, var(--outline-variant));
+  color: var(--error);
+  background: color-mix(in srgb, var(--error) 8%, var(--surface-container-low));
+}
+.chip-origin--updated:hover { border-color: var(--error); color: var(--error); }
+.chip-origin--updated .ring { border-color: var(--error); background: var(--error); }
+.chip-origin--updated .meta { opacity: 0.8; }
+/* Brief highlight when a Researcher handoff link jumps to this row. */
+.row__label--focus {
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
 
 /* BUILD region — reserved right-hand track per row (Architecture §6, A).
  * A read-only progress glance that opens the existing BuildPanel overlay. */
@@ -1297,6 +1382,476 @@ html, body, #root {
 }
 .card__build-exec:hover { opacity: 1; text-decoration: underline; }
 
+/* Researcher grid ----------------------------------------------------
+ * Same grid as Builder; Handoff takes Build's reserved right-hand track
+ * (.row__cell--build), so the breakpoints below wrap it at tablet. */
+.grid--research {
+  --grid-cols: 15rem minmax(8.5rem, 1fr) minmax(11.5rem, 1.35fr) repeat(3, minmax(8.5rem, 1fr)) 16rem;
+}
+.grid--research .row__label { min-width: 0; }
+/* Outdated research cards keep the stale error edge over .card--button's border. */
+.grid--research .card--button.card--stale {
+  border-color: var(--error);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--error) 18%, transparent);
+}
+
+/* Handoff cell: opts out of the 5.5rem cap so the row grows with the build list. */
+.row__cell--build > .card--handoff { height: auto; }
+.card--handoff { gap: 0.25rem; padding: 0.55rem 0.6rem 0.6rem; }
+.card--handoff:hover { transform: none; }
+.handoff__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--on-surface-variant);
+  margin-bottom: 0.15rem;
+}
+.handoff__head span:last-child { text-transform: none; letter-spacing: 0.02em; opacity: 0.7; }
+.handoff-item {
+  display: grid;
+  grid-template-columns: 1rem 1.1rem 1fr;
+  align-items: start;
+  gap: 0.35rem;
+  padding: 0.28rem 0.25rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+label.handoff-item { cursor: pointer; }
+.handoff-item__rank { font-family: var(--font-mono); font-size: 0.66rem; color: var(--on-surface-variant); padding-top: 0.12rem; }
+.handoff-item__check {
+  appearance: none;
+  width: 0.85rem;
+  height: 0.85rem;
+  margin: 0.1rem 0 0;
+  border: 1.5px solid var(--outline);
+  border-radius: var(--radius-sm);
+  position: relative;
+  cursor: pointer;
+}
+.handoff-item__check:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.handoff-item--checked { background: var(--tb-active-bg); }
+.handoff-item__check:checked { background: var(--primary); border-color: var(--primary); }
+.handoff-item__check:checked::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 0;
+  width: 3px;
+  height: 7px;
+  border: solid var(--surface);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.handoff-item__done {
+  width: 0.85rem;
+  height: 0.85rem;
+  margin-top: 0.1rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--success);
+  position: relative;
+  box-sizing: border-box;
+}
+.handoff-item__done::after { content: ""; position: absolute; inset: 2px; border-radius: 50%; background: var(--success); }
+.handoff-item__title { min-width: 0; }
+.handoff-item__feat {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: var(--primary);
+  margin-top: 0.1rem;
+  text-decoration: none;
+}
+.handoff-item__feat:hover { text-decoration: underline; }
+.handoff-item--handed .handoff-item__title > span:first-child { color: var(--on-surface-variant); }
+.handoff__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid var(--outline-variant);
+}
+.handoff__actions small {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: var(--on-surface-variant);
+}
+.handoff__next { all: unset; font-family: var(--font-mono); font-size: 0.64rem; color: var(--on-surface-variant); cursor: pointer; overflow-wrap: anywhere; }
+.handoff__next:hover { color: var(--primary); }
+.handoff__actions .btn { padding: 0.22rem 0.6rem; font-size: 0.74rem; white-space: nowrap; }
+.handoff__result {
+  font-size: 0.72rem;
+  line-height: 1.4;
+  padding: 0.4rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--success) 14%, transparent);
+  color: var(--success);
+  margin-bottom: 0.2rem;
+}
+.handoff__result .link { color: var(--success); padding: 0; font-size: inherit; text-decoration: underline; }
+.handoff__result .mono { font-family: var(--font-mono); font-size: 0.66rem; }
+.handoff__result--skip { background: var(--surface-container-highest); color: var(--on-surface-variant); }
+.handoff__result--error { background: color-mix(in srgb, var(--error) 12%, transparent); color: var(--error); }
+.card--no-items { border-color: color-mix(in srgb, var(--error) 45%, var(--outline-variant)); }
+.card--no-items .mono { font-family: var(--font-mono); }
+.study__idea {
+  font-size: 0.76rem;
+  color: var(--on-surface-variant);
+  line-height: 1.35;
+  margin-top: 0.4rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.study-rail {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  margin-top: 0.6rem;
+}
+.study-rail i {
+  display: block;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface-container-highest);
+}
+.study-rail i.done { background: var(--primary); }
+.study-rail i.next {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--primary);
+  height: 6px;
+  margin-top: -1px;
+}
+.study-rail i.flag { background: var(--error); }
+.study-rail__caption {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.02em;
+  color: var(--on-surface-variant);
+  margin-top: 0.3rem;
+}
+.study-rail__caption b { color: var(--primary); font-weight: 500; }
+.study__next {
+  all: unset;
+  cursor: pointer;
+  margin-top: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--primary);
+  opacity: 0.75;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.study__next:hover { opacity: 1; text-decoration: underline; }
+.study__next:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.card__empty-cmd--dim { color: var(--on-surface-variant); opacity: 0.8; }
+.badge--notes {
+  color: var(--tertiary);
+  background: color-mix(in srgb, var(--tertiary) 14%, transparent);
+}
+.badge--kind {
+  background: transparent;
+  border: 1px solid var(--outline-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Researcher empty state: two panes, explanation + start-study form. */
+.empty-research {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  border: 1px dashed var(--outline-variant);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.empty-research__intro { padding: 2.2rem 2.2rem 2rem; }
+.empty-research__intro h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.4rem;
+}
+.empty-research__intro p {
+  margin: 0 0 1.2rem;
+  color: var(--on-surface-variant);
+  line-height: 1.6;
+  max-width: 34rem;
+}
+.steps {
+  list-style: none;
+  margin: 0 0 1.4rem;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+.steps li {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: var(--on-surface-variant);
+  letter-spacing: 0.02em;
+}
+.steps li i {
+  display: block;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface-container-highest);
+  margin-bottom: 0.45rem;
+}
+.cmd {
+  all: unset;
+  cursor: pointer;
+  display: inline-block;
+  background: var(--surface-container);
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--primary);
+}
+.cmd:hover { background: var(--surface-container-high); }
+.cmd:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.empty-research__form {
+  padding: 2.2rem;
+  background: var(--surface-container-low);
+  border-left: 1px dashed var(--outline-variant);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.empty-research__form h3 {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--on-surface-variant);
+  font-weight: 500;
+}
+.field label { display: block; font-size: 0.78rem; font-weight: 500; margin-bottom: 0.35rem; }
+.field .input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--surface-container);
+  padding: 0.5rem 0.65rem;
+}
+.field .input:focus { box-shadow: 0 0 0 3px var(--tb-active-bg); }
+.field .input--area { min-height: 4.6rem; line-height: 1.5; resize: vertical; }
+.field .hint { font-size: 0.7rem; color: var(--on-surface-variant); margin-top: 0.3rem; font-family: var(--font-mono); }
+.empty-research__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 0.2rem;
+  font-size: 0.72rem;
+  color: var(--on-surface-variant);
+}
+.empty-research__actions .mono { font-family: var(--font-mono); color: var(--primary); }
+.empty-research__error { font-size: 0.78rem; color: var(--error); }
+
+/* Research loop and docs (design-research-loop-and-docs-010) ---------
+ * Docs column: violet header, a stack of compact Doc cards. */
+.grid__header--docs { color: var(--secondary); }
+/* The stack opts out of the 5.5rem cap; empty states stay capped cards. */
+.row__cell--docs { min-width: 0; }
+.doc-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+.doc-stack > .card--button.doc-card {
+  position: relative;
+  box-sizing: border-box;
+  height: auto;
+  min-width: 0;
+  gap: 0.22rem;
+  padding: 0.45rem 0.6rem 0.5rem 0.8rem;
+}
+.doc-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  bottom: 7px;
+  width: 2px;
+  border-radius: 0 2px 2px 0;
+  background: color-mix(in srgb, var(--secondary) 70%, transparent);
+}
+.doc-card.card--stale::before { background: var(--error); }
+.doc-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  min-width: 0;
+}
+.doc-card__head .badge { flex-shrink: 0; }
+.doc-card__type {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.doc-card__type--custom { text-transform: none; letter-spacing: 0.02em; }
+.doc-card__type--custom i { font-style: normal; opacity: 0.6; margin-right: 0.3rem; }
+.doc-card .card__title { font-size: 0.8rem; -webkit-line-clamp: 1; }
+.doc-card .badge--outdated { align-self: flex-start; margin-top: 0.1rem; }
+.doc-add {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px dashed var(--outline-variant);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  color: var(--on-surface-variant);
+  white-space: nowrap;
+  transition: border-color 0.14s ease, color 0.14s ease;
+}
+.doc-add > span:first-child { opacity: 0.85; }
+.doc-add > span:last-child { opacity: 0.6; }
+.doc-add:hover { border-color: var(--card-border-hover); color: var(--on-surface); }
+.doc-add:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+
+/* Brief chip under the idea (matches .chip-origin). Filled page = brief
+ * exists; dashed hollow = no brief yet, never red. */
+.chip-brief {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  align-self: flex-start;
+  margin-top: 0.5rem;
+  padding: 0.22rem 0.6rem 0.22rem 0.5rem;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: var(--surface-container-low);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.02em;
+  color: var(--on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: border-color 0.14s ease, color 0.14s ease;
+}
+.chip-brief .page {
+  position: relative;
+  width: 0.5rem;
+  height: 0.62rem;
+  border-radius: 1px;
+  background: var(--primary);
+  flex-shrink: 0;
+}
+.chip-brief .page::after {
+  content: "";
+  position: absolute;
+  left: 1.5px;
+  right: 1.5px;
+  top: 2px;
+  height: 1px;
+  background: var(--surface);
+  box-shadow: 0 2px 0 var(--surface);
+}
+.chip-brief .meta { opacity: 0.55; }
+.chip-brief:hover { border-color: var(--card-border-hover); }
+.chip-brief:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.chip-brief--missing {
+  background: transparent;
+  border-style: dashed;
+  color: var(--on-surface-variant);
+}
+.chip-brief--missing:hover { color: var(--on-surface); }
+.chip-brief--missing .page { background: transparent; box-shadow: inset 0 0 0 1.5px var(--outline); }
+.chip-brief--missing .page::after { display: none; }
+
+/* Drawer: doc-type badge matches the Docs spine; HTML Docs are read-only;
+ * the footer hint sits on the right. */
+.badge--doctype {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--secondary) 45%, var(--outline-variant));
+  color: var(--secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.badge--doctype-custom { text-transform: none; letter-spacing: 0.02em; }
+.btn--readonly:disabled { cursor: default; }
+.panel__footer:has(.panel__hint) { display: flex; justify-content: space-between; gap: 1rem; }
+.panel__footer:has(.panel__hint) > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.panel__hint { opacity: 0.75; white-space: nowrap; flex-shrink: 0; }
+
+/* Empty state: the loop covers the first four rail steps. */
+.steps li.loop { color: var(--on-surface); }
+.steps li.loop i { background: color-mix(in srgb, var(--primary) 35%, var(--surface-container-highest)); }
+.steps-bracket {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin: -0.9rem 0 1.4rem;
+}
+.steps-bracket span {
+  grid-column: 1 / span 4;
+  position: relative;
+  padding-top: 10px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--primary);
+  white-space: nowrap;
+}
+.steps-bracket span::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 8px;
+  border: 1px solid color-mix(in srgb, var(--primary) 45%, transparent);
+  border-top: 0;
+  border-radius: 0 0 4px 4px;
+}
+.start-block { margin-top: 2.1rem; display: flex; flex-direction: column; gap: 0.45rem; }
+.start-block__lead { font-size: 0.78rem; color: var(--on-surface-variant); }
+.start-block__lead:not(:first-child) { margin-top: 0.7rem; }
+.start-block .cmd { align-self: flex-start; }
+.start-block__caption {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--on-surface-variant);
+  line-height: 1.6;
+}
+.start-block__caption b { color: var(--on-surface); font-weight: 500; }
+.cmd--loop {
+  border: 1px solid color-mix(in srgb, var(--primary) 45%, var(--outline-variant));
+  box-shadow: 0 0 0 3px var(--tb-active-bg);
+}
+.cmd--dim { color: var(--on-surface-variant); font-size: 0.76rem; }
+
 /* ===================================================================
  * Responsive — three Obsidian Flux breakpoints (Architecture §6).
  * CSS-only; no JS layout logic. The grid template is driven by the
@@ -1322,6 +1877,11 @@ html, body, #root {
     gap: 0.6rem;
   }
   .card--build .bar { flex: 1; min-width: 8rem; }
+  /* Docs keeps a wider track; labels drop the idea and next-step lines. */
+  .grid--research {
+    --grid-cols: 10rem minmax(7rem, 1fr) minmax(9rem, 1.3fr) repeat(3, minmax(7rem, 1fr));
+  }
+  .doc-add__more, .study__idea, .study__next { display: none; }
 }
 
 /* Mobile <640px: the grid linearizes — each feature stacks as a single column
@@ -1352,6 +1912,9 @@ html, body, #root {
   .panel__header-actions { flex-wrap: wrap; }
   .panel__editor { border-right: 0; border-bottom: 1px solid var(--outline-variant); }
   .panel__preview { border-left: 0; }
+
+  .empty-research { grid-template-columns: 1fr; }
+  .empty-research__form { border-left: 0; border-top: 1px dashed var(--outline-variant); }
 }
 
 /* Reduced motion: disable the scale/glow/slide micro-interactions but keep the
@@ -1381,4 +1944,18 @@ html, body, #root {
     background: var(--glass-bg-opaque);
     backdrop-filter: none;
   }
+}
+
+/* Research doc drawer (design Screens 3-4). */
+.banner--notes { flex-wrap: wrap; }
+.banner__files { font-family: var(--font-mono); font-size: 0.74rem; }
+.banner__cmd { margin-left: auto; font-family: var(--font-mono); color: inherit; text-decoration: none; }
+.banner__note { flex-basis: 100%; opacity: 0.85; }
+.stale-cmd { font-family: var(--font-mono); font-size: 0.78rem; text-decoration: none; }
+.banner__cmd:hover, .stale-cmd:hover { text-decoration: underline; }
+.prose td.miss {
+  color: var(--on-surface-variant);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-style: italic;
 }

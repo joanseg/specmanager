@@ -5,7 +5,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import WebSocket from "ws";
-import { createFeature, createDocument, initProject, pidFilePath, } from "./core/index.js";
+import { createFeature, createDocument, createResearchDoc, initProject, pidFilePath, studyNotesDir, writeResearchDoc, } from "./core/index.js";
 import { startBoardServer } from "./board-server.js";
 function assert(cond, msg) {
     if (!cond)
@@ -15,6 +15,110 @@ function assert(cond, msg) {
 async function pickPort() {
     // Use a port unlikely to collide with the default 4317.
     return 4317 + Math.floor(Math.random() * 1000);
+}
+/** JSON request against the board; returns status and parsed body. */
+async function call(url, method = "GET", body) {
+    const res = await fetch(url, {
+        method,
+        headers: body === undefined ? {} : { "content-type": "application/json" },
+        body: body === undefined ? undefined : JSON.stringify(body),
+    });
+    return { status: res.status, json: (await res.json()) };
+}
+/** Resolve on the first WS `file.changed` event whose path matches, after `trigger` runs. */
+function awaitFileChanged(port, match, trigger) {
+    return new Promise((resolve, reject) => {
+        const ws = new WebSocket(`ws://127.0.0.1:${port}/ws`);
+        const timer = setTimeout(() => {
+            ws.close();
+            reject(new Error("timed out waiting for file.changed event"));
+        }, 4000);
+        ws.on("open", () => void trigger());
+        ws.on("message", (data) => {
+            const event = JSON.parse(String(data));
+            if (event.type === "file.changed" && match(event.filePath ?? "")) {
+                clearTimeout(timer);
+                ws.close();
+                resolve(event.filePath);
+            }
+        });
+        ws.on("error", (err) => {
+            clearTimeout(timer);
+            reject(err);
+        });
+    });
+}
+/**
+ * Research REST routes: create a study, read/save a doc (incl. 409), hand off
+ * `[S<n>]` build items (created, then skipped), unknown ids → 404, and a WS
+ * `file.changed` for a note dropped in the study's `notes/`.
+ */
+async function researchChecks(board, root) {
+    const api = board.url;
+    const missing = await call(`${api}/api/studies`, "POST", { title: "x" });
+    assert(missing.status === 400, "POST /api/studies without idea → 400");
+    const created = await call(`${api}/api/studies`, "POST", {
+        title: "Oposiciones",
+        idea: "Exam prep app",
+    });
+    assert(created.status === 200, "POST /api/studies → 200");
+    const study = created.json;
+    assert(study.id === "study-oposiciones", "study id derives from the title");
+    const listed = await call(`${api}/api/studies`);
+    assert(listed.status === 200 && listed.json.length === 1, "GET /api/studies lists the study");
+    assert(listed.json[0].nextStep === "market", "new study's next step is market");
+    const one = await call(`${api}/api/studies?studyId=${study.id}`);
+    assert(one.json.length === 1 && one.json[0].id === study.id, "GET /api/studies?studyId= filters");
+    const unknownStudy = await call(`${api}/api/studies?studyId=study-nope`);
+    assert(unknownStudy.status === 404, "GET /api/studies?studyId=<unknown> → 404");
+    // Seed market → user-research (+ findings) through core, so strategy's gate opens.
+    const market = await createResearchDoc({ studyId: study.id, kind: "market", title: "Market", body: "## Size\nsmall\n" }, root);
+    const marketId = market.frontmatter.id;
+    const read = await call(`${api}/api/research/${marketId}`);
+    assert(read.status === 200 && read.json.body.includes("small"), "GET /api/research/:id → body");
+    const saved = await call(`${api}/api/research/${marketId}`, "PUT", { body: "## Size\nedited\n", baseVersion: 1 });
+    assert(saved.status === 200 && saved.json.version === 2, "PUT /api/research/:id bumps version");
+    assert(saved.json.generatedBy === "human", "PUT /api/research/:id records generatedBy human");
+    const stale = await call(`${api}/api/research/${marketId}`, "PUT", {
+        body: "should fail",
+        baseVersion: 1,
+    });
+    assert(stale.status === 409, "PUT /api/research/:id with stale baseVersion → 409");
+    const unknownDoc = await call(`${api}/api/research/market-nope`);
+    assert(unknownDoc.status === 404, "GET /api/research/<unknown> → 404");
+    const dep = { dependsOn: [marketId], basedOn: { [marketId]: 2 } };
+    const ur = await createResearchDoc({ studyId: study.id, kind: "user-research", title: "UR", ...dep }, root);
+    await writeResearchDoc({ id: ur.frontmatter.id, findings: ["2026-10-01-P1.md"], baseVersion: 1 }, root);
+    await createResearchDoc({
+        studyId: study.id,
+        kind: "strategy",
+        title: "Strategy",
+        body: [
+            "## What to build",
+            "",
+            "1. [S1] **Mock exams** — the core loop",
+            "2. [S2] **Spaced repetition** — retention",
+            "",
+        ].join("\n"),
+        dependsOn: [ur.frontmatter.id],
+        basedOn: { [ur.frontmatter.id]: 2 },
+    }, root);
+    const handoffUrl = `${api}/api/studies/${study.id}/handoff`;
+    const first = await call(handoffUrl, "POST", { itemIds: ["S1"] });
+    assert(first.status === 200 && first.json.created.length === 1, "handoff S1 creates a feature");
+    const second = await call(handoffUrl, "POST", { itemIds: ["S1", "S2"] });
+    assert(second.json.created.length === 1 &&
+        second.json.skipped.length === 1 &&
+        second.json.skipped[0].itemId === "S1", "re-handoff skips S1 and creates S2");
+    const emptyIds = await call(handoffUrl, "POST", { itemIds: [] });
+    assert(emptyIds.status === 400, "handoff with empty itemIds → 400");
+    const badItem = await call(handoffUrl, "POST", { itemIds: ["S7"] });
+    assert(badItem.status === 400, "handoff with an unknown build item → 400");
+    const unknownHandoff = await call(`${api}/api/studies/study-nope/handoff`, "POST", { itemIds: ["S1"] });
+    assert(unknownHandoff.status === 404, "handoff on an unknown study → 404");
+    const notePath = path.join(studyNotesDir(study.slug, root), "2026-10-02-P2.md");
+    const changed = await awaitFileChanged(board.port, (p) => p.includes(`${path.sep}notes${path.sep}`), () => fs.writeFile(notePath, "masked note\n", "utf8"));
+    assert(changed.endsWith("2026-10-02-P2.md"), "WS file.changed fires for a note dropped in notes/");
 }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 /**
@@ -293,6 +397,7 @@ async function main() {
                 reject(err);
             });
         });
+        await researchChecks(board, root);
         console.log("\nPhase 2 board-server assertions passed.");
         console.log(`Inspect the tmp project at: ${root}`);
     }

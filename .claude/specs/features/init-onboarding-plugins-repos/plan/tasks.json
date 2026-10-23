@@ -1,0 +1,280 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-init-onboarding-plugins-repos",
+      "title": "Add pure `furthestStage(documents)` to `core/claude-md.ts`, with selftest cases next to 11.4",
+      "status": "done",
+      "phase": "onboarding",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "8e6c938a1ed3bf407203172bed2e5980dce27e81"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/claude-md.ts",
+          "plugins/specmanager/server/src/selftest.ts",
+          "plugins/specmanager/server/dist/core/claude-md.js",
+          "plugins/specmanager/server/dist/selftest.js"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T15:46:12.579Z",
+      "updatedAt": "2026-10-20T18:36:24.643Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-init-onboarding-plugins-repos",
+      "title": "Add `knownRepos: DeclaredRepo[]` to `InitResult` (from `scanDeclaredRepos(root)` after `declareRepos`), with a `selftest-repos` assertion",
+      "status": "done",
+      "phase": "onboarding",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "4d21c5a"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/init.ts",
+          "plugins/specmanager/server/src/selftest-repos.ts",
+          "plugins/specmanager/server/dist/core/init.js",
+          "plugins/specmanager/server/dist/selftest-repos.js"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T15:46:13.931Z",
+      "updatedAt": "2026-10-20T18:37:22.261Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-init-onboarding-plugins-repos",
+      "title": "Rewrite `commands/specmanager-init.md`, part 1: add the `argument-hint` frontmatter, the recommended-plugin table, and the plugin detect/offer/install step",
+      "status": "done",
+      "phase": "onboarding",
+      "complexity": 3,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "3bba25a05237e132a1cbf51f3740a553011ad9bf"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-init.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T15:46:15.021Z",
+      "updatedAt": "2026-10-20T18:38:37.586Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-init-onboarding-plugins-repos",
+      "title": "Make `currentStageLabel` and `notesFor` use `furthestStage` instead of `currentStage`, with selftest cases for the label and the Build note",
+      "status": "done",
+      "phase": "onboarding",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "8e5458fa182476f5fa8c0851eb4e0a4a734fd3df"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/claude-md.ts",
+          "plugins/specmanager/server/src/selftest.ts",
+          "plugins/specmanager/server/dist/core/claude-md.js",
+          "plugins/specmanager/server/dist/selftest.js"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T15:46:22.751Z",
+      "updatedAt": "2026-10-20T18:39:54.473Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-init-onboarding-plugins-repos",
+      "title": "Rewrite `commands/specmanager-init.md`, part 2: repo question when no args, flow order, extended report",
+      "status": "done",
+      "phase": "onboarding",
+      "complexity": 2,
+      "dependsOn": [
+        "task-002",
+        "task-003"
+      ],
+      "artifacts": {
+        "commits": [
+          "d49d3f9"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-init.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T15:46:25.832Z",
+      "updatedAt": "2026-10-20T18:40:46.370Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-init-onboarding-plugins-repos",
+      "title": "Add INV-53 (consent: install only the user's picks) and INV-54 (`-y` never passed) over `commands/specmanager-init.md` in `selftest-prompts.ts`",
+      "status": "done",
+      "phase": "onboarding",
+      "complexity": 2,
+      "dependsOn": [
+        "task-005"
+      ],
+      "artifacts": {
+        "commits": [
+          "ab7b5e7"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest-prompts.ts",
+          "plugins/specmanager/server/dist/selftest-prompts.js"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T15:46:31.139Z",
+      "updatedAt": "2026-10-20T18:41:36.165Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-init-onboarding-plugins-repos",
+      "title": "Release prep: bump `plugin.json` `version` 1.2.0 → 1.3.0, `npm ci` at the plugin root and `npm ci && npm run build` in `server/` and `ui/`, commit any `dist/` change, run `selftest-directory` and `claude plugin validate plugins/specmanager`",
+      "status": "done",
+      "phase": "onboarding",
+      "complexity": 2,
+      "dependsOn": [
+        "task-002",
+        "task-004",
+        "task-006"
+      ],
+      "artifacts": {
+        "commits": [
+          "fc9b9bc40f07edd5cced33c39db0f6c6198bd51b"
+        ],
+        "files": [
+          "plugins/specmanager/.claude-plugin/plugin.json"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T15:46:34.406Z",
+      "updatedAt": "2026-10-20T18:43:35.599Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-init-onboarding-plugins-repos",
+      "title": "Automated headless surface test for M1 and M2 in an isolated `CLAUDE_CONFIG_DIR`, results in `docs/verification/init-onboarding-surface.md`",
+      "status": "done",
+      "phase": "onboarding",
+      "complexity": 3,
+      "dependsOn": [
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [
+          "39a9ab6114f8c4b85a9859de1eeb0bc4e1416cca"
+        ],
+        "files": [
+          "docs/verification/init-onboarding-surface.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T15:46:37.506Z",
+      "updatedAt": "2026-10-20T18:46:45.839Z"
+    },
+    {
+      "id": "task-009",
+      "featureId": "feat-init-onboarding-plugins-repos",
+      "title": "Automated M4/M5 check, results in `docs/verification/init-onboarding-checks.md`",
+      "status": "done",
+      "phase": "onboarding",
+      "complexity": 1,
+      "dependsOn": [
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [
+          "1a1ab24"
+        ],
+        "files": [
+          "docs/verification/init-onboarding-checks.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T15:46:40.394Z",
+      "updatedAt": "2026-10-20T18:47:49.512Z"
+    },
+    {
+      "id": "task-010",
+      "featureId": "feat-init-onboarding-plugins-repos",
+      "title": "Docs: describe the plugin and repo onboarding in `plugins/specmanager/README.md`, and refresh the init line in the repo `CLAUDE.md`",
+      "status": "done",
+      "phase": "onboarding",
+      "complexity": 1,
+      "dependsOn": [
+        "task-005"
+      ],
+      "artifacts": {
+        "commits": [
+          "53f7712abeb9563b0c6816f755a85564cfce6876"
+        ],
+        "files": [
+          "plugins/specmanager/README.md",
+          "CLAUDE.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T15:46:45.474Z",
+      "updatedAt": "2026-10-20T18:42:44.247Z"
+    },
+    {
+      "id": "task-011",
+      "featureId": "feat-init-onboarding-plugins-repos",
+      "title": "Scope filter: in `commands/specmanager-init.md` step 2, count (and report as disabled) only plugin entries that apply to this project — no `projectPath` (`user`, `synced`), or `projectPath` equal to this project's root — with an INV-55 row in `selftest-prompts.ts`",
+      "status": "done",
+      "phase": "onboarding",
+      "complexity": 2,
+      "dependsOn": [
+        "task-006"
+      ],
+      "artifacts": {
+        "commits": [
+          "305fcfbfb8ac0d5a2fd9641390d2208890deee18"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-init.md",
+          "plugins/specmanager/server/src/selftest-prompts.ts",
+          "plugins/specmanager/server/dist/selftest-prompts.js"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-10-20T19:19:32.877Z",
+      "updatedAt": "2026-10-20T19:20:30.176Z"
+    }
+  ],
+  "meta": {
+    "phases": {
+      "onboarding": {
+        "testCommand": "cd plugins/specmanager/server && npm run build && npm run selftest && npm run selftest-repos && npm run selftest-prompts && npm run selftest-directory",
+        "architectureRefs": [
+          "affected-components",
+          "interfaces",
+          "recommended-plugin-list",
+          "G1",
+          "G2",
+          "G3",
+          "G4",
+          "G5",
+          "sequence-flow",
+          "failure-and-edge-cases",
+          "selftest-prompts-invariant",
+          "release-and-verification"
+        ],
+        "kind": "build",
+        "prerequisites": []
+      }
+    },
+    "blocked": {}
+  }
+}

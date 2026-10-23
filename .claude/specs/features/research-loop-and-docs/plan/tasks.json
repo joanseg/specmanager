@@ -1,0 +1,474 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "Research kinds in core/types.ts: brief and doc kinds, DOC_TYPE_PRESETS, docType refine, legacy concepts preprocess",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 2,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:03.199Z",
+      "updatedAt": "2026-10-22T15:04:03.199Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "Doc storage and listing: studyDocsDir, extension-aware uniqueSlug, single-kind id/filename maps with brief, docId, listResearchDocs over legacy + docs/*.html",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 3,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:06.250Z",
+      "updatedAt": "2026-10-22T15:04:06.250Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "createResearchDoc doc branch and prepareBody HTML branch keyed on doc",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 3,
+      "dependsOn": [
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:07.547Z",
+      "updatedAt": "2026-10-22T15:04:07.547Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "Steps, gates and summary: docs step, brief always open, assertSameStudy from listed doc ids, StudySummary docType",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 3,
+      "dependsOn": [
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:08.899Z",
+      "updatedAt": "2026-10-22T15:04:08.899Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "manifest.ts docType and mcp.ts create_research_doc docType input, kind enum, tool descriptions",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 2,
+      "dependsOn": [
+        "task-003",
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:10.255Z",
+      "updatedAt": "2026-10-22T15:04:10.255Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "selftest-research: brief, doc gate, multi-doc, docType rejections, -2 slug, project-wide duplicate id",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 3,
+      "dependsOn": [
+        "task-005"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:11.621Z",
+      "updatedAt": "2026-10-22T15:04:11.621Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "selftest-research: legacy concepts.html fixture, rail docs done/flag, deck outdated after strategy write, existing findings/strategy/handoff with concepts -> doc",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 3,
+      "dependsOn": [
+        "task-006"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:12.973Z",
+      "updatedAt": "2026-10-22T15:04:12.973Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "agents/researcher.md: new brief job with the pinned heading list; every job adds brief-<slug> to dependsOn/basedOn when it exists",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 2,
+      "dependsOn": [
+        "task-005"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:15.971Z",
+      "updatedAt": "2026-10-22T15:04:15.971Z"
+    },
+    {
+      "id": "task-009",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "agents/researcher.md: concepts job becomes the docs job with per-type guidance and per-type dependsOn",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 3,
+      "dependsOn": [
+        "task-008"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:17.315Z",
+      "updatedAt": "2026-10-22T15:04:17.315Z"
+    },
+    {
+      "id": "task-010",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "commands/specmanager-research.md: brief and docs steps, concepts alias, the relevance table, Doc confirmation, loop pointer",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 3,
+      "dependsOn": [
+        "task-009"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:18.665Z",
+      "updatedAt": "2026-10-22T15:04:18.665Z"
+    },
+    {
+      "id": "task-011",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "New commands/specmanager-research-loop.md part 1: parse, opening turn, study resolution, opening questions, brief -> market -> docs -> user-research plan -> marketing plan, per-step check",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 3,
+      "dependsOn": [
+        "task-010"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:20.183Z",
+      "updatedAt": "2026-10-22T15:04:20.183Z"
+    },
+    {
+      "id": "task-012",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "commands/specmanager-research-loop.md part 2: single-pass cross-doc review, end questions, final report, failure stop, Don't list",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 2,
+      "dependsOn": [
+        "task-011"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:21.569Z",
+      "updatedAt": "2026-10-22T15:04:21.569Z"
+    },
+    {
+      "id": "task-013",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "selftest-prompts Part H: INV-56b retarget, INV-56f, INV-57a/b re-pin, INV-64a-g, INV-65",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 3,
+      "dependsOn": [
+        "task-008",
+        "task-009",
+        "task-010",
+        "task-012"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:23.065Z",
+      "updatedAt": "2026-10-22T15:04:23.065Z"
+    },
+    {
+      "id": "task-014",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "ui/src/types.ts mirror and panelParts.tsx comment",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 1,
+      "dependsOn": [
+        "task-005"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:24.103Z",
+      "updatedAt": "2026-10-22T15:04:24.103Z"
+    },
+    {
+      "id": "task-015",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "ResearchBoard.tsx Docs column: stacked doc cards, docTypeLabel, add row, cell states A-E",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 3,
+      "dependsOn": [
+        "task-014"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:27.118Z",
+      "updatedAt": "2026-10-22T15:04:27.118Z"
+    },
+    {
+      "id": "task-016",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "Brief chip in StudyLabel and stepCommand kind -> step map",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 2,
+      "dependsOn": [
+        "task-015"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:28.356Z",
+      "updatedAt": "2026-10-22T15:04:28.356Z"
+    },
+    {
+      "id": "task-017",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "ResearchDocPanel.tsx: isHtml branch, per-type crumb/meta, .badge--doctype, Read-only button, brief header and footer hint",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 3,
+      "dependsOn": [
+        "task-015"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:29.802Z",
+      "updatedAt": "2026-10-22T15:04:29.802Z"
+    },
+    {
+      "id": "task-018",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "EmptyResearch.tsx empty state led by the research loop",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 2,
+      "dependsOn": [
+        "task-014"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:30.983Z",
+      "updatedAt": "2026-10-22T15:04:30.983Z"
+    },
+    {
+      "id": "task-019",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "styles.css desktop styles for Docs column, doc cards, brief chip, doc-type badge, loop command and bracket",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 2,
+      "dependsOn": [
+        "task-015",
+        "task-016",
+        "task-017",
+        "task-018"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:32.443Z",
+      "updatedAt": "2026-10-22T15:04:32.443Z"
+    },
+    {
+      "id": "task-020",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "styles.css tablet overrides (640-1024px) for the Docs column",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 2,
+      "dependsOn": [
+        "task-019"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:33.679Z",
+      "updatedAt": "2026-10-22T15:04:33.679Z"
+    },
+    {
+      "id": "task-021",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "Repo CLAUDE.md: Layout line for specmanager-research-loop.md and the core/research.ts note on brief + multi-doc Docs",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 1,
+      "dependsOn": [
+        "task-012"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:35.105Z",
+      "updatedAt": "2026-10-22T15:04:35.105Z"
+    },
+    {
+      "id": "task-022",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "Release prep: bump plugin.json 1.4.0 -> 1.5.0, rebuild server/dist + ui/dist, run selftest-directory and claude plugin validate",
+      "status": "todo",
+      "phase": "loop-docs",
+      "complexity": 2,
+      "dependsOn": [
+        "task-007",
+        "task-013",
+        "task-020",
+        "task-021"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T15:04:36.486Z",
+      "updatedAt": "2026-10-22T15:04:36.486Z"
+    },
+    {
+      "id": "task-023",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "Managed CLAUDE.md Commands line lists the research commands",
+      "status": "todo",
+      "stageRef": "plan-research-loop-and-docs-026",
+      "phase": "loop-docs",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T17:34:11.269Z",
+      "updatedAt": "2026-10-22T17:34:11.269Z"
+    },
+    {
+      "id": "task-024",
+      "featureId": "feat-research-loop-and-docs",
+      "title": "Plugin README: Researcher mode and research command rows",
+      "status": "todo",
+      "stageRef": "plan-research-loop-and-docs-026",
+      "phase": "loop-docs",
+      "complexity": 1,
+      "dependsOn": [
+        "task-010",
+        "task-011"
+      ],
+      "artifacts": {
+        "commits": [],
+        "files": [],
+        "pr": null
+      },
+      "createdAt": "2026-10-22T17:34:12.482Z",
+      "updatedAt": "2026-10-22T17:34:12.482Z"
+    }
+  ],
+  "meta": {
+    "phases": {
+      "loop-docs": {
+        "testCommand": "cd plugins/specmanager/server && npm run build && npm run selftest && npm run selftest-research && npm run selftest-prompts && npm run smoke-mcp && npm run selftest-directory && cd ../ui && npm run build",
+        "architectureRefs": [
+          "affected-components",
+          "data-model-changes",
+          "G1",
+          "G2",
+          "G3",
+          "G4",
+          "G5",
+          "G6",
+          "G7",
+          "research-loop-command",
+          "doc-relevance-and-dependencies",
+          "core-changes-in-research-ts",
+          "board-docs-column-and-brief",
+          "failure-and-edge-cases",
+          "self-tests",
+          "prompt-invariants",
+          "decisions-on-prd-open-questions"
+        ],
+        "kind": "build",
+        "prerequisites": []
+      }
+    },
+    "blocked": {}
+  }
+}

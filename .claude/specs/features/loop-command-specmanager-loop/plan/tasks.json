@@ -1,0 +1,208 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "featureId": "feat-loop-command-specmanager-loop",
+      "title": "Create `commands/specmanager-loop.md`: frontmatter, intent entry, feature resolution and refinement",
+      "status": "done",
+      "phase": "loop",
+      "complexity": 3,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "6cc25f815b3f20f7e07aac422fcfcec2eec30569"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-loop.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-10-01T11:12:35.485Z",
+      "updatedAt": "2026-10-01T12:28:30.216Z"
+    },
+    {
+      "id": "task-002",
+      "featureId": "feat-loop-command-specmanager-loop",
+      "title": "Add the stage chain to the loop command: existing-doc check, gates, subagent dispatch, auto-approval, conditional Design, failure stop",
+      "status": "done",
+      "phase": "loop",
+      "complexity": 3,
+      "dependsOn": [
+        "task-001"
+      ],
+      "artifacts": {
+        "commits": [
+          "ce656d88911cec82351f786ea4de5e494e1e6f1e"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-loop.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-10-01T11:12:38.391Z",
+      "updatedAt": "2026-10-01T12:29:17.446Z"
+    },
+    {
+      "id": "task-003",
+      "featureId": "feat-loop-command-specmanager-loop",
+      "title": "Add the loop-mode sentence to `agents/planner.md`",
+      "status": "done",
+      "phase": "loop",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "eb4ad58138163e41152f002cbb64d305ebbccbb4"
+        ],
+        "files": [
+          "plugins/specmanager/agents/planner.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-10-01T11:12:39.183Z",
+      "updatedAt": "2026-10-01T12:29:58.950Z"
+    },
+    {
+      "id": "task-004",
+      "featureId": "feat-loop-command-specmanager-loop",
+      "title": "Add review, end questions, report and Don't list to the loop command",
+      "status": "done",
+      "phase": "loop",
+      "complexity": 3,
+      "dependsOn": [
+        "task-002"
+      ],
+      "artifacts": {
+        "commits": [
+          "897e9a86e2f019230f160b0878dfe88ef7fdc9c0",
+          "262f4bf5f0f4adccde14badd7d40b5facb6fe688"
+        ],
+        "files": [
+          "plugins/specmanager/commands/specmanager-loop.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-10-01T11:12:44.139Z",
+      "updatedAt": "2026-10-01T12:35:20.058Z"
+    },
+    {
+      "id": "task-005",
+      "featureId": "feat-loop-command-specmanager-loop",
+      "title": "Add INV-38…INV-44 to `server/src/selftest-prompts.ts`",
+      "status": "done",
+      "phase": "loop",
+      "complexity": 2,
+      "dependsOn": [
+        "task-001",
+        "task-002",
+        "task-003",
+        "task-004"
+      ],
+      "artifacts": {
+        "commits": [
+          "77bdf64"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/selftest-prompts.ts",
+          "plugins/specmanager/server/dist/selftest-prompts.js"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-10-01T11:12:46.985Z",
+      "updatedAt": "2026-10-01T12:31:49.362Z"
+    },
+    {
+      "id": "task-006",
+      "featureId": "feat-loop-command-specmanager-loop",
+      "title": "Add `/specmanager-loop` to the managed-block Commands line in `core/claude-md.ts` and rebuild `server/dist`",
+      "status": "done",
+      "phase": "loop",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "8e869c2"
+        ],
+        "files": [
+          "plugins/specmanager/server/src/core/claude-md.ts",
+          "plugins/specmanager/server/dist/core/claude-md.js"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-10-01T11:12:47.896Z",
+      "updatedAt": "2026-10-01T12:32:25.505Z"
+    },
+    {
+      "id": "task-007",
+      "featureId": "feat-loop-command-specmanager-loop",
+      "title": "List the command in `plugins/specmanager/README.md`, root `README.md` and root `CLAUDE.md`",
+      "status": "done",
+      "phase": "loop",
+      "complexity": 1,
+      "dependsOn": [],
+      "artifacts": {
+        "commits": [
+          "1be34573410a2e9d1b0d64595b0745c96c0f6d82"
+        ],
+        "files": [
+          "README.md",
+          "plugins/specmanager/README.md",
+          "CLAUDE.md"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-10-01T11:12:48.826Z",
+      "updatedAt": "2026-10-01T12:33:05.916Z"
+    },
+    {
+      "id": "task-008",
+      "featureId": "feat-loop-command-specmanager-loop",
+      "title": "Release prep: bump `version` to 1.1.0, rebuild, `selftest-directory`, `claude plugin validate`",
+      "status": "done",
+      "phase": "loop",
+      "complexity": 2,
+      "dependsOn": [
+        "task-005",
+        "task-006",
+        "task-007"
+      ],
+      "artifacts": {
+        "commits": [
+          "a580594400597180211ad4b5940c418386528a84"
+        ],
+        "files": [
+          "plugins/specmanager/.claude-plugin/plugin.json"
+        ],
+        "pr": null
+      },
+      "createdAt": "2026-10-01T11:12:51.378Z",
+      "updatedAt": "2026-10-01T12:33:57.809Z"
+    }
+  ],
+  "meta": {
+    "phases": {
+      "loop": {
+        "testCommand": "cd plugins/specmanager/server && npm run build && npm run selftest-prompts && npm run selftest && npm run selftest-directory",
+        "architectureRefs": [
+          "R1",
+          "R2",
+          "R3",
+          "R4",
+          "R5",
+          "R6",
+          "R7",
+          "R8",
+          "R9",
+          "R10",
+          "R11",
+          "R12",
+          "R13",
+          "affected-components",
+          "interfaces",
+          "failure-edge-cases"
+        ]
+      }
+    },
+    "blocked": {}
+  }
+}

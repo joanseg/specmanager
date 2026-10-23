@@ -1,6 +1,6 @@
 import { projectRoot } from "./paths.js";
-import { listTasks } from "./tasks.js";
-import { DEFAULT_PHASE, Task, TaskStatus } from "./types.js";
+import { listTasks, readTasksMeta } from "./tasks.js";
+import { DEFAULT_PHASE, PhaseKind, PhaseMeta, Prerequisite, Task, TaskStatus } from "./types.js";
 
 export type PhaseStatus = "empty" | "todo" | "in_progress" | "done" | "blocked";
 
@@ -12,6 +12,8 @@ export interface PhaseDescriptor {
   inProgressCount: number;
   blockedCount: number;
   status: PhaseStatus;
+  kind: PhaseKind;
+  prerequisites: Prerequisite[];
 }
 
 function statusOf(taskCount: number, counts: Record<TaskStatus, number>): PhaseStatus {
@@ -24,7 +26,15 @@ function statusOf(taskCount: number, counts: Record<TaskStatus, number>): PhaseS
   return "todo";
 }
 
-export function rollupPhases(tasks: Task[]): PhaseDescriptor[] {
+/**
+ * Roll tasks up into phases in first-appearance order, then append meta-only
+ * `kind: "placeholder"` phases (no tasks yet) as `empty`. Meta-only keys of any
+ * other kind are stale and ignored.
+ */
+export function rollupPhases(
+  tasks: Task[],
+  metaPhases: Record<string, PhaseMeta> = {}
+): PhaseDescriptor[] {
   const order = new Map<string, number>();
   const counts = new Map<
     string,
@@ -38,7 +48,7 @@ export function rollupPhases(tasks: Task[]): PhaseDescriptor[] {
     c[t.status]++;
     counts.set(name, c);
   }
-  return [...order.entries()]
+  const fromTasks: PhaseDescriptor[] = [...order.entries()]
     .sort((a, b) => a[1] - b[1])
     .map(([name, idx]) => {
       const c = counts.get(name)!;
@@ -55,8 +65,24 @@ export function rollupPhases(tasks: Task[]): PhaseDescriptor[] {
           done: c.done,
           blocked: c.blocked,
         }),
+        kind: metaPhases[name]?.kind ?? "build",
+        prerequisites: metaPhases[name]?.prerequisites ?? [],
       };
     });
+  const placeholders: PhaseDescriptor[] = Object.entries(metaPhases)
+    .filter(([name, meta]) => !order.has(name) && meta.kind === "placeholder")
+    .map(([name, meta], i) => ({
+      name,
+      order: fromTasks.length + i,
+      taskCount: 0,
+      doneCount: 0,
+      inProgressCount: 0,
+      blockedCount: 0,
+      status: "empty",
+      kind: meta.kind,
+      prerequisites: meta.prerequisites,
+    }));
+  return [...fromTasks, ...placeholders];
 }
 
 export async function listPhases(
@@ -64,7 +90,8 @@ export async function listPhases(
   root = projectRoot()
 ): Promise<PhaseDescriptor[]> {
   const tasks = await listTasks(featureId, root);
-  return rollupPhases(tasks);
+  const meta = await readTasksMeta(featureId, root);
+  return rollupPhases(tasks, meta.phases);
 }
 
 export async function getNextPhase(

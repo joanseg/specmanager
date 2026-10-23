@@ -1,5 +1,5 @@
 import { projectRoot } from "./paths.js";
-import { listTasks } from "./tasks.js";
+import { listTasks, readTasksMeta } from "./tasks.js";
 import { DEFAULT_PHASE } from "./types.js";
 function statusOf(taskCount, counts) {
     if (taskCount === 0)
@@ -14,7 +14,12 @@ function statusOf(taskCount, counts) {
         return "in_progress";
     return "todo";
 }
-export function rollupPhases(tasks) {
+/**
+ * Roll tasks up into phases in first-appearance order, then append meta-only
+ * `kind: "placeholder"` phases (no tasks yet) as `empty`. Meta-only keys of any
+ * other kind are stale and ignored.
+ */
+export function rollupPhases(tasks, metaPhases = {}) {
     const order = new Map();
     const counts = new Map();
     for (const t of tasks) {
@@ -26,7 +31,7 @@ export function rollupPhases(tasks) {
         c[t.status]++;
         counts.set(name, c);
     }
-    return [...order.entries()]
+    const fromTasks = [...order.entries()]
         .sort((a, b) => a[1] - b[1])
         .map(([name, idx]) => {
         const c = counts.get(name);
@@ -43,12 +48,29 @@ export function rollupPhases(tasks) {
                 done: c.done,
                 blocked: c.blocked,
             }),
+            kind: metaPhases[name]?.kind ?? "build",
+            prerequisites: metaPhases[name]?.prerequisites ?? [],
         };
     });
+    const placeholders = Object.entries(metaPhases)
+        .filter(([name, meta]) => !order.has(name) && meta.kind === "placeholder")
+        .map(([name, meta], i) => ({
+        name,
+        order: fromTasks.length + i,
+        taskCount: 0,
+        doneCount: 0,
+        inProgressCount: 0,
+        blockedCount: 0,
+        status: "empty",
+        kind: meta.kind,
+        prerequisites: meta.prerequisites,
+    }));
+    return [...fromTasks, ...placeholders];
 }
 export async function listPhases(featureId, root = projectRoot()) {
     const tasks = await listTasks(featureId, root);
-    return rollupPhases(tasks);
+    const meta = await readTasksMeta(featureId, root);
+    return rollupPhases(tasks, meta.phases);
 }
 export async function getNextPhase(featureId, root = projectRoot()) {
     const phases = await listPhases(featureId, root);

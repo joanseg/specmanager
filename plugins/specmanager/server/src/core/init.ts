@@ -3,7 +3,13 @@ import { migrateWalkthroughs } from "./documents.js";
 import { writeManifest } from "./manifest.js";
 import { syncClaudeMd } from "./claude-md.js";
 import { syncDesignMd } from "./design-md.js";
-import { declareRepos, DeclareOutcome, DeclareRejection } from "./repos.js";
+import {
+  declareRepos,
+  DeclaredRepo,
+  DeclareOutcome,
+  DeclareRejection,
+  scanDeclaredRepos,
+} from "./repos.js";
 import { projectRoot } from "./paths.js";
 
 export interface InitResult {
@@ -15,6 +21,8 @@ export interface InitResult {
   migratedWalkthroughs: string[];
   declaredRepos: DeclareOutcome[];
   rejectedRepos: DeclareRejection[];
+  /** Every repo declared so far, including earlier runs (from `scanDeclaredRepos`). */
+  knownRepos: DeclaredRepo[];
 }
 
 export async function initProject(
@@ -26,6 +34,7 @@ export async function initProject(
   await writeManifest(root);
   const { outcomes: declaredRepos, rejected: rejectedRepos } =
     await declareRepos(root, opts?.repoPaths ?? [], opts?.cwd);
+  const knownRepos = await scanDeclaredRepos(root);
   const cmd = await syncClaudeMd(root);
   const dmd = await syncDesignMd(root, { mode: "init" });
   return {
@@ -37,5 +46,6 @@ export async function initProject(
     migratedWalkthroughs,
     declaredRepos,
     rejectedRepos,
+    knownRepos,
   };
 }

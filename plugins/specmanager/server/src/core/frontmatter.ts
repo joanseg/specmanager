@@ -1,11 +1,25 @@
 import fs from "node:fs/promises";
 import matter from "gray-matter";
+import type { z } from "zod";
 import { DocFrontmatter, DocFrontmatterSchema, DocumentRecord } from "./types.js";
 
-export async function readDoc(filePath: string): Promise<DocumentRecord> {
+/** A parsed markdown doc whose frontmatter matched `schema`. */
+export interface ParsedDoc<T> {
+  frontmatter: T;
+  body: string;
+  filePath: string;
+}
+
+/** Read a markdown doc; frontmatter is validated by `schema` (default: Builder doc schema). */
+export async function readDoc(filePath: string): Promise<DocumentRecord>;
+export async function readDoc<T>(filePath: string, schema: z.ZodType<T>): Promise<ParsedDoc<T>>;
+export async function readDoc(
+  filePath: string,
+  schema: z.ZodType<unknown> = DocFrontmatterSchema
+): Promise<ParsedDoc<unknown>> {
   const raw = await fs.readFile(filePath, "utf8");
   const parsed = matter(raw);
-  const frontmatter = DocFrontmatterSchema.parse(parsed.data);
+  const frontmatter = schema.parse(parsed.data);
   return { frontmatter, body: parsed.content, filePath };
 }
 
@@ -17,12 +31,21 @@ function stripUndefined<T extends Record<string, unknown>>(obj: T): T {
   return out as T;
 }
 
+/** Write a markdown doc; frontmatter is validated by `schema` (default: Builder doc schema). */
+export async function writeDoc(filePath: string, frontmatter: DocFrontmatter, body: string): Promise<void>;
+export async function writeDoc<T extends object>(
+  filePath: string,
+  frontmatter: T,
+  body: string,
+  schema: z.ZodType<T>
+): Promise<void>;
 export async function writeDoc(
   filePath: string,
-  frontmatter: DocFrontmatter,
-  body: string
+  frontmatter: object,
+  body: string,
+  schema: z.ZodType<object> = DocFrontmatterSchema
 ): Promise<void> {
-  const validated = DocFrontmatterSchema.parse(frontmatter);
+  const validated = schema.parse(frontmatter) as Record<string, unknown>;
   const out = matter.stringify(body, stripUndefined(validated));
   await fs.writeFile(filePath, out, "utf8");
 }

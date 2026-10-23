@@ -187,6 +187,14 @@ async function main(): Promise<void> {
   await fs.access(path.join(thirdTree, "DESIGN.md"));
   await fs.access(path.join(thirdTree, ".specmanager-repo.json"));
   console.log("ok — third repo seeded on re-run");
+  // knownRepos: init with no paths lists every repo declared on earlier runs.
+  const noArgs = await initProject(root, { cwd: workspace });
+  assert(noArgs.declaredRepos.length === 0, "init with no paths declares nothing new");
+  assert(
+    noArgs.knownRepos.map((r) => r.name).join(",") === "repo-no-ui,repo-third,repo-with-ui",
+    "init with no paths lists the previously declared repos in knownRepos"
+  );
+
   const scannedAfter = await scanDeclaredRepos(root);
   assert(scannedAfter.length === 3, "scan returns all three repos after re-run");
   const claudeMdAfter = await fs.readFile(path.join(root, "CLAUDE.md"), "utf8");

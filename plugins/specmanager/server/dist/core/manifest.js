@@ -2,9 +2,10 @@ import fs from "node:fs/promises";
 import { manifestPath, projectRoot } from "./paths.js";
 import { listFeatures } from "./features.js";
 import { listDocuments } from "./documents.js";
-import { listTasks } from "./tasks.js";
+import { listTasks, readTasksMeta } from "./tasks.js";
 import { rollupPhases } from "./phases.js";
 import { DEFAULT_PHASE } from "./types.js";
+import { listResearchDocs, listStudies } from "./research.js";
 export async function buildManifest(root = projectRoot()) {
     const features = await listFeatures(root);
     const out = { generatedAt: new Date().toISOString(), features: [] };
@@ -14,7 +15,7 @@ export async function buildManifest(root = projectRoot()) {
         const counts = { todo: 0, in_progress: 0, done: 0, blocked: 0, total: tasks.length };
         for (const t of tasks)
             counts[t.status]++;
-        const phaseRollup = rollupPhases(tasks);
+        const phaseRollup = rollupPhases(tasks, (await readTasksMeta(f.id, root)).phases);
         // Map phase-name → walkthrough doc (if one exists for that phase).
         const walkthroughByPhase = new Map();
         for (const d of docs) {
@@ -41,6 +42,7 @@ export async function buildManifest(root = projectRoot()) {
             slug: f.slug,
             title: f.title,
             currentStage: f.currentStage,
+            ...(f.origin ? { origin: f.origin } : {}),
             documents: docs.map((d) => ({
                 id: d.frontmatter.id,
                 stage: d.frontmatter.stage,
@@ -55,7 +57,30 @@ export async function buildManifest(root = projectRoot()) {
             phases,
         });
     }
+    const studies = await buildStudyEntries(root);
+    if (studies.length > 0)
+        out.studies = studies;
     return out;
+}
+/** Study summaries re-derived from study.json and research doc frontmatter. */
+async function buildStudyEntries(root) {
+    const entries = [];
+    for (const s of await listStudies(root)) {
+        const docs = await listResearchDocs(s.id, root);
+        entries.push({
+            id: s.id,
+            slug: s.slug,
+            title: s.title,
+            documents: docs.map(({ frontmatter: d }) => ({
+                id: d.id,
+                kind: d.kind,
+                ...(d.docType !== undefined ? { docType: d.docType } : {}),
+                title: d.title,
+                version: d.version,
+            })),
+        });
+    }
+    return entries;
 }
 export async function writeManifest(root = projectRoot()) {
     const m = await buildManifest(root);
