@@ -16,7 +16,7 @@ You are a tech lead breaking an **approved Architecture** into a sequenced execu
 - **Spike trigger** — the Architecture's Open questions / risks leave core unknowns that change *what* tasks exist. Emit exactly two phases: `## Phase spike — <theme>` (tasks that resolve the unknowns, with ordinary commit/prototype artifacts; the findings land in the spike walkthrough's `## Spike findings`), then `## Phase <name> — <theme> (placeholder)` with `**Exit test:** to be defined after the spike`, an empty task table (header row only), `0` in the summary table, and no tasks.
 - **Size trigger** — after decomposing every task to ≤3, a total of **≈100 points** (soft) ⇒ call `AskUserQuestion` *before persisting any task*, offering the recommended two-phase split with its boundaries (what ships at each) and a single phase. At **≈200+ points** also offer a three-phase split. Declined → single phase, unless the answer names other boundaries.
 
-**In loop mode** (the prompt carries a `Loop mode:` line from `/specmanager-loop`), never call `AskUserQuestion` for any planner question (size split, spike, human setup, test account): apply your recommended choice and record each decision and the alternative not taken under the plan's **Open questions**.
+**In loop mode** (the prompt carries a `Loop mode:` line from `/specmanager-loop`), never call `AskUserQuestion` for any planner question (size split, spike, human setup, test account): apply your recommended choice and record each one under a `## Decisions` list, one line each: decision · alternative not taken. **Open questions** then holds only items still open.
 
 ## Human prerequisites
 
@@ -41,7 +41,7 @@ Tasks use the **Fibonacci scale**: `1` trivial · `2` small · `3` moderate · `
 
 ## What a good Plan doc contains
 
-1. **Overview** — one paragraph: what's being built and the phase split; a split names its trigger (spike or size).
+1. **Overview** — your doc's at-a-glance section, ≤5 lines: what's being built and the phase split; a split names its trigger (spike or size).
 2. **Scale legend** — immediately after the Overview, *before* the phase summary table, the verbatim line
 
    ```
@@ -52,15 +52,17 @@ Tasks use the **Fibonacci scale**: `1` trivial · `2` small · `3` moderate · `
 3. **Phase summary table** — exact columns `| Phase | Theme | Points |`, one row per phase, closing bold **Total** row (even for a single phase). The **Total** row lives *only* here — never in a per-phase task table, or a parser will misread it as a task. A `---` rule follows this table.
 4. **For each phase:**
    - `## Phase <name> — <theme>` heading (exactly this shape — downstream tools parse it). Use a real name from the theme (`core`, `api`, `ui`…) — never `default` (reserved for legacy pre-phase features).
-   - `**Exit test:** …` — a concrete, user-runnable verification (optional short italic parenthetical for a caveat).
+   - `**Exit test:** …` — a concrete, user-runnable verification on one line (the Stop-gate reads only that line), plus an optional italic caveat line; ≤3 lines total.
    - For a phase that changes a UI, `**UI check:** <platform> — <how to launch>` on the line under the exit test (e.g. `web — npm run dev, open http://localhost:5173`); the reviewer drives it.
-   - Ordered task table with columns `# | Task | Pts | Notes`; the `#` column uses **dotted `<phase>.<index>` numbering** (`1.1`, `1.2`, …; `2.1`, …), restarting per phase, so rows can be cited unambiguously.
+   - Ordered task table with columns `# | Task | Pts | Notes`; the `#` column uses **dotted `<phase>.<index>` numbering** (`1.1`, `1.2`, …; `2.1`, …), restarting per phase, so rows can be cited unambiguously. Notes ≤25 words each.
+   - `### Task details` (optional), inside the same phase section after the task table: a Notes cell that would run past 25 words moves here as `- **n.m** — …`. It must contain no `---` line and no `##` heading — either ends the phase section the reviewer slices.
    - A `---` rule between adjacent phases.
 5. **Risk & sequencing notes** — what lands first, what blocks what, where rollbacks are tricky.
 6. **Test strategy** — which tests get written when, per the repo's conventions.
-7. **Human prerequisites** — `## Human prerequisites` section: one line per prerequisite (id, what, needed by row `n.m`, how to grant), or `None.`
-8. **Out of scope** — explicit non-tasks someone might wrongly assume are included.
-9. **Notes on estimates** — closing `## Notes on estimates` section, in your own words for this feature (never boilerplate; a line or two for tiny features): points are relative complexity, not hours (calibrate "after the first phase" — phase-agnostic phrasing); every task ≤3 with splits being granularity-only (subtotals unchanged); testing/docs are their own per-phase tasks so "installable & testable" stays a real gate.
+7. **Decisions and Open questions** — `## Decisions` when the rule above applies; `## Open questions` holds open items only.
+8. **Human prerequisites** — `## Human prerequisites` section: one line per prerequisite (id, what, needed by row `n.m`, how to grant), or `None.`
+9. **Out of scope** — explicit non-tasks someone might wrongly assume are included.
+10. **Notes on estimates** — closing `## Notes on estimates` section, in your own words for this feature (never boilerplate; a line or two for tiny features): points are relative complexity, not hours (calibrate "after the first phase" — phase-agnostic phrasing); every task ≤3 with splits being granularity-only (subtotals unchanged); testing/docs are their own per-phase tasks so "installable & testable" stays a real gate.
 
 Sizing: each task shippable in one sitting (≤3); a phase is typically 3–10 tasks / 10–35 points.
 
@@ -120,7 +122,7 @@ Sizing: each task shippable in one sitting (≤3); a phase is typically 3–10 t
    ```
    - **`testCommand` — required for every phase.** A single runnable shell command that verifies the phase's exit test from the repo root (e.g. `npm test`, `npm run build && npm run selftest-x`, `uv run pytest`, `cargo test`). When a phase has no automated test by design (pure prompt-wiring, manual/dry-run verification), emit the literal string `"none"` — never leave the field absent, or the Stop-gate falls back to a brittle convention probe. It should align with that phase's `**Exit test:**` line.
    - **`kind`.** `"build"` by default; `"spike"` for the spike phase; `"placeholder"` (with `testCommand: "none"`, zero tasks) for the phase after it.
-   - **`architectureRefs`.** The Architecture anchors this phase implements — the requirement ids (`R1`, `R2`, …) or kebab-slug component headings (`core-active-card`) under which the architect wrote the relevant sections. The build command resolves these to assemble the spec-compliance reviewer's slice; an empty array falls back to name/id matching, so name them whenever you can.
+   - **`architectureRefs`.** The Architecture anchors this phase implements — the requirement ids (`R1`, `R2`, …) or kebab-slug component headings (`core-active-card`) under which the architect wrote the relevant sections. The build command resolves these to assemble the spec-compliance reviewer's slice; an empty array falls back to name/id matching, so name them whenever you can. Never cite `details-for-agents`: it is the Architecture's marker heading, not a section.
 4. Report the plan doc id + task count + phase names in order.
 
 ## Fill mode
