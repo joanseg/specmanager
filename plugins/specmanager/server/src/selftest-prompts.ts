@@ -17,9 +17,10 @@
 // sections, Part F's INV-51/52 for the build's git strategy, and Part G's
 // INV-53/54 for init's plugin-install consent plus INV-55 for its plugin
 // scope filter, Part H's INV-56…INV-65 for researcher mode and its loop, and
-// Part I's INV-66…INV-69 for readable docs (density, readable-doc and
-// design-pass snippet parity, the researcher's optional Appendix). A few are
-// encoded as lettered rows (INV-14a…e, INV-27a…c,
+// Part I's INV-66…INV-73 for readable docs (density, readable-doc and
+// design-pass snippet parity, the researcher's optional Appendix, the loops'
+// cap check and folded answers, designer Build notes, planner Task details).
+// A few are encoded as lettered rows (INV-14a…e, INV-27a…c,
 // INV-36a/b, INV-45a…c, INV-46a/b, INV-47a/b, INV-48a…c, INV-49a/b,
 // INV-50a…e, INV-51a…f, INV-52a/b, and the pre-existing INV-15a/b)
 // because the reconciliation calls for one pattern per independently
@@ -1100,7 +1101,7 @@ const INVARIANTS: PromptInvariant[] = [
     min: 2,
     max: 2,
   },
-  // ---- Part I — INV-66 onward: readable docs (arch §prompt-invariants) ----
+  // ---- Part I — INV-66…INV-73: readable docs (arch §prompt-invariants) ----
   // Each pinned sentence is copied verbatim from its canonical snippet in
   // `docs/agent-snippets/` (lossless-carryover.md, readable-doc.md,
   // design-pass.md), so these rows double as snippet parity: a carrier that
@@ -1189,6 +1190,48 @@ const INVARIANTS: PromptInvariant[] = [
     files: ["agents/researcher.md"],
     min: 3,
     max: 3,
+  },
+  {
+    id: "INV-70a",
+    what: "specmanager-loop's review has exactly one cap-check bullet",
+    pattern: /^\s*- cap check:/gm,
+    files: ["commands/specmanager-loop.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-70b",
+    what: "specmanager-research-loop's review has exactly one cap-check bullet",
+    pattern: /^\s*- cap check:/gm,
+    files: ["commands/specmanager-research-loop.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-71",
+    what: "neither loop marks answered questions \"resolved\" in place — answers fold into the body (negative)",
+    // Whitespace-tolerant: the old research-loop wording wrapped across lines.
+    pattern: /marked\s+resolved\s+in/gi,
+    files: ["commands/specmanager-loop.md", "commands/specmanager-research-loop.md"],
+    min: 0,
+    max: 0,
+    negativeSample: "keep each answered question, marked resolved in the doc",
+  },
+  {
+    id: "INV-72",
+    what: "designer puts builder detail inside a collapsed Build notes block",
+    pattern: "<details><summary>Build notes</summary>",
+    files: ["agents/designer.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-73",
+    what: "planner's optional `### Task details` holds no `---` line and no `##` heading, so the reviewer's phase slice survives",
+    pattern: /`### Task details` \(optional\).*It must contain no `---` line and no `##` heading/g,
+    files: ["agents/planner.md"],
+    min: 1,
+    max: 1,
   },
 ];
 
