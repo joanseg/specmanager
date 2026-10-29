@@ -159,3 +159,23 @@ because a plugin builder run by the CLI doesn't get that tool. The resolver dete
 the `message` of any `SubagentHandback` tool_use in the agent transcript. That call ends the
 run, so it can only be the final report. Earlier assistant text in the transcript does not
 count.
+
+## Matcher (CLI 2.1.310)
+
+Run 2026-10-29 for plan row 2.8, CLI 2.1.310, sonnet, $0.229. A scratch copy of the probe
+registered two logging `SubagentStop` hooks: one with `matcher: "^specmanager:builder$"`, one
+with no matcher. The session dispatched one foreground `specmanager:builder`
+(`Dispatch: task-001`) and one foreground `general-purpose` agent, both with trivial prompts.
+
+```
+== matched
+{"hook_event_name":"SubagentStop","agent_type":"specmanager:builder","agent_id":"a4eed2c2a893bee60"}
+== all
+{"hook_event_name":"SubagentStop","agent_type":"specmanager:builder","agent_id":"a4eed2c2a893bee60"}
+{"hook_event_name":"SubagentStop","agent_type":"general-purpose","agent_id":"a3553545ef19afd6c"}
+```
+
+**Verdict: the `SubagentStop` matcher is checked against `agent_type`.** Both agents fired
+`SubagentStop`, and only the builder reached the anchored hook. The resolver's own
+`agent_type !== "specmanager:builder"` check stays as a second guard for selftests and other
+hosts.

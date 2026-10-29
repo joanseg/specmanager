@@ -1,7 +1,8 @@
 {
   "hooks": {
-    "Stop": [
+    "SubagentStop": [
       {
+        "matcher": "^specmanager:builder$",
         "hooks": [
           {
             "type": "command",
