@@ -3,7 +3,8 @@
 // no marker ⇒ pass, open dispatched tasks ⇒ exit 2, tests run only when the
 // phase is done, the "none" marker skips the run, the per-dispatch N=3 cap
 // blocks the one task and exits 0; R1 cases (ignored events, naming, transcript
-// shapes, per-dispatch counters, NEEDS_HUMAN:). Plus unit cases for core/dispatch.ts and
+// shapes, per-dispatch counters, NEEDS_HUMAN:); R2 cases (a side-effect file proves
+// the test command runs only once the phase is done). Plus unit cases for core/dispatch.ts and
 // resolveGateCard.
 //
 // Usage: node dist/selftest-stopgate.js
@@ -186,6 +187,52 @@ async function r1HookCases(root: string): Promise<void> {
     "R1: NEEDS_HUMAN: in last_assistant_message passes with A still open"
   );
   assert(await noCounters(), "R1: those passes write no counter file");
+  await clearActiveBuild(root);
+}
+
+/** R2 hook-level cases: the test command runs only once the phase is done. A side-effect file proves whether it ran. */
+async function r2HookCases(root: string): Promise<void> {
+  const feature = await createFeature("R2 hook feature", root);
+  const plan = await createDocument(
+    { featureId: feature.id, stage: "plan", title: "R2 plan", body: "# Plan\n\n## Phase core — x\n**Exit test:** echo ok\n" },
+    root
+  );
+  await setStatus(plan.frontmatter.id, "approved", root);
+  const a = await createTask({ featureId: feature.id, title: "A", phase: "core", complexity: 1 }, root);
+  const b = await createTask({ featureId: feature.id, title: "B", phase: "core", complexity: 1 }, root);
+  const ran = path.join(root, "r2-ran.log");
+  const runs = async () => (await fs.readFile(ran, "utf8").catch(() => "")).split("\n").filter(Boolean).length;
+  const failing = `echo ran >> '${ran}'; echo R2-TAIL-MARK; exit 1`;
+  await setPhaseMeta(feature.id, "core", { testCommand: failing, architectureRefs: [] }, root);
+  await setActiveBuild({ featureId: feature.id, phase: "core" }, root);
+  const aT = await dispatchTranscript(root, a.id);
+  const bT = await dispatchTranscript(root, b.id);
+  const done = (id: string) =>
+    updateTask({ id, featureId: feature.id, status: "done", artifacts: { files: [`${id}.ts`] } }, root);
+
+  const open = runHook(root, aT);
+  assert(open.code === 2 && !open.stderr.includes("tests failing"), "R2: gated task open → exit 2 on the open leg");
+  assert((await runs()) === 0, "R2: the test command does not run while the gated task is open");
+
+  await done(a.id);
+  const early = runHook(root, aT);
+  assert(early.code === 0 && early.stderr.trim() === "", "R2: gated done, another phase task open, failing command → exit 0");
+  assert((await runs()) === 0, "R2: the failing command was not run (no side-effect)");
+
+  await done(b.id);
+  const last = runHook(root, bT);
+  assert(last.code === 2 && last.stderr.includes("tests failing"), "R2: last open task done, failing command → exit 2");
+  assert(last.stderr.includes("R2-TAIL-MARK"), "R2: stderr carries the test output tail");
+  assert((await runs()) === 1, "R2: the command ran exactly once");
+
+  await setPhaseMeta(feature.id, "core", { testCommand: `echo ran >> '${ran}'`, architectureRefs: [] }, root);
+  const green = runHook(root, bT);
+  assert(green.code === 0 && green.stderr.trim() === "", "R2: phase done, passing command → exit 0");
+  assert((await runs()) === 2, "R2: the passing command ran");
+  assert(
+    !(await fs.access(path.join(stopGateDir(root), `${feature.slug}__core__${b.id}`)).then(() => true, () => false)),
+    "R2: the green run clears the dispatch's counter"
+  );
   await clearActiveBuild(root);
 }
 
@@ -672,6 +719,7 @@ async function main(): Promise<void> {
   );
 
   await r1HookCases(root);
+  await r2HookCases(root);
   await dispatchUnitCases(root);
   await gateCardPassCases(root);
   await gateCardFieldCases(root);
