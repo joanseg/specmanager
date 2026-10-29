@@ -20,6 +20,7 @@ import {
   setStatus,
   createTask,
   updateTask,
+  listTasks,
   setPhaseMeta,
   readTasksMeta,
   setActiveBuild,
@@ -57,6 +58,16 @@ function runHook(root: string, sessionId?: string): { code: number; stderr: stri
 }
 
 const RESOLVER = path.join(here, "resolve-active-card.js");
+const BLOCKER = path.join(here, "set-phase-blocked.js");
+
+/** Run the blocker CLI with `args`; returns its exit code. */
+function runBlocker(root: string, args: string[]): number {
+  const r = spawnSync(process.execPath, [BLOCKER, ...args], {
+    env: { ...process.env, SPECMANAGER_PROJECT_DIR: root },
+    encoding: "utf8",
+  });
+  return r.status ?? -1;
+}
 
 /** Run the resolver CLI with `input` on stdin. */
 function runResolver(root: string, input: string): { code: number; stdout: string } {
@@ -453,6 +464,27 @@ async function main(): Promise<void> {
   // The cap phase still has its open task and the marker is still pinned.
   const a4 = runHook(root);
   assert(a4.code === 2, "counter reset after cap → next fail is exit 2 again");
+
+  // R4 shim: `<featureId> <phase> <taskId> <reason…>` blocks that one task only.
+  // Interim (until task-012 passes blockTaskId): the hook still sends the old
+  // `<featureId> <phase> <reason>` argv, so only the phase note is written.
+  const capTasks = (await listTasks(cap.id, root)).filter((x) => x.phase === "core");
+  assert(capTasks.every((x) => x.status !== "blocked"), "old argv blocks no task, phase note only");
+  await createTask({ featureId: cap.id, title: "C2", phase: "core", complexity: 1 }, root);
+  await createTask({ featureId: cap.id, title: "C3", phase: "core", complexity: 1 }, root);
+  const sb = runBlocker(root, [cap.id, "core", "task-002", "iteration cap (3) reached: tests failed"]);
+  assert(sb === 0, "set-phase-blocked with a task id exits 0");
+  const after = await listTasks(cap.id, root);
+  assert(
+    after.map((x) => x.status).join(",") === "todo,blocked,todo",
+    "R4: only the named task is blocked; the others keep their status"
+  );
+  const capMeta = await readTasksMeta(cap.id, root);
+  assert(
+    capMeta.blocked["core"] === "task-002: iteration cap (3) reached: tests failed",
+    "R4: meta.blocked note leads with the task id"
+  );
+  await updateTask({ id: "task-002", featureId: cap.id, status: "todo" }, root);
 
   // ── Absent-testCommand path (Q5) ────────────────────────────────────────────
   // Every case above pins an explicit meta.testCommand. These two cover the

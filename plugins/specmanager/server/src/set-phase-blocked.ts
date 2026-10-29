@@ -1,20 +1,24 @@
 #!/usr/bin/env node
-// CLI shim for the Stop-gate hook: record a blocked note on a phase when the
-// iteration cap is hit (R1 AC2). task-009 extends core to also flip the phase's
-// open tasks to a first-class `blocked` status; this shim picks that up
-// automatically once `blockPhaseTasks` exists.
+// CLI shim for the Stop-gate hook: at the iteration cap, block the ONE failing
+// task and record a phase note that leads with its id (R4). Every other task
+// keeps its status.
 //
-// Usage: set-phase-blocked.js <featureId> <phase> <reason...>
+// Usage: set-phase-blocked.js <featureId> <phase> <taskId> <reason...>
+//
+// If the third argument is not a task id (the pre-R4 argv `<featureId> <phase>
+// <reason...>`), only the phase note is recorded and no task is blocked — the
+// shim never guesses a task.
 
-import * as core from "./core/index.js";
+import { setPhaseBlocked, updateTask } from "./core/index.js";
 
-const { setPhaseBlocked } = core;
+const TASK_ID = /^task-\d+$/;
 
 const root =
   process.env.SPECMANAGER_PROJECT_DIR ?? process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
 
-const [, , featureId, phase, ...reasonParts] = process.argv;
-const reason = reasonParts.join(" ") || "iteration cap reached";
+const [, , featureId, phase, ...rest] = process.argv;
+const taskId = rest[0] && TASK_ID.test(rest[0]) ? rest[0] : null;
+const reason = (taskId ? rest.slice(1) : rest).join(" ") || "iteration cap reached";
 
 if (!featureId || !phase) {
   process.stderr.write("set-phase-blocked: featureId and phase are required\n");
@@ -22,11 +26,8 @@ if (!featureId || !phase) {
 }
 
 (async () => {
-  await setPhaseBlocked(featureId, phase, reason, root);
-  const blockTasks = (core as Record<string, unknown>)["blockPhaseTasks"] as
-    | ((f: string, p: string, r?: string) => Promise<unknown>)
-    | undefined;
-  if (blockTasks) await blockTasks(featureId, phase, root).catch(() => {});
+  if (taskId) await updateTask({ id: taskId, featureId, status: "blocked" }, root);
+  await setPhaseBlocked(featureId, phase, taskId ? `${taskId}: ${reason}` : reason, root);
 })().catch((err) => {
   process.stderr.write(`set-phase-blocked: ${(err as Error).message}\n`);
   process.exit(1);
