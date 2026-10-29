@@ -138,23 +138,33 @@ From `<project>-specs/`, pass init the other repos' paths. Use absolute paths: a
 Each **feature** is a row on the board that flows left to right through the lifecycle. You drive it with slash commands; Claude does the drafting via dedicated subagents, and you approve each stage in the board before the next unlocks.
 
 ```text
+# Spec
 /specmanager:specmanager-interview "Checkout corridor" # OPTIONAL pre-PRD interview — extracts & stress-tests the idea
 /specmanager:specmanager-loop "Checkout corridor"      # OPTIONAL intent → approved Plan in one go (auto-approves, stops before Build)
 /specmanager:specmanager-prd "Checkout corridor"       # create the feature + draft its PRD → approve in board
 /specmanager:specmanager-architecture   <feature>       # draft the Architecture   → approve in board
 /specmanager:specmanager-design         <feature>       # OPTIONAL high-fi HTML mockups → approve
 /specmanager:specmanager-plan           <feature>       # plan.md + phased tasks   → approve in board
-/specmanager:specmanager-build          <feature> next  # build one phase at a time
-/specmanager:specmanager-walkthrough    <feature> <phase>   # per-phase walkthrough
+
+# Build
+/specmanager:specmanager-build          <feature> next  # build one phase, task by task, then stop
+/specmanager:specmanager-walkthrough    <feature> <phase>   # per-phase walkthrough (build drafts it for you)
 /specmanager:specmanager-walkthrough    <feature> final     # feature-level roll-up
+
+# Research
+/specmanager:specmanager-research-loop  "<idea>"        # OPTIONAL brief → market → Docs → research plan → marketing plan, stops before findings
+/specmanager:specmanager-research       <study> [step]  # one research step, starting the study if needed
+
+# Setup and board
+/specmanager:specmanager-init           [/abs/path ...] # set up, optionally with other repos
 /specmanager:specmanager-board                          # open the kanban board anytime
 ```
 
-`<feature>` is the feature's slug or id (reported by `/specmanager:specmanager-prd` when it creates the feature).
+`<feature>` is the feature's slug or id (reported by `/specmanager:specmanager-prd` when it creates the feature). A one-line summary of every command is in the [plugin README](plugins/specmanager/README.md).
 
 `/specmanager:specmanager-interview` is optional: a multi-turn interview in your Claude session that pulls the idea out of your head and challenges it (using the [gstack office-hours](https://github.com/garrytan/gstack/tree/main/office-hours) forcing-question method) before any PRD exists. The result can be stored as `interview.md` in the feature's PRD folder — shown as a chip on the board, never gating anything — and the PRD drafter grounds itself in it when present.
 
-`/specmanager:specmanager-loop` is optional too: it takes a one-line intent, asks a few questions, drafts each stage through its subagent and **approves each stage's document automatically**, reviews across the docs, asks any open questions, and stops before Build.
+`/specmanager:specmanager-loop` is optional too: see [The spec loop](#the-spec-loop).
 
 ### Stages and gates
 
