@@ -223,6 +223,40 @@ A `SubagentStop` hook — plain bash, no model calls — judges each builder as 
 
 ---
 
+## Research
+
+Some ideas need research before there's a feature to build. Switch the board to **Researcher** to see your studies: one row per study, with a Brief chip and the columns Market research · Docs · User research · Marketing plan · Strategy. Studies sit outside features, so they never touch a feature's gates, and research docs have no approval. Research runs in your own Claude session; the plugin makes no model or API calls of its own.
+
+### One step at a time
+
+`/specmanager:specmanager-research <study> [step]` runs one step and stops. With no step, it runs the next one. A step waits for the ones it builds on; the brief is always open.
+
+| Step | What you get |
+|---|---|
+| `new` | a study, from a title and a one-line idea |
+| `brief` | five questions (idea, market, audience, goals, constraints) turned into a short brief that feeds every later step |
+| `market` | market size, competitors and revenue, drafted as three parallel jobs and merged into one doc |
+| `docs` (alias `concepts`) | the HTML Docs you pick: wireframes, a one-pager, a client or partner presentation, an investor deck, or your own type |
+| `plan` | a user-research plan for your interviews |
+| `marketing` | a marketing plan |
+| `findings` | what your interviews say, from your masked notes |
+| `strategy` | a strategy with a ranked build list |
+| `handoff` | features on the Builder board, from the build-list items you pick |
+
+### The research loop
+
+`/specmanager:specmanager-research-loop <idea>` asks every question up front — at most two rounds, including which Docs to make (before interviews it typically offers wireframes, a one-pager and a client presentation) — then drafts brief → market → Docs → user-research plan → marketing plan without pausing. It reviews the docs against each other and the brief (a source on every figure, length caps, drift), asks what's still open, and **approves nothing**. It stops before findings, because findings need real interviews.
+
+### Interviews, findings and strategy
+
+Run the interviews from the plan, then drop transcripts or notes (`.md`, `.txt`, `.pdf`) in the study's `notes/` folder, or paste them into the chat. They're masked before Claude reads them for findings: participant codes instead of names, and `[redacted]` for emails, phones and addresses. Findings never invent a score or a quote. Then run `strategy`.
+
+### Handoff to Builder
+
+`/specmanager:specmanager-research <study> handoff` lists the strategy's build list (`S1`, `S2`, …) and asks which items to hand off. Each one becomes a new feature on the Builder board with an origin chip naming the study it came from; an item already handed off is skipped. From there it's a normal feature: start it with `/specmanager:specmanager-prd <slug>`.
+
+---
+
 ## The board
 
 `/specmanager:specmanager-board` opens a grid: **one row per feature, one column per stage** (PRD · Architecture · Design · Plan · Build · Walkthroughs). It updates live over websockets as Claude writes docs or you edit them.
