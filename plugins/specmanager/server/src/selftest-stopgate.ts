@@ -25,6 +25,7 @@ import {
   setActiveBuild,
   clearActiveBuild,
   readActiveBuild,
+  stopGateDir,
 } from "./core/index.js";
 
 function assert(cond: unknown, msg: string): asserts cond {
@@ -103,7 +104,8 @@ async function main(): Promise<void> {
   assert((await readActiveBuild(root))?.sessionId === "sess-A", "another session's stop leaves the marker intact");
   const owner = runHook(root, "sess-A");
   assert(owner.code === 2, "the owning session's stop still gates");
-  assert(owner.stderr.includes("attempt 2/3"), "only the owning session consumed the retry budget");
+  // setActiveBuild reset the budget (R3), so attempt 1/3 proves sess-B spent nothing.
+  assert(owner.stderr.includes("attempt 1/3"), "only the owning session consumed the retry budget");
   await setActiveBuild({ featureId: feature.id, phase: "core" }, root);
   // Restore the one-attempt budget the later cases expect.
   await fs.writeFile(path.join(root, ".claude/specs/.cache/stop-gate", `${feature.slug}__core`), "1", "utf8");
@@ -225,6 +227,31 @@ async function main(): Promise<void> {
   const proseDone = runHook(root);
   assert(proseDone.code === 0, "absent testCommand + prose exit test + all tasks done → exit 0");
   assert(proseDone.stderr.trim() === "", "criteria-only pass writes no stderr");
+
+  // ── R3 core: setActiveBuild resets the phase's retry counters ──────────────
+  // Legacy `<slug>__<phase>` and per-dispatch `<slug>__<phase>__*` files go;
+  // another phase's counter and a prefix-only lookalike stay.
+  const dir = stopGateDir(root);
+  await fs.mkdir(dir, { recursive: true });
+  const seeded = [
+    `${cap.slug}__core`,
+    `${cap.slug}__core__task-001`,
+    `${cap.slug}__core__bulk`,
+    `${cap.slug}__other`,
+    `${cap.slug}__coreX`,
+  ];
+  for (const name of seeded) await fs.writeFile(path.join(dir, name), "2", "utf8");
+  await setActiveBuild({ featureId: cap.id, phase: "core" }, root);
+  const left = (await fs.readdir(dir)).sort();
+  assert(!left.includes(`${cap.slug}__core`), "R3: legacy phase counter deleted at build start");
+  assert(
+    !left.some((n) => n.startsWith(`${cap.slug}__core__`)),
+    "R3: every per-dispatch counter of the phase deleted at build start"
+  );
+  assert(
+    left.includes(`${cap.slug}__other`) && left.includes(`${cap.slug}__coreX`),
+    "R3: other phases' counters and prefix lookalikes survive"
+  );
 
   console.log("\nAll R1 Stop-gate assertions passed.");
   console.log(`Inspect the tmp project at: ${root}`);
