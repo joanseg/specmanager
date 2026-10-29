@@ -6,7 +6,7 @@
 
 As a non technical founder or product vibe coder you already have the builder — Claude Code. What you *don't* have is the rest of the team: the product manager who pins down the problem, the architect who fits it to your codebase, the planner who breaks it into shippable pieces, the reviewer who checks the work against the plan.
 
-SpecManager is that team. It gives you a set of specialised AI agents organised like an agile squad: the agents draft, **you** review, edit, and approve, and you decide what moves forward. It's **spec-driven development** you can actually see — a kanban board running on your own machine, one row per feature, one column per stage: **PRD → Architecture → (Design) → Plan → Build → Walkthroughs.**
+SpecManager is that team. It gives you a set of specialised AI agents organised like an agile squad: the agents draft, **you** review, edit, and approve, and you decide what moves forward. It's **spec-driven development** you can actually see — a kanban board running on your own machine, one row per feature, one column per stage: **PRD → Architecture → (Design) → Plan → Build → Walkthroughs**, plus a research rail before any feature exists.
 
 Everything the team produces is plain markdown saved inside your project, so it reads like documents, not code, and your version history keeps every draft. It runs entirely on your own machine — single-user, private, no login.
 
@@ -20,6 +20,7 @@ Everything the team produces is plain markdown saved inside your project, so it 
 
 Each role is its own specialised agent — not one mega-prompt wearing different hats:
 
+- **Researcher** *(optional)* — works before there's a feature to build: a short brief, market research, Docs (wireframes, one-pagers, presentations), a user-research plan and a marketing plan, then findings from your interviews and a strategy whose build list becomes features.
 - **Product manager** — drafts the PRD, and can run an optional pre-PRD interview that pulls the idea out of your head and stress-tests it before you write anything down.
 - **Architect** — reads your actual codebase (its structure, conventions, the pieces already there) before designing, so "we'll add X" always points at something real instead of a guess.
 - **Designer** *(optional)* — produces high-fidelity screen mockups grounded in a shared design system, so the look stays consistent across features.
@@ -34,11 +35,11 @@ The agents hand off to each other through approved documents, not a hidden share
 
 ## Good habits, built in
 
-The team comes with established product and engineering practice baked in — and when you have the matching Claude Code skills installed, the agents defer to them automatically (and work fine without them):
+The team comes with established product and engineering practice baked in — and when you have the matching Claude Code plugins installed, the agents defer to them automatically (and work fine without them). `/specmanager:specmanager-init` offers the ones you're missing:
 
 - **Sharper idea stress-testing** — the optional pre-PRD interview uses the [gstack office-hours](https://github.com/garrytan/gstack/tree/main/office-hours) forcing-question method to interrogate an idea *before* any PRD exists, like the cofounder who asks "who is actually desperate for this today?"
 - **Agile planning discipline** — a phase is defined as a working, testable increment; the planner defaults to a single phase and has to ask before splitting one. Tasks are scored, and anything too big must be broken down.
-- **Up-to-date library docs** — the architect (and only the architect, on demand) can look up real, version-current documentation for unfamiliar tools instead of relying on memory. No setup or key required.
+- **Up-to-date library docs** — init offers the `context7` plugin, which gives the writers and the builder current library docs instead of model memory. The architect also looks up an unfamiliar library's docs on demand. Without it, the agents fall back to what the model already knows.
 - **Visual taste** — the designer and builder defer to the official `frontend-design` skill when it's installed, layered on top of your design system, which stays the source of truth.
 - **Execution discipline** — the builder defers to Superpowers, when installed, for *how* it carries out each task.
 
