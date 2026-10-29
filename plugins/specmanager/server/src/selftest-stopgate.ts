@@ -1,9 +1,9 @@
-// R1 smoke test — the Stop-gate hook (hooks/stop-gate.sh) driven end-to-end with
-// the marker-first resolveActiveCard: no marker ⇒ no-op (the bug fix), an
-// explicit active-build marker pins the gate to one {featureId, phase}, exit 2
-// on a failing command / open tasks, the "none" marker skips the run, a
-// stale/finished marker auto-clears, and the N=3 iteration cap surfaces the
-// phase as blocked + exits 0.
+// Stop-gate smoke test — hooks/stop-gate.sh driven end-to-end with synthetic
+// SubagentStop JSON and fixture builder transcripts carrying a `Dispatch:` line:
+// no marker ⇒ pass, open dispatched tasks ⇒ exit 2, tests run only when the
+// phase is done, the "none" marker skips the run, the per-dispatch N=3 cap
+// blocks the one task and exits 0. Plus unit cases for core/dispatch.ts and
+// resolveGateCard.
 //
 // Usage: node dist/selftest-stopgate.js
 
@@ -48,9 +48,27 @@ const here = path.dirname(fileURLToPath(import.meta.url)); // .../server/dist
 const PLUGIN_ROOT = path.resolve(here, "..", ".."); // .../plugins/specmanager
 const HOOK = path.join(PLUGIN_ROOT, "hooks", "stop-gate.sh");
 
-function runHook(root: string, sessionId?: string): { code: number; stderr: string } {
+/** Builder transcript whose first user record carries `Dispatch: <dispatch>`. */
+async function dispatchTranscript(root: string, dispatch: string): Promise<string> {
+  const dir = path.join(root, "hook-transcripts");
+  await fs.mkdir(dir, { recursive: true });
+  const p = path.join(dir, `${dispatch.replace(/\W/g, "_")}.jsonl`);
+  await fs.writeFile(p, `${userRecord(`Dispatch: ${dispatch}\nBuild it.`)}\n`, "utf8");
+  return p;
+}
+
+/** Run the hook with a builder's SubagentStop JSON on stdin. */
+function runHook(root: string, transcript: string, sessionId?: string): { code: number; stderr: string } {
+  const input: GateHookInput = {
+    hook_event_name: "SubagentStop",
+    agent_type: "specmanager:builder",
+    agent_id: "a-hook",
+    last_assistant_message: "Done.",
+    agent_transcript_path: transcript,
+    ...(sessionId ? { session_id: sessionId } : {}),
+  };
   const r = spawnSync("bash", [HOOK], {
-    input: JSON.stringify(sessionId ? { session_id: sessionId } : {}),
+    input: JSON.stringify(input),
     env: { ...process.env, CLAUDE_PLUGIN_ROOT: PLUGIN_ROOT, SPECMANAGER_PROJECT_DIR: root },
     encoding: "utf8",
   });
@@ -349,10 +367,11 @@ async function main(): Promise<void> {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), "specmanager-stopgate-"));
   console.log(`tmp project: ${root}`);
   console.log(`hook: ${HOOK}`);
+  const counterDir = path.join(root, ".claude/specs/.cache/stop-gate");
+  const exists = (p: string) => fs.access(p).then(() => true, () => false);
 
-  // 1. No marker → no-op pass (exit 0) even with an unrelated open-task feature.
-  //    This is the exact shipped bug: a project-wide scan would lock onto this
-  //    feature and demand a build. The marker-first resolver returns null.
+  // 1. No marker → pass (exit 0, no stderr), even for a builder whose dispatched
+  //    task is open in an unrelated feature.
   await initProject(root);
   const unrelated = await createFeature("Unrelated feature", root);
   const unrelatedPlan = await createDocument(
@@ -365,14 +384,14 @@ async function main(): Promise<void> {
     root
   );
   await setStatus(unrelatedPlan.frontmatter.id, "approved", root);
-  await createTask({ featureId: unrelated.id, title: "U1", phase: "core", complexity: 2 }, root);
+  const u1 = await createTask({ featureId: unrelated.id, title: "U1", phase: "core", complexity: 2 }, root);
   await setPhaseMeta(unrelated.id, "core", { testCommand: "true", architectureRefs: [] }, root);
   assert((await readActiveBuild(root)) === null, "no active-build marker exists initially");
-  const noMarker = runHook(root);
-  assert(noMarker.code === 0, "no-op pass when no marker exists despite an unrelated open-task feature");
+  const noMarker = runHook(root, await dispatchTranscript(root, u1.id));
+  assert(noMarker.code === 0, "no-op pass when no marker exists despite an open dispatched task");
   assert(noMarker.stderr.trim() === "", "no-marker no-op writes no stderr");
 
-  // Set up the in-flight feature with an approved plan + one open core task.
+  // In-flight feature: approved plan, one open core task.
   const feature = await createFeature("Gate feature", root);
   const plan = await createDocument(
     {
@@ -385,117 +404,120 @@ async function main(): Promise<void> {
   );
   await setStatus(plan.frontmatter.id, "approved", root);
   const t1 = await createTask({ featureId: feature.id, title: "T1", phase: "core", complexity: 2 }, root);
+  const t1Transcript = await dispatchTranscript(root, t1.id);
 
-  // 2. Marker pins the gate. Passing command but open task → exit 2.
+  // 2. Passing command but the dispatched task open → exit 2 naming it.
   await setActiveBuild({ featureId: feature.id, phase: "core" }, root);
   await setPhaseMeta(feature.id, "core", { testCommand: "true", architectureRefs: [] }, root);
-  const openFail = runHook(root);
-  assert(openFail.code === 2, "exit 2 when the pinned phase has open tasks");
-  assert(openFail.stderr.includes("not done"), "stderr names the open task");
+  const openFail = runHook(root, t1Transcript);
+  assert(openFail.code === 2, "exit 2 when the dispatched task is open");
+  assert(openFail.stderr.includes(`not done: ${t1.id}`), "stderr names the open dispatched task");
+  assert(openFail.stderr.includes("attempt 1/3"), "stderr counts the attempt");
+  assert(
+    await exists(path.join(counterDir, `${feature.slug}__core__${t1.id}`)),
+    "the strike lands on the dispatch's own counter file"
+  );
 
   // 2b. Session scoping: a marker owned by session A never gates session B's
-  //     stop (no stderr, no counter bump); the owning session still gates.
+  //     builder (no stderr, no strike); the owning session still gates.
   await setActiveBuild({ featureId: feature.id, phase: "core", sessionId: "sess-A" }, root);
-  const other = runHook(root, "sess-B");
-  assert(other.code === 0, "another session's stop is a no-op pass");
-  assert(other.stderr.trim() === "", "another session's stop writes no stderr");
+  const other = runHook(root, t1Transcript, "sess-B");
+  assert(other.code === 0, "another session's builder stop is a no-op pass");
+  assert(other.stderr.trim() === "", "another session's builder stop writes no stderr");
   assert((await readActiveBuild(root))?.sessionId === "sess-A", "another session's stop leaves the marker intact");
-  const owner = runHook(root, "sess-A");
-  assert(owner.code === 2, "the owning session's stop still gates");
+  const owner = runHook(root, t1Transcript, "sess-A");
+  assert(owner.code === 2, "the owning session's builder stop still gates");
   // setActiveBuild reset the budget (R3), so attempt 1/3 proves sess-B spent nothing.
   assert(owner.stderr.includes("attempt 1/3"), "only the owning session consumed the retry budget");
-  await setActiveBuild({ featureId: feature.id, phase: "core" }, root);
-  // Restore the one-attempt budget the later cases expect.
-  await fs.writeFile(path.join(root, ".claude/specs/.cache/stop-gate", `${feature.slug}__core`), "1", "utf8");
 
-  // 3. Passing command + task done → false-in-flight guard clears the marker, exit 0.
+  // 3. Task done, phase otherwise done, passing command → exit 0. The pass
+  //    deletes only this dispatch's counter; the marker stays for the build
+  //    command to clear.
+  const otherKey = path.join(counterDir, `${feature.slug}__core__task-999`);
+  await fs.writeFile(otherKey, "2", "utf8");
   await updateTask({ id: t1.id, featureId: feature.id, status: "done", artifacts: { files: ["x.ts"] } }, root);
-  const pass = runHook(root);
-  assert(pass.code === 0, "exit 0 when command passes and all pinned-phase tasks done");
-  assert((await readActiveBuild(root)) === null, "finished phase auto-clears the marker (false-in-flight guard)");
+  const pass = runHook(root, t1Transcript, "sess-A");
+  assert(pass.code === 0, "exit 0 when the phase is done and its command passes");
+  assert(!(await exists(path.join(counterDir, `${feature.slug}__core__${t1.id}`))), "a pass deletes the dispatch's counter");
+  assert(await exists(otherKey), "a pass leaves other dispatches' counters");
+  assert((await readActiveBuild(root))?.featureId === feature.id, "the gate never clears the marker");
 
-  // 4. "none" marker → skip the run, verify criteria only. Re-pin the marker and
-  //    add a second open task so the phase is in flight again; none-marker must
-  //    not fabricate a test failure, but the open task still fails criteria.
+  // 4. "none" marker → never a test failure; an open dispatched task still gates.
   const t2 = await createTask({ featureId: feature.id, title: "T2", phase: "core", complexity: 1 }, root);
+  const t2Transcript = await dispatchTranscript(root, t2.id);
   await setActiveBuild({ featureId: feature.id, phase: "core" }, root);
   await setPhaseMeta(feature.id, "core", { testCommand: "none", architectureRefs: [] }, root);
-  const noneOpen = runHook(root);
-  assert(noneOpen.code === 2, "none-marker still fails on open tasks (criteria only)");
+  const noneOpen = runHook(root, t2Transcript);
+  assert(noneOpen.code === 2, "none-marker still fails on an open dispatched task");
   assert(!noneOpen.stderr.includes("tests failing"), "none-marker never reports a test failure");
 
-  // 4b. Clear-on-done: mark the task done + clearActiveBuild → next stop no-ops.
+  // 4b. "none" with the phase done → exit 0 (runTests true, nothing to run).
   await updateTask({ id: t2.id, featureId: feature.id, status: "done", artifacts: { files: ["y.ts"] } }, root);
+  const noneDone = runHook(root, t2Transcript);
+  assert(noneDone.code === 0 && noneDone.stderr.trim() === "", "none-marker + phase done → exit 0, no stderr");
+
+  // 4c. clear_active_build → the next builder stop passes.
   await clearActiveBuild(root);
-  const cleared = runHook(root);
-  assert(cleared.code === 0, "clear-on-done: no marker after clearActiveBuild → exit 0");
+  assert(runHook(root, t2Transcript).code === 0, "no marker after clearActiveBuild → exit 0");
 
-  // 4c. Stale-marker guard: pin a marker on a phase whose tasks are all done →
-  //     guard returns null, exit 0, and the marker is auto-cleared.
-  await setActiveBuild({ featureId: feature.id, phase: "core" }, root);
-  const stale = runHook(root);
-  assert(stale.code === 0, "stale marker (phase all done) → exit 0");
-  assert((await readActiveBuild(root)) === null, "stale marker auto-cleared after the guard fires");
-
-  // 5. Iteration cap: failing command + open task, pinned via its own marker.
+  // 5. Iteration cap: open task C1 among three, failing command (never run, the
+  //    phase is open). The third strike blocks C1 alone and exits 0.
   const cap = await createFeature("Cap feature", root);
   const capPlan = await createDocument(
     { featureId: cap.id, stage: "plan", title: "Cap plan", body: "# Plan\n\n## Phase core — x\n**Exit test:** n/a\n" },
     root
   );
   await setStatus(capPlan.frontmatter.id, "approved", root);
-  await createTask({ featureId: cap.id, title: "C1", phase: "core", complexity: 2 }, root);
-  // Pin the marker to the cap feature explicitly — resolution never scans.
-  await setActiveBuild({ featureId: cap.id, phase: "core" }, root);
-  await setPhaseMeta(cap.id, "core", { testCommand: "false", architectureRefs: [] }, root);
-
-  const a1 = runHook(root);
-  assert(a1.code === 2, "cap attempt 1 → exit 2");
-  const a2 = runHook(root);
-  assert(a2.code === 2, "cap attempt 2 → exit 2");
-  const a3 = runHook(root);
-  assert(a3.code === 0, "cap attempt 3 → exit 0 (blocked, no infinite loop)");
-  assert(a3.stderr.includes("BLOCKED"), "cap attempt 3 stderr announces BLOCKED");
-
-  const meta = await readTasksMeta(cap.id, root);
-  assert(typeof meta.blocked["core"] === "string", "blocked note recorded for the phase");
-
-  // Counter reset after cap: a fresh fail starts the budget over (exit 2 again).
-  // The cap phase still has its open task and the marker is still pinned.
-  const a4 = runHook(root);
-  assert(a4.code === 2, "counter reset after cap → next fail is exit 2 again");
-
-  // R4 shim: `<featureId> <phase> <taskId> <reason…>` blocks that one task only.
-  // Interim (until task-012 passes blockTaskId): the hook still sends the old
-  // `<featureId> <phase> <reason>` argv, so only the phase note is written.
-  const capTasks = (await listTasks(cap.id, root)).filter((x) => x.phase === "core");
-  assert(capTasks.every((x) => x.status !== "blocked"), "old argv blocks no task, phase note only");
+  const c1 = await createTask({ featureId: cap.id, title: "C1", phase: "core", complexity: 2 }, root);
   await createTask({ featureId: cap.id, title: "C2", phase: "core", complexity: 1 }, root);
   await createTask({ featureId: cap.id, title: "C3", phase: "core", complexity: 1 }, root);
-  const sb = runBlocker(root, [cap.id, "core", "task-002", "iteration cap (3) reached: tests failed"]);
-  assert(sb === 0, "set-phase-blocked with a task id exits 0");
-  const after = await listTasks(cap.id, root);
+  await setActiveBuild({ featureId: cap.id, phase: "core" }, root);
+  await setPhaseMeta(cap.id, "core", { testCommand: "false", architectureRefs: [] }, root);
+  const c1Transcript = await dispatchTranscript(root, c1.id);
+
+  const a1 = runHook(root, c1Transcript);
+  assert(a1.code === 2, "cap attempt 1 → exit 2");
+  assert(!a1.stderr.includes("tests failing"), "tests are not run while the dispatched task is open");
+  assert(runHook(root, c1Transcript).code === 2, "cap attempt 2 → exit 2");
+  const a3 = runHook(root, c1Transcript);
+  assert(a3.code === 0, "cap attempt 3 → exit 0 (the builder returns)");
+  assert(a3.stderr.includes(`${c1.id} BLOCKED`), "cap stderr names the one blocked task");
+  assert(a3.stderr.includes("resets the retry budget"), "cap stderr says a rebuild resets the budget");
+  const capTasks = (await listTasks(cap.id, root)).filter((x) => x.phase === "core");
+  assert(capTasks.map((x) => x.status).join(",") === "blocked,todo,todo", "cap blocks only the dispatched task");
+  const capNote = (await readTasksMeta(cap.id, root)).blocked["core"];
+  assert(capNote?.startsWith(`${c1.id}: iteration cap (3) reached`), "cap: meta.blocked note leads with the task id");
+  assert(!(await exists(path.join(counterDir, `${cap.slug}__core__${c1.id}`))), "cap clears the dispatch's counter");
+
+  // A blocked task counts as open, and the budget starts over.
+  const a4 = runHook(root, c1Transcript);
+  assert(a4.code === 2 && a4.stderr.includes("attempt 1/3"), "after the cap the next fail is attempt 1/3 again");
+
+  // The shim directly: a task id blocks that task only; anything else is refused.
+  await updateTask({ id: c1.id, featureId: cap.id, status: "todo" }, root);
+  assert(runBlocker(root, [cap.id, "core", "task-002", "iteration cap (3) reached: tests failed"]) === 0, "set-phase-blocked with a task id exits 0");
   assert(
-    after.map((x) => x.status).join(",") === "todo,blocked,todo",
+    (await listTasks(cap.id, root)).map((x) => x.status).join(",") === "todo,blocked,todo",
     "R4: only the named task is blocked; the others keep their status"
   );
-  const capMeta = await readTasksMeta(cap.id, root);
   assert(
-    capMeta.blocked["core"] === "task-002: iteration cap (3) reached: tests failed",
+    (await readTasksMeta(cap.id, root)).blocked["core"] === "task-002: iteration cap (3) reached: tests failed",
     "R4: meta.blocked note leads with the task id"
   );
   await updateTask({ id: "task-002", featureId: cap.id, status: "todo" }, root);
+  assert(runBlocker(root, [cap.id, "core", "iteration cap reached"]) === 1, "set-phase-blocked without a task id exits 1");
+  assert(
+    (await listTasks(cap.id, root)).every((x) => x.status === "todo") &&
+      (await readTasksMeta(cap.id, root)).blocked["core"]?.startsWith("task-002:"),
+    "set-phase-blocked without a task id writes nothing"
+  );
 
   // ── Absent-testCommand path (Q5) ────────────────────────────────────────────
-  // Every case above pins an explicit meta.testCommand. These two cover the
-  // opposite: a plan with no meta.phases entry at all (12 of 16 plans in this
-  // repo), where testCommand resolves to null. Rung 2 (the plan's **Exit test:**
-  // line) is the only fallback — the project-root probe ladder is deleted.
+  // A plan with no meta.phases entry: testCommand is null and the plan's
+  // **Exit test:** line is the only fallback, run once the phase is done.
 
-  // 6. No meta.phases + an exit test containing `npm ` → rung 2 runs it.
-  //    The command fails deterministically without shelling out to npm; the
-  //    `npm ` token is what makes rung 2 select the line, and the failure text
-  //    proves the selected line was actually executed.
+  // 6. Exit test containing `npm ` runs when the phase is done; its failure
+  //    gates with the test tail. `false` fails without shelling out to npm.
   const rung2 = await createFeature("Rung two feature", root);
   const rung2Plan = await createDocument(
     {
@@ -507,17 +529,16 @@ async function main(): Promise<void> {
     root
   );
   await setStatus(rung2Plan.frontmatter.id, "approved", root);
-  await createTask({ featureId: rung2.id, title: "R1", phase: "core", complexity: 2 }, root);
+  const r1 = await createTask({ featureId: rung2.id, title: "R1", phase: "core", complexity: 2 }, root);
   await setActiveBuild({ featureId: rung2.id, phase: "core" }, root);
-  const rung2Meta = await readTasksMeta(rung2.id, root);
-  assert(rung2Meta.phases["core"] === undefined, "rung-2 feature has no meta.phases entry (testCommand absent)");
-  const rung2Run = runHook(root);
-  assert(rung2Run.code === 2, "absent testCommand + runnable exit test → rung 2 runs it and its failure gates");
-  assert(rung2Run.stderr.includes("npm run build"), "stderr names the exit-test line rung 2 resolved");
+  assert((await readTasksMeta(rung2.id, root)).phases["core"] === undefined, "rung-2 feature has no meta.phases entry");
+  await updateTask({ id: r1.id, featureId: rung2.id, status: "done", artifacts: { files: ["r.ts"] } }, root);
+  const rung2Run = runHook(root, await dispatchTranscript(root, r1.id));
+  assert(rung2Run.code === 2, "phase done + runnable exit test → it runs and its failure gates");
+  assert(rung2Run.stderr.includes("tests failing") && rung2Run.stderr.includes("npm run build"), "stderr names the exit-test line that ran");
 
-  // 7. No meta.phases + a prose-only exit test → nothing runs, even with a
-  //    failing project-root `npm test` present (what the deleted probe would
-  //    have found). Criteria-only: open tasks gate, all-done exits 0.
+  // 7. A prose-only exit test never runs, even with a failing project-root
+  //    `npm test` present. Open tasks gate; a done phase exits 0.
   await fs.writeFile(
     path.join(root, "package.json"),
     JSON.stringify({ name: "probe-bait", scripts: { test: "exit 1" } }, null, 2),
@@ -535,16 +556,14 @@ async function main(): Promise<void> {
   );
   await setStatus(prosePlan.frontmatter.id, "approved", root);
   const p1 = await createTask({ featureId: prose.id, title: "P1", phase: "core", complexity: 2 }, root);
+  const p1Transcript = await dispatchTranscript(root, p1.id);
   await setActiveBuild({ featureId: prose.id, phase: "core" }, root);
-  const proseOpen = runHook(root);
-  assert(proseOpen.code === 2, "absent testCommand + prose exit test → open tasks still gate");
-  assert(
-    !proseOpen.stderr.includes("tests failing"),
-    "no command is inferred from a project-root package.json (probe ladder deleted)"
-  );
+  const proseOpen = runHook(root, p1Transcript);
+  assert(proseOpen.code === 2, "prose exit test → the open dispatched task still gates");
+  assert(!proseOpen.stderr.includes("tests failing"), "no command is inferred from a project-root package.json");
   await updateTask({ id: p1.id, featureId: prose.id, status: "done", artifacts: { files: ["p.ts"] } }, root);
-  const proseDone = runHook(root);
-  assert(proseDone.code === 0, "absent testCommand + prose exit test + all tasks done → exit 0");
+  const proseDone = runHook(root, p1Transcript);
+  assert(proseDone.code === 0, "prose exit test + phase done → exit 0");
   assert(proseDone.stderr.trim() === "", "criteria-only pass writes no stderr");
 
   // ── R3 core: setActiveBuild resets the phase's retry counters ──────────────
@@ -576,7 +595,7 @@ async function main(): Promise<void> {
   await gateCardPassCases(root);
   await gateCardFieldCases(root);
 
-  console.log("\nAll R1 Stop-gate assertions passed.");
+  console.log("\nAll Stop-gate assertions passed.");
   console.log(`Inspect the tmp project at: ${root}`);
 }
 

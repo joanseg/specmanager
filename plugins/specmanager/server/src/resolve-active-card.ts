@@ -3,12 +3,8 @@
 // GateCard as JSON, or the literal `null`. Never crashes: empty or garbage
 // stdin, or any internal error, prints `null` and exits 0. Resolves the project
 // root from SPECMANAGER_PROJECT_DIR ?? CLAUDE_PROJECT_DIR ?? cwd.
-//
-// Transitional: an argv[2] (the stopping session's id, possibly empty) selects
-// the legacy form, resolveActiveCard(root, sessionId), until the hook pipes the
-// hook JSON on stdin instead (task-012).
 
-import { resolveActiveCard, resolveGateCard, type GateHookInput } from "./core/index.js";
+import { resolveGateCard, type GateHookInput } from "./core/index.js";
 
 const root =
   process.env.SPECMANAGER_PROJECT_DIR ?? process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
@@ -30,7 +26,6 @@ function parseHook(raw: string): GateHookInput | null {
 }
 
 async function resolve(): Promise<unknown> {
-  if (process.argv.length > 2) return resolveActiveCard(root, process.argv[2] || null);
   const hook = parseHook(await readStdin());
   return hook ? resolveGateCard(hook, root) : null;
 }
