@@ -26,6 +26,9 @@ import {
   clearActiveBuild,
   readActiveBuild,
   stopGateDir,
+  parseDispatchLine,
+  readDispatchPrompt,
+  dispatchKey,
 } from "./core/index.js";
 
 function assert(cond: unknown, msg: string): asserts cond {
@@ -45,6 +48,83 @@ function runHook(root: string, sessionId?: string): { code: number; stderr: stri
     encoding: "utf8",
   });
   return { code: r.status ?? -1, stderr: r.stderr ?? "" };
+}
+
+/** First transcript record, shaped on a real Claude Code subagent transcript. */
+function userRecord(content: unknown): string {
+  return JSON.stringify({
+    parentUuid: null,
+    isSidechain: true,
+    agentId: "a5a6fee096b88fb8e",
+    type: "user",
+    message: { role: "user", content },
+    uuid: "3b0d3545-8abc-4cac-8968-fb362e17ac3f",
+  });
+}
+
+/** core/dispatch.ts: the `Dispatch:` line parser, transcript reader and counter key. */
+async function dispatchUnitCases(root: string): Promise<void> {
+  const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+
+  assert(
+    same(parseDispatchLine("Dispatch: task-007\nBuild it."), { taskIds: ["task-007"], bulk: false }),
+    "dispatch: single id parses"
+  );
+  assert(
+    same(parseDispatchLine("Dispatch: task-007,task-008 ,  task-007"), {
+      taskIds: ["task-007", "task-008"],
+      bulk: false,
+    }),
+    "dispatch: comma list parses, spaces optional, duplicates dropped"
+  );
+  assert(same(parseDispatchLine("Dispatch: bulk"), { taskIds: [], bulk: true }), "dispatch: bulk parses");
+  assert(
+    same(parseDispatchLine("Intro\nDispatch: nope here\nDispatch: task-002\nDispatch: task-003"), {
+      taskIds: ["task-002"],
+      bulk: false,
+    }),
+    "dispatch: first valid line wins, a malformed line is skipped"
+  );
+  assert(parseDispatchLine("Build task-007. Dispatch: task-007") === null, "dispatch: line must start the line");
+  assert(parseDispatchLine("Dispatch:") === null, "dispatch: empty value is null");
+  assert(parseDispatchLine("No line here") === null, "dispatch: absent line is null");
+
+  assert(dispatchKey({ taskIds: [], bulk: true }) === "bulk", "dispatchKey: bulk");
+  assert(dispatchKey({ taskIds: ["task-007"], bulk: false }) === "task-007", "dispatchKey: single id");
+  assert(
+    dispatchKey({ taskIds: ["task-008", "task-007"], bulk: false }) === "task-007+task-008",
+    "dispatchKey: ids sorted and +-joined"
+  );
+
+  const dir = path.join(root, "transcripts");
+  await fs.mkdir(dir, { recursive: true });
+  const write = async (name: string, body: string) => {
+    const p = path.join(dir, name);
+    await fs.writeFile(p, body, "utf8");
+    return p;
+  };
+  const later = JSON.stringify({ type: "user", message: { content: "Dispatch: task-999" } });
+
+  const str = await write("string.jsonl", `${userRecord("Dispatch: task-002\nProbe only.")}\n${later}\n`);
+  assert(
+    (await readDispatchPrompt(str)) === "Dispatch: task-002\nProbe only.",
+    "reader: string content, first user record only"
+  );
+  const blocks = await write(
+    "blocks.jsonl",
+    `${JSON.stringify({ type: "system" })}\n${userRecord([
+      { type: "text", text: "Dispatch: task-001, task-003" },
+      { type: "image", source: {} },
+      { type: "text", text: "Build them." },
+    ])}\n`
+  );
+  assert(
+    (await readDispatchPrompt(blocks)) === "Dispatch: task-001, task-003\nBuild them.",
+    "reader: array of text blocks joined, non-user records skipped"
+  );
+  assert((await readDispatchPrompt(path.join(dir, "missing.jsonl"))) === null, "reader: missing file is null");
+  assert((await readDispatchPrompt(await write("empty.jsonl", ""))) === null, "reader: empty file is null");
+  assert((await readDispatchPrompt(await write("bad.jsonl", "{not json\n"))) === null, "reader: bad JSON is null");
 }
 
 async function main(): Promise<void> {
@@ -252,6 +332,8 @@ async function main(): Promise<void> {
     left.includes(`${cap.slug}__other`) && left.includes(`${cap.slug}__coreX`),
     "R3: other phases' counters and prefix lookalikes survive"
   );
+
+  await dispatchUnitCases(root);
 
   console.log("\nAll R1 Stop-gate assertions passed.");
   console.log(`Inspect the tmp project at: ${root}`);

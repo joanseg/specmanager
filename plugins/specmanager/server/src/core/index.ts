@@ -13,6 +13,7 @@ export * from "./phases.js";
 export * from "./spec-slice.js";
 export * from "./active-card.js";
 export * from "./active-build.js";
+export * from "./dispatch.js";
 export * from "./tiers.js";
 export * from "./shipped.js";
 export * from "./phase-completion.js";
