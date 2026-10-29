@@ -491,7 +491,7 @@ server.registerTool(
     title: "Resolve the active build card",
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description:
-      "Resolve the active card deterministically: the feature with open plan tasks, its active phase (first phase not all-done), and that phase's verification target (meta.testCommand primary, plan.md **Exit test:** line fallback) + architectureRefs + open task ids. Returns null when nothing is in flight. Used by the Stop-gate hook.",
+      "Resolve the active card deterministically: the feature with open plan tasks, its active phase (first phase not all-done), and that phase's verification target (meta.testCommand primary, plan.md **Exit test:** line fallback) + architectureRefs + open task ids. Returns null when nothing is in flight. A read-only view of the pinned phase; the Stop-gate itself judges a finishing `specmanager:builder` (SubagentStop) by the `Dispatch:` line of that builder's prompt, via the resolve-active-card CLI.",
     inputSchema: z.object({}),
   },
   async () => ok(await resolveActiveCard(PROJECT_DIR))
@@ -503,7 +503,7 @@ server.registerTool(
     title: "Mark a build as active",
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description:
-      "Write the active-build marker (.cache/active-build.json) pinning the Stop-gate to one {featureId, phase}. Called by /specmanager-build when a phase starts. sessionId is filled from the env (CLAUDE_CODE_SESSION_ID) so the gate only fires for this session.",
+      "Arm the builder gate: write the active-build marker (.cache/active-build.json) pinning the Stop-gate to one {featureId, phase}, and reset that phase's retry budget (deletes its stop-gate counters). The gate then judges each `specmanager:builder` when it completes (SubagentStop), using the `Dispatch:` line of that builder's prompt; the chat's own stops are never gated. Called by /specmanager-build when a phase starts. sessionId is filled from the env (CLAUDE_CODE_SESSION_ID) so the gate only fires for this session.",
     inputSchema: z.object({ featureId: z.string(), phase: z.string() }),
   },
   async ({ featureId, phase }) => {
@@ -523,7 +523,7 @@ server.registerTool(
     title: "Clear the active build marker",
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description:
-      "Delete the active-build marker (idempotent). Called by /specmanager-build on every terminal path (phase done or blocked) so the next Stop is a no-op.",
+      "Delete the active-build marker (idempotent). Called by /specmanager-build on every terminal path (phase done or blocked) so the next builder stop is a no-op.",
     inputSchema: z.object({}),
   },
   async () => {
