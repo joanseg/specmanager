@@ -4,7 +4,8 @@
 // phase is done, the "none" marker skips the run, the per-dispatch N=3 cap
 // blocks the one task and exits 0; R1 cases (ignored events, naming, transcript
 // shapes, per-dispatch counters, NEEDS_HUMAN:); R2 cases (a side-effect file proves
-// the test command runs only once the phase is done). Plus unit cases for core/dispatch.ts and
+// the test command runs only once the phase is done); R3/R4 cases (a rebuild resets
+// seeded counters, multi-id and bulk caps block exactly one task). Plus unit cases for core/dispatch.ts and
 // resolveGateCard.
 //
 // Usage: node dist/selftest-stopgate.js
@@ -233,6 +234,82 @@ async function r2HookCases(root: string): Promise<void> {
     !(await fs.access(path.join(stopGateDir(root), `${feature.slug}__core__${b.id}`)).then(() => true, () => false)),
     "R2: the green run clears the dispatch's counter"
   );
+  await clearActiveBuild(root);
+}
+
+/** A 3-task `core` phase with an approved plan, armed for the gate. */
+async function armedPhase(root: string, title: string, testCommand: string) {
+  const feature = await createFeature(title, root);
+  const plan = await createDocument(
+    { featureId: feature.id, stage: "plan", title: `${title} plan`, body: "# Plan\n\n## Phase core — x\n**Exit test:** n/a\n" },
+    root
+  );
+  await setStatus(plan.frontmatter.id, "approved", root);
+  const make = async (title: string) => (await createTask({ featureId: feature.id, title, phase: "core", complexity: 1 }, root)).id;
+  const ids: [string, string, string] = [await make("A"), await make("B"), await make("C")];
+  await setPhaseMeta(feature.id, "core", { testCommand, architectureRefs: [] }, root);
+  await setActiveBuild({ featureId: feature.id, phase: "core" }, root);
+  const statuses = async () => (await listTasks(feature.id, root)).filter((x) => x.phase === "core").map((x) => x.status).join(",");
+  const counter = (key: string) => path.join(stopGateDir(root), `${feature.slug}__core__${key}`);
+  return { feature, ids, statuses, counter };
+}
+
+/** R3/R4 hook-level cases: a rebuild resets seeded budgets; the cap blocks exactly one task. */
+async function r3r4HookCases(root: string): Promise<void> {
+  const exists = (p: string) => fs.access(p).then(() => true, () => false);
+  const tick = () => new Promise((r) => setTimeout(r, 5));
+
+  // R3: seeded legacy + per-dispatch counters at 2 are gone after a rebuild; the next fail is 1/3.
+  const r3 = await armedPhase(root, "R3 hook feature", "false");
+  const [a3] = r3.ids;
+  const dir = stopGateDir(root);
+  const legacy = path.join(dir, `${r3.feature.slug}__core`);
+  await fs.writeFile(legacy, "2", "utf8");
+  await fs.writeFile(r3.counter(a3), "2", "utf8");
+  await setActiveBuild({ featureId: r3.feature.id, phase: "core" }, root);
+  assert(!(await exists(legacy)) && !(await exists(r3.counter(a3))), "R3: seeded legacy and per-dispatch counters gone after a rebuild");
+  const fresh = runHook(root, await dispatchTranscript(root, a3));
+  assert(fresh.code === 2 && fresh.stderr.includes("attempt 1/3"), "R3: the next hook fail after a rebuild reads attempt 1/3");
+  assert((await fs.readFile(r3.counter(a3), "utf8")) === "1", "R3: the seeded 2 did not carry over");
+
+  // R4 multi-id, the architecture case: task-002 in_progress ⇒ only task-002 blocked.
+  const mi = await armedPhase(root, "R4 multi in-progress feature", "false");
+  const [m1, m2] = mi.ids;
+  await updateTask({ id: m2, featureId: mi.feature.id, status: "in_progress" }, root);
+  const miT = await dispatchTranscript(root, `${m1}, ${m2}`);
+  for (let i = 0; i < 3; i++) runHook(root, miT);
+  assert((await mi.statuses()) === "todo,blocked,todo", `R4: Dispatch: ${m1}, ${m2} with ${m2} in_progress blocks only ${m2}`);
+  assert((await readTasksMeta(mi.feature.id, root)).blocked["core"]?.startsWith(`${m2}:`), "R4: multi-id note leads with the blocked id");
+
+  // R4 multi-id, both todo, listed out of order: the first match in tasks.json order is blocked.
+  const mo = await armedPhase(root, "R4 multi order feature", "false");
+  const [o1, o2] = mo.ids;
+  const bystander = mo.counter("task-009");
+  await fs.writeFile(bystander, "1", "utf8");
+  const moT = await dispatchTranscript(root, `${o2}, ${o1}`);
+  runHook(root, moT);
+  runHook(root, moT);
+  const capped = runHook(root, moT);
+  assert(capped.code === 0 && capped.stderr.includes(`${o1} BLOCKED`), "R4: multi-id cap exits 0 naming the first id in tasks.json order");
+  assert((await mo.statuses()) === "blocked,todo,todo", `R4: only ${o1} blocked; ${o2} stays open (todo)`);
+  assert(!(await exists(mo.counter(`${o1}+${o2}`))), "R4: the cap clears the multi-id dispatch's counter");
+  assert((await fs.readFile(bystander, "utf8")) === "1", "R4: another builder's counter is unaffected by the block");
+
+  // R4 bulk, all done, red tests ⇒ only the latest-updated task blocked.
+  const bk = await armedPhase(root, "R4 bulk feature", "echo BULK-RED; exit 1");
+  const [k1, k2, k3] = bk.ids;
+  for (const id of [k1, k3, k2]) {
+    await tick();
+    await updateTask({ id, featureId: bk.feature.id, status: "done", artifacts: { files: [`${id}.ts`] } }, root);
+  }
+  const bkT = await dispatchTranscript(root, "bulk");
+  const red = runHook(root, bkT);
+  assert(red.code === 2 && red.stderr.includes("BULK-RED"), "R4: bulk, all done, red tests → exit 2 with the tail");
+  runHook(root, bkT);
+  const bulkCap = runHook(root, bkT);
+  assert(bulkCap.code === 0 && bulkCap.stderr.includes(`${k2} BLOCKED`), "R4: bulk cap names the latest-updated task");
+  assert((await bk.statuses()) === "done,blocked,done", `R4: bulk cap blocks only ${k2}; the others stay done`);
+  assert(!(await exists(bk.counter("bulk"))), "R4: the bulk cap clears the bulk counter");
   await clearActiveBuild(root);
 }
 
@@ -720,6 +797,7 @@ async function main(): Promise<void> {
 
   await r1HookCases(root);
   await r2HookCases(root);
+  await r3r4HookCases(root);
   await dispatchUnitCases(root);
   await gateCardPassCases(root);
   await gateCardFieldCases(root);
