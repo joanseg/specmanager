@@ -84,6 +84,55 @@ That's it — no build step. The compiled server and UI are committed, and Claud
 
 ---
 
+## Set up with init
+
+`/specmanager:specmanager-init` is safe to run again: it only adds what's missing and never touches your text outside its markers. It:
+
+1. **Writes the managed files** — `.claude/specs/` (with `manifest.json`, the board's index), a managed block in `CLAUDE.md`, and `docs/DESIGN.md`, a design-system spec inferred from your UI source.
+2. **Offers the recommended plugins** you don't have yet.
+3. **Asks about other repos** your project works with.
+4. **Runs Claude Code's own `/init`** to fill in the general codebase docs in `CLAUDE.md`, outside SpecManager's markers.
+
+### Recommended plugins
+
+Init checks which of these you already have and offers the missing ones in one question. It installs only what you pick, one at a time. When it can't ask you (a headless run), it installs nothing and prints the install commands instead. After an install, run `/reload-plugins`.
+
+| Plugin | Used by | What it adds | Without it |
+|---|---|---|---|
+| `superpowers` | builder | test-first work, systematic debugging and a two-stage review | a plain build loop |
+| `frontend-design` | designer, builder on UI tasks | visual judgement, still grounded in `docs/DESIGN.md` | `docs/DESIGN.md` only |
+| `context7` | all writers and the builder | current library docs | model memory only |
+| `playwright` | reviewer, on web UI | a browser to walk the happy path | the reviewer judges from the diff |
+
+All four come from `claude-plugins-official`. If your session already has Chrome DevTools tools (`mcp__chrome-devtools__*`), playwright counts as installed — init never suggests both.
+
+### Working across several repos
+
+The layout is flexible. This is the ideal case: one folder named for your project, a specs repo inside it where you run Claude Code and SpecManager, and your product repos beside it.
+
+```text
+<project>/
+├── <project>-specs/     # run Claude Code and SpecManager here
+│                        # CLAUDE.md, docs/, .claude/specs/features/…
+├── backend/
+├── frontend/
+└── another-repo/
+../external-repo/        # a repo outside the project folder
+```
+
+From `<project>-specs/`, pass init the other repos' paths. Use absolute paths: a relative one resolves against the SpecManager server's working directory, which may not be the folder you typed it in.
+
+```text
+/specmanager:specmanager-init /path/to/<project>/backend /path/to/<project>/frontend /path/to/<project>/another-repo /path/to/external-repo
+```
+
+- **The paths are the read grant.** SpecManager reads only those repos' `CLAUDE.md` and `DESIGN.md`, and writes nothing into them. Every write stays inside the specs repo.
+- **A mirror per repo.** Each repo gets `repos/<name>/` in the specs repo, named after its folder: its `CLAUDE.md` with a read-only banner (or a stub), its `DESIGN.md` (or a placeholder when it has no UI), and `.specmanager-repo.json`, which records where it came from relative to `<project>/` — `backend`, or `../external-repo`. The managed `CLAUDE.md` block links each one.
+- **Re-run to add more.** New paths are added and existing mirrors are kept byte-for-byte, so your notes in them survive. A folder name that clashes with a repo declared from somewhere else is reported and skipped. Run init with no paths and it lists the repos already declared and asks whether to add others.
+- **Say where work lands.** Describe each repo and its working branch in the specs repo's `CLAUDE.md`, outside SpecManager's markers, so every session starts from it.
+
+---
+
 ## The workflow
 
 Each **feature** is a row on the board that flows left to right through the lifecycle. You drive it with slash commands; Claude does the drafting via dedicated subagents, and you approve each stage in the board before the next unlocks.
