@@ -56,6 +56,18 @@ function runHook(root: string, sessionId?: string): { code: number; stderr: stri
   return { code: r.status ?? -1, stderr: r.stderr ?? "" };
 }
 
+const RESOLVER = path.join(here, "resolve-active-card.js");
+
+/** Run the resolver CLI with `input` on stdin. */
+function runResolver(root: string, input: string): { code: number; stdout: string } {
+  const r = spawnSync(process.execPath, [RESOLVER], {
+    input,
+    env: { ...process.env, SPECMANAGER_PROJECT_DIR: root },
+    encoding: "utf8",
+  });
+  return { code: r.status ?? -1, stdout: r.stdout ?? "" };
+}
+
 /** First transcript record, shaped on a real Claude Code subagent transcript. */
 function userRecord(content: unknown): string {
   return JSON.stringify({
@@ -233,6 +245,18 @@ async function gateCardPassCases(root: string): Promise<void> {
   assert(
     (await resolveGateCard(hook({ agent_transcript_path: earlier }), root)) !== null,
     "gate card: an earlier NEEDS_HUMAN: text in the transcript does not pass"
+  );
+
+  // The CLI (plan 2.6): stdin = hook JSON, stdout = GateCard JSON or `null`, never a crash.
+  for (const [input, label] of [["", "empty"], ["{not json", "garbage"], ["[1]", "non-object"]] as const) {
+    const r = runResolver(root, input);
+    assert(r.code === 0 && r.stdout === "null", `CLI: ${label} stdin prints null, exit 0`);
+  }
+  const cli = runResolver(root, JSON.stringify(hook()));
+  const cliCard = JSON.parse(cli.stdout) as { featureId?: string; gatedTaskIds?: string[] } | null;
+  assert(
+    cli.code === 0 && cliCard?.featureId === feature.id && cliCard.gatedTaskIds?.[0] === k1.id,
+    "CLI: a valid builder hook JSON prints the gate card"
   );
 
   await setActiveBuild({ featureId: "feat-deleted", phase: "core", sessionId: "sess-G" }, root);
