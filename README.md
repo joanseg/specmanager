@@ -54,6 +54,7 @@ The team comes with established product and engineering practice baked in — an
 
 ## Quick start
 
+<!-- specmanager:install:start -->
 ```text
 # 1. Add the marketplace (from GitHub)
 /plugin marketplace add joanseg/specmanager
@@ -61,25 +62,25 @@ The team comes with established product and engineering practice baked in — an
 # 2. Install
 /plugin install specmanager@specmanager
 
-# 3. Reload plugins
-/reload-plugins
+# 3. Restart Claude Code: quit and reopen it, or reload your IDE window
 
-# 4. Reconnect MCP server
-/mcp       ## If plugin:specmanager:specmanager ✘ failed select and click enter to reconnect
-
-# 5. In your project, scaffold SpecManager and open the board
+# 4. In your project, set up SpecManager (it offers recommended plugins and asks about other repos) and open the board
 /specmanager:specmanager-init
 /specmanager:specmanager-board
 
-# 6. Kick off the first feature or MVP
-/specmanager:specmanager-interview about a CRM to manage sales pipeline in my company
+# 5. Take your first idea to an approved Plan
+/specmanager:specmanager-loop <idea>
 ```
+<!-- specmanager:install:end -->
+
+Prefer to go one stage at a time? Start with `/specmanager:specmanager-interview <idea>` or `/specmanager:specmanager-prd "<title>"` instead of the loop.
+
 Example of a Specmanager board:
 ![Specmanager board](assets/Specmanager-board.png)
 
 That's it — no build step. The compiled server and UI are committed, and Claude Code installs the plugin's runtime dependencies when it installs the plugin.
 
-**Requirements:** Node 20+ and Claude Code. The board runs at `http://127.0.0.1:4317` (change the port in the plugin's user config).
+**Requirements:** Node 20+ and Claude Code. The board runs at `http://127.0.0.1:4317`, or the next free port if that one is taken (change the preferred port in the plugin's user config).
 
 ---
 
