@@ -43,6 +43,15 @@ The team comes with established product and engineering practice baked in — an
 - **Visual taste** — the designer and builder defer to the official `frontend-design` skill when it's installed, layered on top of your design system, which stays the source of truth.
 - **Execution discipline** — the builder defers to Superpowers, when installed, for *how* it carries out each task.
 
+## What's new since 1.0.3
+
+- **The spec loop** — `/specmanager:specmanager-loop` takes a one-line idea to an approved Plan in one run, and stops before Build. [More](#the-spec-loop)
+- **A builder gate per task** — the gate now judges each builder as it finishes, checks only the tasks that builder was given, and blocks only the one that keeps failing. It never gates your chat. [More](#the-builder-gate)
+- **A build that asks first** — build confirms a git strategy, asks for any human prerequisites, and pauses when a builder needs you. [More](#the-builder-loop)
+- **A reviewer that checks the UI** — when a phase changes a screen, the reviewer drives its happy path before passing it. [More](#the-builder-loop)
+- **Research** — studies, a Researcher mode on the board, `/specmanager:specmanager-research` and `/specmanager:specmanager-research-loop`, and a handoff that turns a strategy's build list into features. [More](#research)
+- **Init helps you set up** — it offers four recommended plugins and asks which other repos your project works with. [More](#set-up-with-init)
+
 ## Quick start
 
 ```text
