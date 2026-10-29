@@ -1,9 +1,10 @@
 import { z } from "zod";
 export const STAGE = z.enum(["prd", "architecture", "design", "plan", "walkthrough"]);
 export const DOC_STATUS = z.enum(["draft", "approved"]);
-// `blocked` (R1 AC2 / R3 AC5): the Stop-gate iteration cap flips a phase's open
-// tasks to `blocked` so the board surfaces a first-class state. Remediation:
-// re-enter the phase (counter resets) and rebuild — that clears the block.
+// `blocked`: at the Stop-gate iteration cap, only the one failing task of the
+// stopping builder's dispatch is set `blocked` (R4); every other task keeps its
+// status. Remediation: rebuild — `set_active_build` resets the retry budget and
+// the builder re-marks the task in_progress.
 export const TASK_STATUS = z.enum(["todo", "in_progress", "done", "blocked"]);
 // Fibonacci scale. Anything ≥5 must be split before persisting — the planner
 // agent self-checks, and create_task / update_task reject as a backstop.

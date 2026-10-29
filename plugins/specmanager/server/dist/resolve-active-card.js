@@ -1,17 +1,35 @@
 #!/usr/bin/env node
-// Tiny CLI shim for the Stop-gate hook: prints the active card as JSON (or the
-// literal `null`) so discovery stays in TS/core, not bash heuristics. Resolves
-// the project root from SPECMANAGER_PROJECT_DIR ?? CLAUDE_PROJECT_DIR ?? cwd.
-// Optional argv[2] is the stopping session's id (scopes the gate to its build).
-import { resolveActiveCard } from "./core/index.js";
+// CLI shim for the Stop-gate hook: reads the hook JSON on stdin and prints the
+// GateCard as JSON, or the literal `null`. Never crashes: empty or garbage
+// stdin, or any internal error, prints `null` and exits 0. Resolves the project
+// root from SPECMANAGER_PROJECT_DIR ?? CLAUDE_PROJECT_DIR ?? cwd.
+import { resolveGateCard } from "./core/index.js";
 const root = process.env.SPECMANAGER_PROJECT_DIR ?? process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
-const sessionId = process.argv[2] || null;
-resolveActiveCard(root, sessionId)
+async function readStdin() {
+    let s = "";
+    for await (const chunk of process.stdin)
+        s += chunk;
+    return s;
+}
+/** The hook JSON, or null when stdin is not a JSON object. */
+function parseHook(raw) {
+    try {
+        const v = JSON.parse(raw);
+        return v && typeof v === "object" && !Array.isArray(v) ? v : null;
+    }
+    catch {
+        return null;
+    }
+}
+async function resolve() {
+    const hook = parseHook(await readStdin());
+    return hook ? resolveGateCard(hook, root) : null;
+}
+resolve()
     .then((card) => {
-    process.stdout.write(JSON.stringify(card));
+    process.stdout.write(JSON.stringify(card ?? null));
 })
     .catch((err) => {
-    // Never crash the hook: print null so the gate is a no-op pass.
     process.stderr.write(`resolve-active-card: ${err.message}\n`);
     process.stdout.write("null");
 });
