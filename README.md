@@ -1,5 +1,7 @@
 # SpecManager
 
+[![Listed on ClaudePluginHub](https://www.claudepluginhub.com/badge/joanseg-specmanager-plugins-specmanager)](https://www.claudepluginhub.com/plugins/joanseg-specmanager-plugins-specmanager?ref=badge)
+
 **Your AI product team, as a Claude Code plugin.**
 
 As a non technical founder or product vibe coder you already have the builder — Claude Code. What you *don't* have is the rest of the team: the product manager who pins down the problem, the architect who fits it to your codebase, the planner who breaks it into shippable pieces, the reviewer who checks the work against the plan.
