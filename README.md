@@ -199,6 +199,28 @@ Gates are enforced in shared code, not in prompts — Claude **cannot** draft a 
 
 It's the only command that approves anything, and it still goes through every gate: a closed gate or a failed draft stops it, and nothing is approved after a failure. Docs you've already approved are reused, and it never overwrites a draft you wrote. Pass an existing feature's slug first to continue that feature.
 
+## The builder loop
+
+`/specmanager:specmanager-build <feature> next` builds one phase and stops at its boundary, so you check the work before the next one. In order, it:
+
+1. **Checks the Plan is approved** and that earlier phases are done (`--force` skips the order check).
+2. **Confirms a git strategy** — from your branches and history it proposes a base branch, a working branch, one commit per task and no pushing. Nothing is branched or committed until you answer, and it never commits to your base branch.
+3. **Asks for human prerequisites** the phase needs, such as an API key or a test account — now, or when a task actually needs them. Your answers stay in the session, never on disk.
+4. **Dispatches one builder per task**, at a model picked by the task's score: 1–2 → `sonnet`, 3 → `opus` (you can remap it). Tasks whose dependencies are done can run in parallel. `--bulk` builds the whole phase in one builder instead. A transient overload (`529`) is retried twice.
+5. **Gates every builder** as it finishes — see [The builder gate](#the-builder-gate).
+6. **Pauses when a builder needs you.** A builder that replies `NEEDS_HUMAN: …` hasn't failed: build asks you, then runs the same task again.
+7. **Runs the read-only reviewer** once every task is done. It checks the phase against the plan and the Architecture, and drives the happy path when the phase changes a UI (a browser on web, the simulator on iOS, `adb` on Android). On a fail, a fix goes to a builder one tier higher; a fail that persists at the top tier marks the phase blocked.
+8. **Drafts the walkthrough** of what was built, including what happened along the way, then offers to re-sync `CLAUDE.md` and `docs/DESIGN.md`.
+
+### The builder gate
+
+A `SubagentStop` hook — plain bash, no model calls — judges each builder as it finishes:
+
+- Every builder prompt starts with a `Dispatch:` line naming its tasks (`Dispatch: task-007`). The gate checks only those tasks are done.
+- The phase's tests run only when no task in the phase is left open.
+- A builder that fails is told what's left and keeps working. After **3** fails in one dispatch, only that task is marked `blocked`; the others stay open and the phase stops for you. Running build on the phase again resets the count.
+- It runs only when a `specmanager:builder` finishes during a build this session started. Your chat is never gated, so you can stop and ask anything mid-build.
+
 ---
 
 ## The board
