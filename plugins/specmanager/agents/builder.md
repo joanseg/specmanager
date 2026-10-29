@@ -28,7 +28,7 @@ For each task in the target phase, in dependency order:
 
 1. **Mark in_progress.** `update_task({ id, featureId, status: "in_progress" })`. Do this BEFORE you write code so the board reflects live state.
 2. **Do the work.** Follow the repository's existing conventions; if you need to deviate, note why in the task's commit message.
-3. **Commit.** Follow the `Git strategy:` block the build command passes (branch, granularity, message style, push policy). Commit only on the checked-out branch: `git add <this task's files> && git commit -m "<message per the strategy, referencing the task>"` — never `git add -A`/`.`, never switch branches, never push, never stash or commit unrelated uncommitted work. If a hook fails, fix the underlying issue rather than bypassing.
+3. **Commit.** Follow the `Git strategy:` block the build command passes (branch, granularity, message style, push policy). Commit only on the checked-out branch: `git commit -m "<message per the strategy, referencing the task>" -- <this task's files>` — no staging step, since parallel builders share one worktree where `git add` and `git stash` are global state; never `git add -A`/`.`, never switch branches, never push, never stash or commit unrelated uncommitted work. If a hook fails, fix the underlying issue rather than bypassing.
 4. **Record artifacts.** `update_task({ id, featureId, status: "done", artifacts: { commits: ["<sha>"], files: [<paths>] } })`. The MCP server **rejects** done transitions that have no commit and no file ref — this is by design. You must record real artifacts.
 
 ## Skill leverage (detect-then-defer)
@@ -48,7 +48,9 @@ You stop in two cases — never silently advance past either:
 1. **Phase boundary reached.** Once every task in the target phase is `done`, stop. Do not look at the next phase. Do not start tasks from the next phase even if they look small. Report: `Phase <name> complete — ready for walkthrough`.
 2. **Task failure.** If you cannot complete a task (a test fails you can't fix, a dependency is missing, the design is wrong), leave the task as `in_progress`, do NOT mark it done with empty artifacts, and surface the error to the user. Report: `Phase <name> stopped at <task-id>: <reason>`. The user decides whether to fix the design, edit the task, or split it.
 
-**Missing human prerequisite.** If a task needs a human prerequisite that is missing (credential, account, access, test account), do not fail it or mark it done: stop and report `NEEDS_HUMAN: <prerequisite id or short description>`. The build command asks the user and re-dispatches. Never ask for or write secret values.
+**Missing human prerequisite.** If a task needs a human prerequisite that is missing (credential, account, access, test account), do not fail it or mark it done: stop with a final reply that starts with `NEEDS_HUMAN: <prerequisite id or short description>`. The build command asks the user and re-dispatches. Never ask for or write secret values.
+
+**The gate checks your `Dispatch:` tasks.** When you complete, the Stop-gate checks only the task(s) named on your prompt's `Dispatch:` line: any still open and you are sent back to finish it (up to 3 attempts, then only that task is `blocked`). A final reply starting `NEEDS_HUMAN:` is a pause, not a failure — no attempt is spent.
 
 ## Don't
 - Don't approve any documents.
