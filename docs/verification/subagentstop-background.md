@@ -134,3 +134,28 @@ Treat the transcript as covering earlier messages only; do not count on it for t
 final message. Before the gate phase ships, re-run this probe on a CLI with
 `SubagentHandback` with a builder that hands back `NEEDS_HUMAN: probe`, and record where the
 marker shows up.
+
+## SubagentHandback (CLI 2.1.310)
+
+Run 2026-10-29 for plan row 2.4, CLI 2.1.310 (the VS Code extension's bundled binary, put
+first on `PATH` for the run), sonnet, $0.165. The probe ran from a scratch copy whose only
+changes were `REPO` fixed to this checkout and a one-builder prompt: one foreground
+`specmanager:builder` with `Dispatch: task-001`, told to call `SubagentHandback` with
+`NEEDS_HUMAN: probe`, or to reply with that text if it has no such tool.
+
+- **The builder has no `SubagentHandback` tool.** Its tool list on 2.1.310 headless was
+  `Bash`, `Edit`, `Read`, `Write`, `Skill`, `advisor` and the seven `specmanager` MCP tools.
+  It replied in plain text.
+- **The text lands in `last_assistant_message`:** `"last_assistant_message":"NEEDS_HUMAN: probe"`.
+- **Not in the transcript at hook time:** 1 `user`, 9 `attachment`, 1 `api-request-shape`,
+  2 `api-request-blob`, 1 `api-request` and no `assistant` record. After the session, one
+  `assistant` record held the text `NEEDS_HUMAN: probe`. This matches the 2.1.285 finding.
+- 2.1.310 adds `api-request*` records to the agent transcript. The first record is still
+  `type: "user"` with string content starting `Dispatch: task-001`.
+
+Gap: how a real `SubagentHandback` call shows up in the hook input is still unverified,
+because a plugin builder run by the CLI doesn't get that tool. The resolver detects
+`NEEDS_HUMAN:` at the start of `last_assistant_message` (proven above), and falls back to
+the `message` of any `SubagentHandback` tool_use in the agent transcript. That call ends the
+run, so it can only be the final report. Earlier assistant text in the transcript does not
+count.
