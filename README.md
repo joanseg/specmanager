@@ -186,6 +186,21 @@ Gates are enforced in shared code, not in prompts — Claude **cannot** draft a 
 
 ---
 
+## The spec loop
+
+`/specmanager:specmanager-loop <idea>` takes a one-line intent to an approved Plan in one run:
+
+1. **Says what it will do** before writing anything — including that it approves each stage's document for you.
+2. **Asks a few questions** — at most two rounds of up to four, each with a recommended answer and a "decide for me" option. It always asks whether the feature has screens. If the feature already has an interview, it asks only what that leaves open.
+3. **Drafts each stage through its own agent** — PRD, Architecture, Design (only when the feature has screens), Plan — checking the gate first and **approving each document as it lands**.
+4. **Reviews across the documents** in one pass: contradictions, requirements dropped or invented between PRD, Architecture and Plan, tasks that don't match the plan, length caps and drift from your original intent. It fixes what's clear-cut.
+5. **Asks what's still open** and folds your answers into the documents. Questions you skip stay in each doc's Open questions.
+6. **Stops before Build** and reports each document and the next command, `/specmanager:specmanager-build <slug> next`.
+
+It's the only command that approves anything, and it still goes through every gate: a closed gate or a failed draft stops it, and nothing is approved after a failure. Docs you've already approved are reused, and it never overwrites a draft you wrote. Pass an existing feature's slug first to continue that feature.
+
+---
+
 ## The board
 
 `/specmanager:specmanager-board` opens a grid: **one row per feature, one column per stage** (PRD · Architecture · Design · Plan · Build · Walkthroughs). It updates live over websockets as Claude writes docs or you edit them.
