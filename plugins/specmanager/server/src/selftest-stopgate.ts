@@ -29,6 +29,9 @@ import {
   parseDispatchLine,
   readDispatchPrompt,
   dispatchKey,
+  readHandbackMessage,
+  resolveGateCard,
+  type GateHookInput,
 } from "./core/index.js";
 
 function assert(cond: unknown, msg: string): asserts cond {
@@ -125,6 +128,113 @@ async function dispatchUnitCases(root: string): Promise<void> {
   assert((await readDispatchPrompt(path.join(dir, "missing.jsonl"))) === null, "reader: missing file is null");
   assert((await readDispatchPrompt(await write("empty.jsonl", ""))) === null, "reader: empty file is null");
   assert((await readDispatchPrompt(await write("bad.jsonl", "{not json\n"))) === null, "reader: bad JSON is null");
+}
+
+/** resolveGateCard pass conditions (plan 2.4): each returns null; a gated stop returns a card. */
+async function gateCardPassCases(root: string): Promise<void> {
+  const feature = await createFeature("Gate card feature", root);
+  const k1 = await createTask({ featureId: feature.id, title: "K1", phase: "core", complexity: 1 }, root);
+  const k2 = await createTask({ featureId: feature.id, title: "K2", phase: "core", complexity: 1 }, root);
+  const k3 = await createTask({ featureId: feature.id, title: "K3", phase: "later", complexity: 1 }, root);
+  await updateTask({ id: k2.id, featureId: feature.id, status: "done", artifacts: { files: ["k.ts"] } }, root);
+
+  const dir = path.join(root, "gate-transcripts");
+  await fs.mkdir(dir, { recursive: true });
+  const transcript = async (name: string, ...records: string[]) => {
+    const p = path.join(dir, name);
+    await fs.writeFile(p, records.map((r) => `${r}\n`).join(""), "utf8");
+    return p;
+  };
+  const assistant = (content: unknown) => JSON.stringify({ type: "assistant", message: { role: "assistant", content } });
+  const one = await transcript("one.jsonl", userRecord(`Dispatch: ${k1.id}\nBuild it.`));
+  const hook = (over: Partial<GateHookInput> = {}): GateHookInput => ({
+    hook_event_name: "SubagentStop",
+    session_id: "sess-G",
+    agent_type: "specmanager:builder",
+    agent_id: "a1",
+    last_assistant_message: "Done.",
+    agent_transcript_path: one,
+    ...over,
+  });
+
+  await clearActiveBuild(root);
+  assert((await resolveGateCard(hook(), root)) === null, "gate card: no marker passes");
+  await setActiveBuild({ featureId: feature.id, phase: "core", sessionId: "sess-G" }, root);
+
+  const card = await resolveGateCard(hook(), root);
+  assert(card !== null && card.featureId === feature.id && card.phase === "core", "gate card: a builder stop is gated");
+  assert(JSON.stringify(card.gatedTaskIds) === JSON.stringify([k1.id]), "gate card: gated set is the dispatched id");
+  assert(JSON.stringify(card.openTaskIds) === JSON.stringify([k1.id]), "gate card: openTaskIds = gated not done");
+  assert(card.bulk === false, "gate card: per-task dispatch is not bulk");
+
+  assert((await resolveGateCard(hook({ hook_event_name: "Stop" }), root)) === null, "gate card: Stop event passes");
+  assert((await resolveGateCard(hook({ agent_type: "specmanager:reviewer" }), root)) === null, "gate card: non-builder passes");
+  assert((await resolveGateCard(hook({ agent_type: undefined }), root)) === null, "gate card: missing agent_type passes");
+  assert((await resolveGateCard(hook({ session_id: "sess-other" }), root)) === null, "gate card: another session passes");
+  assert((await readActiveBuild(root))?.featureId === feature.id, "gate card: another session leaves the marker");
+
+  assert((await resolveGateCard(hook({ agent_transcript_path: undefined }), root)) === null, "gate card: no transcript path passes");
+  assert(
+    (await resolveGateCard(hook({ agent_transcript_path: path.join(dir, "missing.jsonl") }), root)) === null,
+    "gate card: unreadable transcript passes"
+  );
+  assert((await resolveGateCard(hook({ agent_transcript_path: await transcript("empty.jsonl") }), root)) === null, "gate card: empty transcript passes");
+  const noLine = await transcript("no-line.jsonl", userRecord("Build task-001 please."));
+  assert((await resolveGateCard(hook({ agent_transcript_path: noLine }), root)) === null, "gate card: no Dispatch: line passes");
+  const bad = await transcript("bad-line.jsonl", userRecord("Dispatch: task 001"));
+  assert((await resolveGateCard(hook({ agent_transcript_path: bad }), root)) === null, "gate card: unparseable Dispatch: line passes");
+
+  const outside = await transcript("outside.jsonl", userRecord(`Dispatch: ${k3.id}, task-999`));
+  assert((await resolveGateCard(hook({ agent_transcript_path: outside }), root)) === null, "gate card: ids all outside the phase pass");
+  const mixed = await transcript("mixed.jsonl", userRecord(`Dispatch: task-999, ${k3.id}, ${k2.id}, ${k1.id}`));
+  const mixedCard = await resolveGateCard(hook({ agent_transcript_path: mixed }), root);
+  assert(
+    JSON.stringify(mixedCard?.gatedTaskIds) === JSON.stringify([k1.id, k2.id]),
+    "gate card: outside ids drop out, the rest are gated in tasks.json order"
+  );
+  const bulk = await transcript("bulk.jsonl", userRecord("Dispatch: bulk"));
+  const bulkCard = await resolveGateCard(hook({ agent_transcript_path: bulk }), root);
+  assert(
+    bulkCard?.bulk === true && JSON.stringify(bulkCard.gatedTaskIds) === JSON.stringify([k1.id, k2.id]),
+    "gate card: bulk gates the whole phase"
+  );
+
+  assert(
+    (await resolveGateCard(hook({ last_assistant_message: "NEEDS_HUMAN: test account" }), root)) === null,
+    "gate card: NEEDS_HUMAN: in last_assistant_message passes"
+  );
+  assert(
+    (await resolveGateCard(hook({ last_assistant_message: "\n  NEEDS_HUMAN: creds" }), root)) === null,
+    "gate card: NEEDS_HUMAN: after leading whitespace passes"
+  );
+  assert(
+    (await resolveGateCard(hook({ last_assistant_message: "Stopped. NEEDS_HUMAN: creds" }), root)) !== null,
+    "gate card: NEEDS_HUMAN: mid-text is not a hand-back"
+  );
+  const handback = await transcript(
+    "handback.jsonl",
+    userRecord(`Dispatch: ${k1.id}`),
+    assistant([{ type: "tool_use", id: "t1", name: "SubagentHandback", input: { message: "NEEDS_HUMAN: probe" } }])
+  );
+  assert((await readHandbackMessage(handback)) === "NEEDS_HUMAN: probe", "reader: SubagentHandback message read");
+  assert(
+    (await resolveGateCard(hook({ agent_transcript_path: handback, last_assistant_message: "" }), root)) === null,
+    "gate card: NEEDS_HUMAN: in a SubagentHandback call passes"
+  );
+  const earlier = await transcript(
+    "earlier.jsonl",
+    userRecord(`Dispatch: ${k1.id}`),
+    assistant([{ type: "text", text: "NEEDS_HUMAN: maybe" }])
+  );
+  assert((await readHandbackMessage(earlier)) === null, "reader: plain assistant text is not a hand-back");
+  assert(
+    (await resolveGateCard(hook({ agent_transcript_path: earlier }), root)) !== null,
+    "gate card: an earlier NEEDS_HUMAN: text in the transcript does not pass"
+  );
+
+  await setActiveBuild({ featureId: "feat-deleted", phase: "core", sessionId: "sess-G" }, root);
+  assert((await resolveGateCard(hook(), root)) === null, "gate card: deleted feature passes");
+  assert((await readActiveBuild(root)) === null, "gate card: deleted feature clears the marker");
 }
 
 async function main(): Promise<void> {
@@ -334,6 +444,7 @@ async function main(): Promise<void> {
   );
 
   await dispatchUnitCases(root);
+  await gateCardPassCases(root);
 
   console.log("\nAll R1 Stop-gate assertions passed.");
   console.log(`Inspect the tmp project at: ${root}`);

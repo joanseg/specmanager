@@ -66,6 +66,39 @@ export async function readDispatchPrompt(transcriptPath: string): Promise<string
   }
 }
 
+/** `message` of a `SubagentHandback` tool_use in one assistant record, or null. */
+function handbackIn(record: any): string | null {
+  if (record?.type !== "assistant" || !Array.isArray(record.message?.content)) return null;
+  const call = record.message.content.find(
+    (b: any) => b?.type === "tool_use" && b.name === "SubagentHandback" && typeof b.input?.message === "string"
+  );
+  return call ? (call.input.message as string) : null;
+}
+
+/**
+ * The builder's `SubagentHandback` report, if its transcript records one (the
+ * last wins). The call ends the run, so its presence is the final report. On
+ * CLI 2.1.310 a builder has no such tool and replies in plain text, which only
+ * `last_assistant_message` carries at hook time. Any read error ⇒ null.
+ */
+export async function readHandbackMessage(transcriptPath: string): Promise<string | null> {
+  const stream = fs.createReadStream(transcriptPath, { encoding: "utf8" });
+  const lines = readline.createInterface({ input: stream, crlfDelay: Infinity });
+  let found: string | null = null;
+  try {
+    for await (const line of lines) {
+      if (!line.trim()) continue;
+      found = handbackIn(JSON.parse(line)) ?? found;
+    }
+    return found;
+  } catch {
+    return found;
+  } finally {
+    lines.close();
+    stream.destroy();
+  }
+}
+
 /** Counter key for a dispatch: `bulk`, the single id, or the sorted ids joined by `+`. */
 export function dispatchKey(d: Dispatch): string {
   if (d.bulk) return "bulk";

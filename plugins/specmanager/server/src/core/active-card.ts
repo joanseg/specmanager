@@ -14,6 +14,8 @@ import { listTasks, readTasksMeta } from "./tasks.js";
 import { listDocuments } from "./documents.js";
 import { readActiveBuild, clearActiveBuild } from "./active-build.js";
 import { matchPhaseHeading } from "./spec-slice.js";
+import { parseDispatchLine, readDispatchPrompt, readHandbackMessage, type Dispatch } from "./dispatch.js";
+import type { Feature, Task } from "./types.js";
 
 export interface ActiveCard {
   featureId: string;
@@ -84,30 +86,111 @@ export async function resolveActiveCard(
     return null;
   }
 
-  const meta = await readTasksMeta(feature.id, root);
-  const phaseMeta = meta.phases[marker.phase];
-  const testCommand = phaseMeta?.testCommand ?? null;
-  const architectureRefs = phaseMeta?.architectureRefs ?? [];
+  return { ...(await phaseTarget(feature, marker.phase, root)), openTaskIds };
+}
 
+/** The phase's verification target: testCommand, Exit-test fallback, architecture refs. */
+async function phaseTarget(
+  feature: Feature,
+  phase: string,
+  root: string
+): Promise<Omit<ActiveCard, "openTaskIds">> {
+  const meta = await readTasksMeta(feature.id, root);
+  const phaseMeta = meta.phases[phase];
   let exitTest: string | null = null;
-  const planDocs = await listDocuments({ featureId: feature.id, stage: "plan" }, root);
-  const planDoc = planDocs[0];
+  const planDoc = (await listDocuments({ featureId: feature.id, stage: "plan" }, root))[0];
   if (planDoc) {
     try {
-      const raw = await fs.readFile(planDoc.filePath, "utf8");
-      exitTest = exitTestForPhase(raw, marker.phase);
+      exitTest = exitTestForPhase(await fs.readFile(planDoc.filePath, "utf8"), phase);
     } catch {
       // plan body unreadable ⇒ no fallback exit-test line
     }
   }
-
   return {
     featureId: feature.id,
     slug: feature.slug,
-    phase: marker.phase,
-    testCommand,
+    phase,
+    testCommand: phaseMeta?.testCommand ?? null,
     exitTest,
-    architectureRefs,
-    openTaskIds,
+    architectureRefs: phaseMeta?.architectureRefs ?? [],
+  };
+}
+
+// ── SubagentStop builder gate ────────────────────────────────────────────────
+
+/** The SubagentStop hook JSON, as far as the gate reads it. */
+export interface GateHookInput {
+  hook_event_name?: string;
+  session_id?: string;
+  agent_type?: string;
+  agent_id?: string;
+  last_assistant_message?: string;
+  agent_transcript_path?: string;
+}
+
+/** The gate card for one builder's stop. `openTaskIds` = gated tasks not done. */
+export interface GateCard extends ActiveCard {
+  /** Dispatched tasks in the marker's phase, tasks.json order (bulk ⇒ the whole phase). */
+  gatedTaskIds: string[];
+  /** Every not-done task of the phase, gated or not. */
+  phaseOpenTaskIds: string[];
+  bulk: boolean;
+}
+
+const BUILDER = "specmanager:builder";
+const NEEDS_HUMAN = "NEEDS_HUMAN:";
+
+/** The builder handed back `NEEDS_HUMAN:` — in its final reply, else in a SubagentHandback call. */
+async function needsHuman(hook: GateHookInput): Promise<boolean> {
+  if (hook.last_assistant_message?.trimStart().startsWith(NEEDS_HUMAN)) return true;
+  if (!hook.agent_transcript_path) return false;
+  const handback = await readHandbackMessage(hook.agent_transcript_path);
+  return handback?.trimStart().startsWith(NEEDS_HUMAN) ?? false;
+}
+
+/** Dispatched tasks that belong to the phase, in tasks.json order; unknown ids drop out. */
+function gatedTasks(dispatch: Dispatch, phaseTasks: Task[]): Task[] {
+  if (dispatch.bulk) return phaseTasks;
+  return phaseTasks.filter((t) => dispatch.taskIds.includes(t.id));
+}
+
+/**
+ * Resolve the gate card for a builder's SubagentStop. Returns null (the gate
+ * passes, no strike) when: the event is not SubagentStop or the agent is not
+ * the builder; no marker, another session's marker, or a deleted feature (the
+ * marker is then cleared); the builder handed back `NEEDS_HUMAN:`; its
+ * transcript has no readable dispatch prompt or no `Dispatch:` line; or no
+ * dispatched id is in the marker's phase.
+ */
+export async function resolveGateCard(hook: GateHookInput, root = projectRoot()): Promise<GateCard | null> {
+  if (hook.hook_event_name !== "SubagentStop" || hook.agent_type !== BUILDER) return null;
+
+  const marker = await readActiveBuild(root);
+  if (!marker) return null;
+  if (marker.sessionId && hook.session_id && marker.sessionId !== hook.session_id) return null;
+
+  const feature = await findFeatureById(marker.featureId, root);
+  if (!feature) {
+    await clearActiveBuild(root);
+    return null;
+  }
+
+  if (await needsHuman(hook)) return null;
+
+  if (!hook.agent_transcript_path) return null;
+  const prompt = await readDispatchPrompt(hook.agent_transcript_path);
+  const dispatch = prompt === null ? null : parseDispatchLine(prompt);
+  if (!dispatch) return null;
+
+  const phaseTasks = (await listTasks(feature.id, root)).filter((t) => t.phase === marker.phase);
+  const gated = gatedTasks(dispatch, phaseTasks);
+  if (gated.length === 0) return null;
+
+  return {
+    ...(await phaseTarget(feature, marker.phase, root)),
+    openTaskIds: gated.filter((t) => t.status !== "done").map((t) => t.id),
+    gatedTaskIds: gated.map((t) => t.id),
+    phaseOpenTaskIds: phaseTasks.filter((t) => t.status !== "done").map((t) => t.id),
+    bulk: dispatch.bulk,
   };
 }
