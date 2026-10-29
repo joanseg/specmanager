@@ -2,7 +2,8 @@
 // SubagentStop JSON and fixture builder transcripts carrying a `Dispatch:` line:
 // no marker ⇒ pass, open dispatched tasks ⇒ exit 2, tests run only when the
 // phase is done, the "none" marker skips the run, the per-dispatch N=3 cap
-// blocks the one task and exits 0. Plus unit cases for core/dispatch.ts and
+// blocks the one task and exits 0; R1 cases (ignored events, naming, transcript
+// shapes, per-dispatch counters, NEEDS_HUMAN:). Plus unit cases for core/dispatch.ts and
 // resolveGateCard.
 //
 // Usage: node dist/selftest-stopgate.js
@@ -58,7 +59,12 @@ async function dispatchTranscript(root: string, dispatch: string): Promise<strin
 }
 
 /** Run the hook with a builder's SubagentStop JSON on stdin. */
-function runHook(root: string, transcript: string, sessionId?: string): { code: number; stderr: string } {
+function runHook(
+  root: string,
+  transcript: string,
+  sessionId?: string,
+  overrides: GateHookInput = {}
+): { code: number; stderr: string } {
   const input: GateHookInput = {
     hook_event_name: "SubagentStop",
     agent_type: "specmanager:builder",
@@ -66,6 +72,7 @@ function runHook(root: string, transcript: string, sessionId?: string): { code: 
     last_assistant_message: "Done.",
     agent_transcript_path: transcript,
     ...(sessionId ? { session_id: sessionId } : {}),
+    ...overrides,
   };
   const r = spawnSync("bash", [HOOK], {
     input: JSON.stringify(input),
@@ -107,6 +114,79 @@ function userRecord(content: unknown): string {
     message: { role: "user", content },
     uuid: "3b0d3545-8abc-4cac-8968-fb362e17ac3f",
   });
+}
+
+/** Write a one-record builder transcript whose first user content is `content`. */
+async function contentTranscript(root: string, name: string, content: unknown): Promise<string> {
+  const p = path.join(root, "hook-transcripts", `${name}.jsonl`);
+  await fs.mkdir(path.dirname(p), { recursive: true });
+  await fs.writeFile(p, `${userRecord(content)}\n`, "utf8");
+  return p;
+}
+
+/** R1 hook-level cases: who the gate ignores, what it names, how it counts. */
+async function r1HookCases(root: string): Promise<void> {
+  const feature = await createFeature("R1 hook feature", root);
+  const plan = await createDocument(
+    { featureId: feature.id, stage: "plan", title: "R1 plan", body: "# Plan\n\n## Phase core — x\n**Exit test:** echo ok\n" },
+    root
+  );
+  await setStatus(plan.frontmatter.id, "approved", root);
+  const a = await createTask({ featureId: feature.id, title: "A", phase: "core", complexity: 1 }, root);
+  const b = await createTask({ featureId: feature.id, title: "B", phase: "core", complexity: 1 }, root);
+  const c = await createTask({ featureId: feature.id, title: "C", phase: "core", complexity: 1 }, root);
+  await setPhaseMeta(feature.id, "core", { testCommand: "true", architectureRefs: [] }, root);
+  await setActiveBuild({ featureId: feature.id, phase: "core" }, root);
+
+  const dir = stopGateDir(root);
+  const counter = (id: string) => path.join(dir, `${feature.slug}__core__${id}`);
+  const noCounters = async () =>
+    !(await fs.readdir(dir).catch(() => [] as string[])).some((n) => n.startsWith(`${feature.slug}__core`));
+  const quiet = (r: { code: number; stderr: string }) => r.code === 0 && r.stderr.trim() === "";
+  const aTranscript = await dispatchTranscript(root, a.id);
+
+  assert(quiet(runHook(root, aTranscript, undefined, { hook_event_name: "Stop" })), "R1: a Stop event is a no-op");
+  assert(
+    quiet(runHook(root, aTranscript, undefined, { agent_type: "general-purpose" })),
+    "R1: a non-builder agent_type is a no-op"
+  );
+  assert(await noCounters(), "R1: ignored events strike no counter");
+
+  const named = runHook(root, aTranscript);
+  assert(named.code === 2 && named.stderr.includes(`not done: ${a.id}`), "R1: Dispatch: A with A open → exit 2 naming A");
+  assert(
+    !named.stderr.includes(b.id) && !named.stderr.includes(c.id),
+    "R1: the other open phase tasks are not named"
+  );
+
+  const asString = await contentTranscript(root, "r1-string", `Dispatch: ${b.id}\nBuild it.`);
+  const asArray = await contentTranscript(root, "r1-array", [{ type: "text", text: `Dispatch: ${b.id}\nBuild it.` }]);
+  assert(runHook(root, asString).stderr.includes(`not done: ${b.id}`), "R1: message.content as a string parses");
+  assert(runHook(root, asArray).stderr.includes(`not done: ${b.id}`), "R1: message.content as an array parses");
+
+  // Separate counters: A has one strike, B two (string + array); A again → 2/3.
+  const again = runHook(root, aTranscript);
+  assert(again.stderr.includes("attempt 2/3"), "R1: A's second stop is its attempt 2/3");
+  assert(
+    (await fs.readFile(counter(a.id), "utf8")) === "2" && (await fs.readFile(counter(b.id), "utf8")) === "2",
+    "R1: two dispatches stopping in turn keep separate counters"
+  );
+
+  // Pass-without-a-trace cases start from a clean budget.
+  await setActiveBuild({ featureId: feature.id, phase: "core" }, root);
+  const missing = path.join(root, "hook-transcripts", "does-not-exist.jsonl");
+  const empty = await contentTranscript(root, "r1-empty", "");
+  await fs.writeFile(empty, "", "utf8");
+  const noLine = await contentTranscript(root, "r1-no-line", "Build the next task.");
+  assert(quiet(runHook(root, missing)), "R1: a missing transcript passes");
+  assert(quiet(runHook(root, empty)), "R1: an empty transcript passes");
+  assert(quiet(runHook(root, noLine)), "R1: a transcript with no Dispatch: line passes");
+  assert(
+    quiet(runHook(root, aTranscript, undefined, { last_assistant_message: "NEEDS_HUMAN: test account" })),
+    "R1: NEEDS_HUMAN: in last_assistant_message passes with A still open"
+  );
+  assert(await noCounters(), "R1: those passes write no counter file");
+  await clearActiveBuild(root);
 }
 
 /** core/dispatch.ts: the `Dispatch:` line parser, transcript reader and counter key. */
@@ -591,6 +671,7 @@ async function main(): Promise<void> {
     "R3: other phases' counters and prefix lookalikes survive"
   );
 
+  await r1HookCases(root);
   await dispatchUnitCases(root);
   await gateCardPassCases(root);
   await gateCardFieldCases(root);
