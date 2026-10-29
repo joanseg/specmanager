@@ -21,8 +21,9 @@ Install from the plugin directory, or from the GitHub marketplace:
 ```
 /plugin marketplace add joanseg/specmanager
 /plugin install specmanager@specmanager
-/reload-plugins
 ```
+
+Then restart Claude Code: quit and reopen it, or reload your IDE window.
 
 ## First use
 
@@ -58,6 +59,8 @@ The board's **Researcher** toggle shows research studies: work done before a fea
 2. **Design the build from the approved PRD.** Run `/specmanager:specmanager-architecture sales-pipeline-crm`, approve the result in the board, then run `/specmanager:specmanager-plan sales-pipeline-crm`. The plan lands as a document plus a list of small, scored tasks grouped into phases, visible in the Build column.
 3. **Build one phase and review it.** Run `/specmanager:specmanager-build sales-pipeline-crm next`. Claude builds the first phase task by task, runs that phase's tests, has a read-only reviewer check the result against the plan and architecture, and drafts a walkthrough of what was built. It stops at the end of the phase so you can check the work before the next one.
 4. **Go from intent to an approved plan in one step.** Run `/specmanager:specmanager-loop add CSV export to the board`. Claude asks a few questions to sharpen the intent, drafts the PRD, architecture, design (only when the feature has screens) and plan, **approving each one automatically**, reviews them against each other, then asks you whatever is still open. It stops before building, so you can read the documents in the board and start `/specmanager:specmanager-build` when you're ready.
+5. **Set up a project that spans several repos.** Put a specs repo beside your product repos — for example `acme/acme-specs/` next to `acme/backend/` and `acme/frontend/` — open Claude Code in it, and run `/specmanager:specmanager-init /path/to/acme/backend /path/to/acme/frontend`. Init sets up the spec folder, offers the recommended plugins you're missing, and copies each repo's `CLAUDE.md` and `DESIGN.md` into `repos/backend/` and `repos/frontend/` in the specs repo. Nothing is written into the product repos. Run it again with another path to add a repo; the copies you already have are kept.
+6. **Research an idea, then hand it to Builder.** Run `/specmanager:specmanager-research-loop a booking app for dog groomers`. Claude asks all its questions up front, then drafts a brief, market research, the Docs you picked, a user-research plan and a marketing plan in your own Claude session, and stops. Run the interviews and paste your notes (they are masked before Claude reads them), then run `/specmanager:specmanager-research dog-groomer-booking findings`, then `strategy`, then `handoff`: each build-list item you pick becomes a feature on the Builder board, ready for `/specmanager:specmanager-prd`.
 
 ## What this plugin does on your machine
 
