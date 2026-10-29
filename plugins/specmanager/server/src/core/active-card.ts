@@ -14,7 +14,7 @@ import { listTasks, readTasksMeta } from "./tasks.js";
 import { listDocuments } from "./documents.js";
 import { readActiveBuild, clearActiveBuild } from "./active-build.js";
 import { matchPhaseHeading } from "./spec-slice.js";
-import { parseDispatchLine, readDispatchPrompt, readHandbackMessage, type Dispatch } from "./dispatch.js";
+import { parseDispatchLine, readDispatchPrompt, readHandbackMessage, dispatchKey, type Dispatch } from "./dispatch.js";
 import type { Feature, Task } from "./types.js";
 
 export interface ActiveCard {
@@ -135,6 +135,12 @@ export interface GateCard extends ActiveCard {
   /** Every not-done task of the phase, gated or not. */
   phaseOpenTaskIds: string[];
   bulk: boolean;
+  /** Run the phase test only when the gated tasks are done and no other phase task is open (R2). */
+  runTests: boolean;
+  /** Retry-counter file name: `<slug>__<phase>__<dispatchKey>`, sanitised (R3). */
+  counterKey: string;
+  /** The one task to block at the cap (R4 pick ladder); null only if nothing is gated. */
+  blockTaskId: string | null;
 }
 
 const BUILDER = "specmanager:builder";
@@ -155,12 +161,41 @@ function gatedTasks(dispatch: Dispatch, phaseTasks: Task[]): Task[] {
 }
 
 /**
+ * Counter file name for one dispatch: `<slug>__<phase>__<dispatchKey>`. The
+ * `<slug>__<phase>` prefix is sanitised `[^A-Za-z0-9_.-]` → `_`, as
+ * resetGateCounters does; the dispatch key keeps its `+` joiner.
+ */
+export function gateCounterKey(slug: string, phase: string, dispatch: Dispatch): string {
+  const prefix = `${slug}__${phase}`.replace(/[^A-Za-z0-9_.-]/g, "_");
+  return `${prefix}__${dispatchKey(dispatch).replace(/[^A-Za-z0-9_.+-]/g, "_")}`;
+}
+
+/**
+ * The task to block at the cap, among gated tasks in tasks.json order: the
+ * first in_progress; else the first not-done whose dependsOn are all done;
+ * else the first not-done; else (all done, tests red) the latest-updated.
+ */
+export function pickBlockTask(gated: Task[], allTasks: Task[]): string | null {
+  const done = new Set(allTasks.filter((t) => t.status === "done").map((t) => t.id));
+  const open = gated.filter((t) => t.status !== "done");
+  const pick =
+    gated.find((t) => t.status === "in_progress") ??
+    open.find((t) => t.dependsOn.every((d) => done.has(d))) ??
+    open[0] ??
+    [...gated].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0];
+  return pick?.id ?? null;
+}
+
+/**
  * Resolve the gate card for a builder's SubagentStop. Returns null (the gate
  * passes, no strike) when: the event is not SubagentStop or the agent is not
  * the builder; no marker, another session's marker, or a deleted feature (the
  * marker is then cleared); the builder handed back `NEEDS_HUMAN:`; its
  * transcript has no readable dispatch prompt or no `Dispatch:` line; or no
- * dispatched id is in the marker's phase.
+ * dispatched id is in the marker's phase. Unlike resolveActiveCard there is no
+ * all-done guard: a finished phase yields a card with `runTests: true`, so the
+ * test leg runs exactly when the phase is done. The marker is cleared by the
+ * build command, never here.
  */
 export async function resolveGateCard(hook: GateHookInput, root = projectRoot()): Promise<GateCard | null> {
   if (hook.hook_event_name !== "SubagentStop" || hook.agent_type !== BUILDER) return null;
@@ -182,15 +217,21 @@ export async function resolveGateCard(hook: GateHookInput, root = projectRoot())
   const dispatch = prompt === null ? null : parseDispatchLine(prompt);
   if (!dispatch) return null;
 
-  const phaseTasks = (await listTasks(feature.id, root)).filter((t) => t.phase === marker.phase);
+  const allTasks = await listTasks(feature.id, root);
+  const phaseTasks = allTasks.filter((t) => t.phase === marker.phase);
   const gated = gatedTasks(dispatch, phaseTasks);
   if (gated.length === 0) return null;
 
+  const openTaskIds = gated.filter((t) => t.status !== "done").map((t) => t.id);
+  const phaseOpenTaskIds = phaseTasks.filter((t) => t.status !== "done").map((t) => t.id);
   return {
     ...(await phaseTarget(feature, marker.phase, root)),
-    openTaskIds: gated.filter((t) => t.status !== "done").map((t) => t.id),
+    openTaskIds,
     gatedTaskIds: gated.map((t) => t.id),
-    phaseOpenTaskIds: phaseTasks.filter((t) => t.status !== "done").map((t) => t.id),
+    phaseOpenTaskIds,
     bulk: dispatch.bulk,
+    runTests: openTaskIds.length === 0 && phaseOpenTaskIds.length === 0,
+    counterKey: gateCounterKey(feature.slug, marker.phase, dispatch),
+    blockTaskId: pickBlockTask(gated, allTasks),
   };
 }

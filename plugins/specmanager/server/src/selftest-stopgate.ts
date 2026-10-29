@@ -31,7 +31,10 @@ import {
   dispatchKey,
   readHandbackMessage,
   resolveGateCard,
+  gateCounterKey,
+  pickBlockTask,
   type GateHookInput,
+  type Task,
 } from "./core/index.js";
 
 function assert(cond: unknown, msg: string): asserts cond {
@@ -235,6 +238,76 @@ async function gateCardPassCases(root: string): Promise<void> {
   await setActiveBuild({ featureId: "feat-deleted", phase: "core", sessionId: "sess-G" }, root);
   assert((await resolveGateCard(hook(), root)) === null, "gate card: deleted feature passes");
   assert((await readActiveBuild(root)) === null, "gate card: deleted feature clears the marker");
+}
+
+/** resolveGateCard fields (plan 2.5): runTests, counterKey, blockTaskId; no all-done guard. */
+async function gateCardFieldCases(root: string): Promise<void> {
+  const feature = await createFeature("Gate fields feature", root);
+  const f1 = await createTask({ featureId: feature.id, title: "F1", phase: "core", complexity: 1 }, root);
+  const f2 = await createTask({ featureId: feature.id, title: "F2", phase: "core", complexity: 1 }, root);
+  await createTask({ featureId: feature.id, title: "F3", phase: "later", complexity: 1 }, root);
+  await setActiveBuild({ featureId: feature.id, phase: "core", sessionId: "sess-F" }, root);
+
+  const dir = path.join(root, "field-transcripts");
+  await fs.mkdir(dir, { recursive: true });
+  const transcript = async (name: string, prompt: string) => {
+    const p = path.join(dir, name);
+    await fs.writeFile(p, `${userRecord(prompt)}\n`, "utf8");
+    return p;
+  };
+  const card = async (prompt: string) =>
+    resolveGateCard(
+      {
+        hook_event_name: "SubagentStop",
+        session_id: "sess-F",
+        agent_type: "specmanager:builder",
+        agent_transcript_path: await transcript(`${prompt.replace(/\W/g, "_")}.jsonl`, prompt),
+      },
+      root
+    );
+  const done = (id: string) =>
+    updateTask({ id, featureId: feature.id, status: "done", artifacts: { files: ["f.ts"] } }, root);
+
+  const open1 = await card(`Dispatch: ${f1.id}`);
+  assert(open1?.runTests === false, "runTests: gated task open ⇒ false");
+  assert(open1.counterKey === `${feature.slug}__core__${f1.id}`, "counterKey: <slug>__<phase>__<task id>");
+  assert(open1.blockTaskId === f1.id, "blockTaskId: single-id dispatch blocks the dispatched task");
+
+  const multi = await card(`Dispatch: ${f2.id}, ${f1.id}`);
+  assert(multi?.counterKey === `${feature.slug}__core__${f1.id}+${f2.id}`, "counterKey: multi-id sorted, +-joined");
+  assert((await card("Dispatch: bulk"))?.counterKey === `${feature.slug}__core__bulk`, "counterKey: bulk");
+  assert(
+    gateCounterKey("my slug", "ph/1", { taskIds: ["t:2", "t 1"], bulk: false }) === "my_slug__ph_1__t_1+t_2",
+    "counterKey: [^A-Za-z0-9_.-] sanitised to _, the + joiner kept"
+  );
+
+  await done(f1.id);
+  const otherOpen = await card(`Dispatch: ${f1.id}`);
+  assert(
+    otherOpen?.runTests === false && otherOpen.openTaskIds.length === 0,
+    "runTests: gated done but another phase task open ⇒ false"
+  );
+
+  await done(f2.id);
+  const allDone = await card(`Dispatch: ${f1.id}`);
+  assert(allDone !== null, "gate card: an all-done phase still yields a card (no all-done guard)");
+  assert(allDone.runTests === true, "runTests: gated done and phase otherwise done ⇒ true");
+  assert((await readActiveBuild(root))?.featureId === feature.id, "gate card: all-done phase leaves the marker");
+  await clearActiveBuild(root);
+
+  // R4 pick ladder, pure.
+  const t = (id: string, status: Task["status"], updatedAt: string, dependsOn: string[] = []) =>
+    ({ id, status, updatedAt, dependsOn }) as Task;
+  const ladder = [t("a", "todo", "2026-01-01", ["x"]), t("b", "in_progress", "2026-01-02"), t("x", "todo", "2026-01-03")];
+  assert(pickBlockTask(ladder, ladder) === "b", "blockTaskId: first in_progress wins");
+  const ready = [t("a", "todo", "2026-01-01", ["x"]), t("c", "blocked", "2026-01-02", ["d"]), t("e", "todo", "2026-01-03")];
+  const all = [...ready, t("x", "todo", "2026-01-01"), t("d", "done", "2026-01-01")];
+  assert(pickBlockTask(ready, all) === "c", "blockTaskId: else first not-done with dependsOn all done");
+  const stuck = [t("a", "done", "2026-01-01"), t("b", "todo", "2026-01-02", ["z"]), t("c", "todo", "2026-01-03", ["z"])];
+  assert(pickBlockTask(stuck, stuck) === "b", "blockTaskId: else first not-done");
+  const finished = [t("a", "done", "2026-01-03"), t("b", "done", "2026-01-05"), t("c", "done", "2026-01-04")];
+  assert(pickBlockTask(finished, finished) === "b", "blockTaskId: all done ⇒ latest updatedAt");
+  assert(pickBlockTask([], []) === null, "blockTaskId: nothing gated ⇒ null");
 }
 
 async function main(): Promise<void> {
@@ -445,6 +518,7 @@ async function main(): Promise<void> {
 
   await dispatchUnitCases(root);
   await gateCardPassCases(root);
+  await gateCardFieldCases(root);
 
   console.log("\nAll R1 Stop-gate assertions passed.");
   console.log(`Inspect the tmp project at: ${root}`);
