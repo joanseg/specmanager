@@ -19,10 +19,12 @@
 // scope filter, Part H's INV-56…INV-65 for researcher mode and its loop, and
 // Part I's INV-66…INV-73 for readable docs (density, readable-doc and
 // design-pass snippet parity, the researcher's optional Appendix, the loops'
-// cap check and folded answers, designer Build notes, planner Task details).
+// cap check and folded answers, designer Build notes, planner Task details),
+// and Part J's INV-74…INV-77 for the builder gate's `Dispatch:` line.
 // A few are encoded as lettered rows (INV-14a…e, INV-27a…c,
 // INV-36a/b, INV-45a…c, INV-46a/b, INV-47a/b, INV-48a…c, INV-49a/b,
-// INV-50a…e, INV-51a…f, INV-52a/b, and the pre-existing INV-15a/b)
+// INV-50a…e, INV-51a…f, INV-52a/b, INV-74a…e, INV-76a/b, INV-77a/b, and
+// the pre-existing INV-15a/b)
 // because the reconciliation calls for one pattern per independently
 // deletable clause: a single whole-block pattern stays green when all but
 // one clause is cut, which is the exact failure the entry exists to catch.
@@ -1230,6 +1232,92 @@ const INVARIANTS: PromptInvariant[] = [
     what: "planner's optional `### Task details` holds no `---` line and no `##` heading, so the reviewer's phase slice survives",
     pattern: /`### Task details` \(optional\).*It must contain no `---` line and no `##` heading/g,
     files: ["agents/planner.md"],
+    min: 1,
+    max: 1,
+  },
+
+  // ---- Part J — INV-74…INV-77, the builder gate's `Dispatch:` line ----
+  // The SubagentStop gate reads the `Dispatch:` line from the builder's own
+  // prompt; a prompt without one passes unchecked. One row per dispatch kind
+  // so dropping the line from any single kind goes red.
+  {
+    id: "INV-74a",
+    what: "every builder prompt (per task, multi-task, bulk, fix) starts with a `Dispatch:` line — the umbrella rule",
+    pattern:
+      "Every builder `Agent(...)` prompt — per task, multi-task, bulk and fix — starts with a `Dispatch:` line",
+    files: ["commands/specmanager-build.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-74b",
+    what: "multi-task builders name every task on one `Dispatch:` line",
+    pattern: "`Dispatch: task-007, task-008` for several tasks in one builder",
+    files: ["commands/specmanager-build.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-74c",
+    what: "the per-task dispatch puts its `Dispatch: <task-id>` line first",
+    pattern: "the `Dispatch: <task-id>` line first",
+    files: ["commands/specmanager-build.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-74d",
+    what: "the `--bulk` dispatch's prompt starts with `Dispatch: bulk`",
+    pattern: "its prompt starting with `Dispatch: bulk`",
+    files: ["commands/specmanager-build.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-74e",
+    what: "the reviewer-fail fix's prompt starts with `Dispatch: bulk`",
+    pattern: "The fix's prompt starts with `Dispatch: bulk`",
+    files: ["commands/specmanager-build.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-75",
+    what: "the Don't: never dispatch a builder without a `Dispatch:` line",
+    pattern: "Don't dispatch a builder without a `Dispatch:` line",
+    files: ["commands/specmanager-build.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-76a",
+    what: "builder knows the gate checks only the task(s) on its `Dispatch:` line, and only that task is blocked at the cap",
+    pattern: /checks only the task\(s\) named on your prompt's `Dispatch:` line.*then only that task is `blocked`/g,
+    files: ["agents/builder.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-76b",
+    what: "builder knows a final reply starting `NEEDS_HUMAN:` is a pause, not a failure",
+    pattern: "A final reply starting `NEEDS_HUMAN:` is a pause, not a failure",
+    files: ["agents/builder.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-77a",
+    what: "builder commits with `git commit … -- <paths>` and no staging step, since parallel builders share one worktree",
+    pattern: /`git commit -m "[^"`]*" -- <this task's files>` — no staging step/g,
+    files: ["agents/builder.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-77b",
+    what: "parallel builders' `Git strategy:` block names the `git commit … -- <paths>` form",
+    pattern: "commit with `git commit -m \"<message>\" -- <paths>`",
+    files: ["commands/specmanager-build.md"],
     min: 1,
     max: 1,
   },
