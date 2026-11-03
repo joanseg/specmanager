@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Print the "Security" section for a release's notes, in Markdown.
 # Usage: scripts/release-security.sh [tag]   (tag defaults to v<plugin.json version>)
+# Run it from a checkout of the tag itself: the checks read the working tree.
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "$0")/.." && pwd)"
@@ -9,7 +10,12 @@ version="$(node -p "require('$plugin/.claude-plugin/plugin.json').version")"
 tag="${1:-v$version}"
 blob="https://github.com/joanseg/specmanager/blob/$tag"
 
-audit_json="$(cd "$plugin" && npm audit --omit=dev --json 2>/dev/null || true)"
+if [ "$(git -C "$repo_root" rev-parse HEAD)" != "$(git -C "$repo_root" rev-parse "$tag^{commit}")" ]; then
+  echo "HEAD is not $tag: check out the tag (e.g. git worktree add /tmp/sm $tag) and run it there" >&2
+  exit 1
+fi
+
+audit_json="$(cd "$plugin" && npm audit --omit=dev --package-lock-only --json 2>/dev/null || true)"
 audit_line="$(node -e '
   const v = JSON.parse(process.argv[1]).metadata.vulnerabilities;
   const found = ["critical", "high", "moderate", "low"].filter((s) => v[s] > 0);
