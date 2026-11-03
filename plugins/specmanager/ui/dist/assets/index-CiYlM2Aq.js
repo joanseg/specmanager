@@ -2261,7 +2261,21 @@ function App() {
     createVNode("header", { className: "board__header", children: [
       createVNode("div", { children: [
         createVNode("h1", { className: "board__title", children: board.projectName }),
-        createVNode("p", { className: "board__subtitle", children: "SpecManager" })
+        createVNode("p", { className: "board__subtitle", children: [
+          createVNode("span", { children: "SpecManager" }),
+          createVNode("span", { className: "board__version", children: [
+            "v",
+            board.pluginVersion
+          ] }),
+          createVNode("span", { "aria-hidden": "true", children: "·" }),
+          createVNode("a", {
+            className: "board__update",
+            href: "https://github.com/joanseg/specmanager/releases",
+            target: "_blank",
+            rel: "noopener noreferrer",
+            children: "Check for updates ↗"
+          })
+        ] })
       ] }),
       createVNode(ModeToggle, { mode, onChange: setMode }),
       createVNode("div", { className: "board__meta", children: [

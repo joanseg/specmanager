@@ -113,6 +113,7 @@ export interface FeatureRow {
 export interface Board {
   generatedAt: string;
   projectName: string;
+  pluginVersion: string;
   features: FeatureRow[];
 }
 

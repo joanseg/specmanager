@@ -85,7 +85,14 @@ html, body, #root {
   font-size: 0.78rem;
   letter-spacing: 0.02em;
   color: var(--on-surface-variant);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-sm);
 }
+.board__version { opacity: 0.8; }
+.board__update { color: var(--primary); text-decoration: none; }
+.board__update:hover { text-decoration: underline; }
 .board__meta {
   display: flex;
   align-items: center;

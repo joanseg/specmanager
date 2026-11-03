@@ -464,7 +464,19 @@ export default function App() {
       <header className="board__header">
         <div>
           <h1 className="board__title">{board.projectName}</h1>
-          <p className="board__subtitle">SpecManager</p>
+          <p className="board__subtitle">
+            <span>SpecManager</span>
+            <span className="board__version">v{board.pluginVersion}</span>
+            <span aria-hidden="true">·</span>
+            <a
+              className="board__update"
+              href="https://github.com/joanseg/specmanager/releases"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Check for updates ↗
+            </a>
+          </p>
         </div>
         <ModeToggle mode={mode} onChange={setMode} />
         <div className="board__meta">

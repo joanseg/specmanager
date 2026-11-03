@@ -40,6 +40,10 @@ import {
 const here = path.dirname(fileURLToPath(import.meta.url));
 // dist/board-server.js → plugin root → ui/dist
 const UI_DIST = path.resolve(here, "..", "..", "ui", "dist");
+// dist/board-server.js → plugin root → .claude-plugin/plugin.json
+const PLUGIN_VERSION: string = JSON.parse(
+  readFileSync(path.resolve(here, "..", "..", ".claude-plugin", "plugin.json"), "utf8"),
+).version;
 
 /** Map a research core error to 409 (version conflict), 404 (not found) or 400. */
 function researchError(reply: FastifyReply, err: unknown): { error: string } {
@@ -105,6 +109,7 @@ export async function startBoardServer(opts: {
   app.get("/api/board", async () => ({
     ...(await buildManifest(root)),
     projectName: path.basename(root),
+    pluginVersion: PLUGIN_VERSION,
   }));
 
   app.get("/api/features", async () => listFeatures(root));
