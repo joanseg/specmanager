@@ -26,7 +26,7 @@ Each role is its own specialised agent — not one mega-prompt wearing different
 - **Designer** *(optional)* — produces high-fidelity screen mockups grounded in a shared design system, so the look stays consistent across features.
 - **Tech lead** — breaks the architecture into phases and small, scored tasks, defaulting to the smallest increment that actually ships something.
 - **Builder** — implements one phase at a time, task by task, saving its work as it goes.
-- **Reviewer** — read-only; checks each finished phase against the spec and returns a plain pass/fail verdict. It can't change anything.
+- **Reviewer** — read-only; checks each finished phase against the spec and returns a plain pass/fail verdict, or asks for you when it couldn't run a phase's UI check. It can't change anything.
 - **Tech writer** — documents what actually shipped, per phase, so you always have a record.
 
 The agents hand off to each other through approved documents, not a hidden shared memory — and **none of them approves its own work. That's your call.** You stay in the loop by design: an agent can't move to the next stage until you've approved the current one. Claude can't start the Architecture until you've approved the PRD, because that rule lives in the software itself, not in instructions the AI could talk its way around. The one exception is opt-in: `/specmanager:specmanager-loop` approves each planning document for you when you ask it to, still going through the same gates, and stops before any code is built.
@@ -102,7 +102,7 @@ Init checks which of these you already have and offers the missing ones in one q
 | `superpowers` | builder | test-first work, systematic debugging and a two-stage review | a plain build loop |
 | `frontend-design` | designer, builder on UI tasks | visual judgement, still grounded in `docs/DESIGN.md` | `docs/DESIGN.md` only |
 | `context7` | all writers and the builder | current library docs | model memory only |
-| `playwright` | reviewer, on web UI | a browser to walk the happy path | the reviewer judges from the diff |
+| `playwright` | reviewer, on web UI | a browser to walk the happy path | the build asks you to add it, check the UI yourself, or waive the check |
 
 All four come from `claude-plugins-official`. If your session already has Chrome DevTools tools (`mcp__chrome-devtools__*`), playwright counts as installed — init never suggests both.
 
@@ -209,7 +209,7 @@ It's the only command that approves anything, and it still goes through every ga
 4. **Dispatches one builder per task**, at a model picked by the task's score: 1–2 → `sonnet`, 3 → `opus` (you can remap it). Tasks whose dependencies are done can run in parallel. `--bulk` builds the whole phase in one builder instead. A transient overload (`529`) is retried twice.
 5. **Gates every builder** as it finishes — see [The builder gate](#the-builder-gate).
 6. **Pauses when a builder needs you.** A builder that replies `NEEDS_HUMAN: …` hasn't failed: build asks you, then runs the same task again.
-7. **Runs the read-only reviewer** once every task is done. It checks the phase against the plan and the Architecture, and drives the happy path when the phase changes a UI (a browser on web, the simulator on iOS, `adb` on Android). On a fail, a fix goes to a builder one tier higher; a fail that persists at the top tier marks the phase blocked.
+7. **Runs the read-only reviewer** once every task is done. It checks the phase against the plan and the Architecture, and drives the happy path when the phase changes a UI (a browser on web, the simulator on iOS, `adb` on Android). It signs in with the test account you gave, which the build keeps in a git-ignored file under `.claude/specs/.cache/test-accounts/`. If it can't run the UI check (no browser, no login, the app won't start), it never passes the phase: you give it access, check the UI yourself, or waive the check, and the walkthrough records which. On a fail, a fix goes to a builder one tier higher; a fail that persists at the top tier marks the phase blocked.
 8. **Drafts the walkthrough** of what was built, including what happened along the way, then offers to re-sync `CLAUDE.md` and `docs/DESIGN.md`.
 
 ### The builder gate

@@ -46,7 +46,7 @@ the missing ones; it never requires them.
 | `superpowers@claude-plugins-official` | builder | TDD, systematic-debugging and two-stage-review hand-offs | plain execution loop |
 | `frontend-design@claude-plugins-official` | builder (UI tasks), designer | visual-judgment hand-off, still grounded in `docs/DESIGN.md` tokens | DESIGN.md-only fallback |
 | `context7@claude-plugins-official` | all writers and builder | current library docs ("use latest APIs") | model memory only |
-| `playwright@claude-plugins-official` | reviewer UI check (web) | browser MCP tools to drive the happy path | reviewer judges from the diff |
+| `playwright@claude-plugins-official` | reviewer UI check (web) | browser MCP tools to drive the happy path | the build asks you to add the tools, check the UI yourself, or waive the check |
 
 The playwright row also counts as present when this session already has
 `mcp__chrome-devtools__*` tools. Never recommend both.
