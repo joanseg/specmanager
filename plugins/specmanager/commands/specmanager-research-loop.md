@@ -1,5 +1,5 @@
 ---
-description: Run a SpecManager research study from a one-line idea to a user-research plan in one go — asks every question up front, then drafts the brief, market research, the chosen Docs, the user-research plan and the marketing plan via the researcher subagent, reviews across the docs, and stops before findings.
+description: Run a SpecManager research study from a one-line idea to a user-research plan in one go — asks every question up front, then drafts the brief, market research, the chosen Docs, the user-research plan, the marketing plan and the P&L case via the researcher subagent, reviews across the docs, and stops before findings.
 argument-hint: "<idea, or existing study id/slug>"
 ---
 
@@ -19,10 +19,10 @@ starts, the run never pauses until the review.
    pasted unchanged into every subagent prompt and is the drift reference for
    the review.
 2. **Opening turn — before any write.** One short message: the run order
-   (brief → market → Docs → user-research plan → marketing plan → one review →
-   end questions → report), that it **approves nothing** (research docs have
-   no approval), and that it stops before findings, which needs real
-   interviews. Nothing is created or written before this message.
+   (brief → market → Docs → user-research plan → marketing plan → P&L case →
+   one review → end questions → report), that it **approves nothing**
+   (research docs have no approval), and that it stops before findings,
+   which needs real interviews. Nothing is created or written before this message.
 3. **Resolve the study.** `list_studies`.
    - **Existing study** — the first whitespace-separated token matches an
      `id`/`slug`: use it; the rest of the argument is extra context. Existing
@@ -61,7 +61,7 @@ starts, the run never pauses until the review.
      - Docs: <confirmed docTypes / existing doc ids, or "none">
      - Assumptions: <decide-for-me decisions and gaps, or "none">
      ```
-5. **Run each step the same way.** For each step in 6–10:
+5. **Run each step the same way.** For each step in 6–10a:
    1. **Existing doc.** From `list_studies`: the step's doc exists → reuse it
       (skip the step, note "reused") or, if the user chose rewrite, dispatch
       the job naming the existing doc id so it writes in place.
@@ -101,6 +101,11 @@ starts, the run never pauses until the review.
    `market-<slug>` and every wireframes Doc id.
 10. **Marketing plan.** One `marketing` job, naming `brief-<slug>` and
     `market-<slug>`. It runs after the user-research plan, in PRD order.
+10a. **P&L case.** One `case` job, naming `brief-<slug>`, `market-<slug>`
+    and `mktg-<slug>`. It runs after the marketing plan. Under the loop-mode
+    line it asks nothing: every `[ASK]` stays in its `## Owner questions`,
+    modelled with an `[A]` range. A study with no money question gets the
+    `## Skipped` form, which still counts as the step's doc.
 11. **Cross-doc review — inline in the main session, no subagent.** Read
     every doc of the study with `read_research_doc`; for HTML Docs, `Read` the
     `filePath` it returns in offset/limit chunks. Check, in a single pass:
@@ -111,11 +116,16 @@ starts, the run never pauses until the review.
     - every figure carries a source or reads `n/a (unsourced)` — presentations
       and decks included;
     - each doc keeps its pinned headings (the brief's, the market doc's, the
-      user-research plan's), in order, with an optional trailing `## Appendix`;
+      user-research plan's, the case's), in order, with an optional trailing
+      `## Appendix`;
+    - the case (unless `## Skipped`): every input in `## Data pack` carries a
+      tag, `## Sources checked` is present, and each `[ASK]` in
+      `## Owner questions` ends with `— would be answered by: <connector>`.
+      The case carries no Green/Yellow/Red grade — the review adds none;
     - cap check: each markdown doc's human part is within its cap — words
       before `## Appendix`, `## Sources` excluded: brief 600, market 1,500,
-      marketing 1,500, user-research 2,000. Count with one `awk` over the
-      doc's `filePath`, skipping frontmatter:
+      marketing 1,500, user-research 2,000, case 1,200. Count with one `awk`
+      over the doc's `filePath`, skipping frontmatter:
       `awk '/^---$/&&n<2{n++;next} n<2{next} /^## Appendix/{a=1} /^## /{s=($0~/^## Sources/)} !a&&!s{w+=NF} END{print w+0}' <filePath>`;
     - drift from the Original idea and the brief block.
 
@@ -130,17 +140,21 @@ starts, the run never pauses until the review.
       so an over-long Doc becomes a step-12 question.
     - Single pass — no re-review.
 12. **End questions.** Gather the open questions: each doc's
-    `## Open questions`, unresolved review findings, and the brief's
-    `## Assumptions`. Ask them with `AskUserQuestion` in batches of ≤4,
-    recommended option first, labelled *(recommended)*. Apply the answers in
+    `## Open questions`, the case's `## Owner questions` `[ASK]`s, unresolved
+    review findings, and the brief's `## Assumptions`. Ask them with
+    `AskUserQuestion` in batches of ≤4, recommended option first, labelled *(recommended)*. Apply the answers in
     **one final update per affected doc**, the brief included, with the
     step-11 write rules; answered entries are deleted from that doc's
-    `## Open questions` and the answer is folded into the body. Skipped
-    questions and unresolved review findings are recorded in the brief's
+    `## Open questions` and the answer is folded into the body. In the case,
+    an answered `[ASK]` leaves `## Owner questions`, its input takes the
+    owner's answer, and the `[D]` figures derived from it are recomputed —
+    all in the case's one final update. Skipped questions and unresolved
+    review findings are recorded in the brief's
     `## Open questions`, in that same final update. None → skip and say so.
 13. **Final report.**
     - study id and slug;
-    - each doc: id, version, path;
+    - each doc: id, version, path — the P&L case (`case-<slug>`, or its
+      `## Skipped` form) included;
     - Docs drafted, and any skipped because none was confirmed;
     - review fixes applied;
     - questions answered vs still open;
