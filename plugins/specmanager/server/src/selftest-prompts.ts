@@ -23,11 +23,14 @@
 // Part J's INV-74…INV-77 for the builder gate's `Dispatch:` line, and
 // Part K's INV-78…INV-83 for the P&L case method (snippet parity, tag
 // legend, the `— would be answered by:` rule, the read-only database rule,
-// the six-trap self-check and the snippet's placement-independence).
+// the six-trap self-check and the snippet's placement-independence) plus
+// INV-84…INV-87 for its wiring (the case job's headings, the strategy's
+// `case F<n>` suffix, the research loop's `case` step and the research
+// command's two-pass `case` step).
 // A few are encoded as lettered rows (INV-14a…e, INV-27a…c,
 // INV-36a/b, INV-45a…c, INV-46a/b, INV-47a/b, INV-48a…c, INV-49a/b,
 // INV-50a…e, INV-51a…f, INV-52a/b, INV-74a…e, INV-76a/b, INV-77a/b,
-// INV-79a…f, INV-81a…c, and
+// INV-79a…f, INV-81a…c, INV-85a/b, INV-86a…i, INV-87a…d, and
 // the pre-existing INV-15a/b)
 // because the reconciliation calls for one pattern per independently
 // deletable clause: a single whole-block pattern stays green when all but
@@ -910,7 +913,9 @@ const INVARIANTS: PromptInvariant[] = [
   // INV-57a/b/c recounted for the P&L case lens (task-005): the R13
   // never-invent rewrite (facts need a source; case inputs may be `[A]` with
   // a range) kept all three totals — 3, 6 and 2 — so the pinned
-  // min == max values stand.
+  // min == max values stand. Recounted again for the wiring rows (task-012)
+  // after the case job, strategy suffix and `case` step landed: still 3, 6
+  // and 2.
   {
     id: "INV-57a",
     what: "no-invented-numbers: never invent numbers or scores — agent (rules + findings) and command each state it",
@@ -1476,6 +1481,144 @@ const INVARIANTS: PromptInvariant[] = [
     min: 0,
     max: 0,
     negativeSample: "Run this method in the `case` step, before findings on the rail.",
+  },
+  // ---- Part K (wiring) — INV-84…INV-87: where the case runs (arch §wiring, §test-plan) ----
+  // The method rows above work wherever the case lands; these pin the
+  // placement: the researcher's `case` job shape and the strategy suffix
+  // that cites it, the research loop's run order, dispatch, review and cap,
+  // and the single-step command's two-pass `case` step. Each is min == max
+  // at today's count. INV-60a's `[S<n>]` line format stays pinned at 1/1
+  // above, so the suffix row cannot be satisfied by a second line format.
+  {
+    id: "INV-84",
+    what: "researcher case job: the exact heading list, in order, with the optional trailing Appendix",
+    pattern:
+      /^- `## Answer`.*\n- `## Frame`.*\n- `## Data pack`.*\n- `## Model`.*\n- `## Segments`.*\n- `## Gross vs net`.*\n- `## Break-even and sensitivity`.*\n- `## Recommendation`.*\n- `## Self-check`.*\n- `## Owner questions`.*\n- `## Sources checked`.*\n- `## Sources`.*\n- `## Appendix`.*$/gm,
+    files: ["agents/researcher.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-85a",
+    what: "strategy: a What-to-build item from a case fix ends its rationale with the money / kill-signal / `case F<n>` suffix",
+    pattern: "` · <money>/mo · kill: <signal> · case F<n>`",
+    files: ["agents/researcher.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-85b",
+    what: "strategy: a case fix not built is listed under Learnings with its reason",
+    pattern: "A case fix not built is listed under `## Learnings` with its reason.",
+    files: ["agents/researcher.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-86a",
+    what: "research loop: the opening run order names the P&L case after the marketing plan",
+    pattern: "marketing plan → P&L case →",
+    files: ["commands/specmanager-research-loop.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-86b",
+    what: "research loop: step 10a dispatches one `case` job",
+    pattern: "10a. **P&L case.** One `case` job",
+    files: ["commands/specmanager-research-loop.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-86c",
+    what: "research loop: under the loop-mode line the case job asks nothing",
+    pattern: /Under the loop-mode\s+line it asks nothing/g,
+    files: ["commands/specmanager-research-loop.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-86d",
+    what: "research loop review: every case input in `## Data pack` carries a tag",
+    pattern: /every input in `## Data pack` carries a\s+tag/g,
+    files: ["commands/specmanager-research-loop.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-86e",
+    what: "research loop review: the case's `## Sources checked` is present",
+    pattern: "`## Sources checked` is present",
+    files: ["commands/specmanager-research-loop.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-86f",
+    what: "research loop review: each case `[ASK]` ends with `— would be answered by: <connector>`",
+    pattern: /each `\[ASK\]` in\s+`## Owner questions` ends with `— would be answered by: <connector>`/g,
+    files: ["commands/specmanager-research-loop.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-86g",
+    what: "research loop cap check includes the case's 1,200-word cap",
+    pattern: "case 1,200",
+    files: ["commands/specmanager-research-loop.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-86h",
+    what: "research loop's Don't: no builder, findings, strategy or handoff dispatch",
+    pattern: "Don't dispatch the builder, or a `findings`, `strategy` or handoff step",
+    files: ["commands/specmanager-research-loop.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-86i",
+    what: "research loop never dispatches a `strategy` or `findings` job (negative)",
+    pattern: /One `(?:strategy|findings)` job/gi,
+    files: ["commands/specmanager-research-loop.md"],
+    min: 0,
+    max: 0,
+    negativeSample: "11. **Strategy.** One `strategy` job, naming every doc of the study.",
+  },
+  {
+    id: "INV-87a",
+    what: "research command: the `case` step routes to its Case section",
+    pattern: "- **case:** see Case.",
+    files: ["commands/specmanager-research.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-87b",
+    what: "research command: one `## Case` section",
+    pattern: /^## Case$/gm,
+    files: ["commands/specmanager-research.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-87c",
+    what: "research command case step: open `[ASK]`s are asked with `AskUserQuestion`, at most four per call",
+    pattern: "ask them in this session with `AskUserQuestion`, at most four per call",
+    files: ["commands/specmanager-research.md"],
+    min: 1,
+    max: 1,
+  },
+  {
+    id: "INV-87d",
+    what: "research command case step: one rewrite job takes the answers and rewrites the case in place",
+    pattern:
+      "Dispatch **one** `researcher` `case` job with the study id, the case id and the answers; it rewrites the case in place.",
+    files: ["commands/specmanager-research.md"],
+    min: 1,
+    max: 1,
   },
 ];
 
