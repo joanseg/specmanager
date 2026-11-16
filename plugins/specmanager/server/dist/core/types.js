@@ -63,7 +63,7 @@ export const DocFrontmatterSchema = z.object({
 });
 // Researcher mode, under .claude/specs/research/<slug>/: one doc per single kind per study;
 // `doc` is the multi-per-study HTML kind and carries a `docType`.
-export const RESEARCH_KIND = z.enum(["brief", "market", "doc", "user-research", "marketing", "strategy"]);
+export const RESEARCH_KIND = z.enum(["brief", "market", "doc", "user-research", "marketing", "case", "strategy"]);
 // Preset doc types; any other non-empty `docType` string is a custom type (its own label).
 export const DOC_TYPE_PRESETS = [
     "wireframes",

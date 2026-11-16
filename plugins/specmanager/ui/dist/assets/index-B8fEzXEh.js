@@ -615,8 +615,8 @@ function useEscClose(onClose) {
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 }
-const STEPS = ["market", "docs", "plan", "marketing", "findings", "strategy", "handoff"];
-const LOOP_STEPS = /* @__PURE__ */ new Set(["market", "docs", "plan", "marketing"]);
+const STEPS = ["market", "docs", "plan", "marketing", "case", "findings", "strategy", "handoff"];
+const LOOP_STEPS = /* @__PURE__ */ new Set(["market", "docs", "plan", "marketing", "case"]);
 const LOOP_CMD = '/specmanager-research-loop "<idea>"';
 const CLI_CMD = '/specmanager-research "<idea>" new';
 function slugify(input) {
@@ -693,7 +693,7 @@ function EmptyResearch() {
         createVNode("button", { type: "button", className: "cmd cmd--loop", onClick: () => copy$1(LOOP_CMD), title: "copy to clipboard", children: LOOP_CMD }),
         createVNode("div", { className: "start-block__caption", children: [
           createVNode("b", { children: "asks first" }),
-          " · brief → market → docs → plan → marketing · ",
+          " · brief → market → docs → plan → marketing → case · ",
           createVNode("b", { children: "one review" }),
           " · ",
           createVNode("b", { children: "asks again" }),
@@ -711,6 +711,7 @@ const COLUMNS = [
   { kind: "doc", label: "Docs" },
   { kind: "user-research", label: "User research" },
   { kind: "marketing", label: "Marketing plan" },
+  { kind: "case", label: "P&L case" },
   { kind: "strategy", label: "Strategy" }
 ];
 function kindLabel(kind) {

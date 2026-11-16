@@ -20,10 +20,17 @@
 // Part I's INV-66…INV-73 for readable docs (density, readable-doc and
 // design-pass snippet parity, the researcher's optional Appendix, the loops'
 // cap check and folded answers, designer Build notes, planner Task details),
-// and Part J's INV-74…INV-77 for the builder gate's `Dispatch:` line.
+// Part J's INV-74…INV-77 for the builder gate's `Dispatch:` line, and
+// Part K's INV-78…INV-83 for the P&L case method (snippet parity, tag
+// legend, the `— would be answered by:` rule, the read-only database rule,
+// the six-trap self-check and the snippet's placement-independence) plus
+// INV-84…INV-87 for its wiring (the case job's headings, the strategy's
+// `case F<n>` suffix, the research loop's `case` step and the research
+// command's two-pass `case` step).
 // A few are encoded as lettered rows (INV-14a…e, INV-27a…c,
 // INV-36a/b, INV-45a…c, INV-46a/b, INV-47a/b, INV-48a…c, INV-49a/b,
-// INV-50a…e, INV-51a…f, INV-52a/b, INV-74a…e, INV-76a/b, INV-77a/b, and
+// INV-50a…e, INV-51a…f, INV-52a/b, INV-74a…e, INV-76a/b, INV-77a/b,
+// INV-79a…f, INV-81a…c, INV-85a/b, INV-86a…i, INV-87a…d, and
 // the pre-existing INV-15a/b)
 // because the reconciliation calls for one pattern per independently
 // deletable clause: a single whole-block pattern stays green when all but
@@ -45,6 +52,7 @@
 //
 // Usage: node dist/selftest-prompts.js
 import fs from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 function assert(cond, msg) {
@@ -55,6 +63,20 @@ function assert(cond, msg) {
 // dist/selftest-prompts.js → plugin root is two levels up from server/dist.
 const here = path.dirname(fileURLToPath(import.meta.url)); // .../server/dist
 const PLUGIN_ROOT = path.resolve(here, "..", ".."); // .../plugins/specmanager
+/** Plugin-root-relative path of the canonical P&L case method snippet. */
+const PL_CASE_METHOD_SNIPPET = "../../docs/agent-snippets/pl-case-method.md";
+/** The snippet's carried block: everything after its `---` line, minus the
+ * one blank line that follows it, trailing whitespace trimmed. INV-78 counts
+ * it in the snippet and in researcher.md. */
+function plCaseMethodBlock() {
+    const raw = readFileSync(path.join(PLUGIN_ROOT, PL_CASE_METHOD_SNIPPET), "utf8");
+    const marker = "\n---\n\n";
+    const at = raw.indexOf(marker);
+    if (at === -1)
+        throw new Error(`FAIL: no \`---\` line in ${PL_CASE_METHOD_SNIPPET}`);
+    return raw.slice(at + marker.length).trimEnd();
+}
+const PL_CASE_METHOD_BLOCK = plCaseMethodBlock();
 const INVARIANTS = [
     // ---- Part A — INV-1…INV-15, reconciled against the derived D-nn table ----
     {
@@ -850,6 +872,12 @@ const INVARIANTS = [
         min: 1,
         max: 1,
     },
+    // INV-57a/b/c recounted for the P&L case lens (task-005): the R13
+    // never-invent rewrite (facts need a source; case inputs may be `[A]` with
+    // a range) kept all three totals — 3, 6 and 2 — so the pinned
+    // min == max values stand. Recounted again for the wiring rows (task-012)
+    // after the case job, strategy suffix and `case` step landed: still 3, 6
+    // and 2.
     {
         id: "INV-57a",
         what: "no-invented-numbers: never invent numbers or scores — agent (rules + findings) and command each state it",
@@ -1291,6 +1319,256 @@ const INVARIANTS = [
         what: "parallel builders' `Git strategy:` block names the `git commit … -- <paths>` form",
         pattern: "commit with `git commit -m \"<message>\" -- <paths>`",
         files: ["commands/specmanager-build.md"],
+        min: 1,
+        max: 1,
+    },
+    // ---- Part K — INV-78…INV-83: the P&L case method (arch §lens-core, §test-plan) ----
+    // `docs/agent-snippets/pl-case-method.md` is the canonical method block,
+    // carried verbatim in `agents/researcher.md`. Every row counts across the
+    // snippet AND its carrier (min == max == 2), so a line deleted from either
+    // copy turns the row red. INV-78 pins the whole block byte for byte; the
+    // lettered rows name each independently deletable rule so a failure says
+    // which one went.
+    {
+        id: "INV-78",
+        what: "pl-case-method snippet parity — the block after the snippet's `---` line appears verbatim in researcher.md",
+        pattern: PL_CASE_METHOD_BLOCK,
+        files: [PL_CASE_METHOD_SNIPPET, "agents/researcher.md"],
+        min: 2,
+        max: 2,
+    },
+    {
+        id: "INV-79a",
+        what: "pl-case tags — every input tagged, every output `[D]`, an untagged number forbidden",
+        pattern: "**Tags.** Tag every input with one of four tags, and every model output with `[D]`. A number with no tag is forbidden.",
+        files: [PL_CASE_METHOD_SNIPPET, "agents/researcher.md"],
+        min: 2,
+        max: 2,
+    },
+    {
+        id: "INV-79b",
+        what: "pl-case tags — `[V]` verified, read from a linked project or a connector",
+        pattern: "- `[V]` verified: read from a linked project or a connector.",
+        files: [PL_CASE_METHOD_SNIPPET, "agents/researcher.md"],
+        min: 2,
+        max: 2,
+    },
+    {
+        id: "INV-79c",
+        what: "pl-case tags — `[S]` sourced, an external source, cited",
+        pattern: "- `[S]` sourced: an external source, cited.",
+        files: [PL_CASE_METHOD_SNIPPET, "agents/researcher.md"],
+        min: 2,
+        max: 2,
+    },
+    {
+        id: "INV-79d",
+        what: "pl-case tags — `[A]` assumption, always a `low–high` range, never a point",
+        pattern: "- `[A]` assumption: always given as a range `low–high`, never a point.",
+        files: [PL_CASE_METHOD_SNIPPET, "agents/researcher.md"],
+        min: 2,
+        max: 2,
+    },
+    {
+        id: "INV-79e",
+        what: "pl-case tags — `[ASK]` only the owner can answer it",
+        pattern: "- `[ASK]` owner: only the owner can answer it.",
+        files: [PL_CASE_METHOD_SNIPPET, "agents/researcher.md"],
+        min: 2,
+        max: 2,
+    },
+    {
+        id: "INV-79f",
+        what: "pl-case tags — `[D]` derived, computed from tagged inputs",
+        pattern: "- `[D]` derived: computed from tagged inputs.",
+        files: [PL_CASE_METHOD_SNIPPET, "agents/researcher.md"],
+        min: 2,
+        max: 2,
+    },
+    {
+        id: "INV-80",
+        what: "pl-case sources checked — each `[ASK]` ends with the literal `— would be answered by: <connector>`",
+        pattern: "Each `[ASK]` names the connector that would have answered it, ending with `— would be answered by: <connector>`",
+        files: [PL_CASE_METHOD_SNIPPET, "agents/researcher.md"],
+        min: 2,
+        max: 2,
+    },
+    {
+        id: "INV-81a",
+        what: "pl-case read-only DB — a linked database only when its credentials are already in session",
+        pattern: "A linked project's own database may be queried only when its credentials are already in session.",
+        files: [PL_CASE_METHOD_SNIPPET, "agents/researcher.md"],
+        min: 2,
+        max: 2,
+    },
+    {
+        id: "INV-81b",
+        what: "pl-case read-only DB — SELECT or find only, never a write",
+        pattern: "Run SELECT or find only, never a write.",
+        files: [PL_CASE_METHOD_SNIPPET, "agents/researcher.md"],
+        min: 2,
+        max: 2,
+    },
+    {
+        id: "INV-81c",
+        what: "pl-case read-only DB — aggregates only, no personal data copied into the doc",
+        pattern: "Read aggregates only, and copy no personal data into the doc.",
+        files: [PL_CASE_METHOD_SNIPPET, "agents/researcher.md"],
+        min: 2,
+        max: 2,
+    },
+    {
+        id: "INV-82",
+        what: "pl-case self-check — the six traps, in order, as consecutive numbered lines",
+        pattern: /^\*\*Self-check\.\*\* Answer each trap yes or no.*\n\n1\. Revenue reported as profit\?.*\n2\. Unit sloppiness\?.*\n3\. Total base size never asked\?.*\n4\. "What did the change buy" never asked\?.*\n5\. Container-driven cost\?.*\n6\. Celebrating volume growth that grew a loss\?.*$/gm,
+        files: [PL_CASE_METHOD_SNIPPET, "agents/researcher.md"],
+        min: 2,
+        max: 2,
+    },
+    {
+        id: "INV-83",
+        what: "pl-case snippet is placement-independent — never names the kind/step `case`, the rail or the board (negative)",
+        // Snippet only: researcher.md legitimately names the `case` job, and
+        // INV-78 already holds its copy of the block equal to the snippet's.
+        pattern: /`case`|kind: "case"|\brail\b|\bboard\b/gi,
+        files: [PL_CASE_METHOD_SNIPPET],
+        min: 0,
+        max: 0,
+        negativeSample: "Run this method in the `case` step, before findings on the rail.",
+    },
+    // ---- Part K (wiring) — INV-84…INV-87: where the case runs (arch §wiring, §test-plan) ----
+    // The method rows above work wherever the case lands; these pin the
+    // placement: the researcher's `case` job shape and the strategy suffix
+    // that cites it, the research loop's run order, dispatch, review and cap,
+    // and the single-step command's two-pass `case` step. Each is min == max
+    // at today's count. INV-60a's `[S<n>]` line format stays pinned at 1/1
+    // above, so the suffix row cannot be satisfied by a second line format.
+    {
+        id: "INV-84",
+        what: "researcher case job: the exact heading list, in order, with the optional trailing Appendix",
+        pattern: /^- `## Answer`.*\n- `## Frame`.*\n- `## Data pack`.*\n- `## Model`.*\n- `## Segments`.*\n- `## Gross vs net`.*\n- `## Break-even and sensitivity`.*\n- `## Recommendation`.*\n- `## Self-check`.*\n- `## Owner questions`.*\n- `## Sources checked`.*\n- `## Sources`.*\n- `## Appendix`.*$/gm,
+        files: ["agents/researcher.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-85a",
+        what: "strategy: a What-to-build item from a case fix ends its rationale with the money / kill-signal / `case F<n>` suffix",
+        pattern: "` · <money>/mo · kill: <signal> · case F<n>`",
+        files: ["agents/researcher.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-85b",
+        what: "strategy: a case fix not built is listed under Learnings with its reason",
+        pattern: "A case fix not built is listed under `## Learnings` with its reason.",
+        files: ["agents/researcher.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-86a",
+        what: "research loop: the opening run order names the P&L case after the marketing plan",
+        pattern: "marketing plan → P&L case →",
+        files: ["commands/specmanager-research-loop.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-86b",
+        what: "research loop: step 10a dispatches one `case` job",
+        pattern: "10a. **P&L case.** One `case` job",
+        files: ["commands/specmanager-research-loop.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-86c",
+        what: "research loop: under the loop-mode line the case job asks nothing",
+        pattern: /Under the loop-mode\s+line it asks nothing/g,
+        files: ["commands/specmanager-research-loop.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-86d",
+        what: "research loop review: every case input in `## Data pack` carries a tag",
+        pattern: /every input in `## Data pack` carries a\s+tag/g,
+        files: ["commands/specmanager-research-loop.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-86e",
+        what: "research loop review: the case's `## Sources checked` is present",
+        pattern: "`## Sources checked` is present",
+        files: ["commands/specmanager-research-loop.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-86f",
+        what: "research loop review: each case `[ASK]` ends with `— would be answered by: <connector>`",
+        pattern: /each `\[ASK\]` in\s+`## Owner questions` ends with `— would be answered by: <connector>`/g,
+        files: ["commands/specmanager-research-loop.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-86g",
+        what: "research loop cap check includes the case's 1,200-word cap",
+        pattern: "case 1,200",
+        files: ["commands/specmanager-research-loop.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-86h",
+        what: "research loop's Don't: no builder, findings, strategy or handoff dispatch",
+        pattern: "Don't dispatch the builder, or a `findings`, `strategy` or handoff step",
+        files: ["commands/specmanager-research-loop.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-86i",
+        what: "research loop never dispatches a `strategy` or `findings` job (negative)",
+        pattern: /One `(?:strategy|findings)` job/gi,
+        files: ["commands/specmanager-research-loop.md"],
+        min: 0,
+        max: 0,
+        negativeSample: "11. **Strategy.** One `strategy` job, naming every doc of the study.",
+    },
+    {
+        id: "INV-87a",
+        what: "research command: the `case` step routes to its Case section",
+        pattern: "- **case:** see Case.",
+        files: ["commands/specmanager-research.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-87b",
+        what: "research command: one `## Case` section",
+        pattern: /^## Case$/gm,
+        files: ["commands/specmanager-research.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-87c",
+        what: "research command case step: open `[ASK]`s are asked with `AskUserQuestion`, at most four per call",
+        pattern: "ask them in this session with `AskUserQuestion`, at most four per call",
+        files: ["commands/specmanager-research.md"],
+        min: 1,
+        max: 1,
+    },
+    {
+        id: "INV-87d",
+        what: "research command case step: one rewrite job takes the answers and rewrites the case in place",
+        pattern: "Dispatch **one** `researcher` `case` job with the study id, the case id and the answers; it rewrites the case in place.",
+        files: ["commands/specmanager-research.md"],
         min: 1,
         max: 1,
     },

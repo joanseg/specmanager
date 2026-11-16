@@ -61,6 +61,7 @@ const KIND_ID_PREFIX = {
     market: "market",
     "user-research": "ur",
     marketing: "mktg",
+    case: "case",
     strategy: "strategy",
 };
 const KIND_FILENAME = {
@@ -68,6 +69,7 @@ const KIND_FILENAME = {
     market: "market-research.md",
     "user-research": "user-research.md",
     marketing: "marketing-plan.md",
+    case: "pl-case.md",
     strategy: "strategy.md",
 };
 /** Pre-docs studies keep their wireframes in `concepts.html` (id `concepts-<slug>`), read as a `doc`. */
@@ -242,6 +244,7 @@ export const RESEARCH_STEPS = [
     "docs",
     "user-research",
     "marketing",
+    "case",
     "findings",
     "strategy",
     "handoff",
@@ -320,6 +323,7 @@ function gateFor(step, state) {
         case "docs":
         case "user-research":
         case "marketing":
+        case "case":
             return doc("market") ? { ok: true } : { ok: false, reason: "needs market research first" };
         case "findings":
             return doc("user-research")
