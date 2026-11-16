@@ -274,13 +274,13 @@ Notes live in `.claude/specs/research/<slug>/notes/` and are tracked in git with
 
 ## Job: strategy
 
-**Kind** `strategy` · **title** `<Study title> strategy` · **dependsOn** `[brief-<slug>, market-<slug>, ur-<slug>, mktg-<slug>]` plus every wireframes Doc's id (`brief-<slug>` only if it exists) · **inputs** the study and every doc in `dependsOn`.
+**Kind** `strategy` · **title** `<Study title> strategy` · **dependsOn** `[brief-<slug>, market-<slug>, ur-<slug>, mktg-<slug>, case-<slug>]` plus every wireframes Doc's id (`brief-<slug>` and `case-<slug>` only if they exist) · **inputs** the study and every doc in `dependsOn`.
 
-1. **Revise upstream in place first.** Add what the research learned to the market doc, and resolve each item in the marketing plan's `## To revisit after research` (confirmed, changed or dropped, with the evidence). Persist each with `write_research_doc`, which bumps its version.
+1. **Revise upstream in place first.** Add what the research learned to the market doc, and resolve each item in the marketing plan's `## To revisit after research` (confirmed, changed or dropped, with the evidence), and revise the case (when it exists) with what the findings learned, keeping each fix's `F<n>` id. Persist each with `write_research_doc`, which bumps its version.
 2. **Write the strategy** with `basedOn` mapping each `dependsOn` id to its **current** version, i.e. after step 1's writes. Sections:
    - `## Learnings`
    - `## Decision-rule outcomes` — each V1 decision rule from the user research, with its outcome.
-   - `## What to build` — an ordered list, one item per line, exactly `1. [S<n>] **<Item title>** — <rationale, marketing tie-in>`. On re-synthesis keep each existing item's `S<n>` id, even when it is renamed or re-ranked; give new items the next unused number; never reuse an id, including a dropped item's. This list is the handoff contract.
+   - `## What to build` — an ordered list, one item per line, exactly `1. [S<n>] **<Item title>** — <rationale, marketing tie-in>`. On re-synthesis keep each existing item's `S<n>` id, even when it is renamed or re-ranked; give new items the next unused number; never reuse an id, including a dropped item's. When an item comes from a case fix, its rationale ends with ` · <money>/mo · kill: <signal> · case F<n>`, taken from that fix in the case. A case fix not built is listed under `## Learnings` with its reason. This list is the handoff contract.
    - `## Marketing alignment`
    - `## Sources` — the research doc ids and the versions this strategy was built from.
 
