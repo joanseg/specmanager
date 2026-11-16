@@ -1,8 +1,8 @@
 import { FormEvent, useState } from "react";
 import { createStudyApi } from "./api";
 
-const STEPS = ["market", "docs", "plan", "marketing", "findings", "strategy", "handoff"];
-const LOOP_STEPS = new Set(["market", "docs", "plan", "marketing"]);
+const STEPS = ["market", "docs", "plan", "marketing", "case", "findings", "strategy", "handoff"];
+const LOOP_STEPS = new Set(["market", "docs", "plan", "marketing", "case"]);
 const LOOP_CMD = '/specmanager-research-loop "<idea>"';
 const CLI_CMD = '/specmanager-research "<idea>" new';
 
@@ -98,7 +98,7 @@ export default function EmptyResearch() {
             {LOOP_CMD}
           </button>
           <div className="start-block__caption">
-            <b>asks first</b> · brief → market → docs → plan → marketing · <b>one review</b> · <b>asks again</b> ·
+            <b>asks first</b> · brief → market → docs → plan → marketing → case · <b>one review</b> · <b>asks again</b> ·
             approves nothing
           </div>
           <div className="start-block__lead">Or one step at a time:</div>

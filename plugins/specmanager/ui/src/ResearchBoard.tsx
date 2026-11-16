@@ -17,6 +17,7 @@ const COLUMNS: { kind: ResearchKind; label: string }[] = [
   { kind: "doc", label: "Docs" },
   { kind: "user-research", label: "User research" },
   { kind: "marketing", label: "Marketing plan" },
+  { kind: "case", label: "P&L case" },
   { kind: "strategy", label: "Strategy" },
 ];
 

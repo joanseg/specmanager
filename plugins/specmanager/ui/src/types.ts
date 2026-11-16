@@ -118,12 +118,13 @@ export interface Board {
 }
 
 // Mirror of core/research.ts `StudySummary` (GET /api/studies).
-export type ResearchKind = "brief" | "market" | "doc" | "user-research" | "marketing" | "strategy";
+export type ResearchKind = "brief" | "market" | "doc" | "user-research" | "marketing" | "case" | "strategy";
 export type ResearchStep =
   | "market"
   | "docs"
   | "user-research"
   | "marketing"
+  | "case"
   | "findings"
   | "strategy"
   | "handoff";
