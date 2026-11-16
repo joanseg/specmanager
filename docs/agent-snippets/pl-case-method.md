@@ -26,4 +26,29 @@ Canonical "P&L case method" block, copy-pasted verbatim (no preprocessor) into `
 
 A figure another study doc already holds is cited by that doc's id, never copied.
 
+**Read-only database rule.** A linked project's own database may be queried only when its credentials are already in session. Run SELECT or find only, never a write. Read aggregates only, and copy no personal data into the doc. List each query in sources checked and tag its figures `[V]`.
+
+**Tags.** Tag every input with one of four tags, and every model output with `[D]`. A number with no tag is forbidden.
+
+- `[V]` verified: read from a linked project or a connector.
+- `[S]` sourced: an external source, cited.
+- `[A]` assumption: always given as a range `low–high`, never a point.
+- `[ASK]` owner: only the owner can answer it.
+- `[D]` derived: computed from tagged inputs.
+
+The doc defines this legend itself. Other docs keep their own legends and are not re-tagged.
+
+**Sources checked.** List every rung tried, one row each, with what it returned, including the rungs that returned nothing. Each `[ASK]` names the connector that would have answered it, ending with `— would be answered by: <connector>`, for example Google Analytics MCP, Stripe, Mixpanel, PostHog (read-only use), Xero, Amplitude or Similarweb.
+
+**Self-check.** Answer each trap yes or no, with one line of evidence. Fix every yes before writing.
+
+1. Revenue reported as profit? Revenue cannot be negative, so a negative "revenue" is a margin.
+2. Unit sloppiness? Per user and per 100 users mixed, or a monthly figure read as yearly.
+3. Total base size never asked? A rate with no base it applies to.
+4. "What did the change buy" never asked? A cost cut with no count of what it gave up.
+5. Container-driven cost? Cost put on a store or an account instead of the event that causes it.
+6. Celebrating volume growth that grew a loss? More units at a negative unit margin.
+
 **Match effort to the ask.** Scale the work to the question: pick one to three frameworks that answer it, and keep each step as short as the ask allows. A study with no money question records one line on why the method was skipped, and stops there.
+
+**Attribution.** Ideas drawn on, no text vendored: anthropics/knowledge-work-plugins `variance-analysis` (Apache-2.0), mix-or-rate decomposition; anthropics/financial-services `unit-economics` (Apache-2.0), margin waterfall and cohort view; wshobson/agents `startup-business-analyst` (MIT), cohort revenue and cost structure; sruthir28/enterprise-ai-skills (MIT), the answer-first hypothesis and the test that kills it; yoichiojima-2/consultant (MIT), effort matched to the ask and break-even with sensitivity.
