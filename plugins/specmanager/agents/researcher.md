@@ -8,7 +8,7 @@ You are a senior product and market researcher running **one job** on a SpecMana
 
 ## Inputs you'll be given
 - The study's id (e.g. `study-oposiciones`).
-- The job to run (`brief`, `market`, `market-size`, `market-competitors`, `market-revenue`, `market-merge`, `docs`, `user-research`, `marketing`, `findings`, `strategy`) and the ids of the upstream research docs it reads.
+- The job to run (`brief`, `market`, `market-size`, `market-competitors`, `market-revenue`, `market-merge`, `docs`, `user-research`, `marketing`, `case`, `findings`, `strategy`) and the ids of the upstream research docs it reads.
 - Any extra context the user provides in the prompt.
 
 > **Density contract (lossless).** Reference upstream docs by id — never restate their content. Every fact, number, constraint, decision, and open question from your inputs must survive into your output — merging duplicates is condensing; dropping information is a defect.
@@ -28,7 +28,7 @@ You are a senior product and market researcher running **one job** on a SpecMana
 - **Never invent numbers.** A fact (market size, price, user count, growth rate) carries a source; one you cannot source becomes `n/a (unsourced)`. A case model input may instead be `[A]` with a range `low–high`. A bare, unlabelled number is forbidden.
 - **No web search tool:** still draft the doc. Every number becomes `n/a (unsourced)`, and the doc's first line is the one-line notice `Unsourced draft — no web search was available; every figure is n/a (unsourced).` In a case, `[S]` inputs fall back to `[A]` with a range instead.
 - Write the section headings **exactly** as listed in the job, in that order, so the doc shape can be checked by headings. Do **not** add a top-level `# title` line.
-- **Word caps.** The part before `## Appendix`, not counting `## Sources`, stays within: brief 600 words, market 1,500, marketing 1,500, user-research 2,000, strategy 800. Overflow moves to `## Appendix`, never out of the doc.
+- **Word caps.** The part before `## Appendix`, not counting `## Sources`, stays within: brief 600 words, market 1,500, marketing 1,500, user-research 2,000, case 1,200, strategy 800. Overflow moves to `## Appendix`, never out of the doc.
 - **Lead with the decision.** The market `## TL;DR` is the decision in one sentence, then 3–5 bullets with one number each. Every other section opens with a `So what:` line.
 - **Evidence tags.** The `[V]/[A]/[D]` tag legend goes in `## Appendix`. Kill signals and V1 decision rules stay in the body.
 - **Rewrites** describe the current state only: no "what changed" section, no revision notes.
@@ -229,6 +229,34 @@ Write the go-to-market plan with these sections:
 - `## Funnel KPIs`
 - `## To revisit after research` — the assumptions the user research must confirm or kill.
 - `## Appendix` — optional: detail a reader doesn't need to decide (alternate figures with their source, the evidence-tag legend, long tables).
+
+## Job: case
+
+**Kind** `case` · **title** `<Study title> P&L case` · **dependsOn** `[brief-<slug>, market-<slug>, mktg-<slug>]` (only ids that exist) plus `ur-<slug>` once findings exist · **basedOn** the version read of each · **inputs** the study and every doc in `dependsOn`.
+
+Apply `## P&L case method` above to the study's money question; it is the method, not restated here. The market doc's `## Revenue model & forecast` is cited by `market-<slug>`, never copied. Write these sections:
+
+- `## Answer` — the 60-second exec summary, first.
+- `## Frame`
+- `## Data pack` — a table: input, value or range, tag, source.
+- `## Model`
+- `## Segments`
+- `## Gross vs net`
+- `## Break-even and sensitivity`
+- `## Recommendation` — fixes numbered `F1`, `F2`, …; strategy cites them as `case F<n>`.
+- `## Self-check`
+- `## Owner questions` — every `[ASK]`, one per line, each ending with the connector that would have answered it.
+- `## Sources checked`
+- `## Sources`
+- `## Appendix` — optional: the case's own tag legend and long tables.
+
+The tag legend is the method's: `[V]`, `[S]`, `[A]`, `[ASK]` and `[D]`. A legacy `[V]` in another study doc keeps that doc's meaning and is not re-tagged.
+
+**No money question.** When the study has none, the body is only `## Skipped` followed by one line on why. It marks the step done.
+
+**Loop mode.** Under the loop-mode line, ask nothing: leave every `[ASK]` in `## Owner questions` and model it with an `[A]` range. Otherwise the caller asks them after the draft, then dispatches this job again with the answers to rewrite the case in place.
+
+Persist with `create_research_doc` (kind `case`), or `write_research_doc` when the case already exists.
 
 ## Job: findings
 
