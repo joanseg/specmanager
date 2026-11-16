@@ -80,6 +80,7 @@ const KIND_ID_PREFIX: Record<SingleResearchKind, string> = {
   market: "market",
   "user-research": "ur",
   marketing: "mktg",
+  case: "case",
   strategy: "strategy",
 };
 
@@ -88,6 +89,7 @@ const KIND_FILENAME: Record<SingleResearchKind, string> = {
   market: "market-research.md",
   "user-research": "user-research.md",
   marketing: "marketing-plan.md",
+  case: "pl-case.md",
   strategy: "strategy.md",
 };
 
@@ -323,6 +325,7 @@ export type ResearchStep =
   | "docs"
   | "user-research"
   | "marketing"
+  | "case"
   | "findings"
   | "strategy"
   | "handoff";
@@ -333,6 +336,7 @@ export const RESEARCH_STEPS: ResearchStep[] = [
   "docs",
   "user-research",
   "marketing",
+  "case",
   "findings",
   "strategy",
   "handoff",
@@ -447,6 +451,7 @@ function gateFor(step: ResearchStep, state: StudyState): GateResult {
     case "docs":
     case "user-research":
     case "marketing":
+    case "case":
       return doc("market") ? { ok: true } : { ok: false, reason: "needs market research first" };
     case "findings":
       return doc("user-research")
