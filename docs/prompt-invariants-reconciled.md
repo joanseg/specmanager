@@ -168,6 +168,75 @@ surfaced.
 
 ---
 
+## Part K — `INV-78`…`INV-87`: the P&L case lens
+
+**Feature:** `feat-p-l-case-lens-for-research` · **Tasks:** `task-005` (plan row 1.5, `8946ad4`),
+`task-012` (row 1.12, `caf51b5`) · recorded by `task-014` (row 1.14).
+
+**Naming note.** `selftest-prompts.ts` labels its later blocks Part C…Part K. Its Parts C…J
+(`INV-38`…`INV-77`) were encoded straight into the harness and never recorded here, so this
+doc's Part C (adjudications) and Part D (not added) are unrelated to the harness's Parts C and D.
+Part K below uses the harness's label, so a failing row's id leads to its entry.
+
+Same table shape as Part B. Every method row (`INV-78`…`INV-82`) counts across the canonical
+snippet `docs/agent-snippets/pl-case-method.md` **and** its carrier `agents/researcher.md`, so
+`min == max == 2`: a line cut from either copy goes red. The lettered rows exist for the reason
+in Part A's `INV-14`: one pattern per clause that can be deleted on its own, so a failure names
+the clause.
+
+### Method (`task-005`, arch §lens-core, §test-plan)
+
+| New id | Files | Verdict | `min`/`max` | Reason |
+|---|---|---|---|---|
+| INV-78 | snippet + `researcher.md` | **add** | `min:2, max:2` | Snippet parity. The whole block after the snippet's `---` line, read at test time, appears verbatim in both files. Catches drift between the canonical method and its carried copy. |
+| INV-79a | snippet + `researcher.md` | **add** | `min:2, max:2` | Tag rule: every input tagged, every output `[D]`, an untagged number forbidden. |
+| INV-79b | snippet + `researcher.md` | **add** | `min:2, max:2` | Tag legend `[V]`: verified, read from a linked project or a connector. |
+| INV-79c | snippet + `researcher.md` | **add** | `min:2, max:2` | Tag legend `[S]`: sourced, an external source, cited. |
+| INV-79d | snippet + `researcher.md` | **add** | `min:2, max:2` | Tag legend `[A]`: always a `low–high` range, never a point. Lose it and assumptions come back as false-precise points. |
+| INV-79e | snippet + `researcher.md` | **add** | `min:2, max:2` | Tag legend `[ASK]`: only the owner can answer it. |
+| INV-79f | snippet + `researcher.md` | **add** | `min:2, max:2` | Tag legend `[D]`: derived, computed from tagged inputs. |
+| INV-80 | snippet + `researcher.md` | **add** | `min:2, max:2` | Each `[ASK]` ends with the literal `— would be answered by: <connector>`. The research loop's review (`INV-86f`) checks for this literal, so the method must state it. |
+| INV-81a | snippet + `researcher.md` | **add** | `min:2, max:2` | Read-only database: a linked project's database only when its credentials are already in session. Nothing in core enforces it. |
+| INV-81b | snippet + `researcher.md` | **add** | `min:2, max:2` | Read-only database: SELECT or find only, never a write. |
+| INV-81c | snippet + `researcher.md` | **add** | `min:2, max:2` | Read-only database: aggregates only, no personal data copied into the doc. |
+| INV-82 | snippet + `researcher.md` | **add** | `min:2, max:2` | Self-check: the six traps, in order, as consecutive numbered lines after the `**Self-check.**` lead (one multiline regex). Dropping, reordering or splitting a trap goes red. |
+| INV-83 | snippet only | **add, negative** | `min:0, max:0` | The snippet must not depend on where it runs: it never names the `` `case` `` step, `kind: "case"`, the rail or the board. `researcher.md` is excluded because it legitimately names the `case` job, and `INV-78` already holds its copy equal to the snippet. |
+
+### Wiring (`task-012`, arch §wiring, §test-plan)
+
+Single-file rows, `min == max` at today's count. `INV-60a`'s `[S<n>]` line format stays pinned
+at 1/1, so `INV-85a` can't be met by adding a second line format.
+
+| New id | Files | Verdict | `min`/`max` | Reason |
+|---|---|---|---|---|
+| INV-84 | `researcher.md` | **add** | `min:1, max:1` | The `case` job's exact heading list, in order: Answer, Frame, Data pack, Model, Segments, Gross vs net, Break-even and sensitivity, Recommendation, Self-check, Owner questions, Sources checked, Sources, optional Appendix. The loop's review relies on these headings. |
+| INV-85a | `researcher.md` | **add** | `min:1, max:1` | Strategy: a What-to-build item from a case fix ends its rationale with `` · <money>/mo · kill: <signal> · case F<n>``. This suffix is the only link from strategy back to the case. |
+| INV-85b | `researcher.md` | **add** | `min:1, max:1` | Strategy: a case fix that isn't built is listed under `## Learnings` with its reason, so no fix disappears without a record. |
+| INV-86a | `specmanager-research-loop.md` | **add** | `min:1, max:1` | The opening run order puts the P&L case after the marketing plan. |
+| INV-86b | `specmanager-research-loop.md` | **add** | `min:1, max:1` | Step 10a dispatches one `case` job. |
+| INV-86c | `specmanager-research-loop.md` | **add** | `min:1, max:1` | Under the loop-mode line the case job asks nothing. The loop gathers every question up front. |
+| INV-86d | `specmanager-research-loop.md` | **add** | `min:1, max:1` | Review: every input in `## Data pack` carries a tag. |
+| INV-86e | `specmanager-research-loop.md` | **add** | `min:1, max:1` | Review: `## Sources checked` is present. |
+| INV-86f | `specmanager-research-loop.md` | **add** | `min:1, max:1` | Review: each `[ASK]` in `## Owner questions` ends with `— would be answered by: <connector>`. This is the review half of `INV-80`. |
+| INV-86g | `specmanager-research-loop.md` | **add** | `min:1, max:1` | The cap check includes the case's 1,200-word cap. |
+| INV-86h | `specmanager-research-loop.md` | **add** | `min:1, max:1` | Don't: no builder, `findings`, `strategy` or handoff dispatch. The loop stops before findings. |
+| INV-86i | `specmanager-research-loop.md` | **add, negative** | `min:0, max:0` | The loop never dispatches a `strategy` or `findings` job. This is the behavioural half of `INV-86h`: the Don't could survive while a numbered step adds the dispatch back. |
+| INV-87a | `specmanager-research.md` | **add** | `min:1, max:1` | The `case` step routes to its Case section (`- **case:** see Case.`). |
+| INV-87b | `specmanager-research.md` | **add** | `min:1, max:1` | Exactly one `## Case` section. |
+| INV-87c | `specmanager-research.md` | **add** | `min:1, max:1` | Two-pass flow, pass one: open `[ASK]`s are asked in session with `AskUserQuestion`, at most four per call. |
+| INV-87d | `specmanager-research.md` | **add** | `min:1, max:1` | Two-pass flow, pass two: **one** `researcher` `case` job takes the answers and rewrites the case in place. It does not make a second doc. |
+
+### `INV-57a/b/c` recount (no change)
+
+The R13 never-invent rewrite in `researcher.md` says facts need a source and lets case inputs be
+`[A]` with a range. That is close enough to the no-invented-numbers rows that they were recounted
+twice: after `task-005` and again after `task-012` (once the case job, strategy suffix and `case`
+step had landed). Both recounts gave **3 / 6 / 2** (`never invent` / `` `n/a (unsourced)` `` /
+`` `missing` ``, summed over `researcher.md` + `specmanager-research.md`). These are the totals
+already pinned, so `min == max` stands for all three and no row was edited.
+
+---
+
 ## Findings for the Architecture / Plan (recorded, not applied — I don't edit those docs)
 
 1. **Architecture's `INV-1`, `INV-2`, `INV-4`, `INV-6`, `INV-7`, `INV-11` site counts are
