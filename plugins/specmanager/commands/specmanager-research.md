@@ -1,11 +1,11 @@
 ---
-description: Run one step of a SpecManager research study (brief, market research, Docs, user-research plan, marketing plan, findings, strategy, handoff) via the researcher subagent. Starts a new study if it doesn't exist yet.
-argument-hint: "<study> [new|brief|market|docs|concepts|plan|marketing|findings|strategy|handoff]"
+description: Run one step of a SpecManager research study (brief, market research, Docs, user-research plan, marketing plan, P&L case, findings, strategy, handoff) via the researcher subagent. Starts a new study if it doesn't exist yet.
+argument-hint: "<study> [new|brief|market|docs|concepts|plan|marketing|case|findings|strategy|handoff]"
 ---
 
 Run a research step for: **$ARGUMENTS**.
 
-The first token is the study (its `id`, `slug` or title); the optional second token is the step. Anything after that is extra context to forward to the subagent. `plan` is the user-research plan (kind `user-research`). `concepts` is an alias of `docs`.
+The first token is the study (its `id`, `slug` or title); the optional second token is the step. Anything after that is extra context to forward to the subagent. `plan` is the user-research plan (kind `user-research`). `case` is the P&L case (kind `case`). `concepts` is an alias of `docs`.
 
 ## Steps
 
@@ -17,9 +17,10 @@ The first token is the study (its `id`, `slug` or title); the optional second to
    - **brief:** see Brief.
    - **docs** (alias `concepts`): see Docs.
    - **plan, marketing, strategy:** dispatch one `researcher` job with the study id, the job name (`user-research`, `marketing`, `strategy`) and the ids of the upstream docs from `list_studies`.
+   - **case:** see Case.
    - **findings:** first save any notes the user pasted in the conversation, then dispatch one `findings` job (see Notes intake).
    - **handoff:** see Handoff.
-5. **Report.** Each doc's id, version and file path, plus the study's new `nextStep` from `list_studies`. Suggest opening it in the board (`/specmanager-board`, Researcher mode). After `user-research`, remind the user that findings needs real interviews: drop transcripts or notes in `notes/`, or paste them, then run `/specmanager-research <slug> findings`.
+5. **Report.** Each doc's id, version and file path, plus the study's new `nextStep` from `list_studies`. Suggest opening it in the board (`/specmanager-board`, Researcher mode). After `case`, list any `[ASK]` the owner skipped: it stays in `## Owner questions` with its `[A]` range. After `user-research`, remind the user that findings needs real interviews: drop transcripts or notes in `notes/`, or paste them, then run `/specmanager-research <slug> findings`.
 
 ## Brief
 
@@ -47,6 +48,15 @@ Runs any time after market research. Relevance is a recommendation, not a gate: 
 4. **Draft.** Dispatch one `researcher` `docs` job per confirmed Doc, with the study id and either its `docType` or the id of the existing Doc to update. Docs of different types go **in parallel**, in one message; Docs of the same type run **sequentially**, so each sees the one before it.
 5. **Report** each Doc's id, version and file path.
 
+## Case
+
+Runs after marketing and before findings. Two passes, so the owner answers every `[ASK]` before the case is final.
+
+1. **Draft.** Dispatch one `researcher` `case` job with the study id and the ids of the upstream docs from `list_studies` (`brief-<slug>`, `market-<slug>`, `mktg-<slug>`, and `ur-<slug>` once findings exist).
+2. **Skipped.** If the study has no money question, the job writes the case as `## Skipped` with one line on why. That marks the step done: report it and stop.
+3. **Ask.** If the returned case has open `[ASK]`s in its `## Owner questions`, ask them in this session with `AskUserQuestion`, at most four per call. Each question names the connector that would have answered it (its `— would be answered by: <connector>`). Offer a "skip" option; a skipped `[ASK]` keeps its `[A]` range. With no open `[ASK]`s, stop after the draft.
+4. **Rewrite.** Dispatch **one** `researcher` `case` job with the study id, the case id and the answers; it rewrites the case in place. Never draft the case inline.
+
 ## Notes intake (findings)
 
 - **Pasted notes:** save each participant's pasted text with `Write` as `.claude/specs/research/<slug>/notes/<yyyy-mm-dd>-<participant-code>.md` (today's date, codes `P1`, `P2`, … continuing the study's existing codes). Save it **already masked**: the participant code instead of the name, and `[redacted]` for emails, phones, addresses and other identifying details. Never write a name or contact detail to disk.
@@ -66,4 +76,4 @@ Runs any time after market research. Relevance is a recommendation, not a gate: 
 - Don't draft research docs inline — always go through the `researcher` subagent. The only direct file write is saving pasted notes, already masked.
 - Don't invent numbers, scores or quotes.
 - Don't dispatch the builder or start a build; handed-off features go through `/specmanager-prd` like any other feature.
-- Don't loop here: with no step, this command runs one step and stops. To draft brief → market → Docs → user-research plan → marketing plan in one run, use `/specmanager-research-loop`; it stops before findings, which needs real interviews.
+- Don't loop here: with no step, this command runs one step and stops. To draft brief → market → Docs → user-research plan → marketing plan → P&L case in one run, use `/specmanager-research-loop`; it stops before findings, which needs real interviews.
