@@ -8,7 +8,8 @@
 // build-list parsing, idempotent handoff by itemId (survives rename/re-rank) + origin,
 // Builder-only manifest unchanged, the "Research studies" CLAUDE.md line, and (in a
 // second temp root) the brief, multi-doc Docs, docType rules, project-wide doc ids and a
-// legacy concepts.html read as a wireframes Doc.
+// legacy concepts.html read as a wireframes Doc. The `case` step: gate, rail, `## Skipped`
+// form and strategy staleness behind `case-<slug>`.
 
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -101,7 +102,11 @@ async function main(): Promise<void> {
   assert(sa.nextStep === "market", "empty study's next step is market");
   assert(rail(sa).market === "next" && rail(sa).docs === "locked", "rail: market next, docs locked");
   assert(reasonOf(sa, "findings") === "needs the user-research plan first", "findings locked reason");
-  for (const kind of ["doc", "user-research", "marketing"] as const) {
+  assert(
+    rail(sa).case === "locked" && reasonOf(sa, "case") === "needs market research first",
+    "rail: case locked before market"
+  );
+  for (const kind of ["doc", "user-research", "marketing", "case"] as const) {
     const gate = await checkResearchStep(a.id, kind, root);
     assert(!gate.ok && gate.reason === "needs market research first", `${kind} gate needs market`);
   }
@@ -121,6 +126,8 @@ async function main(): Promise<void> {
   assert(sb.docs.length === 0 && sb.nextStep === "market", "study B is independent of study A");
   sa = await studySummary(a.id, root);
   assert(sa.nextStep === "docs" && rail(sa).market === "done", "A's next step moves to docs");
+  assert((await checkResearchStep(a.id, "case", root)).ok, "case gate opens once market exists");
+  assert(rail(sa).case === "open", "rail: case open while marketing is still missing");
 
   // 5. Manifest studies[] + CLAUDE.md line; Builder entries byte-identical.
   const m1 = await buildManifest(root);
@@ -169,7 +176,18 @@ async function main(): Promise<void> {
   await createResearchDoc({ studyId: a.id, kind: "user-research", title: "UR", ...dep }, root);
   await createResearchDoc({ studyId: a.id, kind: "marketing", title: "Marketing", ...dep }, root);
   sa = await studySummary(a.id, root);
-  assert(sa.nextStep === "findings", "next step is findings once the plan exists");
+  assert(sa.nextStep === "case", "next step is case once the plan and marketing exist");
+  const skipped = await createResearchDoc(
+    { studyId: a.id, kind: "case", title: "P&L case", body: "## Skipped\n\nNo money question in this study.\n", ...dep },
+    root
+  );
+  assert(
+    skipped.frontmatter.id === "case-oposiciones" && path.basename(skipped.filePath) === "pl-case.md",
+    "case id is case-<slug>, file pl-case.md"
+  );
+  sa = await studySummary(a.id, root);
+  assert(rail(sa).case === "done", "a ## Skipped case marks the case step done");
+  assert(sa.nextStep === "findings", "next step is findings once the plan and case exist");
   assert(rail(sa).strategy === "locked", "strategy locked without findings");
   assert(rail(sa).docs === "done", "rail: docs done once one Doc exists");
 
@@ -229,10 +247,21 @@ async function main(): Promise<void> {
   assert(parseBuildList("## Summary\n\nNo list.\n").length === 0, "no What to build section → empty list");
 
   // 12. Strategy with an empty build list closes handoff.
-  const stratDep = { dependsOn: ["ur-oposiciones"], basedOn: { "ur-oposiciones": 3 } };
+  const stratDep = {
+    dependsOn: ["ur-oposiciones", "case-oposiciones"],
+    basedOn: { "ur-oposiciones": 3, "case-oposiciones": 1 },
+  };
   await createResearchDoc(
     { studyId: a.id, kind: "strategy", title: "Strategy", body: strategyBody(["1. Idea with no id"]), ...stratDep },
     root
+  );
+  sa = await studySummary(a.id, root);
+  assert(rail(sa).strategy === "done", "strategy based on the current case is not flagged");
+  await writeResearchDoc({ id: "case-oposiciones", body: "## Frame\n\nRevised with findings.\n" }, root);
+  sa = await studySummary(a.id, root);
+  assert(
+    rail(sa).strategy === "flag" && reasonOf(sa, "strategy") === "behind case-oposiciones",
+    "strategy is flagged behind case-<slug> once the case is rewritten"
   );
   await createResearchDoc(
     {
@@ -350,7 +379,7 @@ async function briefAndDocs(): Promise<void> {
   assert(brief.frontmatter.id === "brief-probe", "brief id is brief-<slug>");
   assert((await readResearchDocById("brief-probe", root)).frontmatter.kind === "brief", "brief-<slug> resolves by id");
   let ss = await studySummary(s.id, root);
-  assert(!("brief" in rail(ss)) && ss.steps.length === 7, "the brief is absent from steps");
+  assert(!("brief" in rail(ss)) && ss.steps.length === 8, "the brief is absent from steps (eight steps, case included)");
   assert(ss.nextStep === "market", "a brief leaves market as the next step");
 
   // 17. Docs gate, then docType rejections.
