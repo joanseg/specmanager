@@ -912,7 +912,7 @@ function EmptyCell$1({ study, kind, label }) {
     return createVNode("div", { className: "card card--empty card--ready", children: [
       createVNode("span", { className: "card__empty-label", children: [
         "Draft ",
-        label.toLowerCase()
+        label.startsWith("P&L") ? label : label.toLowerCase()
       ] }),
       createVNode("button", { type: "button", className: "card__empty-cmd", onClick: copy(cmd), title: "copy to clipboard", children: cmd })
     ] });

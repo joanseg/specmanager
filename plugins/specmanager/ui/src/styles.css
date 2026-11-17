@@ -1393,7 +1393,7 @@ html, body, #root {
  * Same grid as Builder; Handoff takes Build's reserved right-hand track
  * (.row__cell--build), so the breakpoints below wrap it at tablet. */
 .grid--research {
-  --grid-cols: 15rem minmax(8.5rem, 1fr) minmax(11.5rem, 1.35fr) repeat(3, minmax(8.5rem, 1fr)) 16rem;
+  --grid-cols: 15rem minmax(8.5rem, 1fr) minmax(11.5rem, 1.35fr) repeat(4, minmax(8.5rem, 1fr)) 16rem;
 }
 .grid--research .row__label { min-width: 0; }
 /* Outdated research cards keep the stale error edge over .card--button's border. */
@@ -1519,7 +1519,7 @@ label.handoff-item { cursor: pointer; }
 }
 .study-rail {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(8, 1fr);
   gap: 3px;
   margin-top: 0.6rem;
 }
@@ -1600,7 +1600,7 @@ label.handoff-item { cursor: pointer; }
   margin: 0 0 1.4rem;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(8, 1fr);
   gap: 6px;
 }
 .steps li {
@@ -1819,12 +1819,12 @@ label.handoff-item { cursor: pointer; }
 .steps li.loop i { background: color-mix(in srgb, var(--primary) 35%, var(--surface-container-highest)); }
 .steps-bracket {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(8, 1fr);
   gap: 6px;
   margin: -0.9rem 0 1.4rem;
 }
 .steps-bracket span {
-  grid-column: 1 / span 4;
+  grid-column: 1 / span 5;
   position: relative;
   padding-top: 10px;
   text-align: center;
@@ -1886,7 +1886,7 @@ label.handoff-item { cursor: pointer; }
   .card--build .bar { flex: 1; min-width: 8rem; }
   /* Docs keeps a wider track; labels drop the idea and next-step lines. */
   .grid--research {
-    --grid-cols: 10rem minmax(7rem, 1fr) minmax(9rem, 1.3fr) repeat(3, minmax(7rem, 1fr));
+    --grid-cols: 10rem minmax(7rem, 1fr) minmax(9rem, 1.3fr) repeat(4, minmax(7rem, 1fr));
   }
   .doc-add__more, .study__idea, .study__next { display: none; }
 }

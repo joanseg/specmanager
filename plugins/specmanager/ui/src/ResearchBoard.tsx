@@ -245,7 +245,7 @@ function EmptyCell({ study, kind, label }: { study: StudySummary; kind: Research
   if (status?.state === "next") {
     return (
       <div className="card card--empty card--ready">
-        <span className="card__empty-label">Draft {label.toLowerCase()}</span>
+        <span className="card__empty-label">Draft {label.startsWith("P&L") ? label : label.toLowerCase()}</span>
         <button type="button" className="card__empty-cmd" onClick={copy(cmd)} title="copy to clipboard">
           {cmd}
         </button>
